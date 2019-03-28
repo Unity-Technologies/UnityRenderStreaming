@@ -1,0 +1,14 @@
+language: cpp, node_js
+node_js: "8.3"
+os:
+  - windows
+matrix:
+  include:
+  - os: windows
+    env:
+     - MSBUILD_PATH="/C/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin"
+install: 
+    - choco install package.config
+script:
+   - export PATH=$MSBUILD_PATH:$PATH
+   # - MSBuild.exe ProxyServer/ProxyServer.sln -t:Rebuild -p:Configuration=Release
