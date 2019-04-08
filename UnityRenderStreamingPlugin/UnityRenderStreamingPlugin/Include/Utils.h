@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <chrono>
 #include <string>
 #include <memory>
@@ -20,24 +20,24 @@ namespace NvCodec
 	using SetResolutionFuncType = void(*)(int32*, int32*);
     const uint32 kNumBufferedFrames = 3;
 
-	void DebugLog(const char* msg);
-	void checkf(bool result, const char* msg);
-	void SetResolution(int32* widht, int32* height);
+    void DebugLog(const char* msg);
+    void checkf(bool result, const char* msg);
+    void SetResolution(int32* widht, int32* height);
 
     extern FrameBuffer* renderTextures[kNumBufferedFrames];
     extern ID3D11DeviceContext* context;
     extern std::mutex socketMutex;
     extern FrameBuffer* unityRT;
     extern ID3D11Device* g_D3D11Device;
-	extern DebugLogFuncType debugLogFunc;
-	extern SetResolutionFuncType setResFunc;
+    extern DebugLogFuncType debugLogFunc;
+    extern SetResolutionFuncType setResFunc;
 
-	template<class ... Args>
-	std::string StringFormat(const std::string& format, Args ... args)
-	{
-		size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
-		std::unique_ptr<char[]> buf(new char[size]);
-		snprintf(buf.get(), size, format.c_str(), args ...);
-		return std::string(buf.get(), buf.get() + size - 1); 
-	}
+    template<class ... Args>
+    std::string StringFormat(const std::string& format, Args ... args)
+    {
+        size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+        std::unique_ptr<char[]> buf(new char[size]);
+        snprintf(buf.get(), size, format.c_str(), args ...);
+        return std::string(buf.get(), buf.get() + size - 1); 
+    }
 }
