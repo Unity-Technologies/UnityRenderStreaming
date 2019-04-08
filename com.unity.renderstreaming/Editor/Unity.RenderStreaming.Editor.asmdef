@@ -1,0 +1,10 @@
+{
+    "name": "Unity.RenderStreaming.Editor",
+    "references": [
+      "Unity.RenderStreaming"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Unity.RenderStreaming.Tests",
+    "references": [
+        "Unity.RenderStreaming"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}

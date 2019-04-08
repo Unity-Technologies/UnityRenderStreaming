@@ -1,0 +1,14 @@
+{
+    "name": "Unity.RenderStreaming.EditorTests",
+    "references": [
+        "Unity.RenderStreaming.Editor",
+        "Unity.RenderStreaming"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
