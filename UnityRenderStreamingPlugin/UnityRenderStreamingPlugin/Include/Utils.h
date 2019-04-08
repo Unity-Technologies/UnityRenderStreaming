@@ -16,8 +16,8 @@ namespace NvCodec
     using int32 = signed int;
     using int64 = signed long long;
     using FrameBuffer = ID3D11Texture2D;
-	using DebugLogFuncType = void(*)(const char*);
-	using SetResolutionFuncType = void(*)(int32*, int32*);
+    using DebugLogFuncType = void(*)(const char*);
+    using SetResolutionFuncType = void(*)(int32*, int32*);
     const uint32 kNumBufferedFrames = 3;
 
     void DebugLog(const char* msg);
