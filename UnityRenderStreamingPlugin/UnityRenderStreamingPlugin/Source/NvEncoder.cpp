@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "NvEncoder.h"
 #include "Unity/IUnityGraphicsD3D11.h"
 #include <CString>
