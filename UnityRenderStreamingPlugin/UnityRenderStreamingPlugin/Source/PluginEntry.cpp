@@ -1,4 +1,5 @@
-﻿#include "Utils.h"
+#include "pch.h"
+#include "Utils.h"
 #include <string>
 #include "Unity/IUnityInterface.h"
 #include <mutex>
