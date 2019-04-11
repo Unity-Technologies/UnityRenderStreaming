@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "NvEncoder.h"
 
 namespace WebRTC
 {
@@ -33,16 +34,21 @@ namespace WebRTC
             fourccs->push_back(cricket::FOURCC_H264);
             return true;
         }
+        std::unique_ptr<NvCodec::NvEncoder> nvEncoder;
 
         int32 width = 1920;
         int32 height = 1080;
         int32 framerate = 60;
+        bool captureStarted = false;
+
     };
 
     class FrameBuffer : public webrtc::VideoFrameBuffer
     {
     public:
-        FrameBuffer(int width, int height) : frameWidth(width), frameHeight(height) {}
+        std::vector<uint8>& buffer;
+
+        FrameBuffer(int width, int height, std::vector<uint8>& data) : frameWidth(width), frameHeight(height), buffer(data) {}
 
         //webrtc::VideoFrameBuffer pure virtual functions
         // This function specifies in what pixel format the data is stored in.

@@ -41,7 +41,6 @@ namespace WebRTC
         std::unique_ptr<NvVideoCapturer> nvVideoCapturer;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
         rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
-        std::unique_ptr<DummyVideoEncoderFactory> dummyVideoEncoderFactory;
         std::map<int32, rtc::scoped_refptr<ClientConnection>> clients;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
         webrtc::PeerConnectionInterface::RTCConfiguration config;

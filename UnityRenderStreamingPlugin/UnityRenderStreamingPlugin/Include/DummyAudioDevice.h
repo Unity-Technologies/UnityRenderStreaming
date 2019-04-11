@@ -5,7 +5,7 @@ namespace WebRTC
     class DummyAudioDevice : public webrtc::AudioDeviceModule
     {
     public:
-        void ProcessAudioData(const void* data, uint32 size);
+        void ProcessAudioData(const float* data, int32 size);
 
         //webrtc::AudioDeviceModule
         // Retrieve the currently utilized audio layer
@@ -26,7 +26,7 @@ namespace WebRTC
         virtual int32 Terminate() override
         {
             deviceBuffer.reset();
-            recordingStarted = false;
+            started = false;
             return 0;
         }
         virtual bool Initialized() const override
@@ -91,10 +91,13 @@ namespace WebRTC
         {
             return 0;
         }
-        virtual int32 InitRecording() override;
+        virtual int32 InitRecording() override
+        {
+            return 0;
+        }
         virtual bool RecordingIsInitialized() const override
         {
-            return recordingStarted;
+            return started;
         }
 
         // Audio transport control
@@ -120,7 +123,7 @@ namespace WebRTC
         }
         virtual bool Recording() const override
         {
-            return recordingStarted;
+            return started;
         }
 
         // Audio mixer initialization
@@ -276,6 +279,7 @@ namespace WebRTC
         }
     private:
         std::unique_ptr<webrtc::AudioDeviceBuffer> deviceBuffer;
-        std::atomic<bool> recordingStarted = false;
+        std::atomic<bool> started = false;
+        std::vector<int16> convertedAudioData;
     };
 }

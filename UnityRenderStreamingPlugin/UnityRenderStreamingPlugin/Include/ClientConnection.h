@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 namespace WebRTC
 {
     class ClientConnection
@@ -8,16 +9,16 @@ namespace WebRTC
     {
     public:
         ClientConnection(int32 id);
-        ~ClientConnection();
 
-        void Disconnect();
-
+        sigslot::signal2<int32, std::string&> SendAnswer;
+        sigslot::signal2<int32, std::string&> SendIceCandidate;
+        sigslot::signal1<int32> DeleteClient;
         //webrtc::CreateSessionDescriptionObserver
         // This callback transfers the ownership of the |desc|.
         void OnSuccess(webrtc::SessionDescriptionInterface* desc) override;
         // The OnFailure callback takes an RTCError, which consists of an
         // error code and a string.
-        void OnFailure(const std::string& error) override;
+        void OnFailure(webrtc::RTCError error) override;
 
         // webrtc::PeerConnectionObserver
         // Triggered when the SignalingState changed.
@@ -61,7 +62,6 @@ namespace WebRTC
         void OnBufferedAmountChange(uint64_t previous_amount) override {}
     public:
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> peerConnection;
-        rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel;
     private:
         int32 id;
     };

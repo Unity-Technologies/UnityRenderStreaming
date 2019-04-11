@@ -14,7 +14,7 @@ namespace NvCodec
     //d3d11 device
     ID3D11Device* g_D3D11Device = nullptr;
     //natively created ID3D11Texture2D ptrs
-    FrameBuffer* renderTextures[kNumBufferedFrames];
+    FrameBuffer* renderTextures[bufferedFrameNum];
     //store resource from unity
 }
 

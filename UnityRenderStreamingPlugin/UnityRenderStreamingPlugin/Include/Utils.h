@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <chrono>
 #include <string>
 #include <memory>
@@ -16,22 +16,38 @@ using int64 = signed long long;
 
 namespace WebRTC
 {
-    const int32 sampleRate = 48000;
-    const int32 channelNum = 2;
+    enum class ProxyToSignalServerMsg : uint8
+    {
+        answer,
+        iceCandiate,
+        disconnect
+    };
+
+    enum class SignalServerToProxyMsg : uint8
+    {
+        offer,
+        iceCandidate,
+        clientDisconnected,
+        config,
+    };
+
+    const std::string SignalingServerIP = "127.0.0.1";
+    const uint16 UnityPort = 8888;
 }
+
 
 namespace NvCodec
 {
     using FrameBuffer = ID3D11Texture2D;
     using DebugLogFuncType = void(*)(const char*);
     using SetResolutionFuncType = void(*)(int32*, int32*);
-    const uint32 kNumBufferedFrames = 3;
+    const uint32 bufferedFrameNum = 3;
 
     void DebugLog(const char* msg);
     void checkf(bool result, const char* msg);
     void SetResolution(int32* widht, int32* height);
 
-    extern FrameBuffer* renderTextures[kNumBufferedFrames];
+    extern FrameBuffer* renderTextures[bufferedFrameNum];
     extern ID3D11DeviceContext* context;
     extern std::mutex socketMutex;
     extern FrameBuffer* unityRT;

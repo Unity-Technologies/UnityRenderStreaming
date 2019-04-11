@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "NvEncoder.h"
 #include "Unity/IUnityGraphicsD3D11.h"
 #include <CString>
@@ -179,7 +179,7 @@ namespace NvCodec
     void NvEncoder::EncodeFrame()
     {
         UpdateSettings();
-        uint32 bufferIndexToWrite = frameCount % kNumBufferedFrames;
+        uint32 bufferIndexToWrite = frameCount % bufferedFrameNum;
         Frame& frame = bufferedFrames[bufferIndexToWrite];
 #pragma region set frame params
         //no free buffer, skip this frame
@@ -298,7 +298,7 @@ namespace NvCodec
     }
     void NvEncoder::InitEncoderResources()
     {
-        for (uint32 i = 0; i < kNumBufferedFrames; i++)
+        for (uint32 i = 0; i < bufferedFrameNum; i++)
         {
             renderTextures[i] = AllocateInputBuffers();
             Frame& frame = bufferedFrames[i];

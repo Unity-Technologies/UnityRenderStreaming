@@ -54,6 +54,9 @@
     <ClInclude Include="Include\WebRTCUnityClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\NvVideoCapturer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Callback.cpp">
@@ -70,9 +73,6 @@
     </ClCompile>
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\NvVideoCapturer.h">
-      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\NvVideoCapturer.cpp">
       <Filter>Source Files</Filter>

@@ -54,7 +54,7 @@ namespace NvCodec
         NV_ENC_INITIALIZE_PARAMS nvEncInitializeParams;
         NV_ENC_CONFIG nvEncConfig;
         _NVENCSTATUS errorCode;
-        Frame bufferedFrames[kNumBufferedFrames];
+        Frame bufferedFrames[bufferedFrameNum];
         uint64 frameCount = 0;
         void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
