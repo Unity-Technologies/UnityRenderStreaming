@@ -23,20 +23,91 @@ namespace WebRTC
         socket->Send(&msgSize, sizeof(msgSize));
         socket->Send(msg.data(), msgSize);
     }
+    bool SignalingConnection::ReadString(std::string& msg)
+    {
+        if (readBuffer.size() < sizeof(uint32))
+            return false;
+        uint32 stringSize = *reinterpret_cast<uint32*>(readBuffer.data());
+        if (readBuffer.size() < (sizeof(uint32) + stringSize))
+            return false;
+        msg.assign((char*)readBuffer.data() + sizeof(uint32), stringSize);
+        readBuffer.erase(readBuffer.begin(), readBuffer.begin() + sizeof(uint32) + stringSize);
+    }
+    bool SignalingConnection::ReadInt32(int32& id)
+    {
+        if (readBuffer.size() < sizeof(int32))
+            return false;
+        id = *reinterpret_cast<int32*>(readBuffer.data());
+        readBuffer.erase(readBuffer.begin(), readBuffer.begin() + sizeof(int32));
+        return true;
+    }
+    bool SignalingConnection::ReadMsgType(uint8& type)
+    {
+        if (readBuffer.size() < sizeof(uint8))
+            return false;
+        type = *reinterpret_cast<uint8*>(readBuffer.data());
+        readBuffer.erase(readBuffer.begin(), readBuffer.begin() + sizeof(uint8));
+        return true;
+    }
+    bool SignalingConnection::ParseMsg()
+    {
+        uint8 msgType;
+        if (!ReadMsgType(msgType))
+            return false;
+        switch ((SignalServerToProxyMsg)msgType)
+        {
+        case SignalServerToProxyMsg::offer:
+        {
+            int32 id;
+            std::string offer;
+            if (!ReadInt32(id) || !ReadString(offer))
+                return false;
+            OfferSig(id, offer);
+            break;
+        }
+        case SignalServerToProxyMsg::iceCandidate:
+        {
+            int32 id;
+            std::string iceCandidata;
+            if (!ReadInt32(id) || !ReadString(iceCandidata))
+                return false;
+            IceCandidateSig(id, iceCandidata);
+            break;
+        }
+        case SignalServerToProxyMsg::clientDisconnected:
+        {
+            int32 id;
+            if (!ReadInt32(id))
+                return false;
+            ClientDisconnectSig(id);
+            break;
+        }
+        case SignalServerToProxyMsg::config:
+        {
+            std::string config;
+            if (!ReadString(config))
+                return false;
+            ConfigSig(config);
+            break;
+        }
+        default:
+            break;
+        }
+        return true;
+    }
     void SignalingConnection::OnRead(rtc::AsyncSocket*)
     {
-        while (true)
-        {
-            int receivedBytes = socket->Recv(tmpBuffer, sizeof(tmpBuffer), nullptr);
-            if (receivedBytes <= 0)
-            {
+        uint8 buffer[65535];
+        do {
+            int bytes = socket->Recv(buffer, sizeof(buffer), nullptr);
+            if (bytes <= 0)
                 break;
-            }
-            readBuffer.insert(readBuffer.end(), tmpBuffer, tmpBuffer + receivedBytes);
-        }
+            readBuffer.insert(readBuffer.end(), buffer, buffer + bytes);
+        } while (true);
         while (!readBuffer.empty())
         {
-
+            if (!ParseMsg())
+                readBuffer.clear();
         }
     }
     void SignalingConnection::OnClose(rtc::AsyncSocket*, int)
@@ -44,4 +115,11 @@ namespace WebRTC
         DisconnectSig();
         while (socket->Connect(address) == SOCKET_ERROR) {}
     }
+    void SignalingConnection::DisconnectClient(int32 id)
+    {
+        ProxyToSignalServerMsg msgType = ProxyToSignalServerMsg::disconnect;
+        socket->Send(&msgType, sizeof(msgType));
+        socket->Send(&id, sizeof(id));
+    }
+  
 }

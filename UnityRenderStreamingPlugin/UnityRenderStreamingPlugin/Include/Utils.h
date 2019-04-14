@@ -33,6 +33,16 @@ namespace WebRTC
 
     const std::string SignalingServerIP = "127.0.0.1";
     const uint16 UnityPort = 8888;
+    class WebRTCUnityClient;
+
+    // Names used for a IceCandidate JSON object.
+    const char candidateSdpMidName[] = "sdpMid";
+    const char candidateSdpMlineIndexName[] = "sdpMLineIndex";
+    const char candidateSdpName[] = "candidate";
+    // Names used for a SessionDescription JSON object.
+    const char sessionDescriptionTypeName[] = "type";
+    const char sessionDescriptionSdpName[] = "sdp";
+
 }
 
 
@@ -49,11 +59,11 @@ namespace NvCodec
 
     extern FrameBuffer* renderTextures[bufferedFrameNum];
     extern ID3D11DeviceContext* context;
-    extern std::mutex socketMutex;
     extern FrameBuffer* unityRT;
     extern ID3D11Device* g_D3D11Device;
     extern DebugLogFuncType debugLogFunc;
     extern SetResolutionFuncType setResFunc;
+    extern std::unique_ptr<WebRTC::WebRTCUnityClient> unityClient;
 
     template<class ... Args>
     std::string StringFormat(const std::string& format, Args ... args)

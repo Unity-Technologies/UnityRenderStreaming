@@ -1,13 +1,14 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Utils.h"
 #include <string>
 #include "Unity/IUnityInterface.h"
 #include <mutex>
+#include "WebRTCUnityClient.h"
 
 using namespace NvCodec;
 namespace NvCodec
 {
-    std::mutex socketMutex;
+    std::unique_ptr<WebRTC::WebRTCUnityClient> unityClient;
     FrameBuffer* unityRT;
 }
 
@@ -35,5 +36,6 @@ extern "C"
     }
     UNITY_INTERFACE_EXPORT void InitializePluginResource()
     {
+        unityClient = std::make_unique<WebRTC::WebRTCUnityClient>();
     }
 }

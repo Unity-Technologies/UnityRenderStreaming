@@ -4,14 +4,6 @@
 
 namespace WebRTC
 {
-    // Names used for a IceCandidate JSON object.
-    const char candidateSdpMidName[] = "sdpMid";
-    const char candidateSdpMlineIndexName[] = "sdpMLineIndex";
-    const char candidateSdpName[] = "candidate";
-    // Names used for a SessionDescription JSON object.
-    const char sessionDescriptionTypeName[] = "type";
-    const char sessionDescriptionSdpName[] = "sdp";
-
     ClientConnection::ClientConnection(int32 id) : id(id) {}
 
     void ClientConnection::OnSuccess(webrtc::SessionDescriptionInterface* desc)

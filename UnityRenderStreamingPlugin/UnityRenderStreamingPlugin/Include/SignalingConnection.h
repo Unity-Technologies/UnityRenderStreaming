@@ -6,6 +6,7 @@ namespace WebRTC
     {
     public:
         void Connect(const std::string& ip, uint16 port);
+        void DisconnectClient(int32 id);
         void SendMsg(int32 id, ProxyToSignalServerMsg msgType, const std::string& msg);
         //Event signals for message handling
         sigslot::signal1<const std::string&> ConfigSig;
@@ -16,10 +17,12 @@ namespace WebRTC
     private:
         void OnRead(rtc::AsyncSocket*);
         void OnClose(rtc::AsyncSocket*, int);
-
+        bool ReadString(std::string& msg);
+        bool ReadInt32(int32& id);
+        bool ReadMsgType(uint8& type);
+        bool ParseMsg();
         std::unique_ptr<rtc::AsyncSocket> socket;
         rtc::SocketAddress address;
-        uint8 tmpBuffer[65535];
         std::vector<uint8> readBuffer;
     };
 }

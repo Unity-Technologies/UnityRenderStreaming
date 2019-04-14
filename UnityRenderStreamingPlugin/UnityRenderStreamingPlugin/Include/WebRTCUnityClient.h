@@ -25,16 +25,15 @@ namespace WebRTC
     public:
         WebRTCUnityClient();
         ~WebRTCUnityClient();
+        sigslot::signal0<> EncodeSig;
         //SignalingConnection message handle slots
         void OnConfig(const std::string& config);
         void OnOffer(int32 id, const std::string& offer);
         void OnIceCandidate(int32 id, const std::string& iceCandidate);
-        void OnClientDisconnect(int32 client);
-        void OnDisconnect();
+        void OnClientDisconnect(int32 id);
+        void OnSignalingDisconnect();
     private:
         void CreatePeerConnection(int32 id);
-        void RemovePeerConnection(int32 id);
-        void AddTracks(int32 id);
 
         std::unique_ptr<SignalingConnection> signalingConnection;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
