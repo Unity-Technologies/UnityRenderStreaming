@@ -26,18 +26,22 @@ namespace WebRTC
         WebRTCUnityClient();
         ~WebRTCUnityClient();
         sigslot::signal0<> EncodeSig;
+        void ProcessAudioData(const float* data, int32 size);
         //SignalingConnection message handle slots
         void OnConfig(const std::string& config);
         void OnOffer(int32 id, const std::string& offer);
         void OnIceCandidate(int32 id, const std::string& iceCandidate);
         void OnClientDisconnect(int32 id);
         void OnSignalingDisconnect();
+        bool CaptureStarted() { return nvVideoCapturer->CaptureStarted(); }
+        std::unique_ptr<rtc::Thread> workerThread;
     private:
         void CreatePeerConnection(int32 id);
 
-        std::unique_ptr<SignalingConnection> signalingConnection;
+        SignalingConnection* signalingConnection;
+        NvVideoCapturer* nvVideoCapturer;
+        std::unique_ptr<NvVideoCapturer> nvVideoCapturerReal;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
-        std::unique_ptr<NvVideoCapturer> nvVideoCapturer;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
         rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
         std::map<int32, rtc::scoped_refptr<ClientConnection>> clients;

@@ -8,6 +8,8 @@ namespace WebRTC
         void Connect(const std::string& ip, uint16 port);
         void DisconnectClient(int32 id);
         void SendMsg(int32 id, ProxyToSignalServerMsg msgType, const std::string& msg);
+        void SendAnswer(int32 id, std::string& answer);
+        void SendIceCandidate(int32 id, std::string& iceCandidate);
         //Event signals for message handling
         sigslot::signal1<const std::string&> ConfigSig;
         sigslot::signal2<int32, const std::string&> OfferSig;

@@ -59,4 +59,3 @@
 #include "media/base/videobroadcaster.h"
 #pragma endregion
 #include "Utils.h"
-#include <vector>

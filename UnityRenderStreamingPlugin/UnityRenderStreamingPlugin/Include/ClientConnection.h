@@ -13,6 +13,7 @@ namespace WebRTC
         sigslot::signal2<int32, std::string&> SendAnswer;
         sigslot::signal2<int32, std::string&> SendIceCandidate;
         sigslot::signal1<int32> DeleteClient;
+        sigslot::signal0<> StartEncoder;
         //webrtc::CreateSessionDescriptionObserver
         // This callback transfers the ownership of the |desc|.
         void OnSuccess(webrtc::SessionDescriptionInterface* desc) override;

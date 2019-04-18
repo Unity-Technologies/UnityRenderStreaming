@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <mutex>
+#include <vector>
 #include "d3d11.h"
 
 using uint8 = unsigned char;

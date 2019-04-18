@@ -12,11 +12,42 @@ namespace NvCodec
     FrameBuffer* unityRT;
 }
 
+namespace WebRTC
+{
+    std::unique_ptr<std::thread> webrtcMsgThread;
+    DWORD msgThreadId = 0;
+
+    void Init()
+    {
+        msgThreadId = GetCurrentThreadId();
+#ifdef _DEBUG
+        rtc::LogMessage::LogToDebug(rtc::LS_INFO);
+#else
+        rtc::LogMessage::LogToDebug(rtc::LS_NONE);
+#endif
+        rtc::WinsockInitializer socketInit;
+        rtc::Win32SocketServer w32_ss;
+        rtc::Win32Thread w32_thread(&w32_ss);
+        rtc::ThreadManager::Instance()->SetCurrentThread(&w32_thread);
+        rtc::InitializeSSL();
+        unityClient = std::make_unique<WebRTC::WebRTCUnityClient>();
+        MSG msg;
+        BOOL gm;
+        while ((gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1)
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+        }
+        rtc::CleanupSSL();
+    }
+}
 
 extern "C"
 {
     UNITY_INTERFACE_EXPORT void CleanPluginResource()
     {
+        PostThreadMessage(WebRTC::msgThreadId, WM_QUIT, 0, 0);
+        WebRTC::webrtcMsgThread->join();
     }
     //set debug.log on C# side
     UNITY_INTERFACE_EXPORT void SetDebugLogFunc(DebugLogFuncType func)
@@ -36,6 +67,13 @@ extern "C"
     }
     UNITY_INTERFACE_EXPORT void InitializePluginResource()
     {
-        unityClient = std::make_unique<WebRTC::WebRTCUnityClient>();
+        WebRTC::webrtcMsgThread = std::make_unique<std::thread>(WebRTC::Init);
+    }
+    UNITY_INTERFACE_EXPORT void ProcessAudio(float* data, int32 size)
+    {
+        if (unityClient && unityClient->CaptureStarted())
+        {
+            unityClient->ProcessAudioData(data, size);
+        }
     }
 }

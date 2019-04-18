@@ -34,7 +34,7 @@ namespace WebRTC
             }
         }
 
-        if (encodedImage._frameType != webrtc::kVideoFrameKey && (*frameTypes)[0] == webrtc::kVideoFrameKey)
+        if (encodedImage._frameType != webrtc::kVideoFrameKey && frameTypes && (*frameTypes)[0] == webrtc::kVideoFrameKey)
         {
             SetKeyFrame();
         }
@@ -64,9 +64,10 @@ namespace WebRTC
     int32_t DummyVideoEncoder::SetRateAllocation(const webrtc::VideoBitrateAllocation& allocation, uint32_t framerate)
     {
         lastBitrate = allocation;
-        SetRate(allocation.get_sum_kbps());
+        SetRate(allocation.get_sum_kbps() * 1000);
         return 0;
     }
+    DummyVideoEncoderFactory::DummyVideoEncoderFactory(NvVideoCapturer* videoCapturer):capturer(videoCapturer){}
     std::vector<webrtc::SdpVideoFormat> DummyVideoEncoderFactory::GetSupportedFormats() const
     {
         const absl::optional<std::string> profileLevelId =
@@ -77,6 +78,7 @@ namespace WebRTC
               {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
               {cricket::kH264FmtpPacketizationMode, "1"} }) };
     }
+
     webrtc::VideoEncoderFactory::CodecInfo DummyVideoEncoderFactory::QueryVideoEncoder(const webrtc::SdpVideoFormat& format) const
     {
         return CodecInfo{ true, false };
@@ -84,6 +86,9 @@ namespace WebRTC
     std::unique_ptr<webrtc::VideoEncoder> DummyVideoEncoderFactory::CreateVideoEncoder(
         const webrtc::SdpVideoFormat& format)
     {
-        return std::make_unique<DummyVideoEncoder>();
+        auto dummyVideoEncoder = std::make_unique<DummyVideoEncoder>();
+        dummyVideoEncoder->SetKeyFrame.connect(capturer, &NvVideoCapturer::SetKeyFrame);
+        dummyVideoEncoder->SetRate.connect(capturer, &NvVideoCapturer::SetRate);
+        return dummyVideoEncoder;
     }
 }

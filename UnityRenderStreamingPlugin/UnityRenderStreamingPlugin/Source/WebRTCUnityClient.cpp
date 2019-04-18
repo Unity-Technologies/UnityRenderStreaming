@@ -10,7 +10,9 @@ namespace WebRTC
     WebRTCUnityClient::WebRTCUnityClient()
     {
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>();
+        nvVideoCapturerReal = std::make_unique<NvVideoCapturer>();
+        nvVideoCapturer = nvVideoCapturerReal.get();
+        auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>(nvVideoCapturer);
         peerConnectionFactory = webrtc::CreatePeerConnectionFactory(
             nullptr,
             nullptr,
@@ -22,10 +24,20 @@ namespace WebRTC
             std::make_unique<webrtc::InternalDecoderFactory>(),
             nullptr,
             nullptr);
-        ZeroMemory(&config, sizeof(webrtc::PeerConnectionInterface::RTCConfiguration));
+        config = webrtc::PeerConnectionInterface::RTCConfiguration{};
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
-        nvVideoCapturer = std::make_unique<NvVideoCapturer>();
-        signalingConnection = std::make_unique<SignalingConnection>();
+
+
+
+        
+        EncodeSig.connect(nvVideoCapturer, &NvVideoCapturer::EncodeVideoData);
+
+        signalingConnection = new SignalingConnection();
+        signalingConnection->DisconnectSig.connect(this, &WebRTCUnityClient::OnSignalingDisconnect);
+        signalingConnection->ConfigSig.connect(this, &WebRTCUnityClient::OnConfig);
+        signalingConnection->IceCandidateSig.connect(this, &WebRTCUnityClient::OnIceCandidate);
+        signalingConnection->OfferSig.connect(this, &WebRTCUnityClient::OnOffer);
+        signalingConnection->ClientDisconnectSig.connect(this, &WebRTCUnityClient::OnClientDisconnect);
         signalingConnection->Connect(SignalingServerIP, UnityPort);
     }
     WebRTCUnityClient::~WebRTCUnityClient()
@@ -33,16 +45,25 @@ namespace WebRTC
         audioTrack->Release();
         videoTrack->Release();
     }
+    void WebRTCUnityClient::ProcessAudioData(const float* data, int32 size)
+    {
+        audioDevice->ProcessAudioData(data, size);
+    }
     void WebRTCUnityClient::CreatePeerConnection(int32 id)
     {
-        if (clients.find(id) != clients.end())
+        if (clients.count(id))
         {
             return;
         }
         rtc::scoped_refptr<ClientConnection> clientConnection = new rtc::RefCountedObject<ClientConnection>(id);
+        clientConnection->SendAnswer.connect(signalingConnection, &SignalingConnection::SendAnswer);
+        clientConnection->SendIceCandidate.connect(signalingConnection, &SignalingConnection::SendIceCandidate);
+        clientConnection->StartEncoder.connect(nvVideoCapturer, &NvVideoCapturer::StartEncoder);
         clientConnection->peerConnection = peerConnectionFactory->CreatePeerConnection(config, NULL, NULL, clientConnection.get());
+        auto test = clientConnection->peerConnection;
         clients[id] = std::move(clientConnection);
-        if (!clients[id]->peerConnection->GetSenders().empty())
+
+        if (!(clients[id]->peerConnection->GetSenders().empty()))
         {
             return;
         }
@@ -54,11 +75,12 @@ namespace WebRTC
             audioOptions.noise_suppression = false;
             audioOptions.highpass_filter = false;
             audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
+
         }
         if (!videoTrack)
         {
             videoTrack = peerConnectionFactory->CreateVideoTrack(
-                "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturer)));
+                "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerReal)));
         }
         clients[id]->peerConnection->AddTrack(audioTrack, { "streamID" });
         clients[id]->peerConnection->AddTrack(videoTrack, { "streamID" });
@@ -107,7 +129,7 @@ namespace WebRTC
                 signalingConnection->DisconnectClient(id);
                 return;
             }
-            
+
             if (!rtc::GetStringFromJsonObject(message, sessionDescriptionSdpName,
                 &sdp)) {
                 RTC_LOG(WARNING) << "Can't parse received session description message.";
@@ -139,7 +161,7 @@ namespace WebRTC
     }
     void WebRTCUnityClient::OnIceCandidate(int32 id, const std::string& iceCandidate)
     {
-        ClientConnection* client = (clients.find(id) != clients.end()? clients[id] : nullptr);
+        ClientConnection* client = (clients.count(id) ? clients[id] : nullptr);
         if (!client)
             return;
         Json::Reader jsonReader;

@@ -11,7 +11,7 @@ namespace WebRTC
         // Retrieve the currently utilized audio layer
         virtual int32 ActiveAudioLayer(AudioLayer* audioLayer) const override
         {
-            *audioLayer = AudioDeviceModule::kDummyAudio;
+            *audioLayer = AudioDeviceModule::kPlatformDefaultAudio;
             return 0;
         }
         // Full-duplex transportation of PCM audio
@@ -22,16 +22,22 @@ namespace WebRTC
         }
 
         // Main initialization and termination
-        virtual int32 Init() override;
+        virtual int32 Init() override
+        {
+            deviceBuffer = std::make_unique<webrtc::AudioDeviceBuffer>();
+            started = true;
+            return 0;
+        }
         virtual int32 Terminate() override
         {
             deviceBuffer.reset();
             started = false;
+            isRecording = false;
             return 0;
         }
         virtual bool Initialized() const override
         {
-            return true;
+            return started;
         }
 
         // Device enumeration
@@ -93,11 +99,14 @@ namespace WebRTC
         }
         virtual int32 InitRecording() override
         {
+            isRecording = true;
+            deviceBuffer->SetRecordingSampleRate(48000);
+            deviceBuffer->SetRecordingChannels(2);
             return 0;
         }
         virtual bool RecordingIsInitialized() const override
         {
-            return started;
+            return isRecording;
         }
 
         // Audio transport control
@@ -123,7 +132,7 @@ namespace WebRTC
         }
         virtual bool Recording() const override
         {
-            return started;
+            return isRecording;
         }
 
         // Audio mixer initialization
@@ -280,6 +289,7 @@ namespace WebRTC
     private:
         std::unique_ptr<webrtc::AudioDeviceBuffer> deviceBuffer;
         std::atomic<bool> started = false;
+        std::atomic<bool> isRecording = false;
         std::vector<int16> convertedAudioData;
     };
 }

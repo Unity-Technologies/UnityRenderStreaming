@@ -175,6 +175,10 @@ namespace NvCodec
             checkf(result, "Failed to reconfigure encoder setting");
         }
     }
+    void NvEncoder::SetRate(uint32 rate)
+    {
+        bitRate = rate;
+    }
     //entry for encoding a frame
     void NvEncoder::EncodeFrame()
     {
@@ -199,6 +203,7 @@ namespace NvCodec
         picParams.inputWidth = nvEncInitializeParams.encodeWidth;
         picParams.inputHeight = nvEncInitializeParams.encodeHeight;
         picParams.outputBitstream = frame.outputFrame;
+        picParams.inputTimeStamp = frameCount;
 #pragma endregion
 #pragma region start encoding
         if (isIdrFrame)
@@ -233,13 +238,14 @@ namespace NvCodec
         if (lockBitStream.bitstreamSizeInBytes)
         {
             frame.encodedFrame.resize(lockBitStream.bitstreamSizeInBytes);
-            std::memcpy(&frame.encodedFrame[0], lockBitStream.bitstreamBufferPtr, lockBitStream.bitstreamSizeInBytes);
+             std::memcpy(frame.encodedFrame.data(), lockBitStream.bitstreamBufferPtr, lockBitStream.bitstreamSizeInBytes);
         }
 
         result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncUnlockBitstream(pEncoderInterface, frame.outputFrame)));
         checkf(result, StringFormat("Failed to unlock bit stream, error is %d", errorCode).c_str());
         frame.isIdrFrame = lockBitStream.pictureType == NV_ENC_PIC_TYPE_IDR;
 #pragma endregion
+        CaptureFrame(frame.encodedFrame);
     }
 
     ID3D11Texture2D* NvEncoder::AllocateInputBuffers()
@@ -292,6 +298,8 @@ namespace NvCodec
         NV_ENC_CREATE_BITSTREAM_BUFFER createBitstreamBuffer;
         ZeroMemory(&createBitstreamBuffer, sizeof(NV_ENC_CREATE_BITSTREAM_BUFFER));
         createBitstreamBuffer.version = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
+        createBitstreamBuffer.size = 1024 * 1024 * 32;
+        createBitstreamBuffer.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
         checkf(NV_RESULT((errorCode = pNvEncodeAPI->nvEncCreateBitstreamBuffer(pEncoderInterface, &createBitstreamBuffer))),
             StringFormat("nvEncCreateBitstreamBuffer error is %d", errorCode).c_str());
         return createBitstreamBuffer.bitstreamBuffer;

@@ -10,6 +10,7 @@ namespace WebRTC
     {
         peerConnection->SetLocalDescription(
             DummySetSessionDescriptionObserver::Create(), desc);
+        StartEncoder();
         std::string sdp;
         desc->ToString(&sdp);
         std::string tmp;

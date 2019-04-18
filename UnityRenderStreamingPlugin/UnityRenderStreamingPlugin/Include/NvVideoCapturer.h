@@ -26,6 +26,11 @@ namespace WebRTC
         {
             return false;
         }
+        void StartEncoder();
+        void SetKeyFrame();
+        void SetRate(uint32 rate);
+        void CaptureFrame(std::vector<uint8>& data);
+        bool CaptureStarted() { return captureStarted; }
     private:
         // subclasses override this virtual method to provide a vector of fourccs, in
         // order of preference, that are expected by the media engine.
@@ -36,10 +41,12 @@ namespace WebRTC
         }
         std::unique_ptr<NvCodec::NvEncoder> nvEncoder;
 
-        int32 width = 1920;
-        int32 height = 1080;
-        int32 framerate = 60;
-        bool captureStarted = false;
+        //just fake info
+        const int32 width = 1280;
+        const int32 height = 720;
+        const int32 framerate = 60;
+
+        bool captureStarted = false; 
 
     };
 
@@ -54,7 +61,8 @@ namespace WebRTC
         // This function specifies in what pixel format the data is stored in.
         virtual Type type() const override
         {
-            return Type::kNative;
+            //fake I420 to avoid ToI420() being called
+            return Type::kI420;
         }
         // The resolution of the frame in pixels. For formats where some planes are
         // subsampled, this is the highest-resolution plane.

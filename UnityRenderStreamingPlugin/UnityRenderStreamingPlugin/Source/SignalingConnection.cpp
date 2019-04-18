@@ -23,6 +23,14 @@ namespace WebRTC
         socket->Send(&msgSize, sizeof(msgSize));
         socket->Send(msg.data(), msgSize);
     }
+    void SignalingConnection::SendAnswer(int32 id, std::string& answer)
+    {
+        SendMsg(id, ProxyToSignalServerMsg::answer, answer);
+    }
+    void SignalingConnection::SendIceCandidate(int32 id, std::string& iceCandidate)
+    {
+        SendMsg(id, ProxyToSignalServerMsg::iceCandiate, iceCandidate);
+    }
     bool SignalingConnection::ReadString(std::string& msg)
     {
         if (readBuffer.size() < sizeof(uint32))
