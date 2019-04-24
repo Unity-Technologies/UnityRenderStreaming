@@ -32,6 +32,37 @@ namespace WebRTC
         config,
     };
 
+    enum class InputEvent : uint8
+    {
+        KeyDown,
+        KeyUp,
+        MouseDown,
+        MouseUp,
+        MouseMove,
+        MouseWheel,
+    };
+
+    using ProcessKeyEventDownFuncType = void(*)(uint8);
+    using ProcessKeyEventUpFuncType = void(*)(uint8);
+    using ProcessMouseButtonDownFuncType = void(*)(uint8);
+    using ProcessMouseButtonUpFuncType = void(*)(uint8);
+    using ProcessMouseMoveFuncType = void(*)(int16, int16);
+    using ProcessMouseWheelFuncType = void(*)(int16);
+
+    extern ProcessKeyEventDownFuncType processKeyDownEventFunc;
+    extern ProcessKeyEventUpFuncType processKeyUpEventFunc;
+    extern ProcessMouseButtonDownFuncType processMouseButtonDownFunc;
+    extern ProcessMouseButtonUpFuncType processMouseButtonUpFunc;
+    extern ProcessMouseMoveFuncType processMouseMoveFunc;
+    extern ProcessMouseWheelFuncType processMouseWheelFunc;
+
+    void ProcessKeyDown(uint8 keyCode);
+    void ProcessKeyUp(uint8 keyCode);
+    void ProcessMouseButtonDown(uint8 buttonType);
+    void ProcessMouseButtonUp(uint8 buttonType);
+    void ProcessMouseMove(int16 deltaX, int16 deltaY);
+    void ProcessMouseWheel(int16 amount);
+
     const std::string SignalingServerIP = "127.0.0.1";
     const uint16 UnityPort = 8888;
     class WebRTCUnityClient;

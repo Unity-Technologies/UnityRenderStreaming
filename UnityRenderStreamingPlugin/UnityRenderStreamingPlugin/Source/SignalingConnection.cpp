@@ -40,6 +40,7 @@ namespace WebRTC
             return false;
         msg.assign((char*)readBuffer.data() + sizeof(uint32), stringSize);
         readBuffer.erase(readBuffer.begin(), readBuffer.begin() + sizeof(uint32) + stringSize);
+        return true;
     }
     bool SignalingConnection::ReadInt32(int32& id)
     {

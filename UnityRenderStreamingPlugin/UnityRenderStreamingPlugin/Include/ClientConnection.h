@@ -61,6 +61,9 @@ namespace WebRTC
         void OnMessage(const webrtc::DataBuffer& buffer) override;
         // The data channel's buffered_amount has changed.
         void OnBufferedAmountChange(uint64_t previous_amount) override {}
+
+        template<class T>
+        void ReadData(T& value, const uint8* &data);
     public:
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> peerConnection;
     private:

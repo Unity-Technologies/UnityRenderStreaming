@@ -40,7 +40,6 @@ namespace WebRTC
 
         SignalingConnection* signalingConnection;
         NvVideoCapturer* nvVideoCapturer;
-        std::unique_ptr<NvVideoCapturer> nvVideoCapturerReal;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
         rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;

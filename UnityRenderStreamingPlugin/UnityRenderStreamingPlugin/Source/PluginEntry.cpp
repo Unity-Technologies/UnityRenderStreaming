@@ -58,6 +58,30 @@ extern "C"
     {
         setResFunc = func;
     }
+    UNITY_INTERFACE_EXPORT void SetProcessKeyDownEventFunc(WebRTC::ProcessKeyEventDownFuncType func)
+    {
+        WebRTC::processKeyDownEventFunc = func;
+    }
+    UNITY_INTERFACE_EXPORT void SetProcessKeyUpEventFunc(WebRTC::ProcessKeyEventUpFuncType func)
+    {
+        WebRTC::processKeyUpEventFunc = func;
+    }
+    UNITY_INTERFACE_EXPORT void SetProcessMouseButtonDownFunc(WebRTC::ProcessMouseButtonDownFuncType func)
+    {
+        WebRTC::processMouseButtonDownFunc = func;
+    }
+    UNITY_INTERFACE_EXPORT void SetProcessMouseButtonUpFunc(WebRTC::ProcessMouseButtonUpFuncType func)
+    {
+        WebRTC::processMouseButtonUpFunc = func;
+    }
+    UNITY_INTERFACE_EXPORT void SetProcessMouseMoveFunc(WebRTC::ProcessMouseMoveFuncType func)
+    {
+        WebRTC::processMouseMoveFunc = func;
+    }
+    UNITY_INTERFACE_EXPORT void SetProcessMouseWheelFunc(WebRTC::ProcessMouseWheelFuncType func)
+    {
+        WebRTC::processMouseWheelFunc = func;
+    }
 
     //set native ptr of rendertexture
     UNITY_INTERFACE_EXPORT void SetRenderTexturesPtr(void* ptr)

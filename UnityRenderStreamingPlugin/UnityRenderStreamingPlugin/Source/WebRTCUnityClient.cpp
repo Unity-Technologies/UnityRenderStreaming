@@ -10,7 +10,7 @@ namespace WebRTC
     WebRTCUnityClient::WebRTCUnityClient()
     {
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        nvVideoCapturerReal = std::make_unique<NvVideoCapturer>();
+        auto nvVideoCapturerReal = std::make_unique<NvVideoCapturer>();
         nvVideoCapturer = nvVideoCapturerReal.get();
         auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>(nvVideoCapturer);
         peerConnectionFactory = webrtc::CreatePeerConnectionFactory(
@@ -24,12 +24,18 @@ namespace WebRTC
             std::make_unique<webrtc::InternalDecoderFactory>(),
             nullptr,
             nullptr);
+
+        //avoid optimization specially for voice
+        cricket::AudioOptions audioOptions;
+        audioOptions.auto_gain_control = false;
+        audioOptions.noise_suppression = false;
+        audioOptions.highpass_filter = false;
+        audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
+        videoTrack = peerConnectionFactory->CreateVideoTrack(
+            "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerReal)));
         config = webrtc::PeerConnectionInterface::RTCConfiguration{};
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
 
-
-
-        
         EncodeSig.connect(nvVideoCapturer, &NvVideoCapturer::EncodeVideoData);
 
         signalingConnection = new SignalingConnection();
@@ -66,21 +72,6 @@ namespace WebRTC
         if (!(clients[id]->peerConnection->GetSenders().empty()))
         {
             return;
-        }
-        if (!audioTrack)
-        {
-            //avoid optimization specially for voice
-            cricket::AudioOptions audioOptions;
-            audioOptions.auto_gain_control = false;
-            audioOptions.noise_suppression = false;
-            audioOptions.highpass_filter = false;
-            audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
-
-        }
-        if (!videoTrack)
-        {
-            videoTrack = peerConnectionFactory->CreateVideoTrack(
-                "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerReal)));
         }
         clients[id]->peerConnection->AddTrack(audioTrack, { "streamID" });
         clients[id]->peerConnection->AddTrack(videoTrack, { "streamID" });
