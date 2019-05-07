@@ -1,0 +1,17 @@
+{
+    "name": "Unity.RenderStreaming.RuntimeTests",
+    "references": [
+        "Unity.WebRTC"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

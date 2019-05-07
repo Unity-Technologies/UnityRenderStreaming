@@ -22,7 +22,6 @@ namespace NvCodec
 
         struct Frame
         {
-            FrameBuffer* resolvedBackBuffer;
             InputFrame inputFrame;
             OutputFrame outputFrame;
             std::vector<uint8> encodedFrame;
@@ -34,11 +33,13 @@ namespace NvCodec
         NvEncoder();
         ~NvEncoder();
 
+        void SetRate(uint32 rate);
         void UpdateSettings();
         void EncodeFrame();
         bool IsSupported() const { return isNvEncoderSupported; }
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
+        sigslot::signal1<std::vector<uint8>&> CaptureFrame;
 
     private:
         void LoadNvEncApi();
@@ -54,7 +55,7 @@ namespace NvCodec
         NV_ENC_INITIALIZE_PARAMS nvEncInitializeParams;
         NV_ENC_CONFIG nvEncConfig;
         _NVENCSTATUS errorCode;
-        Frame bufferedFrames[kNumBufferedFrames];
+        Frame bufferedFrames[bufferedFrameNum];
         uint64 frameCount = 0;
         void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
@@ -62,7 +63,7 @@ namespace NvCodec
         void* hModule = nullptr;
 
         int bitRate = 10000000;
-        int frameRate = 30;
+        int frameRate = 25;
         int width = 1920;
         int height = 1080;
     };
