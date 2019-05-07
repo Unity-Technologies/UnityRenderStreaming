@@ -1,6 +1,8 @@
-﻿#include "Unity/IUnityGraphics.h"
+﻿#include "pch.h"
+#include "Unity/IUnityGraphics.h"
 #include "Unity/IUnityGraphicsD3D11.h"
 #include "Utils.h"
+#include "WebRTCUnityClient.h"
 
 
 namespace NvCodec
@@ -13,7 +15,7 @@ namespace NvCodec
     //d3d11 device
     ID3D11Device* g_D3D11Device = nullptr;
     //natively created ID3D11Texture2D ptrs
-    FrameBuffer* renderTextures[kNumBufferedFrames];
+    FrameBuffer* renderTextures[bufferedFrameNum];
     //store resource from unity
 }
 
@@ -73,7 +75,8 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID)
 {
-
+    if (unityClient)
+        unityClient->EncodeSig();
 }
 
 

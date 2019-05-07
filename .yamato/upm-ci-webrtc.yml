@@ -1,0 +1,99 @@
+# .yamato/upm-ci-webrtc.yml
+editors:
+  - version: 2018.3
+  - version: 2019.1
+  - version: trunk
+platforms:
+  - name: win
+    type: Unity::VM
+    # currently the projects depends MSBuild. we should replace CMake
+    # image: package-ci/win10:stable
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+    build_command: build.cmd
+projects:
+  - name: webrtc
+    packagename: com.unity.webrtc
+---
+{% for project in projects %}
+{% for platform in platforms %}
+build_{{ platform.name }}:
+  name: Build {{ project.packagename }} {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ platform.build_command }}
+  artifacts:
+    build:
+      paths:
+        - "Packages/com.unity.webrtc/**/*"
+{% endfor %}
+
+pack:
+  name: Pack {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package pack --package-path Packages/com.unity.webrtc
+  artifacts:
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+    build:
+      paths:
+        - "com.unity.webrtc/**/*"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webrtc.yml#build_{{ platform.name }}
+    {% endfor %}
+
+{% for editor in editors %}
+{% for platform in platforms %}
+test_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package test -u {{ editor.version }} --package-path Packages/com.unity.webrtc
+  artifacts:
+    logs.zip:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-webrtc.yml#pack
+{% endfor %}
+{% endfor %}
+
+publish:
+  name: Publish {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package publish --package-path Packages/com.unity.webrtc
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-webrtc.yml#pack
+    {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+    - .yamato/upm-ci-webrtc.yml#test_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+{% endfor %}

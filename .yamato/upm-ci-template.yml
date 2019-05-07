@@ -1,0 +1,79 @@
+# .yamato/upm-ci.yml
+editors:
+  - version: 2018.3
+  - version: 2019.1
+  - version: trunk
+platforms:
+  - name: win
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+projects:
+  - name: renderstreaming
+    packagename: com.unity.template.renderstreaming
+---
+{% for project in projects %}
+pack:
+  name: Pack {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci template pack
+  artifacts:
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+        - "upm-ci~/templates/**/*"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webrtc.yml#build_{{ platform.name }}
+    {% endfor %}
+
+{% for editor in editors %}
+{% for platform in platforms %}
+test_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci template test -u {{ editor.version }}
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-template.yml#pack
+{% endfor %}
+{% endfor %}
+
+publish:
+  name: Publish {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci template publish
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-template.yml#pack
+    {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+    - .yamato/upm-ci-template.yml#test_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+{% endfor %}
