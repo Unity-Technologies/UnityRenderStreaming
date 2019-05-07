@@ -1,0 +1,17 @@
+{
+    "name": "Unity.WebRTC.RuntimeTests",
+    "references": [
+        "Unity.WebRTC"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

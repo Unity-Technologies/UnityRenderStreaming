@@ -1,0 +1,14 @@
+{
+    "name": "Unity.WebRTC.EditorTests",
+    "references": [
+        "Unity.WebRTC.Editor",
+        "Unity.WebRTC"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
