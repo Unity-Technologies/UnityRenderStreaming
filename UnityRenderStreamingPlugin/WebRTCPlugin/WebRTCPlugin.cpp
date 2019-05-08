@@ -46,11 +46,12 @@ UNITY_INTERFACE_EXPORT void peerConnectionSetConfiguration(PeerConnectionObject*
     obj->setConfiguration(std::string(conf));
 }
 
-UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf)
+UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
 {
     std::string _conf;
     obj->getConfiguration(_conf);
-    *conf = new char[_conf.size() + 1];
+    *len = _conf.size();
+    *conf = new char[_conf.size() + sizeof(char)];
     _conf.copy(*conf, _conf.size());
 }
 

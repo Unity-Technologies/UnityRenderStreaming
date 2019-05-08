@@ -52,6 +52,8 @@ void convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfigu
         {
             stunServer.urls.push_back(url.asString());
         }
+        stunServer.username = iceServerJson["username"].asString();
+        stunServer.password = iceServerJson["credential"].asString();
     }
     config.servers.push_back(stunServer);
     config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
@@ -287,20 +289,23 @@ void PeerConnectionObject::getConfiguration(std::string& config) const
 {
     auto _config = connection->peerConnection->GetConfiguration();
 
-    Json::Value jsonConfig;
-    jsonConfig["iceServers"] = Json::Value(Json::arrayValue);
+    Json::Value root;
+    root["iceServers"] = Json::Value(Json::arrayValue);
     for (auto iceServer : _config.servers)
     {
         Json::Value jsonIceServer = Json::Value(Json::objectValue);
+        jsonIceServer["username"] = iceServer.username;
+        jsonIceServer["credential"] = iceServer.password;
+        jsonIceServer["credentialType"] = (int)RTCIceCredentialType::Password;
         jsonIceServer["urls"] = Json::Value(Json::arrayValue);
         for (auto url : iceServer.urls)
         {
             jsonIceServer["urls"].append(url);
         }
-        jsonConfig["iceServers"].append(jsonIceServer);
+        root["iceServers"].append(jsonIceServer);
     }
-    Json::StyledWriter jsonWriter;
-    config = jsonWriter.write(jsonConfig);
+    Json::FastWriter writer;
+    config = writer.write(root);
 }
 
 void PeerConnectionObject::createOffer(const RTCOfferOptions & options)

@@ -43,10 +43,17 @@ class PeerConnectionTest
     [Test]
     public void ConstructWithConfigSimplePasses()
     {
-        var config = default(RTCConfiguration);
-        config.iceServers = new[] {default(RTCIceServer)};
-        config.iceServers[0].urls = new[] {"127.0.0.1"};
-        config.iceServers[0].username = "unity";
+        RTCConfiguration config = default;
+        config.iceServers = new RTCIceServer[]
+        {
+            new RTCIceServer
+            {
+                urls = new string[] { "stun:stun.l.google.com:19302" },
+                username = "unity",
+                credential = "password",
+                credentialType = RTCIceCredentialType.Password
+            }
+        };
         var peer = new RTCPeerConnection(ref config);
 
         var config2 = peer.GetConfiguration();
@@ -54,6 +61,7 @@ class PeerConnectionTest
         Assert.NotNull(config2.iceServers);
         Assert.AreEqual(config.iceServers.Length, config2.iceServers.Length);
         Assert.AreEqual(config.iceServers[0].username, config2.iceServers[0].username);
+        Assert.AreEqual(config.iceServers[0].credential, config2.iceServers[0].credential);
         AssertExtension.ArrayTrue(config.iceServers[0].urls, config2.iceServers[0].urls);
     }
 

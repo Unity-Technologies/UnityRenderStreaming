@@ -343,18 +343,18 @@ namespace Unity.WebRTC
         public bool iceRestart;
     }
 
-public enum RTCIceCredentialType
+    public enum RTCIceCredentialType
     {
         Password,
         OAuth
     }
 
+    [Serializable]
     public struct RTCIceServer
     {
         public string credential;
-        public string credentialType;
+        public RTCIceCredentialType credentialType;
         public string[] urls;
-        public int urlsLength;
         public string username;
     }
 
@@ -364,6 +364,7 @@ public enum RTCIceCredentialType
         All
     }
 
+    [Serializable]
     public struct RTCConfiguration
     {
         public RTCIceServer[] iceServers;
@@ -461,7 +462,7 @@ public enum RTCIceCredentialType
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf);
+        public static extern void peerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf, ref int len);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionCreateOffer(IntPtr ptr, ref RTCOfferOptions options);
         [DllImport(WebRTC.Lib)]
@@ -522,9 +523,12 @@ public enum RTCIceCredentialType
         }
         public void GetConfiguration(out RTCConfiguration conf)
         {
+            int len = 0;
             IntPtr ptr = IntPtr.Zero;
-            NativeMethods.peerConnectionGetConfiguration(self, ref ptr);
-            var str = Marshal.PtrToStringAnsi(ptr);
+            NativeMethods.peerConnectionGetConfiguration(self, ref ptr, ref len);
+            var str = Marshal.PtrToStringAnsi(ptr, len);
+            Marshal.FreeHGlobal(ptr);
+            ptr = IntPtr.Zero;
             conf = JsonUtility.FromJson<RTCConfiguration>(str);
         }
         public void Close() { NativeMethods.peerConnectionClose(self); }
