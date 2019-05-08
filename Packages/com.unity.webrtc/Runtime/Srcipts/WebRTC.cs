@@ -503,7 +503,6 @@ public enum RTCIceCredentialType
         }
         public PeerConnectionObject CreatePeerConnection(int id, ref RTCConfiguration conf)
         {
-            Debug.Log("contextCreatePeerConnectionWithConfig");
             return NativeMethods.contextCreatePeerConnectionWithConfig(self, id, JsonUtility.ToJson(conf));
         }
     }
@@ -511,6 +510,12 @@ public enum RTCIceCredentialType
     internal struct PeerConnectionObject
     {
         internal IntPtr self;
+
+        internal PeerConnectionObject(IntPtr self)
+        {
+            this.self = self;
+        }
+
         public void SetConfiguration(ref RTCConfiguration conf)
         {
             NativeMethods.peerConnectionSetConfiguration(self, JsonUtility.ToJson(conf));
@@ -522,7 +527,10 @@ public enum RTCIceCredentialType
             conf = JsonUtility.FromJson<RTCConfiguration>(str);
         }
         public void Close() { NativeMethods.peerConnectionClose(self); }
-        public void AddTrack(MediaStreamTrack track, MediaStream stream) { NativeMethods.peerConnectionAddTrack(self, track, stream); }
+        public void AddTrack(MediaStreamTrack track, MediaStream stream)
+        {
+            NativeMethods.peerConnectionAddTrack(self, track, stream);
+        }
         public void CreateOffer(ref RTCOfferOptions options)
         {
             NativeMethods.peerConnectionCreateOffer(self, ref options);
