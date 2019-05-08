@@ -38,7 +38,7 @@ namespace WebRTC
     private:
         void CreatePeerConnection(int32 id);
 
-        SignalingConnection* signalingConnection;
+        SignalingConnection signalingConnection;
         NvVideoCapturer* nvVideoCapturer;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
