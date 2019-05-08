@@ -177,7 +177,11 @@ namespace NvCodec
     }
     void NvEncoder::SetRate(uint32 rate)
     {
-        bitRate = rate;
+        if (rate < lastBitRate)
+        {
+            bitRate = rate > minBitRate ? rate:minBitRate;
+            lastBitRate = bitRate;
+        }
     }
     //entry for encoding a frame
     void NvEncoder::EncodeFrame()

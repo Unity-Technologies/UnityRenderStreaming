@@ -75,6 +75,7 @@ namespace WebRTC
     const char sessionDescriptionTypeName[] = "type";
     const char sessionDescriptionSdpName[] = "sdp";
 
+    extern std::unique_ptr<WebRTC::WebRTCUnityClient> unityClient;
 }
 
 
@@ -95,7 +96,7 @@ namespace NvCodec
     extern ID3D11Device* g_D3D11Device;
     extern DebugLogFuncType debugLogFunc;
     extern SetResolutionFuncType setResFunc;
-    extern std::unique_ptr<WebRTC::WebRTCUnityClient> unityClient;
+    
 
     template<class ... Args>
     std::string StringFormat(const std::string& format, Args ... args)

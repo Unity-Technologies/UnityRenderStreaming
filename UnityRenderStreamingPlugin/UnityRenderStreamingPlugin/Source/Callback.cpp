@@ -75,8 +75,8 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID)
 {
-    if (unityClient)
-        unityClient->EncodeSig();
+    if (WebRTC::unityClient)
+        WebRTC::unityClient->EncodeSig();
 }
 
 

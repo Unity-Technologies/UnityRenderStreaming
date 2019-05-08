@@ -61,9 +61,13 @@ namespace NvCodec
         bool isNvEncoderSupported = false;
         bool isIdrFrame = false;
         void* hModule = nullptr;
-
+        //10Mbps
         int bitRate = 10000000;
-        int frameRate = 25;
+        //100Mbps
+        int lastBitRate = 100000000;
+        //5Mbps
+        const int minBitRate = 5000000;
+        int frameRate = 45;
         int width = 1920;
         int height = 1080;
     };

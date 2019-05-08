@@ -38,18 +38,17 @@ namespace WebRTC
 
         EncodeSig.connect(nvVideoCapturer, &NvVideoCapturer::EncodeVideoData);
 
-        signalingConnection = new SignalingConnection();
-        signalingConnection->DisconnectSig.connect(this, &WebRTCUnityClient::OnSignalingDisconnect);
-        signalingConnection->ConfigSig.connect(this, &WebRTCUnityClient::OnConfig);
-        signalingConnection->IceCandidateSig.connect(this, &WebRTCUnityClient::OnIceCandidate);
-        signalingConnection->OfferSig.connect(this, &WebRTCUnityClient::OnOffer);
-        signalingConnection->ClientDisconnectSig.connect(this, &WebRTCUnityClient::OnClientDisconnect);
-        signalingConnection->Connect(SignalingServerIP, UnityPort);
+        signalingConnection.DisconnectSig.connect(this, &WebRTCUnityClient::OnSignalingDisconnect);
+        signalingConnection.ConfigSig.connect(this, &WebRTCUnityClient::OnConfig);
+        signalingConnection.IceCandidateSig.connect(this, &WebRTCUnityClient::OnIceCandidate);
+        signalingConnection.OfferSig.connect(this, &WebRTCUnityClient::OnOffer);
+        signalingConnection.ClientDisconnectSig.connect(this, &WebRTCUnityClient::OnClientDisconnect);
+        signalingConnection.Connect(SignalingServerIP, UnityPort);
     }
     WebRTCUnityClient::~WebRTCUnityClient()
     {
-        audioTrack->Release();
-        videoTrack->Release();
+        audioTrack = nullptr;
+        videoTrack = nullptr;
     }
     void WebRTCUnityClient::ProcessAudioData(const float* data, int32 size)
     {
@@ -62,8 +61,8 @@ namespace WebRTC
             return;
         }
         rtc::scoped_refptr<ClientConnection> clientConnection = new rtc::RefCountedObject<ClientConnection>(id);
-        clientConnection->SendAnswer.connect(signalingConnection, &SignalingConnection::SendAnswer);
-        clientConnection->SendIceCandidate.connect(signalingConnection, &SignalingConnection::SendIceCandidate);
+        clientConnection->SendAnswer.connect(&signalingConnection, &SignalingConnection::SendAnswer);
+        clientConnection->SendIceCandidate.connect(&signalingConnection, &SignalingConnection::SendIceCandidate);
         clientConnection->StartEncoder.connect(nvVideoCapturer, &NvVideoCapturer::StartEncoder);
         clientConnection->peerConnection = peerConnectionFactory->CreatePeerConnection(config, NULL, NULL, clientConnection.get());
         auto test = clientConnection->peerConnection;
@@ -106,7 +105,7 @@ namespace WebRTC
         std::string typeStr;
         if (!jsonReader.parse(offer, message)) {
             RTC_LOG(WARNING) << "Received unknown message. " << message;
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
         rtc::GetStringFromJsonObject(message, sessionDescriptionTypeName,
@@ -117,20 +116,20 @@ namespace WebRTC
                 webrtc::SdpTypeFromString(typeStr);
             if (*type != webrtc::SdpType::kOffer) {
                 RTC_LOG(LS_ERROR) << "Wrong SDP type:" << typeStr;
-                signalingConnection->DisconnectClient(id);
+                signalingConnection.DisconnectClient(id);
                 return;
             }
 
             if (!rtc::GetStringFromJsonObject(message, sessionDescriptionSdpName,
                 &sdp)) {
                 RTC_LOG(WARNING) << "Can't parse received session description message.";
-                signalingConnection->DisconnectClient(id);
+                signalingConnection.DisconnectClient(id);
                 return;
             }
         }
         else
         {
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
 
@@ -141,7 +140,7 @@ namespace WebRTC
         {
             RTC_LOG(WARNING) << "Can't parse received session description message. "
                 << "SdpParseError was: " << error.description;
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
         webrtc::PeerConnectionInterface::RTCOfferAnswerOptions answerOptions;
@@ -159,7 +158,7 @@ namespace WebRTC
         Json::Value message;
         if (!jsonReader.parse(iceCandidate, message))
         {
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
 
@@ -173,7 +172,7 @@ namespace WebRTC
             !rtc::GetStringFromJsonObject(message, candidateSdpName, &sdp))
         {
             RTC_LOG(WARNING) << "Can't parse received message.";
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
 
@@ -184,14 +183,14 @@ namespace WebRTC
         {
             RTC_LOG(WARNING) << "Can't parse received candidate message. "
                 << "SdpParseError was: " << error.description;
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
 
         if (!client->peerConnection->AddIceCandidate(Candidate.get()))
         {
             RTC_LOG(WARNING) << "Failed to apply the received candidate";
-            signalingConnection->DisconnectClient(id);
+            signalingConnection.DisconnectClient(id);
             return;
         }
     }

@@ -8,12 +8,12 @@
 using namespace NvCodec;
 namespace NvCodec
 {
-    std::unique_ptr<WebRTC::WebRTCUnityClient> unityClient;
     FrameBuffer* unityRT;
 }
 
 namespace WebRTC
 {
+    std::unique_ptr<WebRTCUnityClient> unityClient;
     std::unique_ptr<std::thread> webrtcMsgThread;
     DWORD msgThreadId = 0;
 
@@ -30,7 +30,7 @@ namespace WebRTC
         rtc::Win32Thread w32_thread(&w32_ss);
         rtc::ThreadManager::Instance()->SetCurrentThread(&w32_thread);
         rtc::InitializeSSL();
-        unityClient = std::make_unique<WebRTC::WebRTCUnityClient>();
+        unityClient = std::make_unique<WebRTCUnityClient>();
         MSG msg;
         BOOL gm;
         while ((gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1)
@@ -46,8 +46,17 @@ extern "C"
 {
     UNITY_INTERFACE_EXPORT void CleanPluginResource()
     {
+        WebRTC::unityClient.reset();
         PostThreadMessage(WebRTC::msgThreadId, WM_QUIT, 0, 0);
         WebRTC::webrtcMsgThread->join();
+    }
+    UNITY_INTERFACE_EXPORT void TestWebRTCClient()
+    {
+        auto webrtcThread = std::make_unique<std::thread>(WebRTC::Init);
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        WebRTC::unityClient.reset();
+        PostThreadMessage(WebRTC::msgThreadId, WM_QUIT, 0, 0);
+        webrtcThread->join();
     }
     //set debug.log on C# side
     UNITY_INTERFACE_EXPORT void SetDebugLogFunc(DebugLogFuncType func)
@@ -72,7 +81,7 @@ extern "C"
     }
     UNITY_INTERFACE_EXPORT void SetProcessMouseButtonUpFunc(WebRTC::ProcessMouseButtonUpFuncType func)
     {
-        WebRTC::processMouseButtonUpFunc = func;
+        WebRTC::processMouseButtonUpFunc = func; 
     }
     UNITY_INTERFACE_EXPORT void SetProcessMouseMoveFunc(WebRTC::ProcessMouseMoveFuncType func)
     {
@@ -80,7 +89,7 @@ extern "C"
     }
     UNITY_INTERFACE_EXPORT void SetProcessMouseWheelFunc(WebRTC::ProcessMouseWheelFuncType func)
     {
-        WebRTC::processMouseWheelFunc = func;
+        WebRTC::processMouseWheelFunc = func; 
     }
 
     //set native ptr of rendertexture
@@ -95,9 +104,9 @@ extern "C"
     }
     UNITY_INTERFACE_EXPORT void ProcessAudio(float* data, int32 size)
     {
-        if (unityClient && unityClient->CaptureStarted())
+        if (WebRTC::unityClient && WebRTC::unityClient->CaptureStarted())
         {
-            unityClient->ProcessAudioData(data, size);
+            WebRTC::unityClient->ProcessAudioData(data, size);
         }
     }
 }
