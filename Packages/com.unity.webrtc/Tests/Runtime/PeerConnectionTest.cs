@@ -21,6 +21,18 @@ static class AssertExtension
 
 class PeerConnectionTest
 {
+    [SetUp]
+    public void SetUp()
+    {
+        WebRTC.Initialize();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        WebRTC.Finalize();
+    }
+
     [Test]
     public void ConstructSimplePasses()
     {
@@ -38,31 +50,25 @@ class PeerConnectionTest
         var peer = new RTCPeerConnection(ref config);
 
         var config2 = peer.GetConfiguration();
+        Assert.NotNull(config.iceServers);
+        Assert.NotNull(config2.iceServers);
         Assert.AreEqual(config.iceServers.Length, config2.iceServers.Length);
         Assert.AreEqual(config.iceServers[0].username, config2.iceServers[0].username);
         AssertExtension.ArrayTrue(config.iceServers[0].urls, config2.iceServers[0].urls);
     }
 
     [UnityTest]
-    public IEnumerator AddIceCandidatePass()
+    public IEnumerator SetLocalDescriptionSimplePass()
     {
         var peer = new RTCPeerConnection();
-        var candidate = default(RTCIceCandidate​);
-
-        Assert.AreEqual(RTCIceConnectionState.New, peer.IceConnectionState);
-
-        var op = peer.AddIceCandidate(ref candidate);
+        RTCOfferOptions options = default;
+        var op = peer.CreateOffer(ref options);
         yield return op;
-        Assert.AreEqual(RTCIceConnectionState.Completed, peer.IceConnectionState);
-    }
-
-    // A UnityTest behaves like a coroutine in PlayMode
-    // and allows you to yield null to skip a frame in EditMode
-    [UnityTest]
-    public IEnumerator PlayModeSampleTestWithEnumeratorPasses()
-    {
-        // Use the Assert class to test conditions.
-        // yield to skip a frame
-        yield return null;
+        Assert.True(op.isDone);
+        Assert.False(op.isError);
+        var op2 = peer.SetLocalDescription(ref op.desc);
+        yield return op2;
+        Assert.True(op2.isDone);
+        Assert.False(op2.isError);
     }
 }

@@ -457,11 +457,11 @@ public enum RTCIceCredentialType
         [DllImport(WebRTC.Lib)]
         public static extern PeerConnectionObject contextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern bool peerConnectionClose(IntPtr ptr);
+        public static extern void peerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern bool peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] string conf);
+        public static extern void peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionGetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] out string conf);
+        public static extern void peerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionCreateOffer(IntPtr ptr, ref RTCOfferOptions options);
         [DllImport(WebRTC.Lib)]
@@ -522,8 +522,9 @@ public enum RTCIceCredentialType
         }
         public void GetConfiguration(out RTCConfiguration conf)
         {
-            string str = string.Empty;
-            NativeMethods.peerConnectionGetConfiguration(self, out str);
+            IntPtr ptr = IntPtr.Zero;
+            NativeMethods.peerConnectionGetConfiguration(self, ref ptr);
+            var str = Marshal.PtrToStringAnsi(ptr);
             conf = JsonUtility.FromJson<RTCConfiguration>(str);
         }
         public void Close() { NativeMethods.peerConnectionClose(self); }
