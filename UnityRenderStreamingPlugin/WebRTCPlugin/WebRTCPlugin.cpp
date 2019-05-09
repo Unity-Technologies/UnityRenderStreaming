@@ -36,8 +36,7 @@ UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnectionWithConf
 {
     return ctx->createPeerConnection(id, conf);
 }
-
-UNITY_INTERFACE_EXPORT void contextCreatePeerConnectionClose(PeerConnectionObject* obj)
+UNITY_INTERFACE_EXPORT void peerConnectionClose(PeerConnectionObject* obj)
 {
     obj->close();
 }
@@ -47,11 +46,13 @@ UNITY_INTERFACE_EXPORT void peerConnectionSetConfiguration(PeerConnectionObject*
     obj->setConfiguration(std::string(conf));
 }
 
-UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, const char* conf)
+UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
 {
     std::string _conf;
     obj->getConfiguration(_conf);
-    conf = _conf.c_str();
+    *len = _conf.size();
+    *conf = new char[_conf.size() + sizeof(char)];
+    _conf.copy(*conf, _conf.size());
 }
 
 
