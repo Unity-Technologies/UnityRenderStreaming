@@ -1,13 +1,11 @@
 {
-    "name": "com.unity.webrtc",
-    "displayName": "WebRTC for Unity",
-    "version": "0.0.1-preview",
-    "unity": "2018.3",
-    "description": "Render streaming is a set of tools that enable users to control applications built with unity in web browser.",
-    "keywords": [
-        "webrtc",
-        "web"
-    ],
-    "dependencies": {
-    }
+  "name": "com.unity.webrtc",
+  "displayName": "WebRTC",
+  "version": "0.0.1-preview",
+  "unity": "2018.3",
+  "description": "Render streaming is a set of tools that enable users to control applications built with unity in web browser.",
+  "keywords": [
+    "webrtc",
+    "web"
+  ]
 }

@@ -84,6 +84,12 @@ enum class RTCErrorDetailType
     HardwareEncoderError
 };
 
+enum class RTCIceCredentialType
+{
+    Password,
+    OAuth
+};
+
 struct RTCError
 {
     RTCErrorDetailType errorDetail;
@@ -145,10 +151,11 @@ extern "C"
     UNITY_INTERFACE_EXPORT Context* contextCreate(int uid);
     UNITY_INTERFACE_EXPORT void contextDestroy(int uid);
     UNITY_INTERFACE_EXPORT void registerDebugLog(DelegateDebugLog func);
+    UNITY_INTERFACE_EXPORT void peerConnectionClose(PeerConnectionObject* obj);
     UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnection(Context* ctx, int id);
     UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnectionWithConfig(Context* ctx, int id, const char* conf);
     UNITY_INTERFACE_EXPORT void peerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf);
-    UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char* conf);
+    UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len);
     UNITY_INTERFACE_EXPORT void peerConnectionAddIceCandidate(PeerConnectionObject* obj, const RTCIceCandidate* candidate);
     UNITY_INTERFACE_EXPORT RTCPeerConnectionState peerConnectionState(PeerConnectionObject* obj);
     UNITY_INTERFACE_EXPORT RTCIceConnectionState peerConnectionIceConditionState(PeerConnectionObject* obj);

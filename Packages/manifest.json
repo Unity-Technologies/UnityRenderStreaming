@@ -1,7 +1,15 @@
 {
   "dependencies": {
-    "com.unity.package-manager-ui": "2.1.2",
     "com.unity.webrtc": "0.0.1-preview",
+    "com.unity.ads": "2.0.8",
+    "com.unity.analytics": "3.2.2",
+    "com.unity.code-analysis": "0.0.1-preview.3",
+    "com.unity.collab-proxy": "1.2.15",
+    "com.unity.package-manager-ui": "2.1.1",
+    "com.unity.package-validation-suite": "0.4.0-preview.12",
+    "com.unity.purchasing": "2.0.1",
+    "com.unity.textmeshpro": "1.3.0",
+    "com.unity.xr.legacyinputhelpers": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -35,5 +43,6 @@
   },
   "testables": [
     "com.unity.webrtc"
-  ]
+  ],
+  "registry": "https://staging-packages.unity.com"
 }

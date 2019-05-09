@@ -343,18 +343,18 @@ namespace Unity.WebRTC
         public bool iceRestart;
     }
 
-public enum RTCIceCredentialType
+    public enum RTCIceCredentialType
     {
         Password,
         OAuth
     }
 
+    [Serializable]
     public struct RTCIceServer
     {
         public string credential;
-        public string credentialType;
+        public RTCIceCredentialType credentialType;
         public string[] urls;
-        public int urlsLength;
         public string username;
     }
 
@@ -364,6 +364,7 @@ public enum RTCIceCredentialType
         All
     }
 
+    [Serializable]
     public struct RTCConfiguration
     {
         public RTCIceServer[] iceServers;
@@ -457,11 +458,11 @@ public enum RTCIceCredentialType
         [DllImport(WebRTC.Lib)]
         public static extern PeerConnectionObject contextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern bool peerConnectionClose(IntPtr ptr);
+        public static extern void peerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern bool peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] string conf);
+        public static extern void peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionGetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)] out string conf);
+        public static extern void peerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf, ref int len);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionCreateOffer(IntPtr ptr, ref RTCOfferOptions options);
         [DllImport(WebRTC.Lib)]
@@ -503,7 +504,6 @@ public enum RTCIceCredentialType
         }
         public PeerConnectionObject CreatePeerConnection(int id, ref RTCConfiguration conf)
         {
-            Debug.Log("contextCreatePeerConnectionWithConfig");
             return NativeMethods.contextCreatePeerConnectionWithConfig(self, id, JsonUtility.ToJson(conf));
         }
     }
@@ -511,18 +511,31 @@ public enum RTCIceCredentialType
     internal struct PeerConnectionObject
     {
         internal IntPtr self;
+
+        internal PeerConnectionObject(IntPtr self)
+        {
+            this.self = self;
+        }
+
         public void SetConfiguration(ref RTCConfiguration conf)
         {
             NativeMethods.peerConnectionSetConfiguration(self, JsonUtility.ToJson(conf));
         }
         public void GetConfiguration(out RTCConfiguration conf)
         {
-            string str = string.Empty;
-            NativeMethods.peerConnectionGetConfiguration(self, out str);
+            int len = 0;
+            IntPtr ptr = IntPtr.Zero;
+            NativeMethods.peerConnectionGetConfiguration(self, ref ptr, ref len);
+            var str = Marshal.PtrToStringAnsi(ptr, len);
+            Marshal.FreeHGlobal(ptr);
+            ptr = IntPtr.Zero;
             conf = JsonUtility.FromJson<RTCConfiguration>(str);
         }
         public void Close() { NativeMethods.peerConnectionClose(self); }
-        public void AddTrack(MediaStreamTrack track, MediaStream stream) { NativeMethods.peerConnectionAddTrack(self, track, stream); }
+        public void AddTrack(MediaStreamTrack track, MediaStream stream)
+        {
+            NativeMethods.peerConnectionAddTrack(self, track, stream);
+        }
         public void CreateOffer(ref RTCOfferOptions options)
         {
             NativeMethods.peerConnectionCreateOffer(self, ref options);
