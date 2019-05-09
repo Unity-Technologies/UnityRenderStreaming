@@ -161,6 +161,11 @@ PeerConnectionObject::PeerConnectionObject(int id)
 
 PeerConnectionObject::~PeerConnectionObject()
 {
+    auto state = connection->peerConnection->peer_connection_state();
+    if (state != webrtc::PeerConnectionInterface::PeerConnectionState::kClosed)
+    {
+        connection->peerConnection->Close();
+    }
     connection.release();
 }
 
@@ -236,12 +241,9 @@ void PeerConnectionObject::OnMessage(const webrtc::DataBuffer& buffer)
     DebugLog("OnMessage");
 }
 
-
-
 void PeerConnectionObject::close()
 {
     connection->peerConnection->Close();
-    connection->peerConnection = nullptr;
 }
 
 void PeerConnectionObject::setLocalDescription(const RTCSessionDescription& desc)

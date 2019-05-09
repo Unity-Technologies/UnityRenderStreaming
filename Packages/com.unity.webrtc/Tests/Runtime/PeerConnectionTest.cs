@@ -63,6 +63,8 @@ class PeerConnectionTest
         Assert.AreEqual(config.iceServers[0].username, config2.iceServers[0].username);
         Assert.AreEqual(config.iceServers[0].credential, config2.iceServers[0].credential);
         AssertExtension.ArrayTrue(config.iceServers[0].urls, config2.iceServers[0].urls);
+
+        peer.Close();
     }
 
     [UnityTest]
@@ -78,5 +80,7 @@ class PeerConnectionTest
         yield return op2;
         Assert.True(op2.isDone);
         Assert.False(op2.isError);
+
+        peer.Close();
     }
 }
