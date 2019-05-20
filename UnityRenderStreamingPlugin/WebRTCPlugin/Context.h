@@ -1,10 +1,5 @@
 ﻿#pragma once
 
-namespace WebRTC
-{
-    class ClientConnection;
-}
-
 class Context;
 class PeerConnectionObject;
 class PeerSDPObserver;
@@ -57,9 +52,18 @@ public:
     void getConfiguration(std::string& config) const;
     void createOffer(const RTCOfferOptions& options);
     void createAnswer(const RTCAnswerOptions& options);
-    void registerCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
     void addIceCandidate(const RTCIceCandidate& candidate);
-    void createDataChannel(const std::string& label, const RTCDataChannelInit& options);
+    void createDataChannel(const char* label, const RTCDataChannelInit& options);
+    void closeDataChannel();
+    void sendDataFromDataChannel(const char* data);
+
+    void registerCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
+    void registerLocalDataChannelReady(DelegateLocalDataChannelReady callback);
+    void registerDataFromDataChannelReady(DelegateDataFromDataChannelReady callback);
+    void registerLocalSdpReady(DelegateLocalSdpReady callback);
+    void registerIceCandidateReady(DelegateIceCandidateReady callback);
+    void registerDataChannelMsgReceived(DelegateOnDataChannelMsg callback);
+
     RTCPeerConnectionState getConnectionState();
     RTCIceConnectionState getIceCandidateState();
     void registerCallbackEvent(DelegatePeerConnectionCallbackEvent callback);
@@ -94,21 +98,25 @@ public:
     void OnIceConnectionReceivingChange(bool Receiving) override {}
     //werbrtc::DataChannelObserver
     // The data channel state have changed.
-    void OnStateChange() override {}
+    void OnStateChange() override;
     //  A data buffer was successfully received.
     void OnMessage(const webrtc::DataBuffer& buffer) override;
-    // The data channel's buffered_amount has changed.
-    void OnBufferedAmountChange(uint64_t previous_amount) override {}
 
 public:
     DelegateCreateSDSuccess onCreateSDSuccess;
     DelegateCreateSDFailure onCreateSDFailure;
     DelegateSetSDSuccess onSetSDSuccess;
     DelegateSetSDFailure onSetSDFailure;
+    DelegateLocalDataChannelReady onLocalDataChannelReady;
+    DelegateDataFromDataChannelReady onDataFromDataChannelReady;
+    DelegateLocalSdpReady onLocalSdpReady;
+    DelegateIceCandidateReady onIceCandidateReady;
+    DelegateOnDataChannelMsg onDataChannelMsg;
     DelegatePeerConnectionCallbackEvent callbackEvent;
-    rtc::scoped_refptr<WebRTC::ClientConnection> connection;
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> connection;
 private:
     rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel;
+    int32 id;
 };
 
 class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

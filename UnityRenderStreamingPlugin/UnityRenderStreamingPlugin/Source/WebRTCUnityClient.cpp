@@ -64,6 +64,7 @@ namespace WebRTC
         clientConnection->SendAnswer.connect(&signalingConnection, &SignalingConnection::SendAnswer);
         clientConnection->SendIceCandidate.connect(&signalingConnection, &SignalingConnection::SendIceCandidate);
         clientConnection->StartEncoder.connect(nvVideoCapturer, &NvVideoCapturer::StartEncoder);
+        config.enable_dtls_srtp = true;
         clientConnection->peerConnection = peerConnectionFactory->CreatePeerConnection(config, NULL, NULL, clientConnection.get());
         auto test = clientConnection->peerConnection;
         clients[id] = std::move(clientConnection);

@@ -58,6 +58,7 @@
 
 #include "media/base/videobroadcaster.h"
 #pragma endregion
+#include "Utils.h"
 
 void LogPrint(const char* fmt, ...);
 void LogPrint(const wchar_t* fmt, ...);

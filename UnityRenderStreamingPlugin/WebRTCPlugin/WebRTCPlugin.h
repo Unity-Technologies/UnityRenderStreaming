@@ -17,8 +17,11 @@ using DelegateCreateSDFailure = void(*)();
 using DelegateSetSDSuccess = void(*)();
 using DelegateSetSDFailure = void(*)();
 using DelegatePeerConnectionCallbackEvent = void(*)(RTCPeerConnectionEventType type, const char*);
-
-
+using DelegateLocalDataChannelReady = void(*)();
+using DelegateDataFromDataChannelReady = void(*)();
+using DelegateLocalSdpReady = void(*)(const char*, const char*);
+using DelegateIceCandidateReady = void(*)(const char*, const char*, const int);
+using DelegateOnDataChannelMsg = void(*)(const char*);
 void debugLog(const char* buf);
 extern DelegateDebugLog delegateDebugLog;
 
@@ -139,6 +142,13 @@ struct RTCOfferOptions
 
 struct RTCDataChannelInit
 {
+    bool reliable = false;
+    bool ordered = true;
+    int maxRetransmitTime = -1;
+    int maxRetransmits = -1;
+    char* protocol;
+    bool negotiated = false;
+    int id = -1;
 };
 
 struct RTCAnswerOptions
@@ -168,4 +178,8 @@ extern "C"
     UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
     UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackOnTrack(PeerConnectionObject* obj, DelegateRTCPeerConnectionOnTrack func);
     UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackEvent(PeerConnectionObject* obj, DelegatePeerConnectionCallbackEvent func);
+    UNITY_INTERFACE_EXPORT void peerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options);
+    UNITY_INTERFACE_EXPORT void peerConnectionsendDataFromDataChannel(PeerConnectionObject* obj, char* data);
+    UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerConnectionObject* obj, DelegateOnDataChannelMsg callback);
+
 }

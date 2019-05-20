@@ -2,6 +2,11 @@
 #include "WebRTCPlugin.h"
 #include "Context.h"
 
+namespace NvCodec
+{
+    FrameBuffer* unityRT;
+}
+
 DelegateDebugLog delegateDebugLog = nullptr;
 
 void debugLog(const char* buf)
@@ -81,6 +86,21 @@ UNITY_INTERFACE_EXPORT void peerConnectionCreateAnswer(PeerConnectionObject* obj
     obj->createAnswer(*options);
 }
 
+UNITY_INTERFACE_EXPORT void peerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options)
+{
+    obj->createDataChannel(label, *options);
+}
+
+UNITY_INTERFACE_EXPORT void peerConnectionsendDataFromDataChannel(PeerConnectionObject* obj, char* data)
+{
+    obj->sendDataFromDataChannel(data); 
+}
+
+UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerConnectionObject* obj, DelegateOnDataChannelMsg callback)
+{
+    obj->registerDataChannelMsgReceived(callback);
+}
+
 UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
 {
     obj->registerCallbackCreateSD(onSuccess, onFailure);
@@ -90,7 +110,6 @@ UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackSetSD(PeerConnectionOb
 {
     obj->registerCallbackSetSD(onSuccess, onFailure);
 }
-
 
 UNITY_INTERFACE_EXPORT void peerConnectionAddIceCandidate(PeerConnectionObject* obj, const RTCIceCandidate* candidate)
 {
