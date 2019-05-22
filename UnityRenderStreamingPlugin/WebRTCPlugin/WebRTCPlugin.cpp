@@ -101,6 +101,11 @@ UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerCon
     obj->registerDataChannelMsgReceived(callback);
 }
 
+UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnIceCandidateReady(PeerConnectionObject*obj, DelegateIceCandidateReady callback)
+{
+    obj->registerIceCandidateReady(callback);
+}
+
 UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
 {
     obj->registerCallbackCreateSD(onSuccess, onFailure);

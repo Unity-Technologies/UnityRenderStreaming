@@ -210,9 +210,9 @@ void PeerConnectionObject::OnIceCandidate(const webrtc::IceCandidateInterface* c
     {
         DebugError("Can't make string form of sdp.");
     }
-    /* jsonConfig["candidate"] = out;
-     jsonConfig["sdpMid"] = candidate->sdp_mid();
-     jsonConfig["sdpMLineIndex"] = candidate->sdp_mline_index();
+    /*jsonConfig["candidate"] = out;
+    jsonConfig["sdpMid"] = candidate->sdp_mid();
+    jsonConfig["sdpMLineIndex"] = candidate->sdp_mline_index();
 
      Json::StyledWriter jsonWriter;
      auto strJson = jsonWriter.write(jsonConfig);
@@ -230,7 +230,7 @@ void PeerConnectionObject::OnRenegotiationNeeded()
 // Called any time the IceConnectionState changes.
 void PeerConnectionObject::OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state)
 {
-    DebugLog("OnIceConnectionChange");
+    LogPrint(StringFormat("OnIceConnectionChange: %d", new_state).c_str());
     //callbackEvent(RTCPeerConnectionEventType::ConnectionStateChange, "");
 }
 // Called any time the IceGatheringState changes.
@@ -433,7 +433,7 @@ void PeerConnectionObject::createDataChannel(const char* label, const RTCDataCha
     dataChannel = connection->CreateDataChannel(label, &config);
     if(dataChannel)
      {
-         dataChannel->RegisterObserver(this);
+         //dataChannel->RegisterObserver(this);
          DebugLog("Data channel created");
      }
      else {

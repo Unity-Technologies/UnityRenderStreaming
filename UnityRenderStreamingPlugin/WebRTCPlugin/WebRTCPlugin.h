@@ -130,7 +130,6 @@ struct RTCIceCandidate
     char* candidate;
     char* sdpMid;
     int sdpMLineIndex;
-    char* usernameFragment;
 };
 
 struct RTCOfferOptions
@@ -181,5 +180,6 @@ extern "C"
     UNITY_INTERFACE_EXPORT void peerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options);
     UNITY_INTERFACE_EXPORT void peerConnectionsendDataFromDataChannel(PeerConnectionObject* obj, char* data);
     UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerConnectionObject* obj, DelegateOnDataChannelMsg callback);
+    UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnIceCandidateReady(PeerConnectionObject* obj, DelegateIceCandidateReady callback);
 
 }
