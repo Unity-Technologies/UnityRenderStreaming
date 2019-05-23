@@ -11,6 +11,7 @@ public class Main : MonoBehaviour
 
     private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
+    private Coroutine sdpCheck;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -75,7 +76,22 @@ public class Main : MonoBehaviour
 
         return config;
     }
-
+    void pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
+    {
+        RTCIceCandidate​ candidate;
+        candidate.candidate = sdp;
+        candidate.sdpMid = sdpMid;
+        candidate.sdpMlineIndex = sdpMlineIndex;
+        OnIceCandidate(pc1, candidate);
+    }
+    void pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
+    {
+        RTCIceCandidate​ candidate;
+        candidate.candidate = sdp;
+        candidate.sdpMid = sdpMid;
+        candidate.sdpMlineIndex = sdpMlineIndex;
+        OnIceCandidate(pc2, candidate);
+    }
     IEnumerator Call()
     {
         callButton.interactable = false;
@@ -93,10 +109,10 @@ public class Main : MonoBehaviour
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created local peer connection object pc1");
-        pc1.onIceCandidate = delegate (ref RTCIceCandidate​ e) { StartCoroutine(OnIceCandidate(pc1, e)); };
+        pc1.RegisterOnIceCandidateReady(pc1OnIceCandidate);
         pc2 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created remote peer connection object pc2");
-        pc2.onIceCandidate = delegate (ref RTCIceCandidate​ e) { StartCoroutine(OnIceCandidate(pc2, e)); };
+        pc2.RegisterOnIceCandidateReady(pc2OnIceCandidate);
 
         pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); };
         pc2.onIceConnectionStateChange = delegate () { OnIceStateChange(pc2); };
@@ -124,7 +140,7 @@ public class Main : MonoBehaviour
         {
             OnCreateSessionDescriptionError(op.error);
         }
-        StartCoroutine(Loop());
+        sdpCheck = StartCoroutine(Loop());
     }
 
     /// <summary>
@@ -132,18 +148,9 @@ public class Main : MonoBehaviour
     /// </summary>
     /// <param name="pc"></param>
     /// <param name="streamEvent"></param>
-    IEnumerator OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate​ candidate)
+    void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate​ candidate)
     {
-        var op = GetOtherPc(pc).AddIceCandidate(ref candidate);
-        yield return op;
-        if (!op.isError)
-        {
-            OnAddIceCandidateSuccess(pc);
-        }
-        else
-        {
-            OnAddIceCandidateError(pc, op.error);
-        }
+        GetOtherPc(pc).AddIceCandidate(ref candidate);
         Debug.Log($"{GetName(pc)} ICE candidate:\n {candidate.candidate}" );
     }
 
@@ -256,16 +263,6 @@ public class Main : MonoBehaviour
         }
     }
 
-    void OnAddIceCandidateSuccess(RTCPeerConnection pc)
-    {
-        Debug.Log($"{GetName(pc)} addIceCandidate success");
-    }
-
-    void OnAddIceCandidateError(RTCPeerConnection pc, RTCError error)
-    {
-        Debug.Log($"{GetName(pc)} failed to add ICE Candidate: ${error}");
-    }
-
     void OnCreateSessionDescriptionError(RTCError e)
     {
         
@@ -273,6 +270,7 @@ public class Main : MonoBehaviour
     void Hangup()
     {
         Debug.Log("Ending call");
+        StopCoroutine(sdpCheck);
         pc1.Close();
         pc2.Close();
         pc1 = null;
