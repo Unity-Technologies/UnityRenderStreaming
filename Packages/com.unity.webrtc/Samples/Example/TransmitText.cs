@@ -6,6 +6,7 @@ using Unity.WebRTC;
 public class TransmitText : MonoBehaviour
 {
     [SerializeField] private Button callButton;
+    [SerializeField] private Button sendButton;
     [SerializeField] private InputField textSend;
     [SerializeField] private InputField textReceive;
 
@@ -51,9 +52,9 @@ public class TransmitText : MonoBehaviour
 
     private void Update()
     {
-        while(pc2 != null && pc2.dataChannelMsgs.Count > 0)
+        if(pc2 != null && WebRTC.S_dataChannelMsgs.Count > 0)
         {
-            pc2.dataChannelMsgs.TryDequeue(out msg);
+            WebRTC.S_dataChannelMsgs.TryDequeue(out msg);
             textReceive.text = msg;
         }
     }
@@ -152,6 +153,7 @@ IEnumerator Call()
             OnCreateSessionDescriptionError(op.error);
         }
         //sdpCheck = StartCoroutine(Loop()); 
+        sendButton.interactable = true;
     }
 
     /// <summary>
@@ -162,14 +164,6 @@ IEnumerator Call()
     void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate​ candidate)
     {
         GetOtherPc(pc).AddIceCandidate(ref candidate);
-        //if (!op.isError)
-        //{
-        //    OnAddIceCandidateSuccess(pc);
-        //}
-        //else
-        //{
-        //    OnAddIceCandidateError(pc, op.error);
-        //}
         Debug.Log($"{GetName(pc)} ICE candidate:\n {candidate.candidate}");
     }
 

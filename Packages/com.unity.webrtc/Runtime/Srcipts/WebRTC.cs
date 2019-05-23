@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Collections.Concurrent;
 using UnityEngine.Events;
+using System.Collections.Generic;
 
 namespace Unity.WebRTC
 {
@@ -176,13 +177,11 @@ namespace Unity.WebRTC
         private RTCSessionDescriptionAsyncOperation m_opSetRemoteDesc;
         private readonly object syncObj = new object();
 
-        public ConcurrentQueue<string> dataChannelMsgs = new ConcurrentQueue<string>();
         public RTCTrackEvent onTrack;
         public ConnectionStateChangeEvent onConnectionStateChange;
         public RTCDataChannelEvent onDataChannel;
         public RTCPeer​Connection​IceEvent onIceCandidate;
         public RTCIceConnectionStateChangeEvent onIceConnectionStateChange;
-        //public onOffer;
 
         public void Dispose()
         {
@@ -302,12 +301,10 @@ namespace Unity.WebRTC
 
         void OnDataChannelMsg(string msg)
         {
-            lock(syncObj)
+            Debug.Log("DataChannel message: " + msg);
+            lock (WebRTC.S_syncMsgObj)
             {
-                WebRTC.SyncContext.Post(_ =>
-                {
-                    dataChannelMsgs.Enqueue(msg);
-                }, null);
+                WebRTC.S_dataChannelMsgs.Enqueue(msg);
             }
         }
         void OnSuccessCreateSessionDesc(RTCSdpType type, string sdp)
@@ -469,16 +466,15 @@ namespace Unity.WebRTC
 
         private static Context s_context;
         private static System.Threading.SynchronizationContext s_syncContext;
-
+        private static ConcurrentQueue<string> s_dataChannelMsgs;
+        private static readonly object s_syncMsgObj = new object();
+         
         public static void Initialize()
         {
             NativeMethods.registerDebugLog(DebugLog);
             s_context = Context.Create();
             s_syncContext = System.Threading.SynchronizationContext.Current;
-            if(s_syncContext == null)
-            {
-                s_syncContext = new System.Threading.SynchronizationContext();
-            }
+            s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
 
         public static void Finalize(int id = 0)
@@ -494,6 +490,10 @@ namespace Unity.WebRTC
 
         internal static Context Context { get { return s_context; }  }
         internal static System.Threading.SynchronizationContext SyncContext { get { return s_syncContext; } }
+
+        internal static ConcurrentQueue<string> S_dataChannelMsgs { get => s_dataChannelMsgs; }
+
+        internal static object S_syncMsgObj => s_syncMsgObj;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
