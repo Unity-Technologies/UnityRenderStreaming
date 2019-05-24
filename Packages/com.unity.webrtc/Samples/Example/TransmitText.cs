@@ -70,9 +70,8 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
-    void OnIceConnectionChange(object obj, RTCIceConnectionState state)
+    void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
     {
-        RTCPeerConnection pc = obj as RTCPeerConnection;
         switch (state)
         {
             case RTCIceConnectionState.New:
@@ -150,8 +149,8 @@ IEnumerator Call()
             {
                 WebRTC.SyncContext.Post(obj => 
                 {
-                    OnIceConnectionChange(obj, state);   
-                }, pc1);
+                    OnIceConnectionChange(pc1, state);   
+                }, null);
             }
         });
         pc2 = new RTCPeerConnection(ref configuration);
@@ -167,8 +166,8 @@ IEnumerator Call()
             {
                 WebRTC.SyncContext.Post(obj =>
                 {
-                     OnIceConnectionChange(obj, state);
-                }, pc2); 
+                     OnIceConnectionChange(pc2, state);
+                }, null); 
             }
         });
 
