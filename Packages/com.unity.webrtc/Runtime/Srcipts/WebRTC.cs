@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Collections.Concurrent;
+using System.Threading;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
@@ -165,17 +166,61 @@ namespace Unity.WebRTC
         Track
     }
 
+    public class WebRTCSyncContext :  SynchronizationContext
+    {
+        public static ConcurrentQueue<Action> tasks;
+        private static WebRTCSyncContext syncContext;
+        static WebRTCSyncContext()
+        {
+            tasks = new ConcurrentQueue<Action>();
+            syncContext = new WebRTCSyncContext();
+            SynchronizationContext.SetSynchronizationContext(syncContext);
+        }
+        public override void Send(SendOrPostCallback d, object state)
+        {
+            tasks.Enqueue(() => 
+            {
+                d(state);
+            });
+        }
+        public override void Post(SendOrPostCallback d, object state)
+        {
+            tasks.Enqueue(() =>
+            {
+                d(state);
+            });
+        }
+        public void Update()
+        {
+            if(!tasks.IsEmpty)
+            {
+                Action curTask;
+                if(tasks.TryDequeue(out curTask))
+                    curTask();
+            }
+        }
+        public void flush()
+        {
+            while(!tasks.IsEmpty)
+            {
+                Action curTask;
+                if (tasks.TryDequeue(out curTask))
+                    curTask();
+            }
+        }
+
+    }
+
     public class RTCPeerConnection : IDisposable
     {
         private int m_id;
+        private IntPtr self;
         private Context m_context;
-        private PeerConnectionObject m_obj;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
         private RTCSessionDescriptionAsyncOperation m_opSetDesc;
         private RTCSessionDescriptionAsyncOperation m_opSetRemoteDesc;
-        private readonly object syncObj = new object();
 
         public RTCTrackEvent onTrack;
         public ConnectionStateChangeEvent onConnectionStateChange;
@@ -185,14 +230,14 @@ namespace Unity.WebRTC
 
         public void Dispose()
         {
-            m_obj.Close();
+            NativeMethods.peerConnectionClose(self);
         }
 
         public RTCIceConnectionState IceConnectionState
         {
             get
             {
-                return m_obj.IceConditionState;
+                return NativeMethods.peerConnectionIceConditionState(self);
             }
         }
 
@@ -200,27 +245,31 @@ namespace Unity.WebRTC
         {
             get
             {
-                return m_obj.ConnectionState;
+                return NativeMethods.peerConnectionState(self);
             }
         }
 
         public RTCConfiguration GetConfiguration()
         {
-            RTCConfiguration config = default;
-            m_obj.GetConfiguration(out config);
-            return config;
+            int len = 0;
+            IntPtr ptr = IntPtr.Zero;
+            NativeMethods.peerConnectionGetConfiguration(self, ref ptr, ref len);
+            var str = Marshal.PtrToStringAnsi(ptr, len);
+            Marshal.FreeHGlobal(ptr);
+            ptr = IntPtr.Zero;
+            return JsonUtility.FromJson<RTCConfiguration>(str);
         }
 
         public void SetConfiguration(ref RTCConfiguration config)
         {
-            m_obj.SetConfiguration(ref config);
+            NativeMethods.peerConnectionSetConfiguration(self, JsonUtility.ToJson(config));
         }
 
         public RTCPeerConnection()
         {
             m_id = GetHashCode();
             m_context = WebRTC.Context;
-            m_obj = m_context.CreatePeerConnection(m_id);
+            self = NativeMethods.contextCreatePeerConnection(m_context.self, m_id);
             InitCallback();
         }
 
@@ -228,46 +277,40 @@ namespace Unity.WebRTC
         {
             m_id = GetHashCode();
             m_context = WebRTC.Context;
-            m_obj = m_context.CreatePeerConnection(m_id, ref config);
+            self = NativeMethods.contextCreatePeerConnection(m_context.self, m_id);
             InitCallback();
         }
 
         void InitCallback()
         {
-            m_obj.RegisterCallbackCreateSD(OnSuccessCreateSessionDesc, OnFailureCreateSessionDesc);
-            m_obj.RegisterCallbackSetSD(OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
-            m_obj.RegisterCallbackEvent(CallbackEvent);
-            m_obj.RegisterOnDataChannelMsg(OnDataChannelMsg);
+            NativeMethods.peerConnectionRegisterCallbackCreateSD(self,OnSuccessCreateSessionDesc, OnFailureCreateSessionDesc);
+            NativeMethods.peerConnectionRegisterCallbackSetSD(self,OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
+            NativeMethods.peerConnectionRegisterDataChannelMsgReceived(self,OnDataChannelMsg);
         }
 
-        public void RegisterDataChannelMsgReceived(DelegateOnDataChannelMsg callback)
+        public void RegisterOnIceConnectionChange(DelegateOnIceConnectionChange callback)
         {
-            m_obj.RegisterOnDataChannelMsg(callback);
+            NativeMethods.peerConnectionRegisterIceConnectionChange(self, callback);
         }
 
         public void RegisterOnIceCandidateReady(DelegateIceCandidateReady callback)
         {
-            m_obj.RegisterOnIceCandidateReady(callback);
+            NativeMethods.peerConnectionRegisterOnIceCandidateReady(self, callback);
         }
 
         public void Close()
         {
-            m_obj.Close();
+            NativeMethods.peerConnectionClose(self);
         }
 
         public void AddIceCandidate(ref RTCIceCandidate​ candidate)
         {
-            m_obj.AddIceCandidate(ref candidate);
-        }
-
-        void CallbackEvent(RTCPeerConnectionEventType type, string json)
-        {
-            Debug.Log("RTCPeerConnectionEvent: " + json);
+            NativeMethods.peerConnectionAddIceCandidate(self, ref candidate);
         }
 
         public void AddTrack(MediaStreamTrack track, MediaStream stream)
         {
-            m_obj.AddTrack(track, stream);
+            NativeMethods.peerConnectionAddTrack(self, track, stream);
         }
 
         public void RemoveTrack()
@@ -278,99 +321,85 @@ namespace Unity.WebRTC
         public RTCSessionDescriptionAsyncOperation CreateOffer(ref RTCOfferOptions options)
         {
             m_opSessionDesc = new RTCSessionDescriptionAsyncOperation();
-            m_obj.CreateOffer(ref options);
+            NativeMethods.peerConnectionCreateOffer(self, ref options);
             return m_opSessionDesc;
         }
-
+    
         public RTCSessionDescriptionAsyncOperation CreateAnswer(ref RTCAnswerOptions options)
         {
             m_opSessionDesc = new RTCSessionDescriptionAsyncOperation();
-            m_obj.CreateAnswer(ref options);
+            NativeMethods.peerConnectionCreateAnswer(self, ref options);
             return m_opSessionDesc;
         }
 
         public void CreateDataChannel(string label, ref RTCDataChannelInit options)
         {
-            m_obj.CreateDataChannel(label, ref options);
+            NativeMethods.peerConnectionCreateDataChannel(self, label, ref options);
         }
 
         public void SendData(string data)
         {
-            m_obj.SendData(data);
+            NativeMethods.peerConnectionsendDataFromDataChannel(self, data);
         }
 
         void OnDataChannelMsg(string msg)
         {
-            Debug.Log("DataChannel message: " + msg);
-            lock (WebRTC.S_syncMsgObj)
-            {
-                WebRTC.S_dataChannelMsgs.Enqueue(msg);
-            }
+            WebRTC.S_dataChannelMsgs.Enqueue(msg);
         }
         void OnSuccessCreateSessionDesc(RTCSdpType type, string sdp)
         {
-            lock(syncObj)
+            WebRTC.SyncContext.Post(_ =>
             {
-                WebRTC.SyncContext.Post(_ =>
-                {
-                    m_opSessionDesc.desc.sdp = sdp;
-                    m_opSessionDesc.desc.type = type;
-                    m_opSessionDesc.Done();
-                }, null);
-            }
+                m_opSessionDesc.desc.sdp = sdp;
+                m_opSessionDesc.desc.type = type;
+                m_opSessionDesc.Done();
+            }, null);
         }
 
         void OnFailureCreateSessionDesc()
         {
-            lock(syncObj)
+            WebRTC.SyncContext.Post(_ =>
             {
-                WebRTC.SyncContext.Post(_ =>
-                {
-                    m_opSessionDesc.isError = true;
-                    m_opSessionDesc.Done();
-                }, null);
-            }
+                m_opSessionDesc.isError = true;
+                m_opSessionDesc.Done();
+            }, null);
         }
 
         public RTCSessionDescriptionAsyncOperation SetLocalDescription(ref RTCSessionDescription desc)
         {
             m_opSetDesc = new RTCSessionDescriptionAsyncOperation();
-            m_obj.SetLocalDescription(ref desc);
+            NativeMethods.peerConnectionSetLocalDescription(self, ref desc);
             return m_opSetDesc;
         }
 
         public RTCSessionDescription GetLocalDescription()
         {
-            return m_obj.GetLocalDescription();
+            RTCSessionDescription desc = default;
+            NativeMethods.peerConnectionGetLocalDescription(self, ref desc);
+            return desc;
         }
 
         public RTCSessionDescriptionAsyncOperation SetRemoteDescription(ref RTCSessionDescription desc)
         {
             m_opSetDesc = new RTCSessionDescriptionAsyncOperation();
-            m_obj.SetRemoteDescription(ref desc);
+            NativeMethods.peerConnectionSetRemoteDescription(self, ref desc);
             return m_opSetDesc;
         }
 
         void OnSuccessSetSessionDesc()
         {
-            lock(syncObj)
+            WebRTC.SyncContext.Post(_ =>
             {
-                WebRTC.SyncContext.Post(_ =>
-                {
-                    m_opSetDesc.Done();
-                }, null);
-            }
+                m_opSetDesc.Done();
+            }, null);
         }
         void OnFailureSetSessionDesc()
         {
-            lock(syncObj)
+            WebRTC.SyncContext.Post(_ =>
             {
-                WebRTC.SyncContext.Post(_ =>
-                {
-                    m_opSetDesc.isError = true;
-                    m_opSetDesc.Done();
-                }, null);
-            }
+                m_opSetDesc.isError = true;
+                m_opSetDesc.Done();
+            }, null);
         }
     }
 
@@ -465,15 +494,16 @@ namespace Unity.WebRTC
 #endif
 
         private static Context s_context;
-        private static System.Threading.SynchronizationContext s_syncContext;
+        private static WebRTCSyncContext s_syncContext;
         private static ConcurrentQueue<string> s_dataChannelMsgs;
         private static readonly object s_syncMsgObj = new object();
-         
+        private static readonly object s_syncObj = new object();
+
         public static void Initialize()
         {
             NativeMethods.registerDebugLog(DebugLog);
             s_context = Context.Create();
-            s_syncContext = System.Threading.SynchronizationContext.Current;
+            s_syncContext = new WebRTCSyncContext();
             s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
 
@@ -489,11 +519,13 @@ namespace Unity.WebRTC
         }
 
         internal static Context Context { get { return s_context; }  }
-        internal static System.Threading.SynchronizationContext SyncContext { get { return s_syncContext; } }
+        internal static WebRTCSyncContext SyncContext { get { return s_syncContext; } }
 
         internal static ConcurrentQueue<string> S_dataChannelMsgs { get => s_dataChannelMsgs; }
 
         internal static object S_syncMsgObj => s_syncMsgObj;
+
+        internal static object S_syncObj => s_syncObj;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -509,6 +541,8 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     public delegate void DelegateOnDataChannelMsg([MarshalAs(UnmanagedType.LPStr)] string msg);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)] 
     public delegate void DelegateIceCandidateReady([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
@@ -522,9 +556,9 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void contextDestroy(int uid);
         [DllImport(WebRTC.Lib)]
-        public static extern PeerConnectionObject contextCreatePeerConnection(IntPtr ptr, int id);
+        public static extern IntPtr contextCreatePeerConnection(IntPtr ptr, int id);
         [DllImport(WebRTC.Lib)]
-        public static extern PeerConnectionObject contextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
+        public static extern IntPtr contextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
@@ -546,6 +580,8 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionRegisterDataChannelMsgReceived(IntPtr ptr, DelegateOnDataChannelMsg callback);
         [DllImport(WebRTC.Lib)]
+        public static extern void peerConnectionRegisterIceConnectionChange(IntPtr ptr, DelegateOnIceConnectionChange callback);
+        [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionRegisterOnIceCandidateReady(IntPtr ptr, DelegateIceCandidateReady callback);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionSetLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
@@ -557,8 +593,6 @@ namespace Unity.WebRTC
         public static extern bool peerConnectionAddTrack(IntPtr ptr, MediaStreamTrack track, MediaStream stream);
         [DllImport(WebRTC.Lib)]
         public static extern bool peerConnectionAddIceCandidate(IntPtr ptr, ref RTCIceCandidate​ candidate);
-        [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionRegisterCallbackEvent(IntPtr ptr, DelegatePeerConnectionCallbackEvent func);
         [DllImport(WebRTC.Lib)]
         public static extern RTCPeerConnectionState peerConnectionState(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
@@ -574,111 +608,7 @@ namespace Unity.WebRTC
         public static bool ToBool(Context v) { return v; }
         public static Context Create(int uid=0) { return NativeMethods.contextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.contextDestroy(uid); self = IntPtr.Zero; }
-        public PeerConnectionObject CreatePeerConnection(int id)
-        {
-            return NativeMethods.contextCreatePeerConnection(self, id);
-        }
-        public PeerConnectionObject CreatePeerConnection(int id, ref RTCConfiguration conf)
-        {
-            return NativeMethods.contextCreatePeerConnectionWithConfig(self, id, JsonUtility.ToJson(conf));
-        }
-    }
-
-    internal struct PeerConnectionObject
-    {
-        internal IntPtr self;
-
-        internal PeerConnectionObject(IntPtr self)
-        {
-            this.self = self;
-        }
-
-        public void SetConfiguration(ref RTCConfiguration conf)
-        {
-            NativeMethods.peerConnectionSetConfiguration(self, JsonUtility.ToJson(conf));
-        }
-        public void GetConfiguration(out RTCConfiguration conf)
-        {
-            int len = 0;
-            IntPtr ptr = IntPtr.Zero;
-            NativeMethods.peerConnectionGetConfiguration(self, ref ptr, ref len);
-            var str = Marshal.PtrToStringAnsi(ptr, len);
-            Marshal.FreeHGlobal(ptr);
-            ptr = IntPtr.Zero;
-            conf = JsonUtility.FromJson<RTCConfiguration>(str);
-        }
-        public void Close() { NativeMethods.peerConnectionClose(self); }
-        public void AddTrack(MediaStreamTrack track, MediaStream stream)
-        {
-            NativeMethods.peerConnectionAddTrack(self, track, stream);
-        }
-        public void CreateOffer(ref RTCOfferOptions options)
-        {
-            NativeMethods.peerConnectionCreateOffer(self, ref options);
-        }
-        public void CreateAnswer(ref RTCAnswerOptions options)
-        {
-            NativeMethods.peerConnectionCreateAnswer(self, ref options);
-        }
-
-        public void SendData(string data)
-        {
-            NativeMethods.peerConnectionsendDataFromDataChannel(self, data);
-        }
-
-        public void CreateDataChannel(string label, ref RTCDataChannelInit options)
-        {
-            NativeMethods.peerConnectionCreateDataChannel(self, label, ref options); 
-        }
-
-        public void RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
-        {
-            NativeMethods.peerConnectionRegisterCallbackCreateSD(self, onSuccess, onFailure);
-        }
-        public void SetLocalDescription(ref RTCSessionDescription desc)
-        {
-            NativeMethods.peerConnectionSetLocalDescription(self, ref desc);
-        }
-        public RTCSessionDescription GetLocalDescription()
-        {
-            RTCSessionDescription desc = default;
-            NativeMethods.peerConnectionGetLocalDescription(self, ref desc);
-            return desc;
-        }
-
-        public void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
-        {
-            NativeMethods.peerConnectionRegisterCallbackSetSD(self, onSuccess, onFailure);
-        }
-
-        public void RegisterOnDataChannelMsg(DelegateOnDataChannelMsg callback)
-        {
-            NativeMethods.peerConnectionRegisterDataChannelMsgReceived(self, callback);
-        }
-       
-        public void RegisterOnIceCandidateReady(DelegateIceCandidateReady callback)
-        {
-            NativeMethods.peerConnectionRegisterOnIceCandidateReady(self, callback);
-        }
-        public void SetRemoteDescription(ref RTCSessionDescription desc) { NativeMethods.peerConnectionSetRemoteDescription(self, ref desc); }
-        //public void RegisterCallbackOnTrack(RTCTrackEvent func) { NativeMethods.peerConnectionRegisterCallbackOnTrack(self, func);  }
-        public bool AddIceCandidate(ref RTCIceCandidate​ candidate)
-        {
-            return NativeMethods.peerConnectionAddIceCandidate(self, ref candidate);
-        }
-        public void RegisterCallbackEvent(DelegatePeerConnectionCallbackEvent func)
-        {
-            NativeMethods.peerConnectionRegisterCallbackEvent(self, func);
-        }
-        public RTCIceConnectionState IceConditionState
-        {
-            get { return NativeMethods.peerConnectionIceConditionState(self); }
-        }
-
-        public RTCPeerConnectionState ConnectionState
-        {
-            get { return NativeMethods.peerConnectionState(self); }
-        }
+ 
     }
 }
 

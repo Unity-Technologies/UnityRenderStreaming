@@ -1,8 +1,11 @@
 ﻿#pragma once
-
+#include "DummyAudioDevice.h"
+using namespace WebRTC;
 class Context;
 class PeerConnectionObject;
 class PeerSDPObserver;
+class NvVideoCapturer;
+
 
 class ContextManager
 {
@@ -32,6 +35,10 @@ private:
     std::unique_ptr<rtc::Thread> signalingThread;
     std::map<int, rtc::scoped_refptr<PeerConnectionObject>> clients;
     rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
+    NvVideoCapturer* nvVideoCapturer;
+    rtc::scoped_refptr<DummyAudioDevice> audioDevice;
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
 };
 
 class PeerConnectionObject
@@ -63,10 +70,10 @@ public:
     void registerLocalSdpReady(DelegateLocalSdpReady callback);
     void registerIceCandidateReady(DelegateIceCandidateReady callback);
     void registerDataChannelMsgReceived(DelegateOnDataChannelMsg callback);
+    void registerIceConnectionChange(DelegateOnIceConnectionChange callback);
 
     RTCPeerConnectionState getConnectionState();
     RTCIceConnectionState getIceCandidateState();
-    void registerCallbackEvent(DelegatePeerConnectionCallbackEvent callback);
 
     //webrtc::CreateSessionDescriptionObserver
     // This callback transfers the ownership of the |desc|.
@@ -112,7 +119,7 @@ public:
     DelegateLocalSdpReady onLocalSdpReady;
     DelegateIceCandidateReady onIceCandidateReady;
     DelegateOnDataChannelMsg onDataChannelMsg;
-    DelegatePeerConnectionCallbackEvent callbackEvent;
+    DelegateOnIceConnectionChange onIceConnectionChange;
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> connection;
 private:
     rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel;

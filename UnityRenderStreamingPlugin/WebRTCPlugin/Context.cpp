@@ -230,8 +230,10 @@ void PeerConnectionObject::OnRenegotiationNeeded()
 // Called any time the IceConnectionState changes.
 void PeerConnectionObject::OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state)
 {
-    LogPrint(StringFormat("OnIceConnectionChange: %d", new_state).c_str());
-    //callbackEvent(RTCPeerConnectionEventType::ConnectionStateChange, "");
+    if (onIceConnectionChange != nullptr)
+    {
+        onIceConnectionChange(new_state);
+    }
 }
 // Called any time the IceGatheringState changes.
 void PeerConnectionObject::OnIceGatheringChange(webrtc::PeerConnectionInterface::IceGatheringState new_state)
@@ -256,7 +258,6 @@ void PeerConnectionObject::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStream
 
 void PeerConnectionObject::OnMessage(const webrtc::DataBuffer& buffer)
 {
-    DebugLog("OnMessage");
     if (onDataChannelMsg != nullptr)
     {
         size_t size = buffer.data.size();
@@ -384,6 +385,11 @@ void PeerConnectionObject::registerDataChannelMsgReceived(DelegateOnDataChannelM
     onDataChannelMsg = callback;
 }
 
+void PeerConnectionObject::registerIceConnectionChange(DelegateOnIceConnectionChange callback)
+{
+    onIceConnectionChange = callback;
+}
+
 void PeerConnectionObject::addIceCandidate(const RTCIceCandidate& candidate)
 {
     webrtc::SdpParseError error;
@@ -494,10 +500,6 @@ RTCPeerConnectionState PeerConnectionObject::getConnectionState()
     }
 }
 
-void PeerConnectionObject::registerCallbackEvent(DelegatePeerConnectionCallbackEvent callback)
-{
-    this->callbackEvent = callback;
-}
 
 PeerSDPObserver* PeerSDPObserver::Create(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
 {

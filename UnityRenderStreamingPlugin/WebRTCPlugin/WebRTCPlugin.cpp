@@ -101,6 +101,11 @@ UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerCon
     obj->registerDataChannelMsgReceived(callback);
 }
 
+UNITY_INTERFACE_EXPORT void peerConnectionRegisterIceConnectionChange(PeerConnectionObject* obj, DelegateOnIceConnectionChange callback)
+{
+    obj->registerIceConnectionChange(callback);
+}
+
 UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnIceCandidateReady(PeerConnectionObject*obj, DelegateIceCandidateReady callback)
 {
     obj->registerIceCandidateReady(callback);
@@ -129,9 +134,4 @@ UNITY_INTERFACE_EXPORT RTCPeerConnectionState peerConnectionState(PeerConnection
 UNITY_INTERFACE_EXPORT RTCIceConnectionState peerConnectionIceConditionState(PeerConnectionObject* obj)
 {
     return obj->getIceCandidateState();
-}
-
-UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackEvent(PeerConnectionObject* obj, DelegatePeerConnectionCallbackEvent func)
-{
-    obj->registerCallbackEvent(func);
 }

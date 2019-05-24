@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.WebRTC;
+using System.Threading;
 
 public class TransmitText : MonoBehaviour
 {
@@ -14,7 +15,6 @@ public class TransmitText : MonoBehaviour
     private RTCPeerConnection pc1, pc2;
     private Coroutine sdpCheck;
     private string msg;
-    private readonly object syncObj = new object();
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -25,7 +25,7 @@ public class TransmitText : MonoBehaviour
 
     private RTCAnswerOptions AnswerOptions = new RTCAnswerOptions
     {
-        iceRestart = false,
+        iceRestart = false, 
     };
 
     private void Awake()
@@ -52,24 +52,11 @@ public class TransmitText : MonoBehaviour
 
     private void Update()
     {
+        WebRTC.SyncContext.Update();
         if(pc2 != null && WebRTC.S_dataChannelMsgs.Count > 0)
         {
             WebRTC.S_dataChannelMsgs.TryDequeue(out msg);
             textReceive.text = msg;
-        }
-    }
-
-    private IEnumerator Loop()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-
-            var desc = pc1.GetLocalDescription();
-            Debug.Log($"pc1 sdp: {desc.sdp}");
-
-            //var conf = pc1.GetConfiguration();
-            //Debug.Log($"ice servers count {conf.iceServers.Length}");
         }
     }
 
@@ -83,7 +70,41 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
-    void pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
+    void OnIceConnectionChange(object obj, RTCIceConnectionState state)
+    {
+        RTCPeerConnection pc = obj as RTCPeerConnection;
+        switch (state)
+        {
+            case RTCIceConnectionState.New:
+                Debug.Log($"{GetName(pc)} IceConnectionState: New");
+                break;
+            case RTCIceConnectionState.Checking:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Checking");
+                break;
+            case RTCIceConnectionState.Closed:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Closed");
+                break;
+            case RTCIceConnectionState.Completed:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Completed");
+                break;
+            case RTCIceConnectionState.Connected:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Connected");
+                sendButton.interactable = true;
+                break;
+            case RTCIceConnectionState.Disconnected:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Disconnected");
+                break;
+            case RTCIceConnectionState.Failed:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Failed");
+                break;
+            case RTCIceConnectionState.Max:
+                Debug.Log($"{GetName(pc)} IceConnectionState: Max");
+                break;
+            default:
+                break;
+        }
+    }
+    void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
     {
         RTCIceCandidate​ candidate;
         candidate.candidate = sdp;
@@ -91,7 +112,7 @@ public class TransmitText : MonoBehaviour
         candidate.sdpMlineIndex = sdpMlineIndex;
         OnIceCandidate(pc1, candidate);
     }
-    void pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
+    void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
     {
         RTCIceCandidate​ candidate;
         candidate.candidate = sdp;
@@ -99,6 +120,7 @@ public class TransmitText : MonoBehaviour
         candidate.sdpMlineIndex = sdpMlineIndex;
         OnIceCandidate(pc2, candidate);
     }
+
 IEnumerator Call()
     {
         callButton.interactable = false;
@@ -117,10 +139,38 @@ IEnumerator Call()
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created local peer connection object pc1");
-        pc1.RegisterOnIceCandidateReady(pc1OnIceCandidate);
+        pc1.RegisterOnIceCandidateReady(Pc1OnIceCandidate);
+        pc1.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state) 
+        {
+            if(WebRTC.SyncContext == null)
+            {
+                Debug.LogWarning("SyncContext is null!");
+            }
+            else
+            {
+                WebRTC.SyncContext.Post(obj => 
+                {
+                    OnIceConnectionChange(obj, state);   
+                }, pc1);
+            }
+        });
         pc2 = new RTCPeerConnection(ref configuration);
-        Debug.Log("Created remote peer connection object pc2");
-        pc2.RegisterOnIceCandidateReady(pc2OnIceCandidate);
+        Debug.Log("Created remote peer connection object pc2"); 
+        pc2.RegisterOnIceCandidateReady(Pc2OnIceCandidate);
+        pc2.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state)
+        {
+            if (WebRTC.SyncContext == null) 
+            {
+                Debug.LogWarning("SyncContext is null!");
+            }
+            else
+            {
+                WebRTC.SyncContext.Post(obj =>
+                {
+                     OnIceConnectionChange(obj, state);
+                }, pc2); 
+            }
+        });
 
         pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); };
         pc2.onIceConnectionStateChange = delegate () { OnIceStateChange(pc2); };
@@ -152,8 +202,6 @@ IEnumerator Call()
         {
             OnCreateSessionDescriptionError(op.error);
         }
-        //sdpCheck = StartCoroutine(Loop()); 
-        sendButton.interactable = true;
     }
 
     /// <summary>
@@ -296,11 +344,8 @@ IEnumerator Call()
     {
 
     }
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
-        pc1.Close();
-        pc2.Close();
-        pc1 = null;
-        pc2 = null;
+        WebRTC.SyncContext.flush();
     }
 }
