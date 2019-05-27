@@ -30,6 +30,7 @@ pack:
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webrtc.yml#build_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
 
 {% for editor in editors %}

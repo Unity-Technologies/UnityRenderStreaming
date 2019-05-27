@@ -10,7 +10,7 @@ platforms:
     # image: package-ci/win10:stable
     image: renderstreaming/win10:latest
     flavor: m1.large
-    build_command: build.cmd
+    build_command: build_plugin.cmd
 projects:
   - name: webrtc
     packagename: com.unity.webrtc
@@ -98,7 +98,7 @@ publish:
   dependencies:
     - .yamato/upm-ci-webrtc.yml#pack
     {% for editor in test_editors %}
-    {% for platform in test_platforms %}
+    {% for platform in platforms %}
     - .yamato/upm-ci-webrtc.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}

@@ -1,0 +1,550 @@
+{
+	"info": {
+		"_postman_id": "c4ee0e83-3ad3-400d-9947-187687d72f22",
+		"name": "renderstreaming",
+		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/signaling",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    var jsonData = pm.response.json();",
+							"    pm.response.to.have.jsonBody(\"sessionId\");",
+							"});",
+							"pm.environment.set(\"session_Id\", pm.response.json().sessionId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/offer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1f7448eb-7fbe-4e06-8f57-1ab1a52f642a",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "65d5877e-6458-404d-abae-3f6a2feff5d3",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sdp\": {{sdp}}\n}"
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/offer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"offer"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Default",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "offer",
+							"host": [
+								"offer"
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "/signaling/answer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1f7448eb-7fbe-4e06-8f57-1ab1a52f642a",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "88f991c5-074f-4040-9629-4ab3538d37d6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"connectionId\": {{connection_id}},\n\t\"sdp\" : {{sdp}}\n}"
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/answer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"answer"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Default",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "offer",
+							"host": [
+								"offer"
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "\b/signaling/candidate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "028da34c-ba2a-4404-a46d-82c303642cae",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"connectionId\": {{connection_id}},\n\t\"candidate\" : {{candidate}}\n}"
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/candidate",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"candidate"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Default",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "icecandidate",
+							"host": [
+								"icecandidate"
+							]
+						}
+					},
+					"code": 200,
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "/",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "42e4303e-4f2f-4c16-a23a-2390bf3dac32",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/offer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"offers\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.offers.length).to.be.above(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/offer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"offer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/answer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"answers\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.answers.length).to.be.above(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/answer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"answer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/candidate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c3371877-1fc1-418d-a5f8-2829e4be4c0a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"candidates\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.candidates.length).to.be.above(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/candidate",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"candidate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5b49db9f-4fc8-41c3-90b3-4d2b84c39f69",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0a8f284b-249d-40b5-be4f-e77111ed9471",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "eb98d1fb-ddbb-47b0-b61e-d90fed8cdbe7",
+			"key": "url",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"id": "e3e3a573-e02f-49c4-8348-787a0ad3fd06",
+			"key": "session_Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "0a23febf-48c8-45e2-91e6-c6d07725f36a",
+			"key": "sdp",
+			"value": "\"v=0\\r\\no=- 7060022371716902156 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=msid-semantic: WMS 3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\nm=audio 9 UDP\\/TLS\\/RTP\\/SAVPF 111 103 104 9 0 8 110 112 113 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:yOxE\\r\\na=ice-pwd:Ekoek1dl79NlWZS2dfmrW7Cr\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 02:F8:39:CE:EF:A7:77:B4:8D:56:8A:A1:C8:14:0C:1D:00:DF:99:14:ED:CE:05:4B:94:F9:EE:36:EE:4F:82:61\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http:\\/\\/www.ietf.org\\/id\\/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\\r\\na=extmap:5 urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\\r\\na=sendonly\\r\\na=msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=rtcp-mux\\r\\na=rtpmap:111 opus\\/48000\\/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:103 ISAC\\/16000\\r\\na=rtpmap:104 ISAC\\/32000\\r\\na=rtpmap:9 G722\\/8000\\r\\na=rtpmap:0 PCMU\\/8000\\r\\na=rtpmap:8 PCMA\\/8000\\r\\na=rtpmap:110 telephone-event\\/48000\\r\\na=rtpmap:112 telephone-event\\/32000\\r\\na=rtpmap:113 telephone-event\\/16000\\r\\na=rtpmap:126 telephone-event\\/8000\\r\\na=ssrc:2852212123 cname:GybrBKZh3U5xSqQq\\r\\na=ssrc:2852212123 msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=ssrc:2852212123 mslabel:3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\na=ssrc:2852212123 label:a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\n\"",
+			"type": "string"
+		},
+		{
+			"id": "85ad3843-bbae-41b0-b4a6-d3184d965bfe",
+			"key": "candidate",
+			"value": "\"\"",
+			"type": "string"
+		},
+		{
+			"id": "c4fd615e-6918-43ab-bdea-d5780119cb53",
+			"key": "connection_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

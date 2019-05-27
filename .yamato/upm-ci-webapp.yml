@@ -1,0 +1,47 @@
+platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: m1.xlarge
+    pack_command: pack_webapp.cmd
+    test_command: test_webapp.cmd
+projects:
+  - packagename: com.unity.webapp.renderstreaming
+---
+{% for project in projects %}
+{% for platform in platforms %}
+pack_{{ platform.name }}:
+  name : Pack {{ project.packagename }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ platform.pack_command }}
+  artifacts:
+    packages:
+      paths:
+        - "Assets/bin~/**/*"
+{% endfor %}
+
+{% for platform in platforms %}
+test_{{ platform.name }}:
+  name : Test {{ project.packagename }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ platform.test_command }}
+  artifacts:
+    logs:
+      paths:
+        - "WebApp/output.log"
+        - "WebApp/coverage/**/*"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    {% endfor %}
+
+{% endfor %}
+{% endfor %}
