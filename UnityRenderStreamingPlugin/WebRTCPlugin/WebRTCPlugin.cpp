@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "WebRTCPlugin.h"
+#include "PeerConnectionObject.h"
 #include "Context.h"
 
 namespace NvCodec
@@ -135,3 +136,26 @@ UNITY_INTERFACE_EXPORT RTCIceConnectionState peerConnectionIceConditionState(Pee
 {
     return obj->getIceCandidateState();
 }
+
+UNITY_INTERFACE_EXPORT void dataChannelRegisterObserver(rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel, PeerConnectionObject* obj)
+{
+    dataChannel->RegisterObserver(obj);
+}
+
+UNITY_INTERFACE_EXPORT void dataChannelUnregisterObserver(rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel)
+{
+    dataChannel->UnregisterObserver();
+}
+
+UNITY_INTERFACE_EXPORT void dataChannelClose(rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel)
+{
+    dataChannel->Close();
+}
+
+UNITY_INTERFACE_EXPORT int dataChannelGetID(rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel)
+{
+    return dataChannel->id();
+}
+
+
+

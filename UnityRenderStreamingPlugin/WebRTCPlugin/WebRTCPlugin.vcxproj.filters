@@ -57,6 +57,12 @@
     <ClInclude Include="Unity\IUnityInterface.h">
       <Filter>Header Files\Unity</Filter>
     </ClInclude>
+    <ClInclude Include="PeerConnectionObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataChannelObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WebRTCPlugin.cpp">
@@ -87,6 +93,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Callback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PeerConnectionObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

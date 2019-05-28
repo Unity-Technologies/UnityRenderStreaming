@@ -166,15 +166,6 @@ IEnumerator Call()
         pc2.RegisterOnIceCandidateReady(pc2OnIceCandidateReady);
         pc2.RegisterOnIceConnectionChange(pc2OnIceConnectionChange);
 
-        pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); }; 
-        pc2.onIceConnectionStateChange = delegate () { OnIceStateChange(pc2); };
-        pc2.onTrack = delegate (
-            ref RTCRtpReceiver receiver,
-            MediaStream[] streams,
-            ref MediaStreamTrack track,
-            ref RTCRtpTransceiver transceiver)
-        { GotRemoteStream(pc2); };
-
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         pc1.CreateDataChannel("data", ref conf);
 
@@ -217,15 +208,6 @@ IEnumerator Call()
     string GetName(RTCPeerConnection pc)
     {
         return (pc == pc1) ? "pc1" : "pc2";
-    }
-
-    void OnIceStateChange(RTCPeerConnection pc)
-    {
-        if (pc != null)
-        {
-            Debug.Log($"{GetName(pc)} ICE state: {pc.IceConnectionState}");
-            Debug.Log("ICE state change event: "); 
-        }
     }
 
     void GotRemoteStream(RTCPeerConnection e)

@@ -114,14 +114,6 @@ public class Main : MonoBehaviour
         Debug.Log("Created remote peer connection object pc2");
         pc2.RegisterOnIceCandidateReady(pc2OnIceCandidate);
 
-        pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); };
-        pc2.onIceConnectionStateChange = delegate () { OnIceStateChange(pc2); };
-        pc2.onTrack = delegate (
-            ref RTCRtpReceiver receiver,
-            MediaStream[] streams,
-            ref MediaStreamTrack track,
-            ref RTCRtpTransceiver transceiver) { GotRemoteStream (pc2); };
-
         foreach (var track in localStream.GetTracks())
         {
             pc1.AddTrack(track, localStream);
@@ -159,14 +151,6 @@ public class Main : MonoBehaviour
         return (pc == pc1) ? "pc1" : "pc2";
     }
     
-    void OnIceStateChange(RTCPeerConnection pc)
-    {
-        if (pc != null) {
-            Debug.Log($"{GetName(pc)} ICE state: {pc.IceConnectionState}");
-            Debug.Log("ICE state change event: ");
-        }       
-    }
-
     void GotRemoteStream(RTCPeerConnection e)
     {
         
