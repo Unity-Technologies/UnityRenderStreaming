@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.WebRTC;
-using System.Threading;
 
 public class TransmitText : MonoBehaviour
 {

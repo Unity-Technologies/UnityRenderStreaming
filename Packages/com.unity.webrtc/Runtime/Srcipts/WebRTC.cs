@@ -519,9 +519,9 @@ namespace Unity.WebRTC
         }
 
         internal static Context Context { get { return s_context; }  }
-        internal static WebRTCSyncContext SyncContext { get { return s_syncContext; } }
+        public static WebRTCSyncContext SyncContext { get { return s_syncContext; } }
 
-        internal static ConcurrentQueue<string> S_dataChannelMsgs { get => s_dataChannelMsgs; }
+        public static ConcurrentQueue<string> S_dataChannelMsgs { get => s_dataChannelMsgs; }
 
         internal static object S_syncMsgObj => s_syncMsgObj;
 
@@ -544,6 +544,8 @@ namespace Unity.WebRTC
     public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateIceCandidateReady([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
 
     internal static class NativeMethods
     {
