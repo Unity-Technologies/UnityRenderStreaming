@@ -14,6 +14,10 @@ public class TransmitText : MonoBehaviour
     private RTCPeerConnection pc1, pc2;
     private Coroutine sdpCheck;
     private string msg;
+    private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
+    private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
+    private DelegateIceCandidateReady pc1OnIceCandidateReady;
+    private DelegateIceCandidateReady pc2OnIceCandidateReady;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -47,11 +51,15 @@ public class TransmitText : MonoBehaviour
         Debug.Log("Received local stream");
         localStream = stream;
         callButton.interactable = true;
+
+        pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc1OnIceConnectinChange);
+        pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc2OnIceConnectionChange);
+        pc1OnIceCandidateReady = new DelegateIceCandidateReady(Pc1OnIceCandidate);
+        pc2OnIceCandidateReady = new DelegateIceCandidateReady(Pc2OnIceCandidate);
     }
 
     private void Update()
     {
-        WebRTC.SyncContext.Update();
         if(pc2 != null && WebRTC.S_dataChannelMsgs.Count > 0)
         {
             WebRTC.S_dataChannelMsgs.TryDequeue(out msg);
@@ -69,52 +77,52 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
-    void OnIceConnectionChange(RTCIceConnectionState state)
+    void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
     {
-        switch (state)
+        WebRTC.SyncContext.Post(_ =>
         {
-            case RTCIceConnectionState.New:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: New");
-                break;
-            case RTCIceConnectionState.Checking:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Checking");
-                break;
-            case RTCIceConnectionState.Closed:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Closed");
-                break;
-            case RTCIceConnectionState.Completed:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Completed"); 
-                break;
-            case RTCIceConnectionState.Connected:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Connected");
-                sendButton.interactable = true;
-                break;
-            case RTCIceConnectionState.Disconnected:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Disconnected");
-                break;
-            case RTCIceConnectionState.Failed:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Failed");
-                break;
-            case RTCIceConnectionState.Max:
-                Debug.Log($"{GetName(pc1)} IceConnectionState: Max");
-                break;
-            default:
-                break;
-        }
+            switch (state)
+            {
+                case RTCIceConnectionState.New:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: New");
+                    break;
+                case RTCIceConnectionState.Checking:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Checking");
+                    break;
+                case RTCIceConnectionState.Closed:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Closed");
+                    break;
+                case RTCIceConnectionState.Completed:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Completed");
+                    break;
+                case RTCIceConnectionState.Connected:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Connected");
+                    sendButton.interactable = true;
+                    break;
+                case RTCIceConnectionState.Disconnected:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Disconnected");
+                    break;
+                case RTCIceConnectionState.Failed:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Failed");
+                    break;
+                case RTCIceConnectionState.Max:
+                    Debug.Log($"{GetName(pc)} IceConnectionState: Max");
+                    break;
+                default:
+                    break;
+            }
+        }, null);
     }
-    void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
+    void Pc1OnIceConnectinChange(RTCIceConnectionState state)
     {
-        WebRTC.SyncContext.Post(_ => 
-        {
-            RTCIceCandidate​ candidate;
-            candidate.candidate = sdp;
-            candidate.sdpMid = sdpMid;
-            candidate.sdpMlineIndex = sdpMlineIndex;
-            OnIceCandidate(pc1, candidate);
+        OnIceConnectionChange(pc1, state);
+    }
+    void Pc2OnIceConnectionChange(RTCIceConnectionState state)
+    {
+        OnIceConnectionChange(pc2, state);
+    }
 
-        },null);
-    }
-    void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
+    void OnIceCandidate(RTCPeerConnection pc, string sdp, string sdpMid,int sdpMlineIndex)
     {
         WebRTC.SyncContext.Post(_ =>
         {
@@ -122,21 +130,28 @@ public class TransmitText : MonoBehaviour
             candidate.candidate = sdp;
             candidate.sdpMid = sdpMid;
             candidate.sdpMlineIndex = sdpMlineIndex;
-            OnIceCandidate(pc2, candidate);
+            OnIceCandidate(pc, candidate);
         }, null);
+    }
+    void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
+    {
+        OnIceCandidate(pc1, sdp, sdpMid, sdpMlineIndex);
+    }
+    void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
+    {
+        OnIceCandidate(pc2, sdp, sdpMid, sdpMlineIndex);
     }
 
 IEnumerator Call()
     {
         callButton.interactable = false;
-
         var videoTracks = localStream.GetVideoTracks();
         var audioTracks = localStream.GetAudioTracks();
         if (videoTracks.Length > 0)
         {
             Debug.Log($"Using video device: {videoTracks.Length}");
         }
-        if (audioTracks.Length > 0)
+        if (audioTracks.Length > 0) 
         {
             Debug.Log($"Using audio device: {audioTracks.Length}");
         }
@@ -144,27 +159,14 @@ IEnumerator Call()
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created local peer connection object pc1");
-        pc1.RegisterOnIceCandidateReady(Pc1OnIceCandidate);
-        pc1.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state) 
-        {
-            WebRTC.SyncContext.Post(_ =>
-            {
-                OnIceConnectionChange(state);
-            }, null);
-        });
+        pc1.RegisterOnIceCandidateReady(pc1OnIceCandidateReady);
+        pc1.RegisterOnIceConnectionChange(pc1OnIceConnectionChange);
         pc2 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created remote peer connection object pc2"); 
-        pc2.RegisterOnIceCandidateReady(Pc2OnIceCandidate);
-        pc2.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state)
-        {
+        pc2.RegisterOnIceCandidateReady(pc2OnIceCandidateReady);
+        pc2.RegisterOnIceConnectionChange(pc2OnIceConnectionChange);
 
-            WebRTC.SyncContext.Post(_ =>
-            {
-                OnIceConnectionChange(state);
-            }, null);
-        });
-
-        pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); };
+        pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); }; 
         pc2.onIceConnectionStateChange = delegate () { OnIceStateChange(pc2); };
         pc2.onTrack = delegate (
             ref RTCRtpReceiver receiver,
@@ -335,9 +337,5 @@ IEnumerator Call()
     void OnCreateSessionDescriptionError(RTCError e)
     {
 
-    }
-    private void OnApplicationQuit()
-    {
-        WebRTC.SyncContext.flush();
     }
 }

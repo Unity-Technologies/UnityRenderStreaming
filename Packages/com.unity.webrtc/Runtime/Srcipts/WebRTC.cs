@@ -166,51 +166,6 @@ namespace Unity.WebRTC
         Track
     }
 
-    public class WebRTCSyncContext :  SynchronizationContext
-    {
-        public static ConcurrentQueue<Action> tasks;
-        private static WebRTCSyncContext syncContext;
-        static WebRTCSyncContext()
-        {
-            tasks = new ConcurrentQueue<Action>();
-            syncContext = new WebRTCSyncContext();
-            SynchronizationContext.SetSynchronizationContext(syncContext);
-        }
-        public override void Send(SendOrPostCallback d, object state)
-        {
-            tasks.Enqueue(() => 
-            {
-                d(state);
-            });
-        }
-        public override void Post(SendOrPostCallback d, object state)
-        {
-            tasks.Enqueue(() =>
-            {
-                d(state);
-            });
-        }
-        public void Update()
-        {
-            if(!tasks.IsEmpty)
-            {
-                Action curTask;
-                if(tasks.TryDequeue(out curTask))
-                    curTask();
-            }
-        }
-        public void flush()
-        {
-            while(!tasks.IsEmpty)
-            {
-                Action curTask;
-                if (tasks.TryDequeue(out curTask))
-                    curTask();
-            }
-        }
-
-    }
-
     public class RTCPeerConnection : IDisposable
     {
         private int m_id;
@@ -494,7 +449,7 @@ namespace Unity.WebRTC
 #endif
 
         private static Context s_context;
-        private static WebRTCSyncContext s_syncContext;
+        private static SynchronizationContext s_syncContext;
         private static ConcurrentQueue<string> s_dataChannelMsgs;
         private static readonly object s_syncMsgObj = new object();
         private static readonly object s_syncObj = new object();
@@ -503,7 +458,7 @@ namespace Unity.WebRTC
         {
             NativeMethods.registerDebugLog(DebugLog);
             s_context = Context.Create();
-            s_syncContext = new WebRTCSyncContext();
+            s_syncContext = SynchronizationContext.Current;
             s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
 
@@ -519,7 +474,7 @@ namespace Unity.WebRTC
         }
 
         internal static Context Context { get { return s_context; }  }
-        public static WebRTCSyncContext SyncContext { get { return s_syncContext; } }
+        public static SynchronizationContext SyncContext { get { return s_syncContext; } }
 
         public static ConcurrentQueue<string> S_dataChannelMsgs { get => s_dataChannelMsgs; }
 
