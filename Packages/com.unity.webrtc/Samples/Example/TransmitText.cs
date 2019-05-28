@@ -70,34 +70,34 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
-    void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
+    void OnIceConnectionChange(RTCIceConnectionState state)
     {
         switch (state)
         {
             case RTCIceConnectionState.New:
-                Debug.Log($"{GetName(pc)} IceConnectionState: New");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: New");
                 break;
             case RTCIceConnectionState.Checking:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Checking");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Checking");
                 break;
             case RTCIceConnectionState.Closed:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Closed");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Closed");
                 break;
             case RTCIceConnectionState.Completed:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Completed");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Completed"); 
                 break;
             case RTCIceConnectionState.Connected:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Connected");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Connected");
                 sendButton.interactable = true;
                 break;
             case RTCIceConnectionState.Disconnected:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Disconnected");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Disconnected");
                 break;
             case RTCIceConnectionState.Failed:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Failed");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Failed");
                 break;
             case RTCIceConnectionState.Max:
-                Debug.Log($"{GetName(pc)} IceConnectionState: Max");
+                Debug.Log($"{GetName(pc1)} IceConnectionState: Max");
                 break;
             default:
                 break;
@@ -105,19 +105,26 @@ public class TransmitText : MonoBehaviour
     }
     void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
     {
-        RTCIceCandidate​ candidate;
-        candidate.candidate = sdp;
-        candidate.sdpMid = sdpMid;
-        candidate.sdpMlineIndex = sdpMlineIndex;
-        OnIceCandidate(pc1, candidate);
+        WebRTC.SyncContext.Post(_ => 
+        {
+            RTCIceCandidate​ candidate;
+            candidate.candidate = sdp;
+            candidate.sdpMid = sdpMid;
+            candidate.sdpMlineIndex = sdpMlineIndex;
+            OnIceCandidate(pc1, candidate);
+
+        },null);
     }
     void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
     {
-        RTCIceCandidate​ candidate;
-        candidate.candidate = sdp;
-        candidate.sdpMid = sdpMid;
-        candidate.sdpMlineIndex = sdpMlineIndex;
-        OnIceCandidate(pc2, candidate);
+        WebRTC.SyncContext.Post(_ =>
+        {
+            RTCIceCandidate​ candidate;
+            candidate.candidate = sdp;
+            candidate.sdpMid = sdpMid;
+            candidate.sdpMlineIndex = sdpMlineIndex;
+            OnIceCandidate(pc2, candidate);
+        }, null);
     }
 
 IEnumerator Call()
@@ -141,34 +148,21 @@ IEnumerator Call()
         pc1.RegisterOnIceCandidateReady(Pc1OnIceCandidate);
         pc1.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state) 
         {
-            if(WebRTC.SyncContext == null)
+            WebRTC.SyncContext.Post(_ =>
             {
-                Debug.LogWarning("SyncContext is null!");
-            }
-            else
-            {
-                WebRTC.SyncContext.Post(obj => 
-                {
-                    OnIceConnectionChange(pc1, state);   
-                }, null);
-            }
+                OnIceConnectionChange(state);
+            }, null);
         });
         pc2 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created remote peer connection object pc2"); 
         pc2.RegisterOnIceCandidateReady(Pc2OnIceCandidate);
         pc2.RegisterOnIceConnectionChange(delegate (RTCIceConnectionState state)
         {
-            if (WebRTC.SyncContext == null) 
+
+            WebRTC.SyncContext.Post(_ =>
             {
-                Debug.LogWarning("SyncContext is null!");
-            }
-            else
-            {
-                WebRTC.SyncContext.Post(obj =>
-                {
-                     OnIceConnectionChange(pc2, state);
-                }, null); 
-            }
+                OnIceConnectionChange(state);
+            }, null);
         });
 
         pc1.onIceConnectionStateChange = delegate () { OnIceStateChange(pc1); };
@@ -229,7 +223,7 @@ IEnumerator Call()
         if (pc != null)
         {
             Debug.Log($"{GetName(pc)} ICE state: {pc.IceConnectionState}");
-            Debug.Log("ICE state change event: ");
+            Debug.Log("ICE state change event: "); 
         }
     }
 

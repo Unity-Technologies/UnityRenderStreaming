@@ -16,7 +16,6 @@ using DelegateCreateSDSuccess = void(*)(RTCSdpType, const char*);
 using DelegateCreateSDFailure = void(*)();
 using DelegateSetSDSuccess = void(*)();
 using DelegateSetSDFailure = void(*)();
-using DelegatePeerConnectionCallbackEvent = void(*)(RTCPeerConnectionEventType type, const char*);
 using DelegateLocalDataChannelReady = void(*)();
 using DelegateDataFromDataChannelReady = void(*)();
 using DelegateLocalSdpReady = void(*)(const char*, const char*);

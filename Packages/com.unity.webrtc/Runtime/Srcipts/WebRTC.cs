@@ -528,24 +528,22 @@ namespace Unity.WebRTC
         internal static object S_syncObj => s_syncObj;
     }
 
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateDebugLog([MarshalAs(UnmanagedType.LPStr)] string str);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateCreateSDSuccess(RTCSdpType type, [MarshalAs(UnmanagedType.LPStr)] string sdp);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateCreateSDFailure();
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     internal delegate void DelegateSetSDSuccess();
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateSetSDFailure();
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateOnDataChannelMsg([MarshalAs(UnmanagedType.LPStr)] string msg);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)] 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateIceCandidateReady([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
-    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
 
     internal static class NativeMethods
     {

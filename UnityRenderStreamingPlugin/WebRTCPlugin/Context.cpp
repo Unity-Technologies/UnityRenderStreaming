@@ -230,6 +230,7 @@ void PeerConnectionObject::OnRenegotiationNeeded()
 // Called any time the IceConnectionState changes.
 void PeerConnectionObject::OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state)
 {
+    LogPrint(StringFormat("OnIceConnectionChange: %d", new_state).c_str());
     if (onIceConnectionChange != nullptr)
     {
         onIceConnectionChange(new_state);
