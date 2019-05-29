@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.WebRTC;
+using System;
 
 public class TransmitText : MonoBehaviour
 {
@@ -12,12 +13,17 @@ public class TransmitText : MonoBehaviour
 
     private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
+    private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
     private string msg;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
     private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
     private DelegateIceCandidateReady pc1OnIceCandidateReady;
     private DelegateIceCandidateReady pc2OnIceCandidateReady;
+    private DelegateOnMessage onDataChannelMessage;
+    private DelegateOnOpen onDataChannelOpen;
+    private DelegateOnClose onDataChannelClose;
+    private DelegateOnDataChannel onDataChannel;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -56,6 +62,10 @@ public class TransmitText : MonoBehaviour
         pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc2OnIceConnectionChange);
         pc1OnIceCandidateReady = new DelegateIceCandidateReady(Pc1OnIceCandidate);
         pc2OnIceCandidateReady = new DelegateIceCandidateReady(Pc2OnIceCandidate);
+        onDataChannel = new DelegateOnDataChannel(OnDataChannel);
+        onDataChannelMessage = new DelegateOnMessage(OnDataChannelMessage);
+        onDataChannelOpen = new DelegateOnOpen(OnDataChannelOpen);
+        onDataChannelClose = new DelegateOnClose(OnDataChannelClose);
     }
 
     private void Update()
@@ -77,6 +87,32 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
+    void OnDataChannel(IntPtr ptr)
+    {
+        remoteDataChannel = new RTCDataChannel(ptr);
+        remoteDataChannel.OnMessage = onDataChannelMessage;
+    }
+    void OnDataChannelMessage(string msg)
+    {
+        WebRTC.SyncContext.Post(_ =>
+        {
+            textReceive.text = msg;
+        }, null);
+    }
+    void OnDataChannelOpen()
+    {
+        WebRTC.SyncContext.Post(_ =>
+        {
+            sendButton.interactable = true;
+        }, null);
+    }
+    void OnDataChannelClose()
+    {
+        WebRTC.SyncContext.Post(_ =>
+        {
+            sendButton.interactable = false;
+        }, null);
+    }
     void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
     {
         WebRTC.SyncContext.Post(_ =>
@@ -97,7 +133,6 @@ public class TransmitText : MonoBehaviour
                     break;
                 case RTCIceConnectionState.Connected:
                     Debug.Log($"{GetName(pc)} IceConnectionState: Connected");
-                    sendButton.interactable = true;
                     break;
                 case RTCIceConnectionState.Disconnected:
                     Debug.Log($"{GetName(pc)} IceConnectionState: Disconnected");
@@ -165,9 +200,11 @@ IEnumerator Call()
         Debug.Log("Created remote peer connection object pc2"); 
         pc2.RegisterOnIceCandidateReady(pc2OnIceCandidateReady);
         pc2.RegisterOnIceConnectionChange(pc2OnIceConnectionChange);
+        pc2.RegisterOnDataChannel(onDataChannel);
 
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
-        pc1.CreateDataChannel("data", ref conf);
+        dataChannel = new RTCDataChannel(pc1.CreateDataChannel("data", ref conf));
+        dataChannel.OnOpen = onDataChannelOpen;
 
         foreach (var track in localStream.GetTracks())
         {
@@ -200,19 +237,13 @@ IEnumerator Call()
         Debug.Log($"{GetName(pc)} ICE candidate:\n {candidate.candidate}");
     }
 
-
     public void SendMsg()
     {
-        pc1.SendData(textSend.text);
+        dataChannel.Send(textSend.text);
     }
     string GetName(RTCPeerConnection pc)
     {
         return (pc == pc1) ? "pc1" : "pc2";
-    }
-
-    void GotRemoteStream(RTCPeerConnection e)
-    {
-
     }
 
     RTCPeerConnection GetOtherPc(RTCPeerConnection pc)

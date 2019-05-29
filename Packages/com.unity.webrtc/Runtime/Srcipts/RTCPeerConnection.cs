@@ -42,7 +42,6 @@ namespace Unity.WebRTC
             IntPtr ptr = IntPtr.Zero;
             NativeMethods.peerConnectionGetConfiguration(self, ref ptr, ref len);
             var str = Marshal.PtrToStringAnsi(ptr, len);
-            Marshal.FreeHGlobal(ptr);
             ptr = IntPtr.Zero;
             return JsonUtility.FromJson<RTCConfiguration>(str);
         }
@@ -72,7 +71,6 @@ namespace Unity.WebRTC
         {
             NativeMethods.peerConnectionRegisterCallbackCreateSD(self, OnSuccessCreateSessionDesc, OnFailureCreateSessionDesc);
             NativeMethods.peerConnectionRegisterCallbackSetSD(self, OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
-            NativeMethods.peerConnectionRegisterDataChannelMsgReceived(self, OnDataChannelMsg);
         }
 
         public void RegisterOnIceConnectionChange(DelegateOnIceConnectionChange callback)
@@ -83,6 +81,11 @@ namespace Unity.WebRTC
         public void RegisterOnIceCandidateReady(DelegateIceCandidateReady callback)
         {
             NativeMethods.peerConnectionRegisterOnIceCandidateReady(self, callback);
+        }
+
+        public void RegisterOnDataChannel(DelegateOnDataChannel callback)
+        {
+            NativeMethods.peerConnectionRegisterOnDataChannel(self, callback);
         }
 
         public void Close()
@@ -119,14 +122,9 @@ namespace Unity.WebRTC
             return m_opSessionDesc;
         }
 
-        public void CreateDataChannel(string label, ref RTCDataChannelInit options)
+        public IntPtr CreateDataChannel(string label, ref RTCDataChannelInit options)
         {
-            NativeMethods.peerConnectionCreateDataChannel(self, label, ref options);
-        }
-
-        public void SendData(string data)
-        {
-            NativeMethods.peerConnectionsendDataFromDataChannel(self, data);
+            return NativeMethods.peerConnectionCreateDataChannel(self, label, ref options);
         }
 
         void OnDataChannelMsg(string msg)

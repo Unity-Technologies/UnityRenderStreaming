@@ -1,10 +1,19 @@
 ﻿#pragma once
 #include "WebRTCPlugin.h"
+#include "DataChannelObject.h"
+
+using DelegateCreateSDSuccess = void(*)(RTCSdpType, const char*);
+using DelegateCreateSDFailure = void(*)();
+using DelegateSetSDSuccess = void(*)();
+using DelegateSetSDFailure = void(*)();
+using DelegateLocalSdpReady = void(*)(const char*, const char*);
+using DelegateIceCandidateReady = void(*)(const char*, const char*, const int);
+using DelegateOnIceConnectionChange = void(*)(webrtc::PeerConnectionInterface::IceConnectionState state);
+using DelegateOnDataChannel = void(*)(DataChannelObject* remoteDataChannel);
 
 class PeerConnectionObject
     : public webrtc::CreateSessionDescriptionObserver
     , public webrtc::PeerConnectionObserver
-    , public webrtc::DataChannelObserver
 {
 public:
     PeerConnectionObject(int id);
@@ -14,23 +23,19 @@ public:
     void setLocalDescription(const RTCSessionDescription& desc);
     void getLocalDescription(RTCSessionDescription& desc) const;
     void setRemoteDescription(const RTCSessionDescription& desc);
-    void registerCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
     void setConfiguration(const std::string& config);
     void getConfiguration(std::string& config) const;
     void createOffer(const RTCOfferOptions& options);
     void createAnswer(const RTCAnswerOptions& options);
     void addIceCandidate(const RTCIceCandidate& candidate);
-    void createDataChannel(const char* label, const RTCDataChannelInit& options);
-    void closeDataChannel();
-    void sendDataFromDataChannel(const char* data);
+    DataChannelObject* createDataChannel(const char* label, const RTCDataChannelInit& options);
 
+    void registerCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
     void registerCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
-    void registerLocalDataChannelReady(DelegateLocalDataChannelReady callback);
-    void registerDataFromDataChannelReady(DelegateDataFromDataChannelReady callback);
     void registerLocalSdpReady(DelegateLocalSdpReady callback);
     void registerIceCandidateReady(DelegateIceCandidateReady callback);
-    void registerDataChannelMsgReceived(DelegateOnDataChannelMsg callback);
     void registerIceConnectionChange(DelegateOnIceConnectionChange callback);
+    void registerOnDataChannel(DelegateOnDataChannel callback);
 
     RTCPeerConnectionState getConnectionState();
     RTCIceConnectionState getIceCandidateState();
@@ -63,25 +68,21 @@ public:
     void OnIceCandidatesRemoved(const std::vector<cricket::Candidate>& candidates) override {}
     // Called when the ICE connection receiving status changes.
     void OnIceConnectionReceivingChange(bool Receiving) override {}
-    //werbrtc::DataChannelObserver
-    // The data channel state have changed.
-    void OnStateChange() override;
-    //  A data buffer was successfully received.
-    void OnMessage(const webrtc::DataBuffer& buffer) override;
+
+    friend class DataChannelObject;
 
 public:
     DelegateCreateSDSuccess onCreateSDSuccess;
     DelegateCreateSDFailure onCreateSDFailure;
     DelegateSetSDSuccess onSetSDSuccess;
     DelegateSetSDFailure onSetSDFailure;
-    DelegateLocalDataChannelReady onLocalDataChannelReady;
-    DelegateDataFromDataChannelReady onDataFromDataChannelReady;
     DelegateLocalSdpReady onLocalSdpReady;
     DelegateIceCandidateReady onIceCandidateReady;
-    DelegateOnDataChannelMsg onDataChannelMsg;
     DelegateOnIceConnectionChange onIceConnectionChange;
+    DelegateOnDataChannel onDataChannel;
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> connection;
 private:
-    rtc::scoped_refptr<webrtc::DataChannelInterface> dataChannel;
+    std::map<int, DataChannelObject*> localDataChannels;
+    std::map<int, DataChannelObject*> remoteDataChannels;
     int32 id;
 };

@@ -38,15 +38,6 @@ PeerConnectionObject* Context::createPeerConnection(int id, const std::string& c
     return clients[id].get();
 }
 
-void PeerConnectionObject::sendDataFromDataChannel(const char* data)
-{
-    if (dataChannel)
-    {
-        dataChannel->Send(webrtc::DataBuffer(std::string(data)));
-        DebugLog("Data sent from local dataChannel.");
-    }
-}
-
 void PeerConnectionObject::OnSuccess(webrtc::SessionDescriptionInterface* desc)
 {
     std::string out;
@@ -70,8 +61,13 @@ void PeerConnectionObject::OnFailure(webrtc::RTCError error)
 
 void PeerConnectionObject::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> remoteDataChannel)
 {
-    remoteDataChannel->RegisterObserver(this);
-    DebugLog("OnDataChannel");
+    auto remoteDataChannelObj = new DataChannelObject(remoteDataChannel, *this);
+    int id = remoteDataChannelObj->GetID();
+    remoteDataChannels[id] = remoteDataChannelObj;
+    if (onDataChannel != nullptr)
+    {
+        onDataChannel(remoteDataChannels[id]);
+    }
 }
 void PeerConnectionObject::OnIceCandidate(const webrtc::IceCandidateInterface* candidate)
 {
@@ -130,20 +126,6 @@ void PeerConnectionObject::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStream
     DebugLog("OnRemoveStream");
 }
 
-void PeerConnectionObject::OnMessage(const webrtc::DataBuffer& buffer)
-{
-    if (onDataChannelMsg != nullptr)
-    {
-        size_t size = buffer.data.size();
-        char* msg = new char[size + 1];
-        memcpy(msg, buffer.data.data(), size);
-        msg[size] = 0;
-        if (onDataChannelMsg != nullptr)
-            onDataChannelMsg(msg);
-        delete[] msg;
-    }
-}
-
 void PeerConnectionObject::close()
 {
     connection->Close();
@@ -181,6 +163,11 @@ void PeerConnectionObject::registerCallbackSetSD(DelegateSetSDSuccess onSuccess,
 {
     this->onSetSDSuccess = onSuccess;
     this->onSetSDFailure = onFailure;
+}
+
+void PeerConnectionObject::registerOnDataChannel(DelegateOnDataChannel callback)
+{
+    onDataChannel = callback;
 }
 
 void PeerConnectionObject::setConfiguration(const std::string& conf)
@@ -234,16 +221,6 @@ void PeerConnectionObject::registerCallbackCreateSD(DelegateCreateSDSuccess onSu
     this->onCreateSDSuccess = onSuccess;
     this->onCreateSDFailure = onFailure;
 }
-
-void PeerConnectionObject::registerLocalDataChannelReady(DelegateLocalDataChannelReady callback)
-{
-    onLocalDataChannelReady = callback;
-}
-
-void PeerConnectionObject::registerDataFromDataChannelReady(DelegateDataFromDataChannelReady callback)
-{
-    onDataFromDataChannelReady = callback;
-}
 void PeerConnectionObject::registerLocalSdpReady(DelegateLocalSdpReady callback)
 {
     onLocalSdpReady = callback;
@@ -252,11 +229,6 @@ void PeerConnectionObject::registerLocalSdpReady(DelegateLocalSdpReady callback)
 void PeerConnectionObject::registerIceCandidateReady(DelegateIceCandidateReady callback)
 {
     onIceCandidateReady = callback;
-}
-
-void PeerConnectionObject::registerDataChannelMsgReceived(DelegateOnDataChannelMsg callback)
-{
-    onDataChannelMsg = callback;
 }
 
 void PeerConnectionObject::registerIceConnectionChange(DelegateOnIceConnectionChange callback)
@@ -272,22 +244,6 @@ void PeerConnectionObject::addIceCandidate(const RTCIceCandidate& candidate)
     connection->AddIceCandidate(_candidate.get());
 }
 
-void PeerConnectionObject::OnStateChange()
-{
-    if (dataChannel)
-    {
-        auto state = dataChannel->state();
-        if (state == webrtc::DataChannelInterface::kOpen)
-        {
-            if (onLocalDataChannelReady != nullptr)
-            {
-                onLocalDataChannelReady();
-                DebugLog("Data channel ready.");
-            }
-        }
-    }
-}
-
 void PeerConnectionObject::getLocalDescription(RTCSessionDescription& desc) const
 {
     std::string out;
@@ -295,12 +251,12 @@ void PeerConnectionObject::getLocalDescription(RTCSessionDescription& desc) cons
     current->ToString(&out);
 
     desc.type = convertSdpType(current->GetType());
-    desc.sdp = new char[out.size() + 1];
+    desc.sdp = (char*)CoTaskMemAlloc(out.size() + 1);
     out.copy(desc.sdp, out.size());
-    desc.sdp[out.size()] = 0;
+    desc.sdp[out.size()] = '\0';
 }
 
-void PeerConnectionObject::createDataChannel(const char* label, const RTCDataChannelInit& options)
+DataChannelObject* PeerConnectionObject::createDataChannel(const char* label, const RTCDataChannelInit& options)
 {
     webrtc::DataChannelInit config;
     config.reliable = options.reliable;
@@ -310,26 +266,13 @@ void PeerConnectionObject::createDataChannel(const char* label, const RTCDataCha
     config.protocol = options.protocol;
     config.negotiated = options.negotiated;
 
-    dataChannel = connection->CreateDataChannel(label, &config);
-    if (dataChannel)
-    {
-        dataChannel->RegisterObserver(this);
-        DebugLog("Data channel created");
-    }
-    else {
-        DebugError("Can't create dataChannel.");
-    }
+    auto channel = connection->CreateDataChannel(label, &config);
+    auto dataChannelObj = new DataChannelObject(channel, *this);
+    int id = dataChannelObj->GetID();
+    localDataChannels[id] = dataChannelObj;
+    return localDataChannels[id];
 }
 
-void PeerConnectionObject::closeDataChannel()
-{
-    if (dataChannel)
-    {
-        dataChannel->UnregisterObserver();
-        dataChannel->Close();
-        dataChannel = nullptr;
-    }
-}
 RTCIceConnectionState PeerConnectionObject::getIceCandidateState()
 {
     auto state = connection->ice_connection_state();

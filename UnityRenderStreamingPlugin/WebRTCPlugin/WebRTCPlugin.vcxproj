@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClCompile Include="Callback.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="DataChannelObject.cpp" />
     <ClCompile Include="DummyAudioDevice.cpp" />
     <ClCompile Include="DummyVideoEncoder.cpp" />
     <ClCompile Include="Logger.cpp" />

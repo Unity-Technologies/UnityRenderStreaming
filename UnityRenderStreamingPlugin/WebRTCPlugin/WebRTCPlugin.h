@@ -12,16 +12,6 @@ using DelegateDebugLog = void(*)(const char*);
 using DelegateRTCPeerConnectionOnTrack = void(*)();
 using DelegateRTCPeerConnectionOnConnectionStateChange = void(*)();
 
-using DelegateCreateSDSuccess = void(*)(RTCSdpType, const char*);
-using DelegateCreateSDFailure = void(*)();
-using DelegateSetSDSuccess = void(*)();
-using DelegateSetSDFailure = void(*)();
-using DelegateLocalDataChannelReady = void(*)();
-using DelegateDataFromDataChannelReady = void(*)();
-using DelegateLocalSdpReady = void(*)(const char*, const char*);
-using DelegateIceCandidateReady = void(*)(const char*, const char*, const int);
-using DelegateOnDataChannelMsg = void(*)(const char*);
-using DelegateOnIceConnectionChange = void(*)(webrtc::PeerConnectionInterface::IceConnectionState state);
 void debugLog(const char* buf);
 extern DelegateDebugLog delegateDebugLog;
 
@@ -154,31 +144,3 @@ struct RTCAnswerOptions
 {
     bool iceRestart;
 };
-
-extern "C"
-{
-    UNITY_INTERFACE_EXPORT Context* contextCreate(int uid);
-    UNITY_INTERFACE_EXPORT void contextDestroy(int uid);
-    UNITY_INTERFACE_EXPORT void registerDebugLog(DelegateDebugLog func);
-    UNITY_INTERFACE_EXPORT void peerConnectionClose(PeerConnectionObject* obj);
-    UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnection(Context* ctx, int id);
-    UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnectionWithConfig(Context* ctx, int id, const char* conf);
-    UNITY_INTERFACE_EXPORT void peerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf);
-    UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len);
-    UNITY_INTERFACE_EXPORT void peerConnectionAddIceCandidate(PeerConnectionObject* obj, const RTCIceCandidate* candidate);
-    UNITY_INTERFACE_EXPORT RTCPeerConnectionState peerConnectionState(PeerConnectionObject* obj);
-    UNITY_INTERFACE_EXPORT RTCIceConnectionState peerConnectionIceConditionState(PeerConnectionObject* obj);
-    UNITY_INTERFACE_EXPORT void peerConnectionSetRemoteDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc);
-    UNITY_INTERFACE_EXPORT void peerConnectionSetLocalDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc);
-    UNITY_INTERFACE_EXPORT void peerConnectionGetLocalDescription(PeerConnectionObject* obj, RTCSessionDescription* desc);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackSetSD(PeerConnectionObject* obj, DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
-    UNITY_INTERFACE_EXPORT void peerConnectionCreateOffer(PeerConnectionObject* obj, const RTCOfferOptions* options);
-    UNITY_INTERFACE_EXPORT void peerConnectionCreateAnswer(PeerConnectionObject* obj, const RTCAnswerOptions* options);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackOnTrack(PeerConnectionObject* obj, DelegateRTCPeerConnectionOnTrack func);
-    UNITY_INTERFACE_EXPORT void peerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options);
-    UNITY_INTERFACE_EXPORT void peerConnectionsendDataFromDataChannel(PeerConnectionObject* obj, char* data);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterDataChannelMsgReceived(PeerConnectionObject* obj, DelegateOnDataChannelMsg callback);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnIceCandidateReady(PeerConnectionObject* obj, DelegateIceCandidateReady callback);
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterIceConnectionChange(PeerConnectionObject* obj, DelegateOnIceConnectionChange callback);
-}

@@ -3,8 +3,6 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Threading;
-using UnityEngine.Events;
-
 
 namespace Unity.WebRTC
 {
@@ -274,13 +272,19 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateSetSDFailure();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
-    public delegate void DelegateOnDataChannelMsg([MarshalAs(UnmanagedType.LPStr)] string msg);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateIceCandidateReady([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnDataChannel(IntPtr ptr);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnMessage([MarshalAs(UnmanagedType.LPStr)] string msg);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnOpen();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnClose();
 
     internal static class NativeMethods
     {
@@ -297,9 +301,9 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
+        public static extern IntPtr peerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)] 
-        public static extern void peerConnectionCreateDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, ref RTCDataChannelInit options);
+        public static extern IntPtr peerConnectionCreateDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, ref RTCDataChannelInit options);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf, ref int len);
         [DllImport(WebRTC.Lib)]
@@ -307,13 +311,9 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionCreateAnswer(IntPtr ptr, ref RTCAnswerOptions options);
         [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionsendDataFromDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string data);
-        [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionRegisterCallbackCreateSD(IntPtr ptr, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionRegisterCallbackSetSD(IntPtr ptr, DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
-        [DllImport(WebRTC.Lib)]
-        public static extern void peerConnectionRegisterDataChannelMsgReceived(IntPtr ptr, DelegateOnDataChannelMsg callback);
         [DllImport(WebRTC.Lib)]
         public static extern void peerConnectionRegisterIceConnectionChange(IntPtr ptr, DelegateOnIceConnectionChange callback);
         [DllImport(WebRTC.Lib)]
@@ -332,6 +332,26 @@ namespace Unity.WebRTC
         public static extern RTCPeerConnectionState peerConnectionState(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern RTCIceConnectionState peerConnectionIceConditionState(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern void peerConnectionRegisterOnDataChannel(IntPtr ptr, DelegateOnDataChannel callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelUnregisterObserver(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelRegisterObserver(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern int DataChannelGetID(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr DataChannelGetLabel(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelSend(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string msg);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelClose(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelRegisterOnMessage(IntPtr ptr, DelegateOnMessage callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelRegisterOnOpen(IntPtr ptr, DelegateOnOpen callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelRegisterOnClose(IntPtr ptr, DelegateOnClose callback);
     }
 
     internal struct Context
