@@ -557,7 +557,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Call
+  m_Text: Hangup
 --- !u!222 &608190744
 CanvasRenderer:
   m_ObjectHideFlags: 0

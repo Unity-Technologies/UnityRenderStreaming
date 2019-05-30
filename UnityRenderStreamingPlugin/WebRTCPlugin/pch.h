@@ -58,6 +58,7 @@
 
 #include "media/base/videobroadcaster.h"
 #pragma endregion
+#include "Utils.h"
 
 void LogPrint(const char* fmt, ...);
 void LogPrint(const wchar_t* fmt, ...);
@@ -67,6 +68,15 @@ void LogPrint(const wchar_t* fmt, ...);
 #define DebugLogW(...)      LogPrint(L"webrtc Log: " __VA_ARGS__)
 #define DebugWarningW(...)  LogPrint(L"webrtc Warning: " __VA_ARGS__)
 #define DebugErrorW(...)    LogPrint(L"webrtc Error: "  __VA_ARGS__)
+
+template<class ... Args>
+std::string StringFormat(const std::string& format, Args ... args)
+{
+    size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+    std::unique_ptr<char[]> buf(new char[size]);
+    snprintf(buf.get(), size, format.c_str(), args ...);
+    return std::string(buf.get(), buf.get() + size - 1);
+}
 
 using uint8 = unsigned char;
 using uint16 = unsigned short int;

@@ -79,6 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>webrtc</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,13 +127,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;WEBRTCPLUGIN_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WEBRTCPLUGIN_EXPORTS;WEBRTC_WIN;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\webrtc\include\third_party\jsoncpp\source\include;$(ProjectDir)..\webrtc\include\third_party\abseil-cpp;$(ProjectDir)..\webrtc\include;$(ProjectDir)Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\webrtc\include\third_party\jsoncpp\source\include;$(ProjectDir)..\webrtc\include\third_party\abseil-cpp;$(ProjectDir)..\webrtc\include;$(ProjectDir)..\unity\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>jsoncpp.lib;webrtc.lib;webrtc_opus.lib;audio_decoder_opus.lib;Winmm.lib;Msdmo.lib;Dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\webrtc\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,20 +159,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClientConnection.h" />
     <ClInclude Include="Context.h" />
+    <ClInclude Include="DataChannelObject.h" />
+    <ClInclude Include="DummyAudioDevice.h" />
+    <ClInclude Include="DummyVideoEncoder.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="nvEncodeAPI.h" />
+    <ClInclude Include="NvEncoder.h" />
+    <ClInclude Include="NvVideoCapturer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PeerConnectionObject.h" />
+    <ClInclude Include="Unity\IUnityGraphics.h" />
+    <ClInclude Include="Unity\IUnityGraphicsD3D11.h" />
+    <ClInclude Include="Unity\IUnityInterface.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="WebRTCPlugin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClientConnection.cpp" />
+    <ClCompile Include="Callback.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="DataChannelObject.cpp" />
+    <ClCompile Include="DummyAudioDevice.cpp" />
+    <ClCompile Include="DummyVideoEncoder.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="NvEncoder.cpp" />
+    <ClCompile Include="NvVideoCapturer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="PeerConnectionObject.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="WebRTCPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
