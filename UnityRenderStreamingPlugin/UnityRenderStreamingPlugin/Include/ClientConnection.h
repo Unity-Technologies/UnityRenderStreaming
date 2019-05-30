@@ -56,11 +56,9 @@ namespace WebRTC
 
         //werbrtc::DataChannelObserver
         // The data channel state have changed.
-        void OnStateChange() override {}
+        void OnStateChange() override {};
         //  A data buffer was successfully received.
         void OnMessage(const webrtc::DataBuffer& buffer) override;
-        // The data channel's buffered_amount has changed.
-        void OnBufferedAmountChange(uint64_t previous_amount) override {}
 
         template<class T>
         void ReadData(T& value, const uint8* &data);

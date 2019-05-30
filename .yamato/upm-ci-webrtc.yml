@@ -10,7 +10,7 @@ platforms:
     # image: package-ci/win10:stable
     image: renderstreaming/win10:latest
     flavor: m1.large
-    build_command: build_plugin.cmd
+    build_command: build.cmd
 projects:
   - name: webrtc
     packagename: com.unity.webrtc
@@ -63,12 +63,6 @@ test_{{ platform.name }}_{{ editor.version }}:
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package test -u {{ editor.version }} --package-path Packages/com.unity.webrtc
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
   artifacts:
     logs.zip:
       paths:
@@ -98,7 +92,7 @@ publish:
   dependencies:
     - .yamato/upm-ci-webrtc.yml#pack
     {% for editor in test_editors %}
-    {% for platform in platforms %}
+    {% for platform in test_platforms %}
     - .yamato/upm-ci-webrtc.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}

@@ -1,4 +1,4 @@
-# Changes in WebRTC for Unity
+# Changes in Render Streaming for Unity
 
 <!---
 ## [0.0.1] - 2019-04-17
