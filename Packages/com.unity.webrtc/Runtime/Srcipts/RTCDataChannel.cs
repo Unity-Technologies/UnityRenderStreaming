@@ -14,8 +14,8 @@ namespace Unity.WebRTC
         private DelegateOnMessage selfOnMessage;
         private DelegateOnOpen selfOnOpen;
         private DelegateOnClose selfOnClose;
-        public int id;
-        public string label;
+        private int id;
+        private string label;
 
         public DelegateOnMessage OnMessage
         {
@@ -49,6 +49,9 @@ namespace Unity.WebRTC
             }
         }
 
+        public int Id { get => id; private set => id = value; }
+        public string Label { get => label; private set => label = value; }
+
         void DataChannelOnMessage(string msg)
         {
             WebRTC.SyncContext.Post(_ =>
@@ -73,9 +76,9 @@ namespace Unity.WebRTC
         public RTCDataChannel(IntPtr ptr)
         {
             self = ptr;
-            id = NativeMethods.DataChannelGetID(self);
+            Id = NativeMethods.DataChannelGetID(self);
             IntPtr labelPtr = NativeMethods.DataChannelGetLabel(self);
-            label = Marshal.PtrToStringAnsi(labelPtr);
+            Label = Marshal.PtrToStringAnsi(labelPtr);
         }
         public void Send(string msg)
         {
