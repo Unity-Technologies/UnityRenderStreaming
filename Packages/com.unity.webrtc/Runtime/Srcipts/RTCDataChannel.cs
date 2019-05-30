@@ -73,7 +73,7 @@ namespace Unity.WebRTC
                 onClose();
             }, null);
         }
-        public RTCDataChannel(IntPtr ptr)
+        internal RTCDataChannel(IntPtr ptr)
         {
             self = ptr;
             Id = NativeMethods.DataChannelGetID(self);
