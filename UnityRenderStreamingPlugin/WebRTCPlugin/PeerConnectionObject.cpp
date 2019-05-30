@@ -14,7 +14,7 @@ PeerConnectionObject::~PeerConnectionObject()
     connection.release();
 }
 
-PeerConnectionObject* Context::createPeerConnection(int id)
+PeerConnectionObject* Context::CreatePeerConnection(int id)
 {
     rtc::scoped_refptr<PeerConnectionObject> obj = new rtc::RefCountedObject<PeerConnectionObject>(id);
     webrtc::PeerConnectionInterface::RTCConfiguration _config;
@@ -24,11 +24,11 @@ PeerConnectionObject* Context::createPeerConnection(int id)
     return clients[id].get();
 }
 
-PeerConnectionObject* Context::createPeerConnection(int id, const std::string& conf)
+PeerConnectionObject* Context::CreatePeerConnection(int id, const std::string& conf)
 {
     rtc::scoped_refptr<PeerConnectionObject> obj = new rtc::RefCountedObject<PeerConnectionObject>(id);
     webrtc::PeerConnectionInterface::RTCConfiguration _config;
-    convert(conf, _config);
+    Convert(conf, _config);
     obj->connection = peerConnectionFactory->CreatePeerConnection(_config, nullptr, nullptr, obj);
     //TODO
     //RTCDataChannelInit config;
@@ -42,7 +42,7 @@ void PeerConnectionObject::OnSuccess(webrtc::SessionDescriptionInterface* desc)
 {
     std::string out;
     desc->ToString(&out);
-    auto type = convertSdpType(desc->GetType());
+    auto type = ConvertSdpType(desc->GetType());
     if (onCreateSDSuccess != nullptr)
     {
         onCreateSDSuccess(type, out.c_str());
@@ -126,15 +126,15 @@ void PeerConnectionObject::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStream
     DebugLog("OnRemoveStream");
 }
 
-void PeerConnectionObject::close()
+void PeerConnectionObject::Close()
 {
     connection->Close();
 }
 
-void PeerConnectionObject::setLocalDescription(const RTCSessionDescription& desc)
+void PeerConnectionObject::SetLocalDescription(const RTCSessionDescription& desc)
 {
     webrtc::SdpParseError error;
-    auto _desc = webrtc::CreateSessionDescription(convertSdpType(desc.type), desc.sdp, &error);
+    auto _desc = webrtc::CreateSessionDescription(ConvertSdpType(desc.type), desc.sdp, &error);
     if (!_desc.get())
     {
         DebugLog("Can't parse received session description message.");
@@ -145,10 +145,10 @@ void PeerConnectionObject::setLocalDescription(const RTCSessionDescription& desc
     connection->SetLocalDescription(observer, _desc.release());
 }
 
-void PeerConnectionObject::setRemoteDescription(const RTCSessionDescription& desc)
+void PeerConnectionObject::SetRemoteDescription(const RTCSessionDescription& desc)
 {
     webrtc::SdpParseError error;
-    auto _desc = webrtc::CreateSessionDescription(convertSdpType(desc.type), desc.sdp, &error);
+    auto _desc = webrtc::CreateSessionDescription(ConvertSdpType(desc.type), desc.sdp, &error);
     if (!_desc.get())
     {
         DebugLog("Can't parse received session description message.");
@@ -159,25 +159,25 @@ void PeerConnectionObject::setRemoteDescription(const RTCSessionDescription& des
     connection->SetRemoteDescription(observer, _desc.release());
 }
 
-void PeerConnectionObject::registerCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
+void PeerConnectionObject::RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
 {
     this->onSetSDSuccess = onSuccess;
     this->onSetSDFailure = onFailure;
 }
 
-void PeerConnectionObject::registerOnDataChannel(DelegateOnDataChannel callback)
+void PeerConnectionObject::RegisterOnDataChannel(DelegateOnDataChannel callback)
 {
     onDataChannel = callback;
 }
 
-void PeerConnectionObject::setConfiguration(const std::string& conf)
+void PeerConnectionObject::SetConfiguration(const std::string& conf)
 {
     webrtc::PeerConnectionInterface::RTCConfiguration _conf;
-    convert(conf, _conf);
+    Convert(conf, _conf);
     connection->SetConfiguration(_conf);
 }
 
-void PeerConnectionObject::getConfiguration(std::string& config) const
+void PeerConnectionObject::GetConfiguration(std::string& config) const
 {
     auto _config = connection->GetConfiguration();
 
@@ -200,7 +200,7 @@ void PeerConnectionObject::getConfiguration(std::string& config) const
     config = writer.write(root);
 }
 
-void PeerConnectionObject::createOffer(const RTCOfferOptions & options)
+void PeerConnectionObject::CreateOffer(const RTCOfferOptions & options)
 {
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions _options;
     _options.ice_restart = options.iceRestart;
@@ -209,34 +209,34 @@ void PeerConnectionObject::createOffer(const RTCOfferOptions & options)
     connection->CreateOffer(this, _options);
 }
 
-void PeerConnectionObject::createAnswer(const RTCAnswerOptions& options)
+void PeerConnectionObject::CreateAnswer(const RTCAnswerOptions& options)
 {
     webrtc::PeerConnectionInterface::RTCOfferAnswerOptions _options;
     _options.ice_restart = options.iceRestart;
     connection->CreateAnswer(this, _options);
 }
 
-void PeerConnectionObject::registerCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
+void PeerConnectionObject::RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
 {
     this->onCreateSDSuccess = onSuccess;
     this->onCreateSDFailure = onFailure;
 }
-void PeerConnectionObject::registerLocalSdpReady(DelegateLocalSdpReady callback)
+void PeerConnectionObject::RegisterLocalSdpReady(DelegateLocalSdpReady callback)
 {
     onLocalSdpReady = callback;
 }
 
-void PeerConnectionObject::registerIceCandidateReady(DelegateIceCandidateReady callback)
+void PeerConnectionObject::RegisterIceCandidateReady(DelegateIceCandidateReady callback)
 {
     onIceCandidateReady = callback;
 }
 
-void PeerConnectionObject::registerIceConnectionChange(DelegateOnIceConnectionChange callback)
+void PeerConnectionObject::RegisterIceConnectionChange(DelegateOnIceConnectionChange callback)
 {
     onIceConnectionChange = callback;
 }
 
-void PeerConnectionObject::addIceCandidate(const RTCIceCandidate& candidate)
+void PeerConnectionObject::AddIceCandidate(const RTCIceCandidate& candidate)
 {
     webrtc::SdpParseError error;
     std::unique_ptr<webrtc::IceCandidateInterface> _candidate(
@@ -244,13 +244,13 @@ void PeerConnectionObject::addIceCandidate(const RTCIceCandidate& candidate)
     connection->AddIceCandidate(_candidate.get());
 }
 
-void PeerConnectionObject::getLocalDescription(RTCSessionDescription& desc) const
+void PeerConnectionObject::GetLocalDescription(RTCSessionDescription& desc) const
 {
     std::string out;
     auto current = connection->current_local_description();
     current->ToString(&out);
 
-    desc.type = convertSdpType(current->GetType());
+    desc.type = ConvertSdpType(current->GetType());
     desc.sdp = (char*)CoTaskMemAlloc(out.size() + 1);
     out.copy(desc.sdp, out.size());
     desc.sdp[out.size()] = '\0';
@@ -273,7 +273,7 @@ DataChannelObject* PeerConnectionObject::createDataChannel(const char* label, co
     return localDataChannels[id];
 }
 
-RTCIceConnectionState PeerConnectionObject::getIceCandidateState()
+RTCIceConnectionState PeerConnectionObject::GetIceCandidateState()
 {
     auto state = connection->ice_connection_state();
     switch (state)
@@ -297,7 +297,7 @@ RTCIceConnectionState PeerConnectionObject::getIceCandidateState()
     }
 }
 
-RTCPeerConnectionState PeerConnectionObject::getConnectionState()
+RTCPeerConnectionState PeerConnectionObject::GetConnectionState()
 {
     auto state = connection->peer_connection_state();
     switch (state)

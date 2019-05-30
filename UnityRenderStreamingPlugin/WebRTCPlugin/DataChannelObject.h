@@ -39,14 +39,6 @@ public:
     {
         onClose = callback;
     }
-    void UnRegisterObserver()
-    {
-        dataChannel->UnregisterObserver();
-    }
-    void RegisterObserver()
-    {
-        dataChannel->RegisterObserver(this);
-    }
     //werbrtc::DataChannelObserver
    // The data channel state have changed.
     void OnStateChange() override;

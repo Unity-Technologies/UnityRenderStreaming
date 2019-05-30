@@ -10,6 +10,10 @@ namespace Unity.WebRTC
         private DelegateOnMessage onMessage;
         private DelegateOnOpen onOpen;
         private DelegateOnClose onClose;
+
+        private DelegateOnMessage selfOnMessage;
+        private DelegateOnOpen selfOnOpen;
+        private DelegateOnClose selfOnClose;
         public int id;
         public string label;
 
@@ -19,7 +23,8 @@ namespace Unity.WebRTC
             set
             {
                 onMessage = value;
-                NativeMethods.DataChannelRegisterOnMessage(self, onMessage);
+                selfOnMessage = new DelegateOnMessage(DataChannelOnMessage);
+                NativeMethods.DataChannelRegisterOnMessage(self, selfOnMessage);
             }
         }
 
@@ -29,7 +34,8 @@ namespace Unity.WebRTC
             set
             {
                 onOpen = value;
-                NativeMethods.DataChannelRegisterOnOpen(self, onOpen);
+                selfOnOpen = new DelegateOnOpen(DataChannelOnOpen);
+                NativeMethods.DataChannelRegisterOnOpen(self, selfOnOpen);
             }
         }
         public DelegateOnClose OnClose
@@ -38,10 +44,32 @@ namespace Unity.WebRTC
             set
             {
                 onClose = value;
-                NativeMethods.DataChannelRegisterOnClose(self, onClose);
+                selfOnClose = new DelegateOnClose(DataChannelOnClose);
+                NativeMethods.DataChannelRegisterOnClose(self, selfOnClose);
             }
         }
 
+        void DataChannelOnMessage(string msg)
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                onMessage(msg);
+            }, null);
+        }
+        void DataChannelOnOpen()
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                onOpen();
+            }, null);
+        }
+        void DataChannelOnClose()
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                onClose();
+            }, null);
+        }
         public RTCDataChannel(IntPtr ptr)
         {
             self = ptr;
@@ -57,14 +85,6 @@ namespace Unity.WebRTC
         public void Close()
         {
             NativeMethods.DataChannelClose(self);
-        }
-        public void ActivateCallback()
-        {
-            NativeMethods.DataChannelRegisterObserver(self);
-        }
-        public void DeactivateCallback()
-        {
-            NativeMethods.DataChannelUnregisterObserver(self);
         }
     }
 }

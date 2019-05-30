@@ -4,7 +4,7 @@
 
 ContextManager ContextManager::s_instance;
 
-Context* ContextManager::getContext(int uid)
+Context* ContextManager::GetContext(int uid)
 {
     auto it = s_instance.m_contexts.find(uid);
     if (it != s_instance.m_contexts.end()) {
@@ -18,7 +18,7 @@ Context* ContextManager::getContext(int uid)
     return ctx;
 }
 
-void ContextManager::destroyContext(int uid)
+void ContextManager::DestroyContext(int uid)
 {
     auto it = s_instance.m_contexts.find(uid);
     if (it != s_instance.m_contexts.end()) {
@@ -35,7 +35,7 @@ ContextManager::~ContextManager()
     m_contexts.clear();
 }
 
-void convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config)
+void Convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config)
 {
     config = webrtc::PeerConnectionInterface::RTCConfiguration{};
     Json::Reader jsonReader;
@@ -57,7 +57,7 @@ void convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfigu
     config.servers.push_back(stunServer);
     config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
 }
- webrtc::SdpType convertSdpType(RTCSdpType type)
+ webrtc::SdpType ConvertSdpType(RTCSdpType type)
 {
     switch (type)
     {
@@ -70,7 +70,7 @@ void convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfigu
     }
 }
 
-RTCSdpType convertSdpType(webrtc::SdpType type)
+RTCSdpType ConvertSdpType(webrtc::SdpType type)
 {
     switch (type)
     {

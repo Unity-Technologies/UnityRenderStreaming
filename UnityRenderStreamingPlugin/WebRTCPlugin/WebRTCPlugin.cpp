@@ -20,129 +20,120 @@ void debugLog(const char* buf)
 
 extern "C"
 {
-    UNITY_INTERFACE_EXPORT void registerDebugLog(DelegateDebugLog func)
+    UNITY_INTERFACE_EXPORT void RegisterDebugLog(DelegateDebugLog func)
     {
         delegateDebugLog = func;
     }
 
-    UNITY_INTERFACE_EXPORT Context* contextCreate(int uid)
+    UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid)
     {
-        return ContextManager::getContext(uid);
+        return ContextManager::GetContext(uid);
     }
 
-    UNITY_INTERFACE_EXPORT void contextDestroy(int uid)
+    UNITY_INTERFACE_EXPORT void ContextDestroy(int uid)
     {
-        ContextManager::destroyContext(uid);
+        ContextManager::DestroyContext(uid);
     }
 
-    UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnection(Context* ctx, int id)
+    UNITY_INTERFACE_EXPORT PeerConnectionObject* ContextCreatePeerConnection(Context* ctx, int id)
     {
-        return ctx->createPeerConnection(id);
+        return ctx->CreatePeerConnection(id);
     }
 
-    UNITY_INTERFACE_EXPORT PeerConnectionObject* contextCreatePeerConnectionWithConfig(Context* ctx, int id, const char* conf)
+    UNITY_INTERFACE_EXPORT PeerConnectionObject* ContextCreatePeerConnectionWithConfig(Context* ctx, int id, const char* conf)
     {
-        return ctx->createPeerConnection(id, conf);
+        return ctx->CreatePeerConnection(id, conf);
     }
-    UNITY_INTERFACE_EXPORT void peerConnectionClose(PeerConnectionObject* obj)
+    UNITY_INTERFACE_EXPORT void PeerConnectionClose(PeerConnectionObject* obj)
     {
-        obj->close();
-    }
-
-    UNITY_INTERFACE_EXPORT void peerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
-    {
-        obj->setConfiguration(std::string(conf));
+        obj->Close();
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
+    UNITY_INTERFACE_EXPORT void PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
+    {
+        obj->SetConfiguration(std::string(conf));
+    }
+
+    UNITY_INTERFACE_EXPORT void PeerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
     {
         std::string _conf;
-        obj->getConfiguration(_conf);
+        obj->GetConfiguration(_conf);
         *len = _conf.size();
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
         _conf.copy(*conf, _conf.size());
         *conf[_conf.size()] = '\0';
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionSetRemoteDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc)
+    UNITY_INTERFACE_EXPORT void PeerConnectionSetRemoteDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc)
     {
-        obj->setRemoteDescription(*desc);
+        obj->SetRemoteDescription(*desc);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionSetLocalDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc)
+    UNITY_INTERFACE_EXPORT void PeerConnectionSetLocalDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc)
     {
-        obj->setLocalDescription(*desc);
+        obj->SetLocalDescription(*desc);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionGetLocalDescription(PeerConnectionObject* obj, RTCSessionDescription* desc)
+    UNITY_INTERFACE_EXPORT void PeerConnectionGetLocalDescription(PeerConnectionObject* obj, RTCSessionDescription* desc)
     {
-        obj->getLocalDescription(*desc);
+        obj->GetLocalDescription(*desc);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionCreateOffer(PeerConnectionObject* obj, const RTCOfferOptions* options)
+    UNITY_INTERFACE_EXPORT void PeerConnectionCreateOffer(PeerConnectionObject* obj, const RTCOfferOptions* options)
     {
-        obj->createOffer(*options);
+        obj->CreateOffer(*options);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionCreateAnswer(PeerConnectionObject* obj, const RTCAnswerOptions* options)
+    UNITY_INTERFACE_EXPORT void PeerConnectionCreateAnswer(PeerConnectionObject* obj, const RTCAnswerOptions* options)
     {
-        obj->createAnswer(*options);
+        obj->CreateAnswer(*options);
     }
 
-    UNITY_INTERFACE_EXPORT DataChannelObject* peerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options)
+    UNITY_INTERFACE_EXPORT DataChannelObject* PeerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options)
     {
         return obj->createDataChannel(label, *options);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterIceConnectionChange(PeerConnectionObject* obj, DelegateOnIceConnectionChange callback)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterIceConnectionChange(PeerConnectionObject* obj, DelegateOnIceConnectionChange callback)
     {
-        obj->registerIceConnectionChange(callback);
+        obj->RegisterIceConnectionChange(callback);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnIceCandidateReady(PeerConnectionObject*obj, DelegateIceCandidateReady callback)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnIceCandidateReady(PeerConnectionObject*obj, DelegateIceCandidateReady callback)
     {
-        obj->registerIceCandidateReady(callback);
+        obj->RegisterIceCandidateReady(callback);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
     {
-        obj->registerCallbackCreateSD(onSuccess, onFailure);
+        obj->RegisterCallbackCreateSD(onSuccess, onFailure);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterCallbackSetSD(PeerConnectionObject* obj, DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterCallbackSetSD(PeerConnectionObject* obj, DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
     {
-        obj->registerCallbackSetSD(onSuccess, onFailure);
+        obj->RegisterCallbackSetSD(onSuccess, onFailure);
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionAddIceCandidate(PeerConnectionObject* obj, const RTCIceCandidate* candidate)
+    UNITY_INTERFACE_EXPORT void PeerConnectionAddIceCandidate(PeerConnectionObject* obj, const RTCIceCandidate* candidate)
     {
-        return obj->addIceCandidate(*candidate);
+        return obj->AddIceCandidate(*candidate);
     }
 
-    UNITY_INTERFACE_EXPORT RTCPeerConnectionState peerConnectionState(PeerConnectionObject* obj)
+    UNITY_INTERFACE_EXPORT RTCPeerConnectionState PeerConnectionState(PeerConnectionObject* obj)
     {
-        return obj->getConnectionState();
+        return obj->GetConnectionState();
     }
 
-    UNITY_INTERFACE_EXPORT RTCIceConnectionState peerConnectionIceConditionState(PeerConnectionObject* obj)
+    UNITY_INTERFACE_EXPORT RTCIceConnectionState PeerConnectionIceConditionState(PeerConnectionObject* obj)
     {
-        return obj->getIceCandidateState();
+        return obj->GetIceCandidateState();
     }
 
-    UNITY_INTERFACE_EXPORT void peerConnectionRegisterOnDataChannel(PeerConnectionObject* obj, DelegateOnDataChannel callback)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnDataChannel(PeerConnectionObject* obj, DelegateOnDataChannel callback)
     {
-        obj->registerOnDataChannel(callback);
+        obj->RegisterOnDataChannel(callback);
     }
 
-    UNITY_INTERFACE_EXPORT void DataChannelUnregisterObserver(DataChannelObject* dataChannelObj)
-    {
-        dataChannelObj->UnRegisterObserver();
-    }
-
-    UNITY_INTERFACE_EXPORT void DataChannelRegisterObserver(DataChannelObject* dataChannelObj)
-    {
-        dataChannelObj->RegisterObserver();
-    }
 
     UNITY_INTERFACE_EXPORT int DataChannelGetID(DataChannelObject* dataChannelObj)
     {

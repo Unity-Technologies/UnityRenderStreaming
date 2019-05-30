@@ -11,8 +11,8 @@ class NvVideoCapturer;
 class ContextManager
 {
 public:
-    static Context* getContext(int uid);
-    static void destroyContext(int uid);
+    static Context* GetContext(int uid);
+    static void DestroyContext(int uid);
 
 private:
     ~ContextManager();
@@ -28,8 +28,8 @@ public:
     explicit Context(int uid = -1);
     ~Context();
 
-    PeerConnectionObject* createPeerConnection(int id);
-    PeerConnectionObject* createPeerConnection(int id, const std::string& conf);
+    PeerConnectionObject* CreatePeerConnection(int id);
+    PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
 private:
     int m_uid;
     std::unique_ptr<rtc::Thread> workerThread;
@@ -56,6 +56,6 @@ protected:
 
 };  // class PeerSDPObserver
 
-extern void convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config);
-extern webrtc::SdpType convertSdpType(RTCSdpType type);
-extern RTCSdpType convertSdpType(webrtc::SdpType type);
+extern void Convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config);
+extern webrtc::SdpType ConvertSdpType(RTCSdpType type);
+extern RTCSdpType ConvertSdpType(webrtc::SdpType type);

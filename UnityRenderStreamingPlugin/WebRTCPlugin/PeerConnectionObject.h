@@ -19,26 +19,26 @@ public:
     PeerConnectionObject(int id);
     ~PeerConnectionObject();
 
-    void close();
-    void setLocalDescription(const RTCSessionDescription& desc);
-    void getLocalDescription(RTCSessionDescription& desc) const;
-    void setRemoteDescription(const RTCSessionDescription& desc);
-    void setConfiguration(const std::string& config);
-    void getConfiguration(std::string& config) const;
-    void createOffer(const RTCOfferOptions& options);
-    void createAnswer(const RTCAnswerOptions& options);
-    void addIceCandidate(const RTCIceCandidate& candidate);
+    void Close();
+    void SetLocalDescription(const RTCSessionDescription& desc);
+    void GetLocalDescription(RTCSessionDescription& desc) const;
+    void SetRemoteDescription(const RTCSessionDescription& desc);
+    void SetConfiguration(const std::string& config);
+    void GetConfiguration(std::string& config) const;
+    void CreateOffer(const RTCOfferOptions& options);
+    void CreateAnswer(const RTCAnswerOptions& options);
+    void AddIceCandidate(const RTCIceCandidate& candidate);
     DataChannelObject* createDataChannel(const char* label, const RTCDataChannelInit& options);
 
-    void registerCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
-    void registerCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
-    void registerLocalSdpReady(DelegateLocalSdpReady callback);
-    void registerIceCandidateReady(DelegateIceCandidateReady callback);
-    void registerIceConnectionChange(DelegateOnIceConnectionChange callback);
-    void registerOnDataChannel(DelegateOnDataChannel callback);
+    void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
+    void RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
+    void RegisterLocalSdpReady(DelegateLocalSdpReady callback);
+    void RegisterIceCandidateReady(DelegateIceCandidateReady callback);
+    void RegisterIceConnectionChange(DelegateOnIceConnectionChange callback);
+    void RegisterOnDataChannel(DelegateOnDataChannel callback);
 
-    RTCPeerConnectionState getConnectionState();
-    RTCIceConnectionState getIceCandidateState();
+    RTCPeerConnectionState GetConnectionState();
+    RTCIceConnectionState GetIceCandidateState();
 
     //webrtc::CreateSessionDescriptionObserver
     // This callback transfers the ownership of the |desc|.
