@@ -59,6 +59,7 @@ extern "C"
         std::string _conf;
         obj->GetConfiguration(_conf);
         *len = _conf.size();
+        //TODO: make it linux compatible
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
         _conf.copy(*conf, _conf.size());
         *conf[_conf.size()] = '\0';
@@ -143,6 +144,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* DataChannelGetLabel(DataChannelObject* dataChannelObj)
     {
         std::string tmp = dataChannelObj->GetLabel();
+        //TODO: make it linux compatible
         char* label = (char*)CoTaskMemAlloc(tmp.size() + sizeof(char));
         tmp.copy(label, tmp.size());
         label[tmp.size()] = '\0';

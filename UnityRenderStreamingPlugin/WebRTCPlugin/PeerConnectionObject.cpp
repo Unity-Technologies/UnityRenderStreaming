@@ -251,6 +251,7 @@ void PeerConnectionObject::GetLocalDescription(RTCSessionDescription& desc) cons
     current->ToString(&out);
 
     desc.type = ConvertSdpType(current->GetType());
+    //TODO: make it linux compatible
     desc.sdp = (char*)CoTaskMemAlloc(out.size() + 1);
     out.copy(desc.sdp, out.size());
     desc.sdp[out.size()] = '\0';

@@ -276,13 +276,15 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DelegateOnDataChannel(IntPtr ptr);
+    public delegate void DelegateNativeOnDataChannel(IntPtr ptr);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnMessage([MarshalAs(UnmanagedType.LPStr)] string msg);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnOpen();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnClose();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnDataChannel(RTCDataChannel channel);
 
     internal static class NativeMethods
     {
@@ -331,7 +333,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern RTCIceConnectionState PeerConnectionIceConditionState(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionRegisterOnDataChannel(IntPtr ptr, DelegateOnDataChannel callback);
+        public static extern void PeerConnectionRegisterOnDataChannel(IntPtr ptr, DelegateNativeOnDataChannel callback);
         [DllImport(WebRTC.Lib)]
         public static extern int DataChannelGetID(IntPtr ptr);
         [DllImport(WebRTC.Lib)]

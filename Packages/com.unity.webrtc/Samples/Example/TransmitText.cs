@@ -78,9 +78,9 @@ public class TransmitText : MonoBehaviour
 
         return config;
     }
-    void OnDataChannel(IntPtr ptr)
+    void OnDataChannel(RTCDataChannel channel)
     {
-        remoteDataChannel = new RTCDataChannel(ptr);
+        remoteDataChannel = channel;
         remoteDataChannel.OnMessage = onDataChannelMessage;
     }
     void OnDataChannelMessage(string msg)

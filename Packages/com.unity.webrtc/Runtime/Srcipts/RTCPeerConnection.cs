@@ -14,7 +14,7 @@ namespace Unity.WebRTC
         private DelegateOnIceCandidateReady onIceCandidateReady;
         private DelegateOnIceCandidateReady selfOnIceCandidateReady;
         private DelegateOnDataChannel onDataChannel;
-        private DelegateOnDataChannel selfOnDataChannel;
+        private DelegateNativeOnDataChannel selfOnDataChannel;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
@@ -68,7 +68,7 @@ namespace Unity.WebRTC
             set
             {
                 onDataChannel = value;
-                selfOnDataChannel = new DelegateOnDataChannel(PCOnDataChannel);
+                selfOnDataChannel = new DelegateNativeOnDataChannel(PCOnDataChannel);
                 NativeMethods.PeerConnectionRegisterOnDataChannel(self, selfOnDataChannel);
             }
         }
@@ -91,7 +91,7 @@ namespace Unity.WebRTC
         {
             WebRTC.SyncContext.Post(_ =>
             {
-                OnDataChannel(ptr);
+                OnDataChannel(new RTCDataChannel(ptr));
             }, null);
         }
 
@@ -142,7 +142,7 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionRegisterOnIceCandidateReady(self, callback);
         }
 
-        public void RegisterOnDataChannel(DelegateOnDataChannel callback)
+        public void RegisterOnDataChannel(DelegateNativeOnDataChannel callback)
         {
             NativeMethods.PeerConnectionRegisterOnDataChannel(self, callback);
         }
