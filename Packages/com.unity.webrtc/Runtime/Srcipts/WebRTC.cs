@@ -272,7 +272,9 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
     public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
-    public delegate void DelegateOnIceCandidateReady([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
+    public delegate void DelegateNativeOnIceCandidate([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnIceCandidate(RTCIceCandidate candidate);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -317,7 +319,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionRegisterIceConnectionChange(IntPtr ptr, DelegateOnIceConnectionChange callback);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionRegisterOnIceCandidateReady(IntPtr ptr, DelegateOnIceCandidateReady callback);
+        public static extern void PeerConnectionRegisterOnIceCandidate(IntPtr ptr, DelegateNativeOnIceCandidate callback);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
         [DllImport(WebRTC.Lib)]

@@ -14,13 +14,13 @@ public class Main : MonoBehaviour
     private Coroutine sdpCheck;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
     private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
-    private DelegateOnIceCandidateReady pc1OnIceCandidateReady;
-    private DelegateOnIceCandidateReady pc2OnIceCandidateReady;
+    private DelegateOnIceCandidate pc1OnIceCandidate;
+    private DelegateOnIceCandidate pc2OnIceCandidate;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
-        iceRestart = false, 
-        offerToReceiveAudio = true, 
+        iceRestart = false,
+        offerToReceiveAudio = true,
         offerToReceiveVideo = false
     };
 
@@ -46,7 +46,7 @@ public class Main : MonoBehaviour
     private IEnumerator Start()
     {
         Debug.Log("Requesting local stream");
-        var op = MediaDevices.GetUserMedia(new MediaStreamConstraints{audio = true, video = true});
+        var op = MediaDevices.GetUserMedia(new MediaStreamConstraints { audio = true, video = true });
         yield return op;
         var stream = op.stream;
         Debug.Log("Received local stream");
@@ -54,15 +54,15 @@ public class Main : MonoBehaviour
 
         startButton.interactable = false;
         callButton.interactable = true;
-        pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc1OnIceConnectinChange);
-        pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc2OnIceConnectionChange);
-        pc1OnIceCandidateReady = new DelegateOnIceCandidateReady(Pc1OnIceCandidate);
-        pc2OnIceCandidateReady = new DelegateOnIceCandidateReady(Pc2OnIceCandidate);
+        pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
+        pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc2, state); });
+        pc1OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
+        pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
     }
 
     private IEnumerator Loop()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(1);
 
@@ -91,21 +91,23 @@ public class Main : MonoBehaviour
 
         var videoTracks = localStream.GetVideoTracks();
         var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0) {
+        if (videoTracks.Length > 0)
+        {
             Debug.Log($"Using video device: {videoTracks.Length}");
         }
-        if (audioTracks.Length > 0) {
+        if (audioTracks.Length > 0)
+        {
             Debug.Log($"Using audio device: {audioTracks.Length}");
         }
         Debug.Log("GetSelectedSdpSemantics");
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created local peer connection object pc1");
-        pc1.OnIceCandidateReady = pc1OnIceCandidateReady;
+        pc1.OnIceCandidate = pc1OnIceCandidate;
         pc1.OnIceConnectionChange = pc1OnIceConnectionChange;
         pc2 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created remote peer connection object pc2");
-        pc2.OnIceCandidateReady = pc2OnIceCandidateReady;
+        pc2.OnIceCandidate = pc2OnIceCandidate;
         pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
 
         foreach (var track in localStream.GetTracks())
@@ -117,7 +119,7 @@ public class Main : MonoBehaviour
         Debug.Log("pc1 createOffer start");
         var op = pc1.CreateOffer(ref OfferOptions);
         yield return op;
-        
+
         if (!op.isError)
         {
             yield return StartCoroutine(OnCreateOfferSuccess(op.desc));
@@ -160,42 +162,16 @@ public class Main : MonoBehaviour
                 break;
         }
     }
-    void Pc1OnIceConnectinChange(RTCIceConnectionState state)
-    {
-        OnIceConnectionChange(pc1, state);
-    }
-    void Pc2OnIceConnectionChange(RTCIceConnectionState state)
-    {
-        OnIceConnectionChange(pc2, state);
-    }
-
-    void OnIceCandidate(RTCPeerConnection pc, string sdp, string sdpMid, int sdpMlineIndex)
-    {
-        RTCIceCandidate​ candidate;
-        candidate.candidate = sdp;
-        candidate.sdpMid = sdpMid;
-        candidate.sdpMlineIndex = sdpMlineIndex;
-        OnIceCandidate(pc, candidate);
-    }
-    void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
-    {
-        OnIceCandidate(pc1, sdp, sdpMid, sdpMlineIndex);
-    }
-    void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
-    {
-        OnIceCandidate(pc2, sdp, sdpMid, sdpMlineIndex);
-    }
     void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate​ candidate)
     {
         GetOtherPc(pc).AddIceCandidate(ref candidate);
         Debug.Log($"{GetName(pc)} ICE candidate:\n {candidate.candidate}");
     }
-
     string GetName(RTCPeerConnection pc)
     {
         return (pc == pc1) ? "pc1" : "pc2";
     }
-    
+
     RTCPeerConnection GetOtherPc(RTCPeerConnection pc)
     {
         return (pc == pc1) ? pc2 : pc1;
@@ -210,13 +186,13 @@ public class Main : MonoBehaviour
 
         if (!op.isError)
         {
-            OnSetLocalSuccess(pc1);    
+            OnSetLocalSuccess(pc1);
         }
         else
         {
             OnSetSessionDescriptionError(ref op.error);
         }
-            
+
         Debug.Log("pc2 setRemoteDescription start");
         var op2 = pc2.SetRemoteDescription(ref desc);
         yield return op2;
@@ -238,8 +214,8 @@ public class Main : MonoBehaviour
         if (!op3.isError)
         {
             yield return OnCreateAnswerSuccess(op3.desc);
-        } 
-        else 
+        }
+        else
         {
             OnCreateSessionDescriptionError(op3.error);
         }
@@ -249,8 +225,8 @@ public class Main : MonoBehaviour
     {
         Debug.Log($"{GetName(pc)} SetLocalDescription complete");
     }
-    
-    void OnSetSessionDescriptionError(ref RTCError error){}
+
+    void OnSetSessionDescriptionError(ref RTCError error) { }
 
     void OnSetRemoteSuccess(RTCPeerConnection pc)
     {
@@ -266,15 +242,15 @@ public class Main : MonoBehaviour
 
         if (!op.isError)
         {
-            OnSetLocalSuccess(pc2);    
+            OnSetLocalSuccess(pc2);
         }
         else
         {
             OnSetSessionDescriptionError(ref op.error);
         }
-            
+
         Debug.Log("pc1 setRemoteDescription start");
-        
+
         var op2 = pc1.SetRemoteDescription(ref desc);
         yield return op2;
         if (!op2.isError)
@@ -289,7 +265,7 @@ public class Main : MonoBehaviour
 
     void OnCreateSessionDescriptionError(RTCError e)
     {
-        
+
     }
     void Hangup()
     {

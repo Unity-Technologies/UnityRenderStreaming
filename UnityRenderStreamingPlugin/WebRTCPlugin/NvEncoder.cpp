@@ -9,7 +9,6 @@ namespace NvCodec
 
     NvEncoder::NvEncoder()
     {
-        SetResolution(&width, &height);
         LogPrint(StringFormat("width is %d, height is %d", width, height).c_str());
         checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");
         checkf(width > 0 && height > 0, "Invalid width or height!");
@@ -218,12 +217,12 @@ namespace NvCodec
         bool result = NV_RESULT(pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams));
         checkf(result, "Failed to encode frame");
 #pragma endregion
-        GetEncodedFrame(frame);
+        ProcessEncodedFrame(frame);
         frameCount++;
     }
 
     //get encoded frame
-    void NvEncoder::GetEncodedFrame(Frame& frame)
+    void NvEncoder::ProcessEncodedFrame(Frame& frame)
     {
         //The frame hasn't been encoded, something wrong
         if (!frame.isEncoding)

@@ -46,7 +46,7 @@ namespace NvCodec
         void InitEncoderResources();
         void ReleaseFrameInputBuffer(Frame& frame);
         void ReleaseEncoderResources();
-        void GetEncodedFrame(Frame& frame);
+        void ProcessEncodedFrame(Frame& frame) ;
         ID3D11Texture2D* AllocateInputBuffers();
         NV_ENC_REGISTERED_PTR RegisterResource(void *pBuffer);
         void MapResources(InputFrame& inputFrame);

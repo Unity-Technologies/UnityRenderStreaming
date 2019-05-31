@@ -30,10 +30,6 @@ PeerConnectionObject* Context::CreatePeerConnection(int id, const std::string& c
     webrtc::PeerConnectionInterface::RTCConfiguration _config;
     Convert(conf, _config);
     obj->connection = peerConnectionFactory->CreatePeerConnection(_config, nullptr, nullptr, obj);
-    //TODO
-    //RTCDataChannelInit config;
-    //obj->createDataChannel("data", config);
-
     clients[id] = std::move(obj);
     return clients[id].get();
 }
@@ -72,23 +68,15 @@ void PeerConnectionObject::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelI
 void PeerConnectionObject::OnIceCandidate(const webrtc::IceCandidateInterface* candidate)
 {
     DebugLog("OnIceCandidate");
-    //Json::Value jsonConfig;
     std::string out;
 
     if (!candidate->ToString(&out))
     {
         DebugError("Can't make string form of sdp.");
     }
-    /*jsonConfig["candidate"] = out;
-    jsonConfig["sdpMid"] = candidate->sdp_mid();
-    jsonConfig["sdpMLineIndex"] = candidate->sdp_mline_index();
-
-     Json::StyledWriter jsonWriter;
-     auto strJson = jsonWriter.write(jsonConfig);
-     callbackEvent(RTCPeerConnectionEventType::ConnectionStateChange, strJson.c_str());*/
-    if (onIceCandidateReady != nullptr)
+    if (onIceCandidate != nullptr)
     {
-        onIceCandidateReady(out.c_str(), candidate->sdp_mid().c_str(), candidate->sdp_mline_index());
+        onIceCandidate(out.c_str(), candidate->sdp_mid().c_str(), candidate->sdp_mline_index());
     }
 }
 
@@ -226,9 +214,9 @@ void PeerConnectionObject::RegisterLocalSdpReady(DelegateLocalSdpReady callback)
     onLocalSdpReady = callback;
 }
 
-void PeerConnectionObject::RegisterIceCandidateReady(DelegateIceCandidateReady callback)
+void PeerConnectionObject::RegisterIceCandidate(DelegateIceCandidate callback)
 {
-    onIceCandidateReady = callback;
+    onIceCandidate = callback;
 }
 
 void PeerConnectionObject::RegisterIceConnectionChange(DelegateOnIceConnectionChange callback)

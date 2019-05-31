@@ -18,8 +18,8 @@ public class TransmitText : MonoBehaviour
     private string msg;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
     private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
-    private DelegateOnIceCandidateReady pc1OnIceCandidateReady;
-    private DelegateOnIceCandidateReady pc2OnIceCandidateReady;
+    private DelegateOnIceCandidate pc1OnIceCandidate;
+    private DelegateOnIceCandidate pc2OnIceCandidate;
     private DelegateOnMessage onDataChannelMessage;
     private DelegateOnOpen onDataChannelOpen;
     private DelegateOnClose onDataChannelClose;
@@ -34,7 +34,7 @@ public class TransmitText : MonoBehaviour
 
     private RTCAnswerOptions AnswerOptions = new RTCAnswerOptions
     {
-        iceRestart = false, 
+        iceRestart = false,
     };
 
     private void Awake()
@@ -58,14 +58,18 @@ public class TransmitText : MonoBehaviour
         localStream = stream;
         callButton.interactable = true;
 
-        pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc1OnIceConnectinChange);
-        pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(Pc2OnIceConnectionChange);
-        pc1OnIceCandidateReady = new DelegateOnIceCandidateReady(Pc1OnIceCandidate);
-        pc2OnIceCandidateReady = new DelegateOnIceCandidateReady(Pc2OnIceCandidate);
-        onDataChannel = new DelegateOnDataChannel(OnDataChannel);
-        onDataChannelMessage = new DelegateOnMessage(OnDataChannelMessage);
-        onDataChannelOpen = new DelegateOnOpen(OnDataChannelOpen);
-        onDataChannelClose = new DelegateOnClose(OnDataChannelClose);
+        pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
+        pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc2, state); });
+        pc1OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
+        pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
+        onDataChannel = new DelegateOnDataChannel(channel =>
+        {
+            remoteDataChannel = channel;
+            remoteDataChannel.OnMessage = onDataChannelMessage;
+        });
+        onDataChannelMessage = new DelegateOnMessage(msg => { textReceive.text = msg; });
+        onDataChannelOpen = new DelegateOnOpen(()=> { sendButton.interactable = true; });
+        onDataChannelClose = new DelegateOnClose(() => { sendButton.interactable = false; });
     }
 
     RTCConfiguration GetSelectedSdpSemantics()
@@ -77,23 +81,6 @@ public class TransmitText : MonoBehaviour
         };
 
         return config;
-    }
-    void OnDataChannel(RTCDataChannel channel)
-    {
-        remoteDataChannel = channel;
-        remoteDataChannel.OnMessage = onDataChannelMessage;
-    }
-    void OnDataChannelMessage(string msg)
-    {
-        textReceive.text = msg;
-    }
-    void OnDataChannelOpen()
-    {
-        sendButton.interactable = true;
-    }
-    void OnDataChannelClose()
-    {
-        sendButton.interactable = false;
     }
     void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
     {
@@ -136,24 +123,16 @@ public class TransmitText : MonoBehaviour
         OnIceConnectionChange(pc2, state);
     }
 
-    void OnIceCandidate(RTCPeerConnection pc, string sdp, string sdpMid,int sdpMlineIndex)
+    void Pc1OnIceCandidate(RTCIceCandidate candidate)
     {
-        RTCIceCandidate​ candidate;
-        candidate.candidate = sdp;
-        candidate.sdpMid = sdpMid;
-        candidate.sdpMlineIndex = sdpMlineIndex;
-        OnIceCandidate(pc, candidate);
+        OnIceCandidate(pc1, candidate);
     }
-    void Pc1OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex) 
+    void Pc2OnIceCandidate(RTCIceCandidate candidate)
     {
-        OnIceCandidate(pc1, sdp, sdpMid, sdpMlineIndex);
-    }
-    void Pc2OnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
-    {
-        OnIceCandidate(pc2, sdp, sdpMid, sdpMlineIndex);
+        OnIceCandidate(pc2, candidate);
     }
 
-IEnumerator Call()
+    IEnumerator Call()
     {
         callButton.interactable = false;
         var videoTracks = localStream.GetVideoTracks();
@@ -162,7 +141,7 @@ IEnumerator Call()
         {
             Debug.Log($"Using video device: {videoTracks.Length}");
         }
-        if (audioTracks.Length > 0) 
+        if (audioTracks.Length > 0)
         {
             Debug.Log($"Using audio device: {audioTracks.Length}");
         }
@@ -170,11 +149,11 @@ IEnumerator Call()
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created local peer connection object pc1");
-        pc1.OnIceCandidateReady = pc1OnIceCandidateReady;
+        pc1.OnIceCandidate = pc1OnIceCandidate;
         pc1.OnIceConnectionChange = pc1OnIceConnectionChange;
         pc2 = new RTCPeerConnection(ref configuration);
-        Debug.Log("Created remote peer connection object pc2"); 
-        pc2.OnIceCandidateReady = pc2OnIceCandidateReady;
+        Debug.Log("Created remote peer connection object pc2");
+        pc2.OnIceCandidate = pc2OnIceCandidate;
         pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
         pc2.OnDataChannel = onDataChannel;
 

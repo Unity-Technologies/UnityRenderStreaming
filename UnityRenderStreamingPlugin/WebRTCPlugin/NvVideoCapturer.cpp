@@ -3,6 +3,7 @@
 
 namespace WebRTC
 {
+    UnityFrameBuffer* unityRT;
     NvVideoCapturer::NvVideoCapturer()
     {
         nvEncoder = std::make_unique<NvCodec::NvEncoder>();
@@ -14,8 +15,8 @@ namespace WebRTC
     {
         if (captureStarted)
         {
-            int curFrameNum = nvEncoder->GetCurrentFrameCount() % NvCodec::bufferedFrameNum;
-            NvCodec::context->CopyResource(NvCodec::renderTextures[curFrameNum], NvCodec::unityRT);
+            int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
+            context->CopyResource(renderTextures[curFrameNum], unityRT);
             nvEncoder->EncodeFrame();
         }
     }

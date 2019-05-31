@@ -218,12 +218,12 @@ namespace NvCodec
         bool result = NV_RESULT(pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams));
         checkf(result, "Failed to encode frame");
 #pragma endregion
-        GetEncodedFrame(frame);
+        ProcessEncodedFrame(frame);
         frameCount++;
     }
 
     //get encoded frame
-    void NvEncoder::GetEncodedFrame(Frame& frame)
+    void NvEncoder::ProcessEncodedFrame(Frame& frame)
     {
         //The frame hasn't been encoded, something wrong
         if (!frame.isEncoding)

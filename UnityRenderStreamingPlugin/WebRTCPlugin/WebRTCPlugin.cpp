@@ -5,7 +5,7 @@
 
 namespace NvCodec
 {
-    FrameBuffer* unityRT;
+    UnityFrameBuffer* unityRT;
 }
 
 DelegateDebugLog delegateDebugLog = nullptr;
@@ -100,9 +100,9 @@ extern "C"
         obj->RegisterIceConnectionChange(callback);
     }
 
-    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnIceCandidateReady(PeerConnectionObject*obj, DelegateIceCandidateReady callback)
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnIceCandidate(PeerConnectionObject*obj, DelegateIceCandidate callback)
     {
-        obj->RegisterIceCandidateReady(callback);
+        obj->RegisterIceCandidate(callback);
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionRegisterCallbackCreateSD(PeerConnectionObject* obj, DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)

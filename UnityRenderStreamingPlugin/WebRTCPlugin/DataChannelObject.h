@@ -11,11 +11,11 @@ public:
     DataChannelObject(rtc::scoped_refptr<webrtc::DataChannelInterface> channel, PeerConnectionObject& pc);
     ~DataChannelObject();
 
-    std::string GetLabel()
+    std::string GetLabel() const
     {
         return dataChannel->label();
     }
-    int GetID()
+    int GetID() const
     {
         return dataChannel->id();
     }

@@ -58,10 +58,11 @@
 
 #include "media/base/videobroadcaster.h"
 #pragma endregion
-#include "Utils.h"
+#include "d3d11.h"
 
 void LogPrint(const char* fmt, ...);
 void LogPrint(const wchar_t* fmt, ...);
+void checkf(bool result, const char* msg);
 #define DebugLog(...)       LogPrint("webrtc Log: " __VA_ARGS__)
 #define DebugWarning(...)   LogPrint("webrtc Warning: " __VA_ARGS__)
 #define DebugError(...)     LogPrint("webrtc Error: "  __VA_ARGS__)
@@ -78,6 +79,7 @@ std::string StringFormat(const std::string& format, Args ... args)
     return std::string(buf.get(), buf.get() + size - 1);
 }
 
+using UnityFrameBuffer = ID3D11Texture2D;
 using uint8 = unsigned char;
 using uint16 = unsigned short int;
 using uint32 = unsigned int;
@@ -86,3 +88,9 @@ using int8 = signed char;
 using int16 = signed short int;
 using int32 = signed int;
 using int64 = signed long long;
+
+const uint32 bufferedFrameNum = 3;
+extern UnityFrameBuffer* renderTextures[bufferedFrameNum];
+extern ID3D11DeviceContext* context;
+extern UnityFrameBuffer* unityRT;
+extern ID3D11Device* g_D3D11Device;

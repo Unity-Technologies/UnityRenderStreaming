@@ -11,8 +11,8 @@ namespace Unity.WebRTC
         private Context m_context;
         private DelegateOnIceConnectionChange onIceConnectionChange;
         private DelegateOnIceConnectionChange selfOnIceConnectionChange;
-        private DelegateOnIceCandidateReady onIceCandidateReady;
-        private DelegateOnIceCandidateReady selfOnIceCandidateReady;
+        private DelegateOnIceCandidate onIceCandidate;
+        private DelegateNativeOnIceCandidate selfOnIceCandidate;
         private DelegateOnDataChannel onDataChannel;
         private DelegateNativeOnDataChannel selfOnDataChannel;
 
@@ -52,14 +52,14 @@ namespace Unity.WebRTC
                 NativeMethods.PeerConnectionRegisterIceConnectionChange(self, selfOnIceConnectionChange);
             } 
         }
-        public DelegateOnIceCandidateReady OnIceCandidateReady
+        public DelegateOnIceCandidate OnIceCandidate
         {
-            get => onIceCandidateReady;
+            get => onIceCandidate;
             set
             {
-                onIceCandidateReady = value;
-                selfOnIceCandidateReady = new DelegateOnIceCandidateReady(PCOnIceCandidateReady);
-                NativeMethods.PeerConnectionRegisterOnIceCandidateReady(self, selfOnIceCandidateReady);
+                onIceCandidate = value;
+                selfOnIceCandidate = new DelegateNativeOnIceCandidate(PCOnIceCandidate);
+                NativeMethods.PeerConnectionRegisterOnIceCandidate(self, selfOnIceCandidate);
             }
         }
         public DelegateOnDataChannel OnDataChannel
@@ -73,11 +73,12 @@ namespace Unity.WebRTC
             }
         }
 
-        void PCOnIceCandidateReady(string sdp, string sdpMid, int sdpMlineIndex)
+        void PCOnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
         {
             WebRTC.SyncContext.Post(_ =>
             {
-                OnIceCandidateReady(sdp, sdpMid, sdpMlineIndex);
+                RTCIceCandidate candidate = new RTCIceCandidate {candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
+                OnIceCandidate(candidate);
             }, null);
         }
         void PCOnIceConnectionChange(RTCIceConnectionState state)
@@ -138,9 +139,9 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionRegisterIceConnectionChange(self, callback);
         }
 
-        public void RegisterOnIceCandidateReady(DelegateOnIceCandidateReady callback)
+        public void RegisterOnIceCandidate(DelegateNativeOnIceCandidate callback)
         {
-            NativeMethods.PeerConnectionRegisterOnIceCandidateReady(self, callback);
+            NativeMethods.PeerConnectionRegisterOnIceCandidate(self, callback);
         }
 
         public void RegisterOnDataChannel(DelegateNativeOnDataChannel callback)

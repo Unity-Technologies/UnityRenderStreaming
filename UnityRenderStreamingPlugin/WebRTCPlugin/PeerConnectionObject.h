@@ -7,7 +7,7 @@ using DelegateCreateSDFailure = void(*)();
 using DelegateSetSDSuccess = void(*)();
 using DelegateSetSDFailure = void(*)();
 using DelegateLocalSdpReady = void(*)(const char*, const char*);
-using DelegateIceCandidateReady = void(*)(const char*, const char*, const int);
+using DelegateIceCandidate = void(*)(const char*, const char*, const int);
 using DelegateOnIceConnectionChange = void(*)(webrtc::PeerConnectionInterface::IceConnectionState state);
 using DelegateOnDataChannel = void(*)(DataChannelObject* remoteDataChannel);
 
@@ -33,7 +33,7 @@ public:
     void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
     void RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
     void RegisterLocalSdpReady(DelegateLocalSdpReady callback);
-    void RegisterIceCandidateReady(DelegateIceCandidateReady callback);
+    void RegisterIceCandidate(DelegateIceCandidate callback);
     void RegisterIceConnectionChange(DelegateOnIceConnectionChange callback);
     void RegisterOnDataChannel(DelegateOnDataChannel callback);
 
@@ -77,7 +77,7 @@ public:
     DelegateSetSDSuccess onSetSDSuccess;
     DelegateSetSDFailure onSetSDFailure;
     DelegateLocalSdpReady onLocalSdpReady;
-    DelegateIceCandidateReady onIceCandidateReady;
+    DelegateIceCandidate onIceCandidate;
     DelegateOnIceConnectionChange onIceConnectionChange;
     DelegateOnDataChannel onDataChannel;
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> connection;

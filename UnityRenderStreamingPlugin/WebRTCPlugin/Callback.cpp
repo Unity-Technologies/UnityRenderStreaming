@@ -1,24 +1,18 @@
 ﻿#include "pch.h"
 #include "Unity/IUnityGraphics.h"
 #include "Unity/IUnityGraphicsD3D11.h"
-#include "Utils.h"
 
 
-namespace NvCodec
-{
-    IUnityInterfaces* s_UnityInterfaces = nullptr;
-    IUnityGraphics* s_Graphics = nullptr;
-    UnityGfxRenderer s_RenderType;
-    //d3d11 context
-    ID3D11DeviceContext* context;
-    //d3d11 device
-    ID3D11Device* g_D3D11Device = nullptr;
-    //natively created ID3D11Texture2D ptrs
-    FrameBuffer* renderTextures[bufferedFrameNum];
-    //store resource from unity
-}
-
-using namespace NvCodec;
+IUnityInterfaces* s_UnityInterfaces = nullptr;
+IUnityGraphics* s_Graphics = nullptr;
+UnityGfxRenderer s_RenderType;
+//d3d11 context
+ID3D11DeviceContext* context;
+//d3d11 device
+ID3D11Device* g_D3D11Device = nullptr;
+//natively created ID3D11Texture2D ptrs
+UnityFrameBuffer* renderTextures[bufferedFrameNum];
+//store resource from unity
 
 //get d3d11 device
 static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType)
