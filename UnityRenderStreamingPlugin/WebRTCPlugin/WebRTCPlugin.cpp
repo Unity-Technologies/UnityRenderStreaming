@@ -62,7 +62,7 @@ extern "C"
         //TODO: make it linux compatible
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
         _conf.copy(*conf, _conf.size());
-        *conf[_conf.size()] = '\0';
+        (*conf)[_conf.size()] = '\0';
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionSetRemoteDescription(PeerConnectionObject* obj, const RTCSessionDescription* desc)

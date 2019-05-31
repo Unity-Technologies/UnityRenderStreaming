@@ -118,11 +118,12 @@ namespace Unity.WebRTC
             InitCallback();
         }
 
-        public RTCPeerConnection(ref RTCConfiguration config)
+        public RTCPeerConnection(ref RTCConfiguration config) 
         {
             m_id = GetHashCode();
             m_context = WebRTC.Context;
-            self = NativeMethods.ContextCreatePeerConnection(m_context.self, m_id);
+            string configStr = JsonUtility.ToJson(config);
+            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self,m_id, configStr);
             InitCallback();
         }
 
