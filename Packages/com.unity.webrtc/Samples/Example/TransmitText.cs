@@ -2,20 +2,28 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.WebRTC;
+using System;
 
-public class Main : MonoBehaviour
+public class TransmitText : MonoBehaviour
 {
-    [SerializeField] private Button startButton;
     [SerializeField] private Button callButton;
-    [SerializeField] private Button hangupButton;
+    [SerializeField] private Button sendButton;
+    [SerializeField] private InputField textSend;
+    [SerializeField] private InputField textReceive;
 
     private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
+    private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
+    private string msg;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
     private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
     private DelegateOnIceCandidate pc1OnIceCandidate;
     private DelegateOnIceCandidate pc2OnIceCandidate;
+    private DelegateOnMessage onDataChannelMessage;
+    private DelegateOnOpen onDataChannelOpen;
+    private DelegateOnClose onDataChannelClose;
+    private DelegateOnDataChannel onDataChannel;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -32,10 +40,7 @@ public class Main : MonoBehaviour
     private void Awake()
     {
         WebRTC.Initialize();
-
-        startButton.onClick.AddListener(() => { StartCoroutine(Start()); });
         callButton.onClick.AddListener(() => { StartCoroutine(Call()); });
-        hangupButton.onClick.AddListener(() => { Hangup(); });
     }
 
     private void OnDestroy()
@@ -51,27 +56,20 @@ public class Main : MonoBehaviour
         var stream = op.stream;
         Debug.Log("Received local stream");
         localStream = stream;
-
-        startButton.interactable = false;
         callButton.interactable = true;
+
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
         pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc2, state); });
         pc1OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
         pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
-    }
-
-    private IEnumerator Loop()
-    {
-        while (true)
+        onDataChannel = new DelegateOnDataChannel(channel =>
         {
-            yield return new WaitForSeconds(1);
-
-            var desc = pc1.GetLocalDescription();
-            Debug.Log($"pc1 sdp: {desc.sdp}");
-
-            //var conf = pc1.GetConfiguration();
-            //Debug.Log($"ice servers count {conf.iceServers.Length}");
-        }
+            remoteDataChannel = channel;
+            remoteDataChannel.OnMessage = onDataChannelMessage;
+        });
+        onDataChannelMessage = new DelegateOnMessage(msg => { textReceive.text = msg; });
+        onDataChannelOpen = new DelegateOnOpen(()=> { sendButton.interactable = true; });
+        onDataChannelClose = new DelegateOnClose(() => { sendButton.interactable = false; });
     }
 
     RTCConfiguration GetSelectedSdpSemantics()
@@ -83,52 +81,6 @@ public class Main : MonoBehaviour
         };
 
         return config;
-    }
-    IEnumerator Call()
-    {
-        callButton.interactable = false;
-        hangupButton.interactable = true;
-
-        var videoTracks = localStream.GetVideoTracks();
-        var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0)
-        {
-            Debug.Log($"Using video device: {videoTracks.Length}");
-        }
-        if (audioTracks.Length > 0)
-        {
-            Debug.Log($"Using audio device: {audioTracks.Length}");
-        }
-        Debug.Log("GetSelectedSdpSemantics");
-        var configuration = GetSelectedSdpSemantics();
-        pc1 = new RTCPeerConnection(ref configuration);
-        Debug.Log("Created local peer connection object pc1");
-        pc1.OnIceCandidate = pc1OnIceCandidate;
-        pc1.OnIceConnectionChange = pc1OnIceConnectionChange;
-        pc2 = new RTCPeerConnection(ref configuration);
-        Debug.Log("Created remote peer connection object pc2");
-        pc2.OnIceCandidate = pc2OnIceCandidate;
-        pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
-
-        foreach (var track in localStream.GetTracks())
-        {
-            pc1.AddTrack(track, localStream);
-        }
-        Debug.Log("Added local stream to pc1");
-
-        Debug.Log("pc1 createOffer start");
-        var op = pc1.CreateOffer(ref OfferOptions);
-        yield return op;
-
-        if (!op.isError)
-        {
-            yield return StartCoroutine(OnCreateOfferSuccess(op.desc));
-        }
-        else
-        {
-            OnCreateSessionDescriptionError(op.error);
-        }
-        sdpCheck = StartCoroutine(Loop());
     }
     void OnIceConnectionChange(RTCPeerConnection pc, RTCIceConnectionState state)
     {
@@ -162,10 +114,87 @@ public class Main : MonoBehaviour
                 break;
         }
     }
+    void Pc1OnIceConnectinChange(RTCIceConnectionState state)
+    {
+        OnIceConnectionChange(pc1, state);
+    }
+    void Pc2OnIceConnectionChange(RTCIceConnectionState state)
+    {
+        OnIceConnectionChange(pc2, state);
+    }
+
+    void Pc1OnIceCandidate(RTCIceCandidate candidate)
+    {
+        OnIceCandidate(pc1, candidate);
+    }
+    void Pc2OnIceCandidate(RTCIceCandidate candidate)
+    {
+        OnIceCandidate(pc2, candidate);
+    }
+
+    IEnumerator Call()
+    {
+        callButton.interactable = false;
+        var videoTracks = localStream.GetVideoTracks();
+        var audioTracks = localStream.GetAudioTracks();
+        if (videoTracks.Length > 0)
+        {
+            Debug.Log($"Using video device: {videoTracks.Length}");
+        }
+        if (audioTracks.Length > 0)
+        {
+            Debug.Log($"Using audio device: {audioTracks.Length}");
+        }
+        Debug.Log("GetSelectedSdpSemantics");
+        var configuration = GetSelectedSdpSemantics();
+        pc1 = new RTCPeerConnection(ref configuration);
+        Debug.Log("Created local peer connection object pc1");
+        pc1.OnIceCandidate = pc1OnIceCandidate;
+        pc1.OnIceConnectionChange = pc1OnIceConnectionChange;
+        pc2 = new RTCPeerConnection(ref configuration);
+        Debug.Log("Created remote peer connection object pc2");
+        pc2.OnIceCandidate = pc2OnIceCandidate;
+        pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
+        pc2.OnDataChannel = onDataChannel;
+
+        RTCDataChannelInit conf = new RTCDataChannelInit(true);
+        dataChannel = pc1.CreateDataChannel("data", ref conf);
+        dataChannel.OnOpen = onDataChannelOpen;
+
+        foreach (var track in localStream.GetTracks())
+        {
+            pc1.AddTrack(track, localStream);
+        }
+        Debug.Log("Added local stream to pc1");
+
+        Debug.Log("pc1 createOffer start");
+        var op = pc1.CreateOffer(ref OfferOptions);
+        yield return op;
+
+        if (!op.isError)
+        {
+            yield return StartCoroutine(OnCreateOfferSuccess(op.desc));
+        }
+        else
+        {
+            OnCreateSessionDescriptionError(op.error);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pc"></param>
+    /// <param name="streamEvent"></param>
     void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate​ candidate)
     {
         GetOtherPc(pc).AddIceCandidate(ref candidate);
         Debug.Log($"{GetName(pc)} ICE candidate:\n {candidate.candidate}");
+    }
+
+    public void SendMsg()
+    {
+        dataChannel.Send(textSend.text);
     }
     string GetName(RTCPeerConnection pc)
     {
@@ -263,19 +292,18 @@ public class Main : MonoBehaviour
         }
     }
 
+    void OnAddIceCandidateSuccess(RTCPeerConnection pc)
+    {
+        Debug.Log($"{GetName(pc)} addIceCandidate success");
+    }
+
+    void OnAddIceCandidateError(RTCPeerConnection pc, RTCError error)
+    {
+        Debug.Log($"{GetName(pc)} failed to add ICE Candidate: ${error}");
+    }
+
     void OnCreateSessionDescriptionError(RTCError e)
     {
 
-    }
-    void Hangup()
-    {
-        Debug.Log("Ending call");
-        StopCoroutine(sdpCheck);
-        pc1.Close();
-        pc2.Close();
-        pc1 = null;
-        pc2 = null;
-        hangupButton.interactable = false;
-        callButton.interactable = true;
     }
 }

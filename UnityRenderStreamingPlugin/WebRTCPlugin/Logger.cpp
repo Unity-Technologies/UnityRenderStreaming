@@ -15,3 +15,10 @@ void LogPrint(const char* fmt, ...)
 #endif
     va_end(vl);
 }
+void checkf(bool result, const char* msg)
+{
+    if (!result)
+    {
+        LogPrint(msg);
+    }
+}

@@ -82,8 +82,6 @@ namespace WebRTC
     {
         const uint8* data = buffer.data.data();
         InputEvent inputType;
-        int temp = buffer.data.size();
-        int temp1 = sizeof(inputType);
         if (buffer.data.size() < sizeof(inputType))
             return;
         ReadData(inputType, data);

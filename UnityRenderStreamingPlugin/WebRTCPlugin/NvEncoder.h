@@ -1,6 +1,5 @@
 ﻿#pragma once
 #define _WINSOCKAPI_  //Stops windows.h including winsock.h
-#include "Utils.h"
 #include <vector>
 #include "nvEncodeAPI.h"
 #include <thread>
@@ -46,7 +45,7 @@ namespace NvCodec
         void InitEncoderResources();
         void ReleaseFrameInputBuffer(Frame& frame);
         void ReleaseEncoderResources();
-        void ProcessEncodedFrame(Frame& frame) ;
+        void ProcessEncodedFrame(Frame& frame);
         ID3D11Texture2D* AllocateInputBuffers();
         NV_ENC_REGISTERED_PTR RegisterResource(void *pBuffer);
         void MapResources(InputFrame& inputFrame);

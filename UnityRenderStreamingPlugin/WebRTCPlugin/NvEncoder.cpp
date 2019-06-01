@@ -9,8 +9,7 @@ namespace NvCodec
 
     NvEncoder::NvEncoder()
     {
-        SetResolution(&width, &height);
-        DebugLog(StringFormat("width is %d, height is %d", width, height).c_str());
+        LogPrint(StringFormat("width is %d, height is %d", width, height).c_str());
         checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");
         checkf(width > 0 && height > 0, "Invalid width or height!");
         bool result = true;
@@ -31,7 +30,7 @@ namespace NvCodec
         openEncdoeSessionExParams.apiVersion = NVENCAPI_VERSION;
         result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncOpenEncodeSessionEx(&openEncdoeSessionExParams, &pEncoderInterface)));
         checkf(result, "Unable to open NvEnc encode session");
-        DebugLog(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
+        LogPrint(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
 #pragma endregion
 #pragma region set initialization parameters
         nvEncInitializeParams.version = NV_ENC_INITIALIZE_PARAMS_VER;
@@ -77,12 +76,12 @@ namespace NvCodec
         int32 asyncMode = 0;
         result = NV_RESULT(pNvEncodeAPI->nvEncGetEncodeCaps(pEncoderInterface, nvEncInitializeParams.encodeGUID, &capsParam, &asyncMode));
         checkf(result, "Failded to get NVEncoder capability params");
-        nvEncInitializeParams.enableEncodeAsync = 0;
+        nvEncInitializeParams.enableEncodeAsync = asyncMode;
 #pragma endregion
 #pragma region initialize hardware encoder session
         result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncInitializeEncoder(pEncoderInterface, &nvEncInitializeParams)));
         checkf(result, "Failed to initialize NVEncoder");
-        DebugLog(StringFormat("nvEncInitializeEncoder error is %d", errorCode).c_str());
+        LogPrint(StringFormat("nvEncInitializeEncoder error is %d", errorCode).c_str());
 #pragma endregion
         InitEncoderResources();
 #pragma endregion
@@ -117,10 +116,10 @@ namespace NvCodec
 
         if (module == nullptr)
         {
-            DebugLog("NVENC library file is not found. Please ensure NV driver is installed");
+            LogPrint("NVENC library file is not found. Please ensure NV driver is installed");
         }
         hModule = module;
-        DebugLog(StringFormat("hModule is %d", hModule).c_str());
+        LogPrint(StringFormat("hModule is %d", hModule).c_str());
 
         using NvEncodeAPIGetMaxSupportedVersion_Type = NVENCSTATUS(NVENCAPI *)(uint32_t*);
 #if defined(_WIN32)
@@ -134,7 +133,7 @@ namespace NvCodec
         NvEncodeAPIGetMaxSupportedVersion(&version);
         if (currentVersion > version)
         {
-            DebugLog("Current Driver Version does not support this NvEncodeAPI version, please upgrade driver");
+            LogPrint("Current Driver Version does not support this NvEncodeAPI version, please upgrade driver");
         }
 
         using NvEncodeAPICreateInstance_Type = NVENCSTATUS(NVENCAPI *)(NV_ENCODE_API_FUNCTION_LIST*);
@@ -146,7 +145,7 @@ namespace NvCodec
 
         if (!NvEncodeAPICreateInstance)
         {
-            DebugLog("Cannot find NvEncodeAPICreateInstance() entry in NVENC library");
+            LogPrint("Cannot find NvEncodeAPICreateInstance() entry in NVENC library");
         }
         bool result = NV_RESULT(NvEncodeAPICreateInstance(pNvEncodeAPI.get()));
         checkf(result, "Unable to create NvEnc API function list");;
@@ -278,10 +277,10 @@ namespace NvCodec
         registerResource.resourceToRegister = buffer;
 
         if (!registerResource.resourceToRegister)
-            DebugLog("resource is not initialized");
+            LogPrint("resource is not initialized");
         registerResource.width = nvEncInitializeParams.encodeWidth;
         registerResource.height = nvEncInitializeParams.encodeHeight;
-        DebugLog(StringFormat("nvEncRegisterResource: width is %d, height is %d", registerResource.width, registerResource.height).c_str());
+        LogPrint(StringFormat("nvEncRegisterResource: width is %d, height is %d", registerResource.width, registerResource.height).c_str());
         registerResource.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
         checkf(NV_RESULT((errorCode = pNvEncodeAPI->nvEncRegisterResource(pEncoderInterface, &registerResource))),
             StringFormat("nvEncRegisterResource error is %d", errorCode).c_str());
