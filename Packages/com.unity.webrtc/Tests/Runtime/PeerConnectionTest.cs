@@ -34,6 +34,7 @@ class PeerConnectionTest
     }
 
     [Test]
+    [Category("PeerConnection")]
     public void ConstructSimplePasses()
     {
         var peer = new RTCPeerConnection();
@@ -41,6 +42,7 @@ class PeerConnectionTest
     }
 
     [Test]
+    [Category("PeerConnection")]
     public void ConstructWithConfigSimplePasses()
     {
         RTCConfiguration config = default;
@@ -68,6 +70,8 @@ class PeerConnectionTest
     }
 
     [UnityTest]
+    [Category("PeerConnection")]
+
     public IEnumerator SetLocalDescriptionSimplePass()
     {
         var peer = new RTCPeerConnection();

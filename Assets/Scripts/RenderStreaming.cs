@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -90,7 +87,7 @@ namespace Unity.RenderStreaming
                 pcs.Add(offer.connectionId, pc);
 
                 pc.SetConfiguration(ref conf);
-                pc.onIceCandidate = delegate (ref RTCIceCandidate candidate) { StartCoroutine(OnIceCandidate(connectionId, candidate)); };
+                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(offer.connectionId, candidate); });
                 pc.SetRemoteDescription(ref _desc);
 
                 StartCoroutine(Answer(connectionId));
