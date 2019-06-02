@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 class PeerConnectionObject;
-using DelegateOnMessage = void(*)(const char*);
+using DelegateOnMessage = void(*)(const byte*, int size);
 using DelegateOnOpen = void(*)();
 using DelegateOnClose = void(*)();
 
@@ -26,6 +26,11 @@ public:
     void Send(const char* data)
     {
         dataChannel->Send(webrtc::DataBuffer(std::string(data)));
+    }
+    void Send(const byte* data, int len)
+    {
+        rtc::CopyOnWriteBuffer buf(data, len);
+        dataChannel->Send(webrtc::DataBuffer(buf, true));
     }
     void RegisterOnMessage(DelegateOnMessage callback)
     {

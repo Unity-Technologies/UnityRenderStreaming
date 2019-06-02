@@ -5,9 +5,11 @@ using Unity.WebRTC;
 
 public class Main : MonoBehaviour
 {
+    #pragma warning disable 0649
     [SerializeField] private Button startButton;
     [SerializeField] private Button callButton;
     [SerializeField] private Button hangupButton;
+    #pragma warning restore 0649
 
     private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;

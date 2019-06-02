@@ -18,6 +18,7 @@ namespace Unity.RenderStreaming
 
         private Signaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
+        private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
 
@@ -79,13 +80,14 @@ namespace Unity.RenderStreaming
                 _desc.type = RTCSdpType.Offer;
                 _desc.sdp = offer.sdp;
                 var connectionId = offer.connectionId;
-                if(pcs.ContainsKey(connectionId))
+                if (pcs.ContainsKey(connectionId))
                 {
                     continue;
                 }
                 var pc = new RTCPeerConnection();
                 pcs.Add(offer.connectionId, pc);
 
+                pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
                 pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(offer.connectionId, candidate); });
                 pc.SetRemoteDescription(ref _desc);
@@ -153,6 +155,19 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opCandidate.webRequest.error}");
                 yield break;
             }
+        }
+
+        void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
+        {
+            Dictionary<int, RTCDataChannel> channels;
+            if (!mapChannels.TryGetValue(pc, out channels))
+            {
+                channels = new Dictionary<int, RTCDataChannel>();
+                mapChannels.Add(pc, channels);
+            }
+            channels.Add(channel.Id, channel);
+
+            channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
         }
     }
 }

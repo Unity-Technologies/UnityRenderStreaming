@@ -36,11 +36,7 @@ void DataChannelObject::OnMessage(const webrtc::DataBuffer& buffer)
     if (onMessage != nullptr)
     {
         size_t size = buffer.data.size();
-        char* msg = new char[size + 1];
-        memcpy(msg, buffer.data.data(), size);
-        msg[size] = 0;
         if (onMessage != nullptr)
-            onMessage(msg);
-        delete[] msg;
+            onMessage(buffer.data.data(), size);
     }
 }
