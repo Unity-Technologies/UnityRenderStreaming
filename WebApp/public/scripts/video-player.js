@@ -21,7 +21,7 @@ export class VideoPlayer {
     this.video.addEventListener('loadedmetadata', function () {
       _this.video.play();
     }, true);
-    this.interval = 5000;
+    this.interval = 3000;
     this.signalingChannel = new SignalingChannel();
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
@@ -51,16 +51,17 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       console.log('Send ICE candidate', e);
-      _this.signalingChannel.send(_this.sessionId, e);
+      if(e.candidate != null) {
+        _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+      }
     };
     // Create data channel with proxy server and set up handlers
-    this.channel = this.pc.createDataChannel('ProxyDataChannel');
-    console.log('Create datachannel.');
+    this.channel = this.pc.createDataChannel('data');
     this.channel.onopen = function () {
       console.log('Datachannel connected.');
     };
     this.channel.onerror = function (e) {
-      console.log("The error " + e.error.message + " occurred\n                            while handling data with proxy server.");
+      console.log("The error " + e.error.message + " occurred\n while handling data with proxy server.");
     };
     this.channel.onclose = function () {
       console.log('Datachannel disconnected.');
@@ -85,27 +86,36 @@ export class VideoPlayer {
 
   async sendOffer(offer) {
     // signaling
-    const res = await this.signalingChannel.send(this.sessionId, offer);
+    const res = await this.signalingChannel.sendOffer(this.sessionId, offer.sdp);
     this.connectionId = res.connectionId;
   }
 
   async loopGetAnswer(sessionId, interval) {
     while(true) {
+      await this.sleep(interval);
+
+      const state = this.pc.signalingState;
+      if(state == 'stable') {
+        console.log('stable');
+        continue;
+      }
+
       const res = await this.signalingChannel.getAnswer(sessionId);
       if(res.answers.length > 0) {
         const answer = res.answers[0];
+        console.log('setAnswer');
         await this.setAnswer(sessionId, answer.sdp);
       }
-      await this.sleep(interval);
     }
   }
 
   async loopGetCandidate(sessionId, interval) {
     while(true) {
       const res = await this.signalingChannel.getCandidate(sessionId);
-      if(res.candidates.length > 0) {
-        for(let candidate of res.candidates) {
-          const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate });
+      const candidates = res.candidates.filter(v => v.connectionId = this.connectionId);
+      if(candidates.length > 0) {
+        for(let candidate of candidates[0].candidates) {
+          const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
           await this.pc.addIceCandidate(iceCandidate);
         }
       }
