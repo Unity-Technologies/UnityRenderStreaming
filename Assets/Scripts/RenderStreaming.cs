@@ -73,7 +73,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
-            var obj = op.webRequest.DownloadHandlerJson<OfferListResData>().GetObject();
+            var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
             foreach (var offer in obj.offers)
             {
                 RTCSessionDescription _desc = default;
@@ -89,7 +89,7 @@ namespace Unity.RenderStreaming
 
                 pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
-                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(offer.connectionId, candidate); });
+                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
                 pc.SetRemoteDescription(ref _desc);
 
                 StartCoroutine(Answer(connectionId));
@@ -133,22 +133,29 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
-            var obj = op.webRequest.DownloadHandlerJson<CandidateListResData>().GetObject();
-            foreach (var candidate in obj.candidates)
+            var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
+            foreach (var candidateContainer in obj.candidates)
             {
-                if (!pcs.ContainsKey(candidate.connectionId))
+                RTCPeerConnection pc;
+                if (!pcs.TryGetValue(candidateContainer.connectionId, out pc))
                 {
                     continue;
                 }
-                RTCIceCandidate _candidate = default;
-                _candidate.candidate = candidate.candidate;
-                pcs[candidate.connectionId].AddIceCandidate(ref _candidate);
+                foreach (var candidate in candidateContainer.candidates)
+                {
+                    RTCIceCandidate _candidate = default;
+                    _candidate.candidate = candidate.candidate;
+                    _candidate.sdpMlineIndex = candidate.sdpMLineIndex;
+                    _candidate.sdpMid = candidate.sdpMid;
+
+                    pcs[candidateContainer.connectionId].AddIceCandidate(ref _candidate);
+                }
             }
         }
 
         IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate candidate)
         {
-            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate);
+            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMlineIndex);
             yield return opCandidate;
             if (opCandidate.webRequest.isNetworkError)
             {

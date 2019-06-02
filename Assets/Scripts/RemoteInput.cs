@@ -11,11 +11,10 @@ namespace Unity.RenderStreaming
         KeyUp,
         KeyPress
     }
-
     enum EventType
     {
         Keyboard = 0,
-        Mouse = 1,
+        MouseMove = 4,
     }
 
     public static class RemoteInput
@@ -24,8 +23,8 @@ namespace Unity.RenderStreaming
         static Mouse mouse;
         static RemoteInput()
         {
-            keyboard = InputSystem.AddDevice<Keyboard>();
-            mouse = InputSystem.AddDevice<Mouse>();
+            keyboard = InputSystem.GetDevice<Keyboard>();
+            mouse = InputSystem.GetDevice<Mouse>();
         }
 
         public static void ProcessInput(byte[] bytes)
@@ -33,9 +32,9 @@ namespace Unity.RenderStreaming
             switch ((EventType)bytes[0])
             {
                 case EventType.Keyboard:
-                    ProcessKeyEvent((Key)bytes[1]);
+                    ProcessKeyEvent((char)bytes[1]);
                     break;
-                case EventType.Mouse:
+                case EventType.MouseMove:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
                     var deltaY = BitConverter.ToInt16(bytes, 3);
                     ProcessMouseMoveEvent(deltaX, deltaY);
@@ -43,9 +42,10 @@ namespace Unity.RenderStreaming
             }
         }
 
-        static void ProcessKeyEvent(Key keyCode)
+        static void ProcessKeyEvent(char keyCode)
         {
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState(keyCode));
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState((Key)keyCode));
+            InputSystem.QueueTextEvent(keyboard, keyCode);
             InputSystem.Update();
         }
 
