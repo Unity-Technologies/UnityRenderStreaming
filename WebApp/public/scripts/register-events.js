@@ -1,10 +1,9 @@
 let InputEvent = {
   KeyDown : 0,
-  KeyUp : 1,
-  MouseDown : 2,
-  MouseUp : 3,
+  MouseButton : 2,
   MouseMove : 4,
-  MouseWheel : 5
+  MouseWheel : 5,
+  TouchMove : 6
 };
 
 let isPlayMode = false;
@@ -12,13 +11,17 @@ let isPlayMode = false;
 export function registerKeyboardEvents(videoPlayer) {
   const _videoPlayer = videoPlayer;
   document.addEventListener('keydown', function (e) {
-    console.log("key down " + e.key + ", repeat = " + e.repeat);
-    _videoPlayer && _videoPlayer.sendMsg(new Uint8Array([InputEvent.KeyDown, e.key]).buffer);
+    const key = e.key.charCodeAt(0);
+    console.log("key down " + key + ", repeat = " + e.repeat);
+    _videoPlayer && _videoPlayer.sendMsg(new Uint8Array([InputEvent.KeyDown, key]).buffer);
   }, false);
+
+  /*
   document.addEventListener('keyup', function (e) {
     console.log("key up " + e.key);
     _videoPlayer && _videoPlayer.sendMsg(new Uint8Array([InputEvent.KeyUp, e.key]).buffer);
   }, false);
+  */
 }
 
 export function registerMouseEvents(videoPlayer, playerElement) {
@@ -39,6 +42,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   playerElement.addEventListener('mousewheel', sendMouseWheel, false);
   // ios workaround for not allowing auto-play
   playerElement.addEventListener('touchend', playVideoWithTouch , false);
+  playerElement.addEventListener('touchmove', sendTouchMove, false);
 
 
   function pointerLockChange() {
@@ -67,27 +71,41 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     if (_playerElement.paused) {
       _playerElement.play();
     }
+    isPlayMode = true;
   }
-  function sendMousePosition(e) {
-    console.log("deltaX: " + e.movementX + ", deltaY: " + e.movementY);
+  function sendTouchMove(e) {
+    console.log("touchMove: pageX" + e.pageX + ", pageX: " + e.pageY);
+
+    var changes = touchEvent.changedTouches;
     let data = new DataView(new ArrayBuffer(5));
+    data.setUint8(0, InputEvent.TouchMove);
+    data.setInt16(1, changes[0].pageX, true);
+    data.setInt16(3, changes[0].pageY, true);
+    _videoPlayer.sendMsg(data.buffer);
+  }
+
+  function sendMousePosition(e) {
+    console.log("deltaX: " + e.movementX + ", deltaY: " + e.movementY + " mouse button:" + e.buttons);
+    let data = new DataView(new ArrayBuffer(6));
     data.setUint8(0, InputEvent.MouseMove);
     data.setInt16(1, e.movementX, true);
     data.setInt16(3, e.movementY, true);
+    data.setUint8(5, e.buttons);
     _videoPlayer.sendMsg(data.buffer);
   }
   function sendMouseDown(e) {
-    console.log("mouse button " + e.button + " down");
+    console.log("mouse button " + e.buttons + " down");
     let data = new DataView(new ArrayBuffer(2));
-    data.setUint8(0, InputEvent.MouseDown);
-    data.setUint8(1, e.button);
+
+    data.setUint8(0, InputEvent.MouseButton);
+    data.setUint8(1, e.buttons);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
   function sendMouseUp(e) {
-    console.log("mouse button " + e.button + " up");
+    console.log("mouse button " + e.buttons + " up");
     let data = new DataView(new ArrayBuffer(2));
-    data.setUint8(0, InputEvent.MouseUp);
-    data.setUint8(1, e.button);
+    data.setUint8(0, InputEvent.MouseButton);
+    data.setUint8(1, e.buttons);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
   function sendMouseWheel(e) {

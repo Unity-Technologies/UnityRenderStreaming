@@ -4,21 +4,6 @@ using NUnit.Framework;
 using System.Collections;
 using Unity.WebRTC;
 
-static class AssertExtension
-{
-    public static void ArrayTrue<T>(T[] expected, T[] actual)
-    {
-        if(StructuralComparisons.StructuralEqualityComparer.Equals(expected, actual))
-        {
-            Assert.Pass();
-        }
-        else
-        {
-            Assert.Fail($"expect: {actual} \n actual: {expected}");
-        }
-    }
-}
-
 class PeerConnectionTest
 {
     [SetUp]
@@ -34,14 +19,16 @@ class PeerConnectionTest
     }
 
     [Test]
-    public void ConstructSimplePasses()
+    [Category("PeerConnection")]
+    public void PeerConnection_Construct()
     {
         var peer = new RTCPeerConnection();
         peer.Close();
     }
 
     [Test]
-    public void ConstructWithConfigSimplePasses()
+    [Category("PeerConnection")]
+    public void PeerConnection_ConstructWithConfig()
     {
         RTCConfiguration config = default;
         config.iceServers = new RTCIceServer[]
@@ -62,13 +49,15 @@ class PeerConnectionTest
         Assert.AreEqual(config.iceServers.Length, config2.iceServers.Length);
         Assert.AreEqual(config.iceServers[0].username, config2.iceServers[0].username);
         Assert.AreEqual(config.iceServers[0].credential, config2.iceServers[0].credential);
-        AssertExtension.ArrayTrue(config.iceServers[0].urls, config2.iceServers[0].urls);
+        Assert.AreEqual(config.iceServers[0].urls, config2.iceServers[0].urls);
 
         peer.Close();
     }
 
     [UnityTest]
-    public IEnumerator SetLocalDescriptionSimplePass()
+    [Category("PeerConnection")]
+
+    public IEnumerator PeerConnection_SetLocalDescription()
     {
         var peer = new RTCPeerConnection();
         RTCOfferOptions options = default;
@@ -80,7 +69,6 @@ class PeerConnectionTest
         yield return op2;
         Assert.True(op2.isDone);
         Assert.False(op2.isError);
-
         peer.Close();
     }
 }

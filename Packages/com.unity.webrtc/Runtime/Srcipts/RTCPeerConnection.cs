@@ -134,21 +134,6 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionRegisterCallbackSetSD(self, OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
         }
 
-        public void RegisterOnIceConnectionChange(DelegateOnIceConnectionChange callback)
-        {
-            NativeMethods.PeerConnectionRegisterIceConnectionChange(self, callback);
-        }
-
-        public void RegisterOnIceCandidate(DelegateNativeOnIceCandidate callback)
-        {
-            NativeMethods.PeerConnectionRegisterOnIceCandidate(self, callback);
-        }
-
-        public void RegisterOnDataChannel(DelegateNativeOnDataChannel callback)
-        {
-            NativeMethods.PeerConnectionRegisterOnDataChannel(self, callback);
-        }
-
         public void Close()
         {
             NativeMethods.PeerConnectionClose(self);

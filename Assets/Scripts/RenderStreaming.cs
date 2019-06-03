@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -21,6 +18,7 @@ namespace Unity.RenderStreaming
 
         private Signaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
+        private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
 
@@ -75,22 +73,23 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
-            var obj = op.webRequest.DownloadHandlerJson<OfferListResData>().GetObject();
+            var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
             foreach (var offer in obj.offers)
             {
                 RTCSessionDescription _desc = default;
                 _desc.type = RTCSdpType.Offer;
                 _desc.sdp = offer.sdp;
                 var connectionId = offer.connectionId;
-                if(pcs.ContainsKey(connectionId))
+                if (pcs.ContainsKey(connectionId))
                 {
                     continue;
                 }
                 var pc = new RTCPeerConnection();
                 pcs.Add(offer.connectionId, pc);
 
+                pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
-                pc.onIceCandidate = delegate (ref RTCIceCandidate candidate) { StartCoroutine(OnIceCandidate(connectionId, candidate)); };
+                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
                 pc.SetRemoteDescription(ref _desc);
 
                 StartCoroutine(Answer(connectionId));
@@ -134,28 +133,48 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
-            var obj = op.webRequest.DownloadHandlerJson<CandidateListResData>().GetObject();
-            foreach (var candidate in obj.candidates)
+            var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
+            foreach (var candidateContainer in obj.candidates)
             {
-                if (!pcs.ContainsKey(candidate.connectionId))
+                RTCPeerConnection pc;
+                if (!pcs.TryGetValue(candidateContainer.connectionId, out pc))
                 {
                     continue;
                 }
-                RTCIceCandidate _candidate = default;
-                _candidate.candidate = candidate.candidate;
-                pcs[candidate.connectionId].AddIceCandidate(ref _candidate);
+                foreach (var candidate in candidateContainer.candidates)
+                {
+                    RTCIceCandidate _candidate = default;
+                    _candidate.candidate = candidate.candidate;
+                    _candidate.sdpMlineIndex = candidate.sdpMLineIndex;
+                    _candidate.sdpMid = candidate.sdpMid;
+
+                    pcs[candidateContainer.connectionId].AddIceCandidate(ref _candidate);
+                }
             }
         }
 
         IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate candidate)
         {
-            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate);
+            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMlineIndex);
             yield return opCandidate;
             if (opCandidate.webRequest.isNetworkError)
             {
                 Debug.LogError($"Network Error: {opCandidate.webRequest.error}");
                 yield break;
             }
+        }
+
+        void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
+        {
+            Dictionary<int, RTCDataChannel> channels;
+            if (!mapChannels.TryGetValue(pc, out channels))
+            {
+                channels = new Dictionary<int, RTCDataChannel>();
+                mapChannels.Add(pc, channels);
+            }
+            channels.Add(channel.Id, channel);
+
+            channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
         }
     }
 }

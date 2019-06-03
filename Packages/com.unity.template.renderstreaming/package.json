@@ -3,9 +3,10 @@
   "displayName": "Render Streaming",
   "version": "0.1.0-preview.1",
   "type": "template",
-  "unity": "2018.3",
+  "unity": "2019.1",
   "description": "Replace this string with your own description of the package. This description appears in the Package Manager window when the user selects this package from the list. \n\nFor best results, use this text to summarize: \n\u25aa What the package does \n\u25aa How it can benefit the user \n\nNote: Special formatting characters are supported, including line breaks ('\\n') and bullets ('\\u25AA').",
   "dependencies": {
-    "com.unity.webrtc": "0.0.1-preview"
+    "com.unity.webrtc": "0.0.1-preview",
+    "com.unity.inputsystem": "0.2.10-preview"
   }
 }

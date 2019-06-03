@@ -3,6 +3,8 @@ using System;
 
 namespace Unity.WebRTC
 {
+    public delegate void DelegateOnMessage(byte[] bytes);
+    public delegate void DelegateOnDataChannel(RTCDataChannel channel);
 
     public class RTCDataChannel
     {
@@ -11,7 +13,7 @@ namespace Unity.WebRTC
         private DelegateOnOpen onOpen;
         private DelegateOnClose onClose;
 
-        private DelegateOnMessage selfOnMessage;
+        private DelegateNativeOnMessage selfOnMessage;
         private DelegateOnOpen selfOnOpen;
         private DelegateOnClose selfOnClose;
         private int id;
@@ -23,7 +25,7 @@ namespace Unity.WebRTC
             set
             {
                 onMessage = value;
-                selfOnMessage = new DelegateOnMessage(DataChannelOnMessage);
+                selfOnMessage = new DelegateNativeOnMessage(DataChannelNativeOnMessage);
                 NativeMethods.DataChannelRegisterOnMessage(self, selfOnMessage);
             }
         }
@@ -49,16 +51,20 @@ namespace Unity.WebRTC
             }
         }
 
-        public int Id { get => id; private set => id = value; }
+        public int Id
+        {
+            get => NativeMethods.DataChannelGetID(self);
+        }
         public string Label { get => label; private set => label = value; }
 
-        void DataChannelOnMessage(string msg)
+        void DataChannelNativeOnMessage(byte[] msg, int len)
         {
             WebRTC.SyncContext.Post(_ =>
             {
                 onMessage(msg);
             }, null);
         }
+        
         void DataChannelOnOpen()
         {
             WebRTC.SyncContext.Post(_ =>
@@ -76,13 +82,17 @@ namespace Unity.WebRTC
         internal RTCDataChannel(IntPtr ptr)
         {
             self = ptr;
-            Id = NativeMethods.DataChannelGetID(self);
-            IntPtr labelPtr = NativeMethods.DataChannelGetLabel(self);
+            var labelPtr = NativeMethods.DataChannelGetLabel(self);
             Label = Marshal.PtrToStringAnsi(labelPtr);
         }
         public void Send(string msg)
         {
             NativeMethods.DataChannelSend(self, msg);
+        }
+
+        public void Send(byte[] msg)
+        {
+            NativeMethods.DataChannelSendBinary(self, msg, msg.Length);
         }
 
         public void Close()

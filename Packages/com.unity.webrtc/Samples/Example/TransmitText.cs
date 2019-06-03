@@ -6,10 +6,12 @@ using System;
 
 public class TransmitText : MonoBehaviour
 {
+    #pragma warning disable 0649
     [SerializeField] private Button callButton;
     [SerializeField] private Button sendButton;
     [SerializeField] private InputField textSend;
     [SerializeField] private InputField textReceive;
+    #pragma warning restore 0649
 
     private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
@@ -67,7 +69,7 @@ public class TransmitText : MonoBehaviour
             remoteDataChannel = channel;
             remoteDataChannel.OnMessage = onDataChannelMessage;
         });
-        onDataChannelMessage = new DelegateOnMessage(msg => { textReceive.text = msg; });
+        onDataChannelMessage = new DelegateOnMessage(bytes => { textReceive.text = System.Text.Encoding.UTF8.GetString(bytes); });
         onDataChannelOpen = new DelegateOnOpen(()=> { sendButton.interactable = true; });
         onDataChannelClose = new DelegateOnClose(() => { sendButton.interactable = false; });
     }

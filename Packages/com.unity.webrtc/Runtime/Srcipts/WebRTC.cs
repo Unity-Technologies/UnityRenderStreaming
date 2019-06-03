@@ -278,15 +278,13 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DelegateNativeOnDataChannel(IntPtr ptr);
+    internal delegate void DelegateNativeOnDataChannel(IntPtr ptr);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DelegateOnMessage([MarshalAs(UnmanagedType.LPStr)] string msg);
+    internal delegate void DelegateNativeOnMessage([MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] byte[] bytes, int size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnOpen();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnClose();
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DelegateOnDataChannel(RTCDataChannel channel);
 
     internal static class NativeMethods
     {
@@ -343,9 +341,11 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void DataChannelSend(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr)]string msg);
         [DllImport(WebRTC.Lib)]
+        public static extern void DataChannelSendBinary(IntPtr ptr, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] bytes, int size);
+        [DllImport(WebRTC.Lib)]
         public static extern void DataChannelClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern void DataChannelRegisterOnMessage(IntPtr ptr, DelegateOnMessage callback);
+        public static extern void DataChannelRegisterOnMessage(IntPtr ptr, DelegateNativeOnMessage callback);
         [DllImport(WebRTC.Lib)]
         public static extern void DataChannelRegisterOnOpen(IntPtr ptr, DelegateOnOpen callback);
         [DllImport(WebRTC.Lib)]

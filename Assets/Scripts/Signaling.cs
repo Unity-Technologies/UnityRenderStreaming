@@ -74,15 +74,15 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
-    class OfferListResData
+    class OfferResDataList
     {
         public OfferResData[] offers;
     }
 
     [Serializable]
-    class CandidateListResData
+    class CandidateContainerResDataList
     {
-        public CandidateResData[] candidates;
+        public CandidateContainerResData[] candidates;
     }
 
     [Serializable]
@@ -100,11 +100,22 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
-    class CandidateResData
+    class CandidateContainerResData
     {
         public string connectionId;
-        public string candidate;
+        public CandidateResData[] candidates;
     }
+
+    [Serializable]
+    class CandidateResData
+    {
+        public string candidate;
+        public string sdpMid;
+        public int sdpMLineIndex;
+    }
+
+
+
 #pragma warning restore 0649
 
 
@@ -136,6 +147,8 @@ namespace Unity.RenderStreaming
         {
             public string connectionId;
             public string candidate;
+            public string sdpMid;
+            public int sdpMlineIndex;
         }
 
         public UnityWebRequestAsyncOperation Create()
@@ -158,6 +171,7 @@ namespace Unity.RenderStreaming
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
             var req = new UnityWebRequest($"{Url}/signaling/offer", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest();
             return op;
@@ -166,7 +180,7 @@ namespace Unity.RenderStreaming
         {
             var req = new UnityWebRequest($"{Url}/signaling/offer", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<OfferListResData>();
+            var op = req.SendWebRequest<OfferResDataList>();
             return op;
         }
         public UnityWebRequestAsyncOperation PostAnswer(string sessionId, string connectionId, string sdp)
@@ -175,6 +189,7 @@ namespace Unity.RenderStreaming
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
             var req = new UnityWebRequest($"{Url}/signaling/answer", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest();
             return op;
@@ -187,12 +202,13 @@ namespace Unity.RenderStreaming
             return op;
         }
 
-        public UnityWebRequestAsyncOperation PostCandidate(string sessionId, string connectionId, string candidate)
+        public UnityWebRequestAsyncOperation PostCandidate(string sessionId, string connectionId, string candidate, string sdpMid, int sdpMlineIndex)
         {
-            var obj = new CandidateReqData { connectionId = connectionId, candidate = candidate };
+            var obj = new CandidateReqData { connectionId = connectionId, candidate = candidate, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
             var req = new UnityWebRequest($"{Url}/signaling/candidate", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest();
             return op;
@@ -201,7 +217,7 @@ namespace Unity.RenderStreaming
         {
             var req = new UnityWebRequest($"{Url}/signaling/candidate", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<CandidateListResData>();
+            var op = req.SendWebRequest<CandidateContainerResDataList>();
             return op;
         }
     }

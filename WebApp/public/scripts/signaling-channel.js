@@ -13,26 +13,26 @@ export default class SignalingChannel {
     return location.protocol + '//' + location.host + '/signaling/' + method;
   };
 
-  async send(sessionId, data) {
-    let method = undefined;
-    if ('type' in data) {
-      switch (data.type) {
-        case 'offer':
-          method = 'offer';
-          break;
-        case 'answer':
-          method = 'answer';
-          break;
-        default:
-          return;
-      }
-    } else {
-      method = 'candidate';
-    }
-    const response = await fetch(this.url(method), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
+  async sendOffer(sessionId, sdp) {
+    const data = {'sdp' : sdp };
+    const response = await fetch(this.url('offer'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
     return await response.json();
   };
-
+  async sendAnswer(sessionId, connectionId, sdp) {
+    const data = {'sdp' : sdp, 'connectionId' : connectionId };
+    await fetch(this.url('answer'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
+    return;
+  };
+  async sendCandidate(sessionId, connectionId, candidate, sdpMid, sdpMLineIndex) {
+    const data = {
+      'candidate' : candidate,
+      'sdpMLineIndex': sdpMLineIndex,
+      'sdpMid': sdpMid,
+      'connectionId' : connectionId
+    };
+    await fetch(this.url('candidate'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
+    return;
+  };
   async create() {
     const response = await fetch(this.url(''), {method: 'PUT', headers: this.headers()});
     return await response.json();
