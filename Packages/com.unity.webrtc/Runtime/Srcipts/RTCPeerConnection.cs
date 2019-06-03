@@ -162,7 +162,7 @@ namespace Unity.WebRTC
 
         public RTCRtpSender AddTrack(MediaStreamTrack track)
         {
-
+            return new RTCRtpSender(IntPtr.Zero);
         }
         public void RemoveTrack(RTCRtpSender sender)
         {

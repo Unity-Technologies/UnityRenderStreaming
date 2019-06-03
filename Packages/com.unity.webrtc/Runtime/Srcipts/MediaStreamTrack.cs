@@ -19,24 +19,28 @@ namespace Unity.WebRTC
         public string Id { get => id; set => id = value; }
         public bool Enabled { get => enabled; set => enabled = value; }
         public TrackState ReadyState { get => readyState; set => readyState = value; }
-        public enum TrackKind
-        {
-            Audio,
-            Video
-        }
-        public enum TrackState
-        {
-            Live,
-            Ended
-        }
     }
 
+    public enum TrackKind
+    {
+        Audio,
+        Video
+    }
+    public enum TrackState
+    {
+        Live,
+        Ended
+    }
     public class RTCRtpSender
     {
         private IntPtr self;
         private MediaStreamTrack track;
 
         public MediaStreamTrack Track { get => track; set => track = value; }
+        internal RTCRtpSender(IntPtr ptr)
+        {
+            self = ptr;
+        }
     }
     public class RTCTrackEvent
     {
