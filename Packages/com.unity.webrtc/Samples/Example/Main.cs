@@ -91,7 +91,7 @@ public class Main : MonoBehaviour
         callButton.interactable = false;
         hangupButton.interactable = true;
 
-        var videoTracks = localStream.GetVideoTracks();
+        var videoTracks = localStream.GetVideoTracks(); 
         var audioTracks = localStream.GetAudioTracks();
         if (videoTracks.Length > 0)
         {

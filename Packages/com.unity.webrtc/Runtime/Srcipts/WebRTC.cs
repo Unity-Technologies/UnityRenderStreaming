@@ -19,7 +19,7 @@ namespace Unity.WebRTC
         /// <summary>
         ///
         /// </summary>
-        public bool video;
+        public bool video; 
     }
 
     public class MediaDevices
@@ -192,28 +192,6 @@ namespace Unity.WebRTC
         public RTCIceTransportPolicy iceTransportPolicy;
     }
 
-    public class MediaStream
-    {
-        public MediaStreamTrack[] GetVideoTracks()
-        {
-            return new MediaStreamTrack[0];
-        }
-        public MediaStreamTrack[] GetAudioTracks()
-        {
-            return new MediaStreamTrack[0];
-        }
-
-        public MediaStreamTrack[] GetTracks()
-        {
-            return new MediaStreamTrack[0];
-        }
-    }
-
-    public class MediaStreamTrack
-    {
-
-    }
-
     public static class WebRTC
     {
 #if UNITY_EDITOR_OSX
@@ -285,6 +263,11 @@ namespace Unity.WebRTC
     public delegate void DelegateOnOpen();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnClose();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void DelegateNativeOnTrack(IntPtr ptr);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnTrack(RTCTrackEvent e);
+
 
     internal static class NativeMethods
     {
