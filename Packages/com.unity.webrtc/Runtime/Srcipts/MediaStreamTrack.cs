@@ -7,18 +7,41 @@ namespace Unity.WebRTC
 {
     public class MediaStreamTrack
     {
-        private IntPtr self;
+        internal IntPtr self;
         private TrackKind kind;
         private string id;
         private bool enabled;
         private TrackState readyState;
 
+        public bool Enabled
+        {
+            get
+            {
+                return NativeMethods.MediaStreamTrackGetEnabled(self);
+            }
+            set
+            {
+                NativeMethods.MediaStreamTrackSetEnabled(self, value);
+            }
+        }
+        public TrackState ReadyState
+        {
+            get
+            {
+                return NativeMethods.MediaStreamTrackGetReadyState(self);
+            }
+            private set { }
+        }
 
+        public TrackKind Kind { get => kind; private set { } }
+        public string Id { get => id; private set { } }
 
-        public TrackKind Kind { get => kind; set => kind = value; }
-        public string Id { get => id; set => id = value; }
-        public bool Enabled { get => enabled; set => enabled = value; }
-        public TrackState ReadyState { get => readyState; set => readyState = value; }
+        internal MediaStreamTrack(IntPtr ptr)
+        {
+            self = ptr;
+            Kind = NativeMethods.MediaStreamTrackGetKind(self);
+            Id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
+        }
     }
 
     public enum TrackKind
@@ -33,7 +56,7 @@ namespace Unity.WebRTC
     }
     public class RTCRtpSender
     {
-        private IntPtr self;
+        internal IntPtr self;
         private MediaStreamTrack track;
 
         public MediaStreamTrack Track { get => track; set => track = value; }

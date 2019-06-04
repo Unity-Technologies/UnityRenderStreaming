@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 using UnityEngine.UI;
+using System.Text;
 
 public class AddMediaStream : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class AddMediaStream : MonoBehaviour
     [SerializeField] private InputField infoText; 
 #pragma warning restore 0649
 
-    private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
     private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
@@ -23,6 +23,7 @@ public class AddMediaStream : MonoBehaviour
     private DelegateOnIceCandidate pc1OnIceCandidate;
     private DelegateOnIceCandidate pc2OnIceCandidate;
     private DelegateOnTrack pc2Ontrack;
+    private StringBuilder trackInfos;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -47,14 +48,9 @@ public class AddMediaStream : MonoBehaviour
         WebRTC.Finalize();
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        Debug.Log("Requesting local stream");
-        var op = MediaDevices.GetUserMedia(new MediaStreamConstraints { audio = true, video = true });
-        yield return op;
-        var stream = op.stream;
-        Debug.Log("Received local stream");
-        localStream = stream;
+        trackInfos = new StringBuilder();
         callButton.interactable = true;
 
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
@@ -141,16 +137,6 @@ public class AddMediaStream : MonoBehaviour
     IEnumerator Call()
     {
         callButton.interactable = false;
-        var videoTracks = localStream.GetVideoTracks();
-        var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0)
-        {
-            Debug.Log($"Using video device: {videoTracks.Length}");
-        }
-        if (audioTracks.Length > 0)
-        {
-            Debug.Log($"Using audio device: {audioTracks.Length}");
-        }
         Debug.Log("GetSelectedSdpSemantics");
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
@@ -165,12 +151,6 @@ public class AddMediaStream : MonoBehaviour
 
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
-
-        foreach (var track in localStream.GetTracks())
-        {
-            pc1.AddTrack(track, localStream);
-        }
-        Debug.Log("Added local stream to pc1");
 
         Debug.Log("pc1 createOffer start");
         var op = pc1.CreateOffer(ref OfferOptions);
@@ -199,7 +179,8 @@ public class AddMediaStream : MonoBehaviour
     void OnTrack(RTCPeerConnection pc, RTCTrackEvent e)
     {
         pc.AddTrack(e.Track);
-        infoText.text = $"{GetName(pc)} receives remote track";
+        trackInfos.Append($"{GetName(pc)} receives remote track");
+        infoText.text = trackInfos.ToString();
     }
 
     string GetName(RTCPeerConnection pc)
@@ -252,7 +233,7 @@ public class AddMediaStream : MonoBehaviour
         }
         else
         {
-            OnCreateSessionDescriptionError(op3.error);
+            OnCreateSessionDescriptionError(op3.error); 
         }
     }
 

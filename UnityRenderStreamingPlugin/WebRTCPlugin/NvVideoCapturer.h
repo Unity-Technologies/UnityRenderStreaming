@@ -39,7 +39,7 @@ namespace WebRTC
             fourccs->push_back(cricket::FOURCC_H264);
             return true;
         }
-        std::unique_ptr<NvCodec::NvEncoder> nvEncoder;
+        std::unique_ptr<NvEncoder> nvEncoder;
 
         //just fake info
         const int32 width = 1280;

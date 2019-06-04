@@ -3,7 +3,7 @@
 #include "Unity/IUnityGraphicsD3D11.h"
 #include <CString>
 
-namespace NvCodec
+namespace WebRTC
 {
 #define NV_RESULT(NvFunction) NvFunction == NV_ENC_SUCCESS
 

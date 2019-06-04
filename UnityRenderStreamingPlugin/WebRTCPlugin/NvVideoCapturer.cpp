@@ -6,7 +6,7 @@ namespace WebRTC
     UnityFrameBuffer* unityRT;
     NvVideoCapturer::NvVideoCapturer()
     {
-        nvEncoder = std::make_unique<NvCodec::NvEncoder>();
+        nvEncoder = std::make_unique<NvEncoder>();
         nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
         set_enable_video_adapter(false);
         SetSupportedFormats(std::vector<cricket::VideoFormat>(1, cricket::VideoFormat(width, height, cricket::VideoFormat::FpsToInterval(framerate), cricket::FOURCC_H264)));

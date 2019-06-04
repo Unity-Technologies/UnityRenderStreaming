@@ -22,21 +22,13 @@ namespace Unity.WebRTC
         public bool video; 
     }
 
-    public class MediaDevices
-    {
-        public static MediaDevicesAsyncOperation GetUserMedia(MediaStreamConstraints constraints)
-        {
-            return new MediaDevicesAsyncOperation();
-        }
-    }
-
     public struct MediaStreamEvent
     {
         public RTCIceCandidate​ candidate;
     }
 
     public struct RTCIceCandidate​
-    {
+    { 
         [MarshalAs(UnmanagedType.LPStr)]
         public string candidate;
         [MarshalAs(UnmanagedType.LPStr)]
@@ -308,7 +300,9 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
         [DllImport(WebRTC.Lib)]
-        public static extern bool PeerConnectionAddTrack(IntPtr ptr, MediaStreamTrack track, MediaStream stream);
+        public static extern IntPtr PeerConnectionAddTrack(IntPtr pc, IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern void PeerConnectionRemoveTrack(IntPtr pc, IntPtr sender);
         [DllImport(WebRTC.Lib)]
         public static extern bool PeerConnectionAddIceCandidate(IntPtr ptr, ref RTCIceCandidate​ candidate);
         [DllImport(WebRTC.Lib)]
@@ -333,6 +327,30 @@ namespace Unity.WebRTC
         public static extern void DataChannelRegisterOnOpen(IntPtr ptr, DelegateOnOpen callback);
         [DllImport(WebRTC.Lib)]
         public static extern void DataChannelRegisterOnClose(IntPtr ptr, DelegateOnClose callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr CaptureVideoStream(IntPtr context);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr CaptureAudioStream(IntPtr context);
+        [DllImport(WebRTC.Lib)]
+        public static extern void MediaStreamAddTrack(IntPtr stream, IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern void MediaStreamRemoveTrack(IntPtr stream, IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr MediaStreamGetVideoTracks(IntPtr stream, ref int length);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr MediaStreamGetAudioTracks(IntPtr stream, ref int length);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr MeidaStreamGetID(IntPtr stream);
+        [DllImport(WebRTC.Lib)]
+        public static extern TrackKind MediaStreamTrackGetKind(IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern TrackState MediaStreamTrackGetReadyState(IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr MediaStreamTrackGetID(IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern bool MediaStreamTrackGetEnabled(IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern void MediaStreamTrackSetEnabled(IntPtr track, bool enabled);
     }
 
     internal struct Context
@@ -344,7 +362,9 @@ namespace Unity.WebRTC
         public static bool ToBool(Context v) { return v; }
         public static Context Create(int uid=0) { return NativeMethods.ContextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
- 
+        public IntPtr CaptureVideoStream() { return NativeMethods.CaptureVideoStream(self); }
+        public IntPtr CaptureAudioStream() { return NativeMethods.CaptureAudioStream(self); }
+
     }
 }
 

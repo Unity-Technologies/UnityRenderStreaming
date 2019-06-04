@@ -65,14 +65,6 @@ class DataChannelTest
         peer2.OnIceCandidate = new DelegateOnIceCandidate(candidate => { peer1.AddIceCandidate(ref candidate); });
         peer2.OnDataChannel = new DelegateOnDataChannel(channel => { channel2 = channel; });
 
-
-        var op0 = MediaDevices.GetUserMedia(new MediaStreamConstraints { audio = true, video = true });
-        yield return op0;
-        foreach (var track in op0.stream.GetTracks())
-        {
-            peer1.AddTrack(track, op0.stream);
-        }
-
         var conf = new RTCDataChannelInit(true);
         channel1 = peer1.CreateDataChannel("data", ref conf);
 

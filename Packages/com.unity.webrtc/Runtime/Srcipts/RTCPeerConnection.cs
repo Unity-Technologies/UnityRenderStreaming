@@ -160,13 +160,13 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionClose(self);
         }
 
-        public RTCRtpSender AddTrack(MediaStreamTrack track)
+        public RTCRtpSender AddTrack(MediaStreamTrack track )
         {
-            return new RTCRtpSender(IntPtr.Zero);
+            return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.self));
         }
         public void RemoveTrack(RTCRtpSender sender)
         {
-
+            NativeMethods.PeerConnectionRemoveTrack(self, sender.self);
         }
 
         public void AddIceCandidate(ref RTCIceCandidate​ candidate)
@@ -174,15 +174,6 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionAddIceCandidate(self, ref candidate);
         }
 
-        public void AddTrack(MediaStreamTrack track, MediaStream stream)
-        {
-            NativeMethods.PeerConnectionAddTrack(self, track, stream);
-        }
-
-        public void RemoveTrack()
-        {
-
-        }
 
         public RTCSessionDescriptionAsyncOperation CreateOffer(ref RTCOfferOptions options)
         {

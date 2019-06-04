@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 
-namespace NvCodec
+namespace WebRTC
 {
     using OutputFrame = NV_ENC_OUTPUT_PTR;
     class NvEncoder
