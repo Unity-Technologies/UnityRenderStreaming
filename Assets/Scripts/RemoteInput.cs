@@ -17,7 +17,7 @@ namespace Unity.RenderStreaming
         MouseDown = 2,
         MouseMove = 4,
         MouseWheel = 5,
-        TouchMove = 6
+        Touch = 6
     }
 
     public static class RemoteInput
@@ -58,15 +58,16 @@ namespace Unity.RenderStreaming
                     var deltaY = BitConverter.ToInt16(bytes, 3);
                     ProcessMouseMoveEvent(deltaX, deltaY, bytes[5]);
                     break;
-                case EventType.TouchMove:
-                    var length = bytes[1];
-                    var index = 2;
+                case EventType.Touch:
+                    var phase = (PointerPhase)bytes[1];
+                    var length = bytes[2];
+                    var index = 3;
                     for (int i = 0; i < length; i++)
                     {
                         var pageX = BitConverter.ToInt16(bytes, index);
                         var pageY = BitConverter.ToInt16(bytes, index+2);
                         var force = BitConverter.ToSingle(bytes, index+4);
-                        ProcessTouchMoveEvent(i, pageX, pageY, force);
+                        ProcessTouchMoveEvent(i, phase, pageX, pageY, force);
                         index += 8;
                     }
                     break;
@@ -93,9 +94,16 @@ namespace Unity.RenderStreaming
             InputSystem.Update();
         }
 
-        static void ProcessTouchMoveEvent(int touchId, short pageX, short pageY, float force)
+        static void ProcessTouchMoveEvent(int index, PointerPhase phase, short pageX, short pageY, float force)
         {
-            InputSystem.QueueStateEvent(Touch, new TouchState { touchId = touchId, position = new Vector2Int(pageX, pageY), pressure = force });
+            InputSystem.QueueDeltaStateEvent(Touch.allTouchControls[index],
+                new TouchState
+                {
+                    touchId = index,
+                    phase = phase,
+                    position = new Vector2Int(pageX, pageY),
+                    pressure = force
+                });
             InputSystem.Update();
         }
     }

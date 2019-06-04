@@ -9,7 +9,10 @@ namespace Unity.RenderStreaming
 {
     public class UIController : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField] RectTransform cursor;
+#pragma warning restore 0649
+
         Image image;
 
         Mouse mouse;
@@ -28,10 +31,9 @@ namespace Unity.RenderStreaming
             var delta = mouse.delta.ReadValue();
             cursor.Translate(delta.x, -delta.y, 0);
 
-            var touch0 = touch.primaryTouch.ReadValue();
-            if (touch0.pressure > 0)
+            if (touch.activeTouches.Count > 0)
             {
-                cursor.position = touch0.position;
+                cursor.position = touch.activeTouches[0].position.ReadValue();
             }
 
             if (Mouse.current.leftButton.ReadValue() > 0)
