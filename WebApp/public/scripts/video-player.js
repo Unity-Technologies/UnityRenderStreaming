@@ -50,8 +50,8 @@ export class VideoPlayer {
       _this.video.srcObject = e.streams[0];
     };
     this.pc.onicecandidate = function (e) {
-      console.log('Send ICE candidate', e);
       if(e.candidate != null) {
+        console.log("sendCandidate");
         _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
@@ -73,21 +73,25 @@ export class VideoPlayer {
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
+    await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
     const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
     await this.pc.setLocalDescription(desc);
-
     await this.sendOffer(offer);
-
-    this.loopGetAnswer(this.sessionId, this.interval);
-    this.loopGetCandidate(this.sessionId, this.interval);
   };
+
+  async createConnection() {
+    // signaling
+    const res = await this.signalingChannel.createConnection(this.sessionId);
+    this.connectionId = res.connectionId;
+  }
 
   async sendOffer(offer) {
     // signaling
-    const res = await this.signalingChannel.sendOffer(this.sessionId, offer.sdp);
-    this.connectionId = res.connectionId;
+    await this.signalingChannel.sendOffer(this.sessionId, this.connectionId, offer.sdp);
+    this.loopGetAnswer(this.sessionId, this.interval);
+    this.loopGetCandidate(this.sessionId, this.interval);
   }
 
   async loopGetAnswer(sessionId, interval) {

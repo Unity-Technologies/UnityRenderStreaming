@@ -47,6 +47,53 @@
 			"response": []
 		},
 		{
+			"name": "/signaling/connection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Session-Id",
+						"value": "{{session_Id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling/connection",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"connection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/signaling/offer",
 			"event": [
 				{
@@ -65,7 +112,7 @@
 						"id": "65d5877e-6458-404d-abae-3f6a2feff5d3",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
-							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -88,7 +135,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"sdp\": {{sdp}}\n}"
+					"raw": "{\t\n\t\"connectionId\": {{connection_id}},\n    \"sdp\": {{sdp}}\n}"
 				},
 				"url": {
 					"raw": "http://{{url}}/signaling/offer",
@@ -294,10 +341,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{url}}",
 					"protocol": "http",
@@ -338,10 +381,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{url}}/signaling/offer",
 					"protocol": "http",
@@ -386,10 +425,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{url}}/signaling/answer",
 					"protocol": "http",
@@ -418,6 +453,8 @@
 							"    pm.response.to.have.jsonBody(\"candidates\");",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.candidates.length).to.be.above(0);",
+							"    pm.expect(jsonData.candidates[0].connectionId).to.not.equal(null);",
+							"    pm.expect(jsonData.candidates[0].candidates.length).to.be.above(0);",
 							"});",
 							""
 						],
@@ -434,10 +471,6 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{url}}/signaling/candidate",
 					"protocol": "http",
@@ -517,31 +550,31 @@
 	],
 	"variable": [
 		{
-			"id": "eb98d1fb-ddbb-47b0-b61e-d90fed8cdbe7",
+			"id": "b31a118b-2064-4ecc-81d1-393d2a0d5054",
 			"key": "url",
 			"value": "localhost",
 			"type": "string"
 		},
 		{
-			"id": "e3e3a573-e02f-49c4-8348-787a0ad3fd06",
+			"id": "ec99f45a-bf01-4ec5-9dba-9a68b7cdb594",
 			"key": "session_Id",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "0a23febf-48c8-45e2-91e6-c6d07725f36a",
+			"id": "c50e1150-f399-4ae3-b757-7a41b5e2a69f",
 			"key": "sdp",
 			"value": "\"v=0\\r\\no=- 7060022371716902156 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=msid-semantic: WMS 3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\nm=audio 9 UDP\\/TLS\\/RTP\\/SAVPF 111 103 104 9 0 8 110 112 113 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:yOxE\\r\\na=ice-pwd:Ekoek1dl79NlWZS2dfmrW7Cr\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 02:F8:39:CE:EF:A7:77:B4:8D:56:8A:A1:C8:14:0C:1D:00:DF:99:14:ED:CE:05:4B:94:F9:EE:36:EE:4F:82:61\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http:\\/\\/www.ietf.org\\/id\\/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\\r\\na=extmap:5 urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\\r\\na=sendonly\\r\\na=msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=rtcp-mux\\r\\na=rtpmap:111 opus\\/48000\\/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:103 ISAC\\/16000\\r\\na=rtpmap:104 ISAC\\/32000\\r\\na=rtpmap:9 G722\\/8000\\r\\na=rtpmap:0 PCMU\\/8000\\r\\na=rtpmap:8 PCMA\\/8000\\r\\na=rtpmap:110 telephone-event\\/48000\\r\\na=rtpmap:112 telephone-event\\/32000\\r\\na=rtpmap:113 telephone-event\\/16000\\r\\na=rtpmap:126 telephone-event\\/8000\\r\\na=ssrc:2852212123 cname:GybrBKZh3U5xSqQq\\r\\na=ssrc:2852212123 msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=ssrc:2852212123 mslabel:3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\na=ssrc:2852212123 label:a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\n\"",
 			"type": "string"
 		},
 		{
-			"id": "85ad3843-bbae-41b0-b4a6-d3184d965bfe",
+			"id": "081b25a1-70d9-488d-9f5b-9cf3555e8676",
 			"key": "candidate",
 			"value": "\"\"",
 			"type": "string"
 		},
 		{
-			"id": "c4fd615e-6918-43ab-bdea-d5780119cb53",
+			"id": "7e5b01d1-7b15-4fa6-bf17-35389e8b874f",
 			"key": "connection_id",
 			"value": "",
 			"type": "string"
