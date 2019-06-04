@@ -27,6 +27,7 @@ function showPlayButton() {
 function onClickPlayButton() {
   const playerDiv = document.getElementById('player');
   const element = document.createElement('video');
+  element.style.touchAction = 'none';
   playerDiv.appendChild(element);
   const videoPlayer = setupVideoPlayer(element);
   registerKeyboardEvents(videoPlayer);

@@ -22,9 +22,9 @@ namespace Unity.RenderStreaming
 
     public static class RemoteInput
     {
-        static Keyboard keyboard;
-        static Mouse mouse;
-        static Touchscreen touch;
+        public static Keyboard Keyboard { get; private set; }
+        public static Mouse Mouse { get; private set; }
+        public static Touchscreen Touch { get; private set; }
 
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
         {
@@ -38,9 +38,9 @@ namespace Unity.RenderStreaming
 
         static RemoteInput()
         {
-            keyboard = GetOrAddDevice<Keyboard>();
-            mouse = GetOrAddDevice<Mouse>();
-            touch = GetOrAddDevice<Touchscreen>();
+            Keyboard = GetOrAddDevice<Keyboard>();
+            Mouse = GetOrAddDevice<Mouse>();
+            Touch = GetOrAddDevice<Touchscreen>();
         }
 
         public static void ProcessInput(byte[] bytes)
@@ -59,9 +59,16 @@ namespace Unity.RenderStreaming
                     ProcessMouseMoveEvent(deltaX, deltaY, bytes[5]);
                     break;
                 case EventType.TouchMove:
-                    var pageX = BitConverter.ToInt16(bytes, 1);
-                    var pageY = BitConverter.ToInt16(bytes, 3);
-                    ProcessTouchMoveEvent(pageX, pageY);
+                    var length = bytes[1];
+                    var index = 2;
+                    for (int i = 0; i < length; i++)
+                    {
+                        var pageX = BitConverter.ToInt16(bytes, index);
+                        var pageY = BitConverter.ToInt16(bytes, index+2);
+                        var force = BitConverter.ToSingle(bytes, index+4);
+                        ProcessTouchMoveEvent(i, pageX, pageY, force);
+                        index += 8;
+                    }
                     break;
 
             }
@@ -69,26 +76,26 @@ namespace Unity.RenderStreaming
 
         static void ProcessKeyEvent(char keyCode)
         {
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState((Key)keyCode));
-            InputSystem.QueueTextEvent(keyboard, keyCode);
+            InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
+            InputSystem.QueueTextEvent(Keyboard, keyCode);
             InputSystem.Update();
         }
 
         static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
         {
-            InputSystem.QueueStateEvent(mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
             InputSystem.Update();
         }
 
         static void ProcessMouseDownEvent(byte button)
         {
-            InputSystem.QueueStateEvent(mouse, new MouseState { buttons = button });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { buttons = button });
             InputSystem.Update();
         }
 
-        static void ProcessTouchMoveEvent(short pageX, short pageY)
+        static void ProcessTouchMoveEvent(int touchId, short pageX, short pageY, float force)
         {
-            InputSystem.QueueStateEvent(touch, new TouchState { position = new Vector2Int(pageX, pageY) });
+            InputSystem.QueueStateEvent(Touch, new TouchState { touchId = touchId, position = new Vector2Int(pageX, pageY), pressure = force });
             InputSystem.Update();
         }
     }

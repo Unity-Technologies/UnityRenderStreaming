@@ -74,13 +74,21 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     isPlayMode = true;
   }
   function sendTouchMove(e) {
-    console.log("touchMove: pageX" + e.pageX + ", pageX: " + e.pageY);
+    const changes = e.changedTouches;
+    console.log("touchMove: length:" + changes.length + " pageX" + changes[0].pageX + ", pageX: " + changes[0].pageY + ", force:" + changes[0].force);
 
-    var changes = touchEvent.changedTouches;
-    let data = new DataView(new ArrayBuffer(5));
+    let data = new DataView(new ArrayBuffer(2 + 8 * changes.length));
     data.setUint8(0, InputEvent.TouchMove);
-    data.setInt16(1, changes[0].pageX, true);
-    data.setInt16(3, changes[0].pageY, true);
+    data.setUint8(1, changes.length);
+    let byteOffset = 2;
+    for(let i = 0; i < changes.length; i++) {
+      data.setInt16(byteOffset, changes[i].pageX, true);
+      byteOffset += 2;
+      data.setInt16(byteOffset, changes[i].pageY, true);
+      byteOffset += 2;
+      data.setFloat32(byteOffset, changes[i].force, true)
+      byteOffset += 4;
+    }
     _videoPlayer.sendMsg(data.buffer);
   }
 
