@@ -15,6 +15,8 @@ namespace Unity.WebRTC
         private DelegateNativeOnIceCandidate selfOnIceCandidate;
         private DelegateOnDataChannel onDataChannel;
         private DelegateNativeOnDataChannel selfOnDataChannel;
+        private DelegateNativeOnTrack selfOnTrack;
+        private DelegateOnTrack onTrack;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
@@ -73,6 +75,17 @@ namespace Unity.WebRTC
             }
         }
 
+        public DelegateOnTrack OnTrack
+        {
+            get => onTrack;
+            set
+            {
+                onTrack = value;
+                selfOnTrack = new DelegateNativeOnTrack(PCOnDataChannel);
+
+            }
+        }
+
         void PCOnIceCandidate(string sdp, string sdpMid, int sdpMlineIndex)
         {
             WebRTC.SyncContext.Post(_ =>
@@ -93,6 +106,14 @@ namespace Unity.WebRTC
             WebRTC.SyncContext.Post(_ =>
             {
                 OnDataChannel(new RTCDataChannel(ptr));
+            }, null);
+        }
+
+        void PCOnTrack(IntPtr ptr)
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                OnTrack(new RTCTrackEvent(ptr));
             }, null);
         }
 
@@ -137,6 +158,15 @@ namespace Unity.WebRTC
         public void Close()
         {
             NativeMethods.PeerConnectionClose(self);
+        }
+
+        public RTCRtpSender AddTrack(MediaStreamTrack track)
+        {
+            return new RTCRtpSender(IntPtr.Zero);
+        }
+        public void RemoveTrack(RTCRtpSender sender)
+        {
+
         }
 
         public void AddIceCandidate(ref RTCIceCandidate​ candidate)
