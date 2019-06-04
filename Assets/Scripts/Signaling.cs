@@ -179,6 +179,18 @@ namespace Unity.RenderStreaming
             return op;
         }
 
+        public UnityWebRequestAsyncOperation DeleteConnection(string sessionId, string connectionId)
+        {
+            var obj = new AnswerReqData { connectionId = connectionId };
+            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
+            var req = new UnityWebRequest($"{Url}/signaling/connection", "DELETE");
+            req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
+            req.uploadHandler = new UploadHandlerRaw(data);
+            var op = req.SendWebRequest();
+            return op;
+        }
+
         public UnityWebRequestAsyncOperation PostOffer(string sessionId, string connectionId, string sdp)
         {
             var obj = new OfferReqData { connectionId = connectionId, sdp = sdp };
