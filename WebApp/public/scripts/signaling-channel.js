@@ -12,9 +12,13 @@ export default class SignalingChannel {
   url(method) {
     return location.protocol + '//' + location.host + '/signaling/' + method;
   };
-
   async createConnection(sessionId) {
     const response = await fetch(this.url('connection'), {method: 'PUT', headers: this.headers(sessionId)});
+    return await response.json();
+  };
+  async deleteConnection(sessionId, connectionId) {
+    const data = {'connectionId' : connectionId };
+    const response = await fetch(this.url('connection'), {method: 'DELETE', headers: this.headers(sessionId), body: JSON.stringify(data)});
     return await response.json();
   };
   async sendOffer(sessionId, connectionId, sdp) {

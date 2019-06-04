@@ -3,7 +3,7 @@ import SignalingChannel from "./signaling-channel.js"
 export class VideoPlayer {
   constructor(element, options) {
     const _this = this;
-    if(options == undefined) {
+    if(options === undefined) {
       options = {};
     }
     this.cfg = options;
@@ -27,7 +27,7 @@ export class VideoPlayer {
   }
 
   async setupConnection() {
-    var _this = this;
+    const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
       console.log('Close current PeerConnection');
@@ -51,7 +51,6 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
-        console.log("sendCandidate");
         _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
@@ -99,15 +98,13 @@ export class VideoPlayer {
       await this.sleep(interval);
 
       const state = this.pc.signalingState;
-      if(state == 'stable') {
-        console.log('stable');
+      if(state === 'stable') {
         continue;
       }
 
       const res = await this.signalingChannel.getAnswer(sessionId);
       if(res.answers.length > 0) {
         const answer = res.answers[0];
-        console.log('setAnswer');
         await this.setAnswer(sessionId, answer.sdp);
       }
     }
