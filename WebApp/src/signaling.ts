@@ -11,6 +11,16 @@ const offers: Map<string, string> = new Map<string, string>();
 const answers: Map<string, string> = new Map<string,string>();
 const candidates: Map<string, Map<string, Array<any>>> = new Map<string, Map<string, Array<any>>>();
 
+function getOrCreateConnectionIds(sessionId) : Set<string> {
+  let connectionIds = null;
+  if(!clients.has(sessionId)) {
+    connectionIds = new Set<string>();
+    clients.set(sessionId, connectionIds);
+  }
+  connectionIds = clients.get(sessionId);
+  return connectionIds;
+}
+
 router.use((req: Request, res: Response, next) => {
   if (req.url == '/') {
     next();
@@ -43,11 +53,12 @@ router.get('/candidate', (req: Request, res: Response) => {
   const sessionId : string = req.header('session-id');
   let connectionIds = Array.from(clients.get(sessionId));
 
-  let arr = new Array();
-
+  let arr = [];
   for(let connectionId of connectionIds)
   {
     let pair = connectionPair.get(connectionId);
+    if(pair == null)
+      continue;
     const otherSessionId = sessionId == pair[0] ? pair[1] : pair[0];
     if(!candidates.get(otherSessionId) || !candidates.get(otherSessionId).get(connectionId)) {
       continue;
@@ -70,24 +81,37 @@ router.delete('', (req: Request, res: Response) => {
   res.sendStatus(200);
 });
 
+router.put('/connection', (req: Request, res: Response) => {
+  const sessionId : string = req.header('session-id');
+  const connectionId : string = uuid();
+  const connectionIds = getOrCreateConnectionIds(sessionId);
+  connectionIds.add(connectionId);
+  res.json({ connectionId : connectionId });
+});
+
+router.delete('/connection', (req: Request, res: Response) => {
+  const sessionId : string = req.header('session-id');
+  const connectionId : string = req.body.connectionId;
+  const connectionIds = clients.get(sessionId);
+  connectionIds.delete(connectionId);
+  connectionPair.delete(connectionId);
+  res.sendStatus(200);
+});
+
 router.post('/offer', (req: Request, res: Response) => {
   const sessionId : string = req.header('session-id');
-  let connectionIds = clients.get(sessionId);
-  const connectionId : string = uuid();
-  connectionIds.add(connectionId);
+  const connectionId : string = req.body.connectionId;
   offers.set(connectionId, req.body.sdp);
   connectionPair.set(connectionId, [sessionId, null]);
-
-  res.json({ connectionId : connectionId });
+  res.sendStatus(200);
 });
 
 router.post('/answer', (req: Request, res: Response) => {
   const sessionId : string = req.header('session-id');
   const connectionId : string = req.body.connectionId;
-  answers.set(connectionId, req.body.sdp);
-
-  let connectionIds = clients.get(sessionId);
+  const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
+  answers.set(connectionId, req.body.sdp);
 
   let pair = connectionPair.get(connectionId);
   connectionPair.set(connectionId, [pair[0], sessionId]);
@@ -97,6 +121,7 @@ router.post('/answer', (req: Request, res: Response) => {
 router.post('/candidate', (req: Request, res: Response) => {
   const sessionId : string = req.header('session-id');
   const connectionId : string = req.body.connectionId;
+
   if(!candidates.has(sessionId)) {
     let _map = new Map<string, Array<string>>();
     candidates.set(sessionId, _map);
@@ -111,8 +136,7 @@ router.post('/candidate', (req: Request, res: Response) => {
     'candidate' : req.body.candidate,
     'sdpMLineIndex' : req.body.sdpMLineIndex,
     'sdpMid' : req.body.sdpMid
-
-  }
+  };
   arr.push(value);
 
   res.sendStatus(200);

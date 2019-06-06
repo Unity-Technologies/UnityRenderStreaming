@@ -3,7 +3,7 @@ import SignalingChannel from "./signaling-channel.js"
 export class VideoPlayer {
   constructor(element, options) {
     const _this = this;
-    if(options == undefined) {
+    if(options === undefined) {
       options = {};
     }
     this.cfg = options;
@@ -27,7 +27,7 @@ export class VideoPlayer {
   }
 
   async setupConnection() {
-    var _this = this;
+    const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
       console.log('Close current PeerConnection');
@@ -50,7 +50,6 @@ export class VideoPlayer {
       _this.video.srcObject = e.streams[0];
     };
     this.pc.onicecandidate = function (e) {
-      console.log('Send ICE candidate', e);
       if(e.candidate != null) {
         _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
@@ -73,21 +72,25 @@ export class VideoPlayer {
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
+    await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
     const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
     await this.pc.setLocalDescription(desc);
-
     await this.sendOffer(offer);
-
-    this.loopGetAnswer(this.sessionId, this.interval);
-    this.loopGetCandidate(this.sessionId, this.interval);
   };
+
+  async createConnection() {
+    // signaling
+    const res = await this.signalingChannel.createConnection(this.sessionId);
+    this.connectionId = res.connectionId;
+  }
 
   async sendOffer(offer) {
     // signaling
-    const res = await this.signalingChannel.sendOffer(this.sessionId, offer.sdp);
-    this.connectionId = res.connectionId;
+    await this.signalingChannel.sendOffer(this.sessionId, this.connectionId, offer.sdp);
+    this.loopGetAnswer(this.sessionId, this.interval);
+    this.loopGetCandidate(this.sessionId, this.interval);
   }
 
   async loopGetAnswer(sessionId, interval) {
@@ -95,15 +98,13 @@ export class VideoPlayer {
       await this.sleep(interval);
 
       const state = this.pc.signalingState;
-      if(state == 'stable') {
-        console.log('stable');
+      if(state === 'stable') {
         continue;
       }
 
       const res = await this.signalingChannel.getAnswer(sessionId);
       if(res.answers.length > 0) {
         const answer = res.answers[0];
-        console.log('setAnswer');
         await this.setAnswer(sessionId, answer.sdp);
       }
     }

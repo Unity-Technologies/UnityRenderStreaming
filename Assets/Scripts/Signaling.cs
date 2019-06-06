@@ -74,6 +74,12 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
+    class CreateConnectionResData
+    {
+        public string connectionId;
+    }
+
+    [Serializable]
     class OfferResDataList
     {
         public OfferResData[] offers;
@@ -161,6 +167,26 @@ namespace Unity.RenderStreaming
         public UnityWebRequestAsyncOperation Delete()
         {
             var req = new UnityWebRequest($"{Url}/signaling", "DELETE");
+            var op = req.SendWebRequest();
+            return op;
+        }
+
+        public UnityWebRequestAsyncOperation CreateConnection(string sessionId)
+        {
+            var req = new UnityWebRequest($"{Url}/signaling/connection", "PUT");
+            req.SetRequestHeader("Session-Id", sessionId);
+            var op = req.SendWebRequest<CreateConnectionResData>();
+            return op;
+        }
+
+        public UnityWebRequestAsyncOperation DeleteConnection(string sessionId, string connectionId)
+        {
+            var obj = new AnswerReqData { connectionId = connectionId };
+            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
+            var req = new UnityWebRequest($"{Url}/signaling/connection", "DELETE");
+            req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
+            req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest();
             return op;
         }
