@@ -94,6 +94,5 @@ namespace WebRTC
     const uint32 bufferedFrameNum = 3;
     extern UnityFrameBuffer* renderTextures[bufferedFrameNum];
     extern ID3D11DeviceContext* context;
-    extern UnityFrameBuffer* unityRT;
     extern ID3D11Device* g_D3D11Device;
 }

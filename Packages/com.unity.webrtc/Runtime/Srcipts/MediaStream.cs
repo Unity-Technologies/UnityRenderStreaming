@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace Unity.WebRTC
@@ -21,7 +23,6 @@ namespace Unity.WebRTC
             Marshal.Copy(videoPtr, tracksPtr, audioTrackSize, videoTrackSize);
             Marshal.FreeCoTaskMem(audioPtr);
             Marshal.FreeCoTaskMem(videoPtr);
-
             MediaStreamTrack[] tracks = new MediaStreamTrack[audioTrackSize + videoTrackSize];
             for (int i = 0; i < audioTrackSize + videoTrackSize; i++)
             {
@@ -73,14 +74,27 @@ namespace Unity.WebRTC
             self = ptr;
             Id = Marshal.PtrToStringAnsi(NativeMethods.MeidaStreamGetID(self));
         }
-
+        public static IEnumerator Render()
+        {
+            while (true)
+            {
+                // Wait until all frame rendering is done
+                yield return new WaitForEndOfFrame();
+                GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
+            }
+        }
     }
 
     public static class CameraExtension
     {
+        public static List<RenderTexture> camCopyRts = new List<RenderTexture>();
         public static MediaStream CaptureStream(this Camera cam)
         {
-            return new MediaStream(WebRTC.Context.CaptureVideoStream());
+            RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.BGRA32);
+            camCopyRts.Add(rt);
+            cam.targetTexture = rt;
+            NativeMethods.SetResolution(Screen.width, Screen.height);
+            return new MediaStream(WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr()));
         }
     }
 

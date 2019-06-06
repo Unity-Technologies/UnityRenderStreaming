@@ -36,6 +36,11 @@ namespace WebRTC
         return clients[id].get();
     }
 
+    void Context::EncodeFrame()
+    {
+        nvVideoCapturer->EncodeVideoData();
+    }
+
     void PeerConnectionObject::OnSuccess(webrtc::SessionDescriptionInterface* desc)
     {
         std::string out;

@@ -27,10 +27,13 @@ namespace WebRTC
             return false;
         }
         void StartEncoder();
+        void SetResolution(int32 width, int32 height);
         void SetKeyFrame();
         void SetRate(uint32 rate);
         void CaptureFrame(std::vector<uint8>& data);
         bool CaptureStarted() { return captureStarted; }
+    public:
+        UnityFrameBuffer* unityRT;
     private:
         // subclasses override this virtual method to provide a vector of fourccs, in
         // order of preference, that are expected by the media engine.

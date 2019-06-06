@@ -19,6 +19,15 @@ namespace WebRTC
         DebugLog("Register context with ID %d", uid);
         return ctx;
     }
+    void ContextManager::SetCurContext(Context* context)
+    {
+        curContext = context;
+    }
+
+    ContextManager* ContextManager::GetInstance()
+    {
+        return &s_instance;
+    }
 
     void ContextManager::DestroyContext(int uid)
     {
@@ -129,7 +138,8 @@ namespace WebRTC
         clients.clear();
         peerConnectionFactory = nullptr;
         audioTrack = nullptr;
-        videoTrack = nullptr;
+        videoTracks.clear();
+        videoStreams.clear();
 
         workerThread->Quit();
         workerThread.reset();
@@ -137,13 +147,24 @@ namespace WebRTC
         signalingThread.reset();
     }
 
-    webrtc::MediaStreamInterface* Context::CreateVideoStream()
+    void Context::SetResolution(int32 width, int32 height)
+    {
+        nvVideoCapturer->SetResolution(width, height);
+    }
+
+    webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer)
     {
         //TODO: label and stream id should be maintained in some way for multi-stream
-        videoTrack = peerConnectionFactory->CreateVideoTrack(
+        auto videoTrack = peerConnectionFactory->CreateVideoTrack(
             "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
-        videoStream = peerConnectionFactory->CreateLocalMediaStream("video");
+        if (!videoTracks.count(frameBuffer))
+        {
+            videoTracks[frameBuffer] = videoTrack;
+        }
+        auto videoStream = peerConnectionFactory->CreateLocalMediaStream("video");
         videoStream->AddTrack(videoTrack);
+        videoStreams.push_back(videoStream);
+        nvVideoCapturer->unityRT = frameBuffer;
         return videoStream.get();
     }
 

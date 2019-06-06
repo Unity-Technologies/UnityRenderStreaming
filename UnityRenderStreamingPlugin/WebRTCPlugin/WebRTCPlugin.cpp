@@ -29,15 +29,9 @@ namespace WebRTC
 
 extern "C"
 {
-
-    UNITY_INTERFACE_EXPORT void SetRenderTexturesPtr(void* ptr)
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt)
     {
-        unityRT = (UnityFrameBuffer*)ptr;
-    }
-
-    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context)
-    {
-        return context->CreateVideoStream();
+        return context->CreateVideoStream(rt);
     }
 
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureAudioStream(Context* context)
@@ -71,7 +65,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* MeidaStreamGetID(webrtc::MediaStreamInterface* stream)
     {
         auto idStr = stream->id();
-        char* id = (char*)CoTaskMemAlloc(sizeof(idStr.size() + sizeof(char));
+        char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
         idStr.copy(id, idStr.size());
         id[idStr.size()] = '\0';
         return id;
@@ -312,6 +306,17 @@ extern "C"
     UNITY_INTERFACE_EXPORT void DataChannelRegisterOnClose(DataChannelObject* dataChannelObj, DelegateOnClose callback)
     {
         dataChannelObj->RegisterOnClose(callback);
+    }
+
+    UNITY_INTERFACE_EXPORT void SetCurrentContext(Context* context)
+    {
+        ContextManager::GetInstance()->curContext = context; 
+    }
+
+    //TODO: design for multi-stream
+    UNITY_INTERFACE_EXPORT void SetResolution(int32 width, int32 height)
+    {
+        ContextManager::GetInstance()->curContext->SetResolution(width, height);
     }
 }
 

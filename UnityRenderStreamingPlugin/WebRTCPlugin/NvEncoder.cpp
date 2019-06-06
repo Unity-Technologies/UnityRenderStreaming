@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "NvEncoder.h"
-#include "Unity/IUnityGraphicsD3D11.h"
+#include "IUnityGraphicsD3D11.h"
 #include <CString>
 
 namespace WebRTC
@@ -153,7 +153,7 @@ namespace WebRTC
 
     void NvEncoder::UpdateSettings()
     {
-        bool settingChanged = false;
+        bool settingChanged = false, resChanged = false;
         if (nvEncConfig.rcParams.averageBitRate != bitRate)
         {
             nvEncConfig.rcParams.averageBitRate = bitRate;
@@ -164,9 +164,19 @@ namespace WebRTC
             nvEncInitializeParams.frameRateNum = frameRate;
             settingChanged = true;
         }
+        if (nvEncInitializeParams.encodeHeight != height || nvEncInitializeParams.encodeWidth != width)
+        {
+            nvEncInitializeParams.encodeHeight = height;
+            nvEncInitializeParams.encodeWidth = width;
+            resChanged = settingChanged = true;
+        }
 
         if (settingChanged)
         {
+            if (resChanged)
+            {
+                InitEncoderResources();
+            }
             NV_ENC_RECONFIGURE_PARAMS nvEncReconfigureParams;
             std::memcpy(&nvEncReconfigureParams.reInitEncodeParams, &nvEncInitializeParams, sizeof(nvEncInitializeParams));
             nvEncReconfigureParams.version = NV_ENC_RECONFIGURE_PARAMS_VER;
@@ -214,8 +224,8 @@ namespace WebRTC
             picParams.encodePicFlags |= NV_ENC_PIC_FLAG_FORCEIDR;
         }
         isIdrFrame = false;
-        bool result = NV_RESULT(pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams));
-        checkf(result, "Failed to encode frame");
+        bool result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams)));
+        checkf(result, StringFormat("Failed to encode frame, error is %d", errorCode).c_str()); 
 #pragma endregion
         ProcessEncodedFrame(frame);
         frameCount++;

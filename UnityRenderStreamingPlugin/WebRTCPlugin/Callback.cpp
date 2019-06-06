@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
-#include "Unity/IUnityGraphics.h"
-#include "Unity/IUnityGraphicsD3D11.h"
+#include "Context.h"
+#include "IUnityGraphics.h"
+#include "IUnityGraphicsD3D11.h"
 
 namespace WebRTC
 {
@@ -69,7 +70,10 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID)
 {
-
+    if (ContextManager::GetInstance() != nullptr)
+    {
+        ContextManager::GetInstance()->curContext->EncodeFrame();
+    }
 }
 
 

@@ -11,7 +11,8 @@ public class AddMediaStream : MonoBehaviour
     [SerializeField] private Button callButton;
     [SerializeField] private Button addTracksButton;
     [SerializeField] private Camera camera;
-    [SerializeField] private InputField infoText; 
+    [SerializeField] private InputField infoText;
+    [SerializeField] private RawImage RtImage;
 #pragma warning restore 0649
 
     private RTCPeerConnection pc1, pc2;
@@ -41,6 +42,7 @@ public class AddMediaStream : MonoBehaviour
     {
         WebRTC.Initialize();
         callButton.onClick.AddListener(() => { StartCoroutine(Call()); });
+        addTracksButton.onClick.AddListener(() => { AddTracks(); });
     }
 
     private void OnDestroy()
@@ -124,6 +126,7 @@ public class AddMediaStream : MonoBehaviour
     {
         MediaStream audioStream = Audio.CaptureStream();
         MediaStream videoStream = camera.CaptureStream();
+        RtImage.texture = camera.targetTexture;
         foreach(var track in audioStream.GetTracks())
         {
             pc1.AddTrack(track);
@@ -132,6 +135,8 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1.AddTrack(track);
         }
+        StartCoroutine(MediaStream.Render());
+        addTracksButton.interactable = false;
     }
 
     IEnumerator Call()

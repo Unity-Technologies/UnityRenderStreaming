@@ -206,6 +206,7 @@ namespace Unity.WebRTC
         {
             NativeMethods.RegisterDebugLog(DebugLog);
             s_context = Context.Create();
+            NativeMethods.SetCurrentContext(s_context.self);
             s_syncContext = SynchronizationContext.Current;
             s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
@@ -328,7 +329,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void DataChannelRegisterOnClose(IntPtr ptr, DelegateOnClose callback);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr CaptureVideoStream(IntPtr context);
+        public static extern IntPtr CaptureVideoStream(IntPtr context, IntPtr rt);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr CaptureAudioStream(IntPtr context);
         [DllImport(WebRTC.Lib)]
@@ -351,6 +352,12 @@ namespace Unity.WebRTC
         public static extern bool MediaStreamTrackGetEnabled(IntPtr track);
         [DllImport(WebRTC.Lib)]
         public static extern void MediaStreamTrackSetEnabled(IntPtr track, bool enabled);
+        [DllImport(WebRTC.Lib)]
+        public static extern void SetCurrentContext(IntPtr context);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr GetRenderEventFunc();
+        [DllImport(WebRTC.Lib)]
+        public static extern void SetResolution(int width, int height);
     }
 
     internal struct Context
@@ -362,9 +369,8 @@ namespace Unity.WebRTC
         public static bool ToBool(Context v) { return v; }
         public static Context Create(int uid=0) { return NativeMethods.ContextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
-        public IntPtr CaptureVideoStream() { return NativeMethods.CaptureVideoStream(self); }
+        public IntPtr CaptureVideoStream(IntPtr rt) { return NativeMethods.CaptureVideoStream(self, rt); }
         public IntPtr CaptureAudioStream() { return NativeMethods.CaptureAudioStream(self); }
-
     }
 }
 

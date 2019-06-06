@@ -39,7 +39,9 @@ namespace WebRTC
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
         sigslot::signal1<std::vector<uint8>&> CaptureFrame;
-
+    public:
+        int width = 1920;
+        int height = 1080;
     private:
         void LoadNvEncApi();
         void InitEncoderResources();
@@ -67,8 +69,6 @@ namespace WebRTC
         //5Mbps
         const int minBitRate = 5000000;
         int frameRate = 45;
-        int width = 1920;
-        int height = 1080;
     };
 
 }
