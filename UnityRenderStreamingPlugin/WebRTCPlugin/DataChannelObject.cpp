@@ -39,7 +39,10 @@ namespace WebRTC
         {
             size_t size = buffer.data.size();
             if (onMessage != nullptr)
+            {
+#pragma warning(suppress: 4267)
                 onMessage(buffer.data.data(), size);
+            }
         }
     }
 }

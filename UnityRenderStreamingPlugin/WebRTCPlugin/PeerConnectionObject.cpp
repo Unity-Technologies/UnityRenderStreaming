@@ -36,11 +36,6 @@ namespace WebRTC
         return clients[id].get();
     }
 
-    void Context::EncodeFrame()
-    {
-        nvVideoCapturer->EncodeVideoData();
-    }
-
     void PeerConnectionObject::OnSuccess(webrtc::SessionDescriptionInterface* desc)
     {
         std::string out;
@@ -268,7 +263,8 @@ namespace WebRTC
         localDataChannels[id] = dataChannelObj;
         return localDataChannels[id];
     }
-
+#pragma warning(push)
+#pragma warning(disable: 4715)
     RTCIceConnectionState PeerConnectionObject::GetIceCandidateState()
     {
         auto state = connection->ice_connection_state();
@@ -312,5 +308,6 @@ namespace WebRTC
             return RTCPeerConnectionState::New;
         }
     }
+#pragma warning(pop)
 }
 

@@ -68,6 +68,8 @@ namespace WebRTC
         config.servers.push_back(stunServer);
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
     }
+#pragma warning(push)
+#pragma warning(disable: 4715)
     webrtc::SdpType ConvertSdpType(RTCSdpType type)
     {
         switch (type)
@@ -93,6 +95,7 @@ namespace WebRTC
             return RTCSdpType::Answer;
         }
     }
+#pragma warning(pop)
 
     /*
     static RTCErrorDetailType convertError(webrtc::RTCErrorType type)
@@ -139,6 +142,7 @@ namespace WebRTC
         peerConnectionFactory = nullptr;
         audioTrack = nullptr;
         videoTracks.clear();
+        audioStream = nullptr;
         videoStreams.clear();
 
         workerThread->Quit();
@@ -150,6 +154,16 @@ namespace WebRTC
     void Context::SetResolution(int32 width, int32 height)
     {
         nvVideoCapturer->SetResolution(width, height);
+    }
+
+    void Context::EncodeFrame()
+    {
+        nvVideoCapturer->EncodeVideoData();
+    }
+
+    void Context::ProcessAudioData(const float* data, int32 size)
+    {
+        audioDevice->ProcessAudioData(data, size);
     }
 
     webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer)
@@ -165,6 +179,7 @@ namespace WebRTC
         videoStream->AddTrack(videoTrack);
         videoStreams.push_back(videoStream);
         nvVideoCapturer->unityRT = frameBuffer;
+        nvVideoCapturer->StartEncoder();
         return videoStream.get();
     }
 

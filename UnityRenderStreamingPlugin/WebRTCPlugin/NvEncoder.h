@@ -39,12 +39,12 @@ namespace WebRTC
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
         sigslot::signal1<std::vector<uint8>&> CaptureFrame;
+        void InitEncoderResources();
     public:
         int width = 1920;
         int height = 1080;
     private:
         void LoadNvEncApi();
-        void InitEncoderResources();
         void ReleaseFrameInputBuffer(Frame& frame);
         void ReleaseEncoderResources();
         void ProcessEncodedFrame(Frame& frame);

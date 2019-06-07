@@ -177,7 +177,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 0
+  m_Spacing: 10
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -899,7 +899,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   callButton: {fileID: 2066401219}
   addTracksButton: {fileID: 2092880142}
-  camera: {fileID: 934963288}
+  cam: {fileID: 934963288}
   infoText: {fileID: 440341638}
   RtImage: {fileID: 1839397354}
 --- !u!1 &1068560632
@@ -1401,7 +1401,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 529.8, y: 424.2}
+  m_SizeDelta: {x: 358, y: 270.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1839397354
 MonoBehaviour:

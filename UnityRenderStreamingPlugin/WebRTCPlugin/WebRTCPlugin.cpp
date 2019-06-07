@@ -29,8 +29,9 @@ namespace WebRTC
 
 extern "C"
 {
-    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt)
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
     {
+        context->SetResolution(width, height);
         return context->CreateVideoStream(rt);
     }
 
@@ -62,7 +63,7 @@ extern "C"
         }
     }
 
-    UNITY_INTERFACE_EXPORT char* MeidaStreamGetID(webrtc::MediaStreamInterface* stream)
+    UNITY_INTERFACE_EXPORT char* MediaStreamGetID(webrtc::MediaStreamInterface* stream)
     {
         auto idStr = stream->id();
         char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
@@ -75,9 +76,10 @@ extern "C"
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface** MediaStreamGetVideoTracks(webrtc::MediaStreamInterface* stream, int* length)
     {
         auto tracksVector = stream->GetVideoTracks();
+#pragma warning(suppress: 4267)
         *length = tracksVector.size();
         auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
-        for(int i = 0; i < tracksVector.size(); i++)
+        for (int i = 0; i < tracksVector.size(); i++)
         {
             tracks[i] = tracksVector[i].get();
         }
@@ -87,6 +89,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface** MediaStreamGetAudioTracks(webrtc::MediaStreamInterface* stream, int* length)
     {
         auto tracksVector = stream->GetAudioTracks();
+#pragma warning(suppress: 4267)
         *length = tracksVector.size();
         auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
         for (int i = 0; i < tracksVector.size(); i++)
@@ -178,13 +181,14 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT void PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
     {
-        obj->SetConfiguration(std::string(conf));
+        obj->SetConfiguration(std::string(conf)); 
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
     {
         std::string _conf;
         obj->GetConfiguration(_conf);
+#pragma warning(suppress: 4267)
         *len = _conf.size();
         //TODO: make it linux compatible
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
@@ -310,13 +314,21 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT void SetCurrentContext(Context* context)
     {
-        ContextManager::GetInstance()->curContext = context; 
+        ContextManager::GetInstance()->curContext = context;
     }
 
     //TODO: design for multi-stream
     UNITY_INTERFACE_EXPORT void SetResolution(int32 width, int32 height)
     {
         ContextManager::GetInstance()->curContext->SetResolution(width, height);
+    }
+
+    UNITY_INTERFACE_EXPORT void ProcessAudio(float* data, int32 size)
+    {
+        if (ContextManager::GetInstance()->curContext)
+        {
+            ContextManager::GetInstance()->curContext->ProcessAudioData(data, size);
+        }
     }
 }
 

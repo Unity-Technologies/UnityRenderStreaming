@@ -83,7 +83,6 @@ namespace WebRTC
         checkf(result, "Failed to initialize NVEncoder");
         LogPrint(StringFormat("nvEncInitializeEncoder error is %d", errorCode).c_str());
 #pragma endregion
-        InitEncoderResources();
 #pragma endregion
         isNvEncoderSupported = true;
     }
@@ -153,7 +152,7 @@ namespace WebRTC
 
     void NvEncoder::UpdateSettings()
     {
-        bool settingChanged = false, resChanged = false;
+        bool settingChanged = false;
         if (nvEncConfig.rcParams.averageBitRate != bitRate)
         {
             nvEncConfig.rcParams.averageBitRate = bitRate;
@@ -166,17 +165,13 @@ namespace WebRTC
         }
         if (nvEncInitializeParams.encodeHeight != height || nvEncInitializeParams.encodeWidth != width)
         {
-            nvEncInitializeParams.encodeHeight = height;
-            nvEncInitializeParams.encodeWidth = width;
-            resChanged = settingChanged = true;
+            nvEncInitializeParams.encodeHeight = nvEncInitializeParams.darHeight = height;
+            nvEncInitializeParams.encodeWidth = nvEncInitializeParams.darWidth = width;
+            settingChanged = true;
         }
 
         if (settingChanged)
         {
-            if (resChanged)
-            {
-                InitEncoderResources();
-            }
             NV_ENC_RECONFIGURE_PARAMS nvEncReconfigureParams;
             std::memcpy(&nvEncReconfigureParams.reInitEncodeParams, &nvEncInitializeParams, sizeof(nvEncInitializeParams));
             nvEncReconfigureParams.version = NV_ENC_RECONFIGURE_PARAMS_VER;
@@ -186,9 +181,11 @@ namespace WebRTC
     }
     void NvEncoder::SetRate(uint32 rate)
     {
+#pragma warning (suppress: 4018)
         if (rate < lastBitRate)
         {
-            bitRate = rate > minBitRate ? rate:minBitRate;
+#pragma warning(suppress: 4018)
+            bitRate = rate > minBitRate ? rate : minBitRate;
             lastBitRate = bitRate;
         }
     }
@@ -225,7 +222,7 @@ namespace WebRTC
         }
         isIdrFrame = false;
         bool result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams)));
-        checkf(result, StringFormat("Failed to encode frame, error is %d", errorCode).c_str()); 
+        checkf(result, StringFormat("Failed to encode frame, error is %d", errorCode).c_str());
 #pragma endregion
         ProcessEncodedFrame(frame);
         frameCount++;
@@ -251,7 +248,7 @@ namespace WebRTC
         if (lockBitStream.bitstreamSizeInBytes)
         {
             frame.encodedFrame.resize(lockBitStream.bitstreamSizeInBytes);
-             std::memcpy(frame.encodedFrame.data(), lockBitStream.bitstreamBufferPtr, lockBitStream.bitstreamSizeInBytes);
+            std::memcpy(frame.encodedFrame.data(), lockBitStream.bitstreamBufferPtr, lockBitStream.bitstreamSizeInBytes);
         }
 
         result = NV_RESULT((errorCode = pNvEncodeAPI->nvEncUnlockBitstream(pEncoderInterface, frame.outputFrame)));
@@ -266,8 +263,8 @@ namespace WebRTC
         ID3D11Texture2D* inputTextures = nullptr;
         D3D11_TEXTURE2D_DESC desc;
         ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-        desc.Width = nvEncInitializeParams.encodeWidth;
-        desc.Height = nvEncInitializeParams.encodeHeight;
+        desc.Width = width;
+        desc.Height = height;
         desc.MipLevels = 1;
         desc.ArraySize = 1;
         desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -288,8 +285,8 @@ namespace WebRTC
 
         if (!registerResource.resourceToRegister)
             LogPrint("resource is not initialized");
-        registerResource.width = nvEncInitializeParams.encodeWidth;
-        registerResource.height = nvEncInitializeParams.encodeHeight;
+        registerResource.width = width;
+        registerResource.height = height;
         LogPrint(StringFormat("nvEncRegisterResource: width is %d, height is %d", registerResource.width, registerResource.height).c_str());
         registerResource.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
         checkf(NV_RESULT((errorCode = pNvEncodeAPI->nvEncRegisterResource(pEncoderInterface, &registerResource))),
@@ -311,8 +308,6 @@ namespace WebRTC
         NV_ENC_CREATE_BITSTREAM_BUFFER createBitstreamBuffer;
         ZeroMemory(&createBitstreamBuffer, sizeof(NV_ENC_CREATE_BITSTREAM_BUFFER));
         createBitstreamBuffer.version = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
-        createBitstreamBuffer.size = 1024 * 1024 * 32;
-        createBitstreamBuffer.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
         checkf(NV_RESULT((errorCode = pNvEncodeAPI->nvEncCreateBitstreamBuffer(pEncoderInterface, &createBitstreamBuffer))),
             StringFormat("nvEncCreateBitstreamBuffer error is %d", errorCode).c_str());
         return createBitstreamBuffer.bitstreamBuffer;
@@ -321,6 +316,10 @@ namespace WebRTC
     {
         for (uint32 i = 0; i < bufferedFrameNum; i++)
         {
+            if (renderTextures[i])
+            {
+                renderTextures[i]->Release();
+            }
             renderTextures[i] = AllocateInputBuffers();
             Frame& frame = bufferedFrames[i];
             frame.inputFrame.registeredResource = RegisterResource(renderTextures[i]);

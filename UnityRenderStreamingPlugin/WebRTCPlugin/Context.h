@@ -19,7 +19,7 @@ namespace WebRTC
         using ContextPtr = std::unique_ptr<Context>;
         void SetCurContext(Context*);
         static ContextManager* GetInstance();
-        Context* curContext;
+        Context* curContext = nullptr;
     private:
         ~ContextManager();
 
@@ -40,6 +40,7 @@ namespace WebRTC
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
         void SetResolution(int32 width, int32 height);
         void EncodeFrame();
+        void ProcessAudioData(const float* data, int32 size);
     private:
         int m_uid;
         std::unique_ptr<rtc::Thread> workerThread;
@@ -51,6 +52,7 @@ namespace WebRTC
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
         rtc::scoped_refptr<webrtc::MediaStreamInterface> audioStream;
+        //TODO: move videoTrack to NvVideoCapturer and maintain multiple NvVideoCapturer here
         std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> videoStreams;
         std::map<UnityFrameBuffer*, rtc::scoped_refptr<webrtc::VideoTrackInterface>> videoTracks;
     };

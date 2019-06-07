@@ -12,9 +12,12 @@ namespace WebRTC
     }
     void NvVideoCapturer::EncodeVideoData()
     {
-        int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
-        context->CopyResource(renderTextures[curFrameNum], unityRT);
-        nvEncoder->EncodeFrame();
+        if (captureStarted)
+        {
+            int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
+            context->CopyResource(renderTextures[curFrameNum], unityRT);
+            nvEncoder->EncodeFrame();
+        }
     }
     void NvVideoCapturer::CaptureFrame(std::vector<uint8>& data)
     {
@@ -40,7 +43,9 @@ namespace WebRTC
 
     void NvVideoCapturer::SetResolution(int32 width, int32 height)
     {
+        //reset resources
         nvEncoder->width = width;
         nvEncoder->height = height;
+        nvEncoder->InitEncoderResources();
     }
 }

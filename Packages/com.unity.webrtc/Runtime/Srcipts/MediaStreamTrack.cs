@@ -39,8 +39,8 @@ namespace Unity.WebRTC
         internal MediaStreamTrack(IntPtr ptr)
         {
             self = ptr;
-            Kind = NativeMethods.MediaStreamTrackGetKind(self);
-            Id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
+            kind = NativeMethods.MediaStreamTrackGetKind(self);
+            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
         }
     }
 
