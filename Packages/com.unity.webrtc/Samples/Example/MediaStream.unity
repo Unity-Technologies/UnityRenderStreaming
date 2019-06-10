@@ -301,7 +301,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 208.4, y: 130.9}
+  m_SizeDelta: {x: 191.4, y: 258.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &440341638
 MonoBehaviour:
@@ -563,7 +563,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 510738293}
   m_OnClick:
     m_PersistentCalls:
@@ -1048,6 +1048,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   callButton: {fileID: 2066401219}
   addTracksButton: {fileID: 2092880142}
+  removeTracksButton: {fileID: 510738292}
   cam: {fileID: 934963288}
   infoText: {fileID: 440341638}
   RtImage: {fileID: 1839397354}

@@ -10,12 +10,15 @@ public class AddMediaStream : MonoBehaviour
 #pragma warning disable 0649
     [SerializeField] private Button callButton;
     [SerializeField] private Button addTracksButton;
+    [SerializeField] private Button removeTracksButton;
     [SerializeField] private Camera cam;
     [SerializeField] private InputField infoText;
     [SerializeField] private RawImage RtImage;
 #pragma warning restore 0649
 
     private RTCPeerConnection pc1, pc2;
+    private List<RTCRtpSender> pc1Senders;
+    private MediaStream audioStream, videoStream;
     private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
     private string msg;
@@ -44,6 +47,7 @@ public class AddMediaStream : MonoBehaviour
         WebRTC.Initialize();
         callButton.onClick.AddListener(() => { Call(); });
         addTracksButton.onClick.AddListener(() => { AddTracks(); });
+        removeTracksButton.onClick.AddListener(() => { RemoveTracks(); });
     }
 
     private void OnDestroy()
@@ -55,6 +59,7 @@ public class AddMediaStream : MonoBehaviour
     private void Start()
     {
         trackInfos = new StringBuilder();
+        pc1Senders = new List<RTCRtpSender>();
         callButton.interactable = true;
 
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
@@ -146,19 +151,30 @@ public class AddMediaStream : MonoBehaviour
     }
     public void AddTracks()
     {
-        MediaStream audioStream = Audio.CaptureStream();
-        MediaStream videoStream = cam.CaptureStream();
-        RtImage.texture = cam.targetTexture; 
+        
         foreach(var track in audioStream.GetTracks())
         {
-            pc1.AddTrack(track); 
+            pc1Senders.Add (pc1.AddTrack(track)); 
         }
         foreach(var track in videoStream.GetTracks())
         {
-            pc1.AddTrack(track);
+            pc1Senders.Add(pc1.AddTrack(track));
         }
         StartCoroutine(cam.UpdateVideo());
         addTracksButton.interactable = false;
+        removeTracksButton.interactable = true;
+    }
+
+    public void RemoveTracks()
+    {
+        foreach(var sender in pc1Senders)
+        {
+            pc1.RemoveTrack(sender);
+        }
+        addTracksButton.interactable = true;
+        removeTracksButton.interactable = false;
+        trackInfos.Clear();
+        infoText.text = "";
     }
 
     void Call()
@@ -179,6 +195,9 @@ public class AddMediaStream : MonoBehaviour
 
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
+        audioStream = Audio.CaptureStream();
+        videoStream = cam.CaptureStream();
+        RtImage.texture = cam.targetTexture;
     }
 
     /// <summary>
@@ -194,7 +213,9 @@ public class AddMediaStream : MonoBehaviour
     void OnTrack(RTCPeerConnection pc, RTCTrackEvent e)
     {
         pc.AddTrack(e.Track);
-        trackInfos.Append($"{GetName(pc)} receives remote track");
+        trackInfos.Append($"{GetName(pc)} receives remote track:\r\n");
+        trackInfos.Append($"Track kind: {e.Track.Kind}\r\n");
+        trackInfos.Append($"Track id: {e.Track.Id}\r\n");
         infoText.text = trackInfos.ToString();
     }
 

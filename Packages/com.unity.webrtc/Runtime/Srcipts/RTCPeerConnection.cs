@@ -19,6 +19,10 @@ namespace Unity.WebRTC
         private DelegateOnTrack onTrack;
         private DelegateOnNegotiationNeeded onNegotiationNeeded;
         private DelegateOnNegotiationNeeded selfOnNegotiationNeeded;
+        private DelegateCreateSDSuccess onCreateSDSuccess;
+        private DelegateCreateSDFailure onCreateSDFailure;
+        private DelegateSetSDSuccess onSetSDSuccess;
+        private DelegateSetSDFailure onSetSDFailure;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
@@ -54,7 +58,7 @@ namespace Unity.WebRTC
                 onIceConnectionChange = value;
                 selfOnIceConnectionChange = new DelegateOnIceConnectionChange(PCOnIceConnectionChange);
                 NativeMethods.PeerConnectionRegisterIceConnectionChange(self, selfOnIceConnectionChange);
-            } 
+            }
         }
         public DelegateOnIceCandidate OnIceCandidate
         {
@@ -103,7 +107,7 @@ namespace Unity.WebRTC
         {
             WebRTC.SyncContext.Post(_ =>
             {
-                RTCIceCandidate candidate = new RTCIceCandidate {candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
+                RTCIceCandidate candidate = new RTCIceCandidate { candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
                 OnIceCandidate(candidate);
             }, null);
         }
@@ -160,19 +164,23 @@ namespace Unity.WebRTC
             InitCallback();
         }
 
-        public RTCPeerConnection(ref RTCConfiguration config) 
+        public RTCPeerConnection(ref RTCConfiguration config)
         {
             m_id = GetHashCode();
             m_context = WebRTC.Context;
             string configStr = JsonUtility.ToJson(config);
-            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self,m_id, configStr);
+            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self, m_id, configStr);
             InitCallback();
         }
 
         void InitCallback()
         {
-            NativeMethods.PeerConnectionRegisterCallbackCreateSD(self, OnSuccessCreateSessionDesc, OnFailureCreateSessionDesc);
-            NativeMethods.PeerConnectionRegisterCallbackSetSD(self, OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
+            onCreateSDSuccess = new DelegateCreateSDSuccess(OnSuccessCreateSessionDesc);
+            onCreateSDFailure = new DelegateCreateSDFailure(OnFailureCreateSessionDesc);
+            onSetSDSuccess = new DelegateSetSDSuccess(OnSuccessSetSessionDesc);
+            onSetSDFailure = new DelegateSetSDFailure(OnFailureSetSessionDesc);
+            NativeMethods.PeerConnectionRegisterCallbackCreateSD(self, onCreateSDSuccess, onCreateSDFailure);
+            NativeMethods.PeerConnectionRegisterCallbackSetSD(self, onSetSDSuccess, onSetSDFailure);
         }
 
         public void Close()
@@ -180,7 +188,7 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionClose(self);
         }
 
-        public RTCRtpSender AddTrack(MediaStreamTrack track )
+        public RTCRtpSender AddTrack(MediaStreamTrack track)
         {
             return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.self));
         }
