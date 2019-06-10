@@ -29,6 +29,7 @@ public class AddMediaStream : MonoBehaviour
     private DelegateOnTrack pc2Ontrack;
     private DelegateOnNegotiationNeeded pc1OnNegotiationNeeded;
     private StringBuilder trackInfos;
+    private bool videoUpdateStarted = false;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
@@ -151,7 +152,6 @@ public class AddMediaStream : MonoBehaviour
     }
     public void AddTracks()
     {
-        
         foreach(var track in audioStream.GetTracks())
         {
             pc1Senders.Add (pc1.AddTrack(track)); 
@@ -160,7 +160,11 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1Senders.Add(pc1.AddTrack(track));
         }
-        StartCoroutine(cam.UpdateVideo());
+        if(!videoUpdateStarted)
+        {
+            StartCoroutine(cam.UpdateVideo());
+            videoUpdateStarted = true;
+        }
         addTracksButton.interactable = false;
         removeTracksButton.interactable = true;
     }
@@ -171,6 +175,7 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1.RemoveTrack(sender);
         }
+        pc1Senders.Clear();
         addTracksButton.interactable = true;
         removeTracksButton.interactable = false;
         trackInfos.Clear();
