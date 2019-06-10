@@ -85,11 +85,23 @@ namespace WebRTC
     void PeerConnectionObject::OnRenegotiationNeeded()
     {
         DebugLog("OnRenegotiationNeeded");
+        if (onRenegotiationNeeded != nullptr)
+        {
+            onRenegotiationNeeded();
+        }
+    }
+
+    void PeerConnectionObject::OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
+    {
+        DebugLog("OnTrack");
+        if (onTrack != nullptr)
+        {
+            onTrack(transceiver.get());
+        }
     }
     // Called any time the IceConnectionState changes.
     void PeerConnectionObject::OnIceConnectionChange(webrtc::PeerConnectionInterface::IceConnectionState new_state)
     {
-        LogPrint(StringFormat("OnIceConnectionChange: %d", new_state).c_str());
         if (onIceConnectionChange != nullptr)
         {
             onIceConnectionChange(new_state);
@@ -149,17 +161,6 @@ namespace WebRTC
         connection->SetRemoteDescription(observer, _desc.release());
     }
 
-    void PeerConnectionObject::RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
-    {
-        this->onSetSDSuccess = onSuccess;
-        this->onSetSDFailure = onFailure;
-    }
-
-    void PeerConnectionObject::RegisterOnDataChannel(DelegateOnDataChannel callback)
-    {
-        onDataChannel = callback;
-    }
-
     void PeerConnectionObject::SetConfiguration(const std::string& conf)
     {
         webrtc::PeerConnectionInterface::RTCConfiguration _conf;
@@ -204,26 +205,6 @@ namespace WebRTC
         webrtc::PeerConnectionInterface::RTCOfferAnswerOptions _options;
         _options.ice_restart = options.iceRestart;
         connection->CreateAnswer(this, _options);
-    }
-
-    void PeerConnectionObject::RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
-    {
-        this->onCreateSDSuccess = onSuccess;
-        this->onCreateSDFailure = onFailure;
-    }
-    void PeerConnectionObject::RegisterLocalSdpReady(DelegateLocalSdpReady callback)
-    {
-        onLocalSdpReady = callback;
-    }
-
-    void PeerConnectionObject::RegisterIceCandidate(DelegateIceCandidate callback)
-    {
-        onIceCandidate = callback;
-    }
-
-    void PeerConnectionObject::RegisterIceConnectionChange(DelegateOnIceConnectionChange callback)
-    {
-        onIceConnectionChange = callback;
     }
 
     void PeerConnectionObject::AddIceCandidate(const RTCIceCandidate& candidate)

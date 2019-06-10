@@ -247,6 +247,13 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnIceCandidate(RTCIceCandidate candidate);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    //according to JS API naming, use OnNegotiationNeeded instead of OnRenegotiationNeeded
+    public delegate void DelegateOnNegotiationNeeded();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateNativeOnTrack(IntPtr rtpTransceiverInterface);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DelegateOnTrack(RTCTrackEvent e);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegatePeerConnectionCallbackEvent(RTCPeerConnectionEventType type, [MarshalAs(UnmanagedType.LPStr, SizeConst = 1024)] string str);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateNativeOnDataChannel(IntPtr ptr);
@@ -256,11 +263,6 @@ namespace Unity.WebRTC
     public delegate void DelegateOnOpen();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnClose();
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void DelegateNativeOnTrack(IntPtr ptr);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void DelegateOnTrack(RTCTrackEvent e);
-
 
     internal static class NativeMethods
     {
@@ -312,6 +314,12 @@ namespace Unity.WebRTC
         public static extern RTCIceConnectionState PeerConnectionIceConditionState(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionRegisterOnDataChannel(IntPtr ptr, DelegateNativeOnDataChannel callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern void PeerConnectionRegisterOnRenegotiationNeeded(IntPtr ptr, DelegateOnNegotiationNeeded callback);
+        [DllImport(WebRTC.Lib)]
+        public static extern void PeerConnectionRegisterOnTrack(IntPtr ptr, DelegateNativeOnTrack rtpTransceiverInterface);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr RtpTransceiverInterfaceGetTrack(IntPtr rtpTransceiverInterface);
         [DllImport(WebRTC.Lib)]
         public static extern int DataChannelGetID(IntPtr ptr);
         [DllImport(WebRTC.Lib)]

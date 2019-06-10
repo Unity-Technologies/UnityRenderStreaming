@@ -11,8 +11,10 @@ namespace WebRTC
     using DelegateSetSDFailure = void(*)();
     using DelegateLocalSdpReady = void(*)(const char*, const char*);
     using DelegateIceCandidate = void(*)(const char*, const char*, const int);
-    using DelegateOnIceConnectionChange = void(*)(webrtc::PeerConnectionInterface::IceConnectionState state);
-    using DelegateOnDataChannel = void(*)(DataChannelObject* remoteDataChannel);
+    using DelegateOnIceConnectionChange = void(*)(webrtc::PeerConnectionInterface::IceConnectionState);
+    using DelegateOnDataChannel = void(*)(DataChannelObject*);
+    using DelegateOnRenegotiationNeeded = void(*)();
+    using DelegateOnTrack = void(*)(webrtc::RtpTransceiverInterface*);
 
     class PeerConnectionObject
         : public webrtc::CreateSessionDescriptionObserver
@@ -33,12 +35,22 @@ namespace WebRTC
         void AddIceCandidate(const RTCIceCandidate& candidate);
         DataChannelObject* createDataChannel(const char* label, const RTCDataChannelInit& options);
 
-        void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
-        void RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure);
-        void RegisterLocalSdpReady(DelegateLocalSdpReady callback);
-        void RegisterIceCandidate(DelegateIceCandidate callback);
-        void RegisterIceConnectionChange(DelegateOnIceConnectionChange callback);
-        void RegisterOnDataChannel(DelegateOnDataChannel callback);
+        void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
+        {
+            onSetSDSuccess = onSuccess;
+            onSetSDFailure = onFailure;
+        }
+        void RegisterCallbackCreateSD(DelegateCreateSDSuccess onSuccess, DelegateCreateSDFailure onFailure)
+        {
+            onCreateSDSuccess = onSuccess;
+            onCreateSDFailure = onFailure;
+        }
+        void RegisterLocalSdpReady(DelegateLocalSdpReady callback) { onLocalSdpReady = callback; }
+        void RegisterIceCandidate(DelegateIceCandidate callback) { onIceCandidate = callback; }
+        void RegisterIceConnectionChange(DelegateOnIceConnectionChange callback) { onIceConnectionChange = callback; };
+        void RegisterOnDataChannel(DelegateOnDataChannel callback) { onDataChannel = callback; }
+        void RegisterOnRenegotiationNeeded(DelegateOnRenegotiationNeeded callback) { onRenegotiationNeeded = callback; }
+        void RegisterOnTrack(DelegateOnTrack callback) { onTrack = callback; }
 
         RTCPeerConnectionState GetConnectionState();
         RTCIceConnectionState GetIceCandidateState();
@@ -71,6 +83,17 @@ namespace WebRTC
         void OnIceCandidatesRemoved(const std::vector<cricket::Candidate>& candidates) override {}
         // Called when the ICE connection receiving status changes.
         void OnIceConnectionReceivingChange(bool Receiving) override {}
+        // This is called when signaling indicates a transceiver will be receiving
+        // media from the remote endpoint. This is fired during a call to
+        // SetRemoteDescription. The receiving track can be accessed by:
+        // |transceiver->receiver()->track()| and its associated streams by
+        // |transceiver->receiver()->streams()|.
+        // Note: This will only be called if Unified Plan semantics are specified.
+        // This behavior is specified in section 2.2.8.2.5 of the "Set the
+        // RTCSessionDescription" algorithm:
+        // https://w3c.github.io/webrtc-pc/#set-description
+        void OnTrack(
+            rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver);
 
         friend class DataChannelObject;
 
@@ -83,6 +106,8 @@ namespace WebRTC
         DelegateIceCandidate onIceCandidate;
         DelegateOnIceConnectionChange onIceConnectionChange;
         DelegateOnDataChannel onDataChannel;
+        DelegateOnRenegotiationNeeded onRenegotiationNeeded;
+        DelegateOnTrack onTrack;
         rtc::scoped_refptr<webrtc::PeerConnectionInterface> connection;
     private:
         std::map<int, DataChannelObject*> localDataChannels;

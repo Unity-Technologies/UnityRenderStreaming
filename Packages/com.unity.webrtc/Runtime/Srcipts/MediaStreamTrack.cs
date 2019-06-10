@@ -70,7 +70,11 @@ namespace Unity.WebRTC
         private IntPtr self;
         private MediaStreamTrack track;
 
-        public MediaStreamTrack Track { get => track; set => track = value; }
+        public MediaStreamTrack Track
+        {
+            get => new MediaStreamTrack(NativeMethods.RtpTransceiverInterfaceGetTrack(self));
+            private set { }
+        }
         internal RTCTrackEvent(IntPtr ptr)
         {
             self = ptr;

@@ -266,6 +266,19 @@ extern "C"
         obj->RegisterOnDataChannel(callback);
     }
 
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnRenegotiationNeeded(PeerConnectionObject* obj, DelegateOnRenegotiationNeeded callback)
+    {
+        obj->RegisterOnRenegotiationNeeded(callback);
+    }
+
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnTrack(PeerConnectionObject* obj, DelegateOnTrack callback)
+    {
+        obj->RegisterOnTrack(callback);
+    }
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* RtpTransceiverInterfaceGetTrack(webrtc::RtpTransceiverInterface* obj)
+    {
+        return obj->receiver()->track().get();
+    }
 
     UNITY_INTERFACE_EXPORT int DataChannelGetID(DataChannelObject* dataChannelObj)
     {

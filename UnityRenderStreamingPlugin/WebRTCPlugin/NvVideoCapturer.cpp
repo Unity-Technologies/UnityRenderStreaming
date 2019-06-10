@@ -5,8 +5,6 @@ namespace WebRTC
 {
     NvVideoCapturer::NvVideoCapturer()
     {
-        nvEncoder = std::make_unique<NvEncoder>();
-        nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
         set_enable_video_adapter(false);
         SetSupportedFormats(std::vector<cricket::VideoFormat>(1, cricket::VideoFormat(width, height, cricket::VideoFormat::FpsToInterval(framerate), cricket::FOURCC_H264)));
     }
@@ -43,9 +41,8 @@ namespace WebRTC
 
     void NvVideoCapturer::SetResolution(int32 width, int32 height)
     {
-        //reset resources
-        nvEncoder->width = width;
-        nvEncoder->height = height;
-        nvEncoder->InitEncoderResources();
+        //initialize Encoder
+        nvEncoder = std::make_unique<NvEncoder>(width, height);
+        nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
     }
 }

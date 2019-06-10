@@ -29,7 +29,7 @@ namespace WebRTC
         };
 
     public:
-        NvEncoder();
+        NvEncoder(int width, int height);
         ~NvEncoder();
 
         void SetRate(uint32 rate);
@@ -40,9 +40,7 @@ namespace WebRTC
         uint64 GetCurrentFrameCount() { return frameCount; }
         sigslot::signal1<std::vector<uint8>&> CaptureFrame;
         void InitEncoderResources();
-    public:
-        int width = 1920;
-        int height = 1080;
+    
     private:
         void LoadNvEncApi();
         void ReleaseFrameInputBuffer(Frame& frame);
@@ -62,6 +60,8 @@ namespace WebRTC
         bool isNvEncoderSupported = false;
         bool isIdrFrame = false;
         void* hModule = nullptr;
+        int width = 1920;
+        int height = 1080;
         //10Mbps
         int bitRate = 10000000;
         //100Mbps

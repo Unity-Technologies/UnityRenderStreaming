@@ -24,6 +24,7 @@ public class AddMediaStream : MonoBehaviour
     private DelegateOnIceCandidate pc1OnIceCandidate;
     private DelegateOnIceCandidate pc2OnIceCandidate;
     private DelegateOnTrack pc2Ontrack;
+    private DelegateOnNegotiationNeeded pc1OnNegotiationNeeded;
     private StringBuilder trackInfos;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
@@ -41,7 +42,7 @@ public class AddMediaStream : MonoBehaviour
     private void Awake()
     {
         WebRTC.Initialize();
-        callButton.onClick.AddListener(() => { StartCoroutine(Call()); });
+        callButton.onClick.AddListener(() => { Call(); });
         addTracksButton.onClick.AddListener(() => { AddTracks(); });
     }
 
@@ -61,6 +62,7 @@ public class AddMediaStream : MonoBehaviour
         pc1OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
         pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
         pc2Ontrack = new DelegateOnTrack(e => { OnTrack(pc2, e); });
+        pc1OnNegotiationNeeded = new DelegateOnNegotiationNeeded(() => { StartCoroutine(Pc1OnNegotiationNeeded()); });
     }
 
     private void Update()
@@ -110,6 +112,21 @@ public class AddMediaStream : MonoBehaviour
                 break;
         }
     }
+    IEnumerator Pc1OnNegotiationNeeded()
+    {
+        Debug.Log("pc1 createOffer start");
+        var op = pc1.CreateOffer(ref OfferOptions);
+        yield return op;
+
+        if (!op.isError)
+        {
+            yield return StartCoroutine(OnCreateOfferSuccess(op.desc));
+        }
+        else
+        {
+            OnCreateSessionDescriptionError(op.error);
+        }
+    }
     void Pc1OnIceConnectinChange(RTCIceConnectionState state)
     {
         OnIceConnectionChange(pc1, state);
@@ -144,7 +161,7 @@ public class AddMediaStream : MonoBehaviour
         addTracksButton.interactable = false;
     }
 
-    IEnumerator Call()
+    void Call()
     {
         callButton.interactable = false;
         Debug.Log("GetSelectedSdpSemantics");
@@ -153,6 +170,7 @@ public class AddMediaStream : MonoBehaviour
         Debug.Log("Created local peer connection object pc1");
         pc1.OnIceCandidate = pc1OnIceCandidate;
         pc1.OnIceConnectionChange = pc1OnIceConnectionChange;
+        pc1.OnNegotiationNeeded = pc1OnNegotiationNeeded;
         pc2 = new RTCPeerConnection(ref configuration);
         Debug.Log("Created remote peer connection object pc2");
         pc2.OnIceCandidate = pc2OnIceCandidate;
@@ -161,19 +179,6 @@ public class AddMediaStream : MonoBehaviour
 
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
-
-        Debug.Log("pc1 createOffer start");
-        var op = pc1.CreateOffer(ref OfferOptions);
-        yield return op;
-
-        if (!op.isError)
-        {
-            yield return StartCoroutine(OnCreateOfferSuccess(op.desc));
-        }
-        else
-        {
-            OnCreateSessionDescriptionError(op.error);
-        }
     }
 
     /// <summary>

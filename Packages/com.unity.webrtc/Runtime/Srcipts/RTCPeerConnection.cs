@@ -17,6 +17,8 @@ namespace Unity.WebRTC
         private DelegateNativeOnDataChannel selfOnDataChannel;
         private DelegateNativeOnTrack selfOnTrack;
         private DelegateOnTrack onTrack;
+        private DelegateOnNegotiationNeeded onNegotiationNeeded;
+        private DelegateOnNegotiationNeeded selfOnNegotiationNeeded;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
@@ -75,14 +77,25 @@ namespace Unity.WebRTC
             }
         }
 
+        public DelegateOnNegotiationNeeded OnNegotiationNeeded
+        {
+            get => onNegotiationNeeded;
+            set
+            {
+                onNegotiationNeeded = value;
+                selfOnNegotiationNeeded = new DelegateOnNegotiationNeeded(PCOnNegotiationNeeded);
+                NativeMethods.PeerConnectionRegisterOnRenegotiationNeeded(self, selfOnNegotiationNeeded);
+            }
+        }
+
         public DelegateOnTrack OnTrack
         {
             get => onTrack;
             set
             {
                 onTrack = value;
-                selfOnTrack = new DelegateNativeOnTrack(PCOnDataChannel);
-
+                selfOnTrack = new DelegateNativeOnTrack(PCOnTrack);
+                NativeMethods.PeerConnectionRegisterOnTrack(self, selfOnTrack);
             }
         }
 
@@ -99,6 +112,13 @@ namespace Unity.WebRTC
             WebRTC.SyncContext.Post(_ =>
             {
                 OnIceConnectionChange(state);
+            }, null);
+        }
+        void PCOnNegotiationNeeded()
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                OnNegotiationNeeded();
             }, null);
         }
         void PCOnDataChannel(IntPtr ptr)
@@ -173,7 +193,6 @@ namespace Unity.WebRTC
         {
             NativeMethods.PeerConnectionAddIceCandidate(self, ref candidate);
         }
-
 
         public RTCSessionDescriptionAsyncOperation CreateOffer(ref RTCOfferOptions options)
         {
