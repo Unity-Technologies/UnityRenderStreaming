@@ -2,7 +2,6 @@
 using System;
 using Unity.Collections;
 using System.Collections.Generic;
-using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace Unity.WebRTC
@@ -17,10 +16,11 @@ namespace Unity.WebRTC
         {
             int audioTrackSize = 0, videoTrackSize = 0;
             IntPtr audioPtr = NativeMethods.MediaStreamGetAudioTracks(self, ref audioTrackSize);
-            IntPtr videoPtr = NativeMethods.MediaStreamGetVideoTracks(self, ref videoTrackSize); 
+            IntPtr videoPtr = NativeMethods.MediaStreamGetVideoTracks(self, ref videoTrackSize);
             IntPtr[] tracksPtr = new IntPtr[audioTrackSize + videoTrackSize];
             Marshal.Copy(audioPtr, tracksPtr, 0, audioTrackSize);
             Marshal.Copy(videoPtr, tracksPtr, audioTrackSize, videoTrackSize);
+            //TODO: Linux compatibility 
             Marshal.FreeCoTaskMem(audioPtr);
             Marshal.FreeCoTaskMem(videoPtr);
             MediaStreamTrack[] tracks = new MediaStreamTrack[audioTrackSize + videoTrackSize];
@@ -36,6 +36,7 @@ namespace Unity.WebRTC
             IntPtr ptr = NativeMethods.MediaStreamGetAudioTracks(self, ref trackSize);
             IntPtr[] tracksPtr = new IntPtr[trackSize];
             Marshal.Copy(ptr, tracksPtr, 0, trackSize);
+            //TODO: Linux compatibility 
             Marshal.FreeCoTaskMem(ptr);
 
             MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
@@ -51,6 +52,7 @@ namespace Unity.WebRTC
             IntPtr ptr = NativeMethods.MediaStreamGetVideoTracks(self, ref trackSize);
             IntPtr[] tracksPtr = new IntPtr[trackSize];
             Marshal.Copy(ptr, tracksPtr, 0, trackSize);
+            //TODO: Linux compatibility 
             Marshal.FreeCoTaskMem(ptr);
 
             MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
@@ -74,34 +76,37 @@ namespace Unity.WebRTC
             self = ptr;
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
         }
-    
-    }
 
+    }
+    internal class CamRTCleaner : MonoBehaviour
+    {
+        public RenderTexture rt;
+        void OnDestroy()
+        {
+            CameraExtension.RemoveRt(rt);
+            rt.Release();
+            Destroy(rt);
+        }
+    }
     public static class CameraExtension
     {
-        public static List<RenderTexture> camCopyRts = new List<RenderTexture>(); 
-        private static bool started = false;
-        public static MediaStream CaptureStream(this Camera cam)
+        private static List<RenderTexture> camCopyRts = new List<RenderTexture>();
+        internal static bool started = false;
+        public static MediaStream CaptureStream(this Camera cam, int width, int height)
         {
-            RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.BGRA32);
+            RenderTexture rt = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
             rt.Create();
             camCopyRts.Add(rt);
-            cam.targetTexture = rt; 
+            cam.targetTexture = rt;
+            cam.gameObject.AddComponent<CamRTCleaner>().rt = rt;
             started = true;
-            return new MediaStream(WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), Screen.width, Screen.height));
+            return new MediaStream(WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), width, height));
         }
-        public static IEnumerator UpdateVideo(this Camera cam)
+        public static void RemoveRt(RenderTexture rt)
         {
-            while (true)
-            {
-                // Wait until all frame rendering is done
-                yield return new WaitForEndOfFrame();
-                if(started)
-                {
-                    GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
-                }
-            }
+            camCopyRts.Remove(rt);
         }
+
     }
 
     public static class Audio
@@ -116,14 +121,14 @@ namespace Unity.WebRTC
         }
         public static void Update()
         {
-            if(started)
+            if (started)
             {
                 audioInput.UpdateAudio();
             }
         }
         public static void Stop()
         {
-            if(started)
+            if (started)
             {
                 AudioRenderer.Stop();
                 started = false;

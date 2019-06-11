@@ -11,7 +11,6 @@ public class Main : MonoBehaviour
     [SerializeField] private Button hangupButton;
 #pragma warning restore 0649
 
-    private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
     private Coroutine sdpCheck;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
@@ -84,16 +83,6 @@ public class Main : MonoBehaviour
         callButton.interactable = false;
         hangupButton.interactable = true;
 
-        var videoTracks = localStream.GetVideoTracks();
-        var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0)
-        {
-            Debug.Log($"Using video device: {videoTracks.Length}");
-        }
-        if (audioTracks.Length > 0)
-        {
-            Debug.Log($"Using audio device: {audioTracks.Length}");
-        }
         Debug.Log("GetSelectedSdpSemantics");
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);

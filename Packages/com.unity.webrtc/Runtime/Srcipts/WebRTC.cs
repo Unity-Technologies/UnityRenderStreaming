@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Collections;
 
 namespace Unity.WebRTC
 {
@@ -210,6 +211,19 @@ namespace Unity.WebRTC
             s_syncContext = SynchronizationContext.Current;
             s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
+        public static IEnumerator Update() 
+        {
+            while (true)
+            {
+                // Wait until all frame rendering is done
+                yield return new WaitForEndOfFrame();
+                if (CameraExtension.started)
+                {
+                    GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
+                    Audio.Update();
+                }
+            }
+        }
 
         public static void Finalize(int id = 0)
         {
@@ -365,15 +379,13 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr GetRenderEventFunc();
         [DllImport(WebRTC.Lib)]
-        public static extern void SetResolution(int width, int height);
-        [DllImport(WebRTC.Lib)]
         public static extern void ProcessAudio(float[] data, int size);
     }
 
     internal struct Context
     {
         internal IntPtr self;
-
+        internal static bool started = false;
         public bool IsNull { get { return self == IntPtr.Zero; }  }
         public static implicit operator bool(Context v) { return v.self != IntPtr.Zero; }
         public static bool ToBool(Context v) { return v; }
@@ -381,6 +393,7 @@ namespace Unity.WebRTC
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
         public IntPtr CaptureVideoStream(IntPtr rt, int width, int height) { return NativeMethods.CaptureVideoStream(self, rt, width, height); }
         public IntPtr CaptureAudioStream() { return NativeMethods.CaptureAudioStream(self); }
+       
     }
 }
 

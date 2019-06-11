@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.WebRTC;
 using UnityEngine.UI;
 using System.Text;
+using UnityEngine.SceneManagement;
 
 public class AddMediaStream : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class AddMediaStream : MonoBehaviour
 #pragma warning restore 0649
 
     private RTCPeerConnection pc1, pc2;
-    private List<RTCRtpSender> pc1Senders;
+    private List<RTCRtpSender> pc1Senders, pc2Senders;
     private MediaStream audioStream, videoStream;
     private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
@@ -61,6 +62,7 @@ public class AddMediaStream : MonoBehaviour
     {
         trackInfos = new StringBuilder();
         pc1Senders = new List<RTCRtpSender>();
+        pc2Senders = new List<RTCRtpSender>();
         callButton.interactable = true;
 
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
@@ -69,11 +71,6 @@ public class AddMediaStream : MonoBehaviour
         pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
         pc2Ontrack = new DelegateOnTrack(e => { OnTrack(pc2, e); });
         pc1OnNegotiationNeeded = new DelegateOnNegotiationNeeded(() => { StartCoroutine(Pc1OnNegotiationNeeded()); });
-    }
-
-    private void Update()
-    {
-        Audio.Update();
     }
 
     RTCConfiguration GetSelectedSdpSemantics()
@@ -150,11 +147,11 @@ public class AddMediaStream : MonoBehaviour
     {
         OnIceCandidate(pc2, candidate);
     }
-    public void AddTracks()
+    public void AddTracks() 
     {
-        foreach(var track in audioStream.GetTracks())
+        foreach (var track in audioStream.GetTracks())
         {
-            pc1Senders.Add (pc1.AddTrack(track)); 
+            pc1Senders.Add (pc1.AddTrack(track));  
         }
         foreach(var track in videoStream.GetTracks())
         {
@@ -162,7 +159,7 @@ public class AddMediaStream : MonoBehaviour
         }
         if(!videoUpdateStarted)
         {
-            StartCoroutine(cam.UpdateVideo());
+            StartCoroutine(WebRTC.Update());
             videoUpdateStarted = true;
         }
         addTracksButton.interactable = false;
@@ -175,7 +172,12 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1.RemoveTrack(sender);
         }
+        foreach(var sender in pc2Senders)
+        {
+            pc2.RemoveTrack(sender);
+        }
         pc1Senders.Clear();
+        pc2Senders.Clear();
         addTracksButton.interactable = true;
         removeTracksButton.interactable = false;
         trackInfos.Clear();
@@ -201,7 +203,7 @@ public class AddMediaStream : MonoBehaviour
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
         audioStream = Audio.CaptureStream();
-        videoStream = cam.CaptureStream();
+        videoStream = cam.CaptureStream(1280, 720);
         RtImage.texture = cam.targetTexture;
     }
 
@@ -217,7 +219,7 @@ public class AddMediaStream : MonoBehaviour
     }
     void OnTrack(RTCPeerConnection pc, RTCTrackEvent e)
     {
-        pc.AddTrack(e.Track);
+        pc2Senders.Add(pc.AddTrack(e.Track));
         trackInfos.Append($"{GetName(pc)} receives remote track:\r\n");
         trackInfos.Append($"Track kind: {e.Track.Kind}\r\n");
         trackInfos.Append($"Track id: {e.Track.Id}\r\n");
