@@ -38,7 +38,7 @@ namespace WebRTC
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
-        void SetResolution(int32 width, int32 height);
+        void InitializeEncoder(int32 width, int32 height);
         void EncodeFrame();
         void ProcessAudioData(const float* data, int32 size);
     private:

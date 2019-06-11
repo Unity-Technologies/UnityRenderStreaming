@@ -151,9 +151,9 @@ namespace WebRTC
         signalingThread.reset();
     }
 
-    void Context::SetResolution(int32 width, int32 height)
+    void Context::InitializeEncoder(int32 width, int32 height)
     {
-        nvVideoCapturer->SetResolution(width, height);
+        nvVideoCapturer->InitializeEncoder(width, height);
     }
 
     void Context::EncodeFrame()

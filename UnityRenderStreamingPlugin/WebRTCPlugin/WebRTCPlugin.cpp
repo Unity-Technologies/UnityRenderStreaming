@@ -31,7 +31,7 @@ extern "C"
 {
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
     {
-        context->SetResolution(width, height);
+        context->InitializeEncoder(width, height);
         return context->CreateVideoStream(rt);
     }
 
@@ -66,6 +66,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* MediaStreamGetID(webrtc::MediaStreamInterface* stream)
     {
         auto idStr = stream->id();
+        //TODO: Linux compatibility 
         char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
         idStr.copy(id, idStr.size());
         id[idStr.size()] = '\0';
@@ -78,6 +79,7 @@ extern "C"
         auto tracksVector = stream->GetVideoTracks();
 #pragma warning(suppress: 4267)
         *length = tracksVector.size();
+        //TODO: Linux compatibility 
         auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
         for (int i = 0; i < tracksVector.size(); i++)
         {
@@ -91,6 +93,7 @@ extern "C"
         auto tracksVector = stream->GetAudioTracks();
 #pragma warning(suppress: 4267)
         *length = tracksVector.size();
+        //TODO: Linux compatibility 
         auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
         for (int i = 0; i < tracksVector.size(); i++)
         {
@@ -190,7 +193,7 @@ extern "C"
         obj->GetConfiguration(_conf);
 #pragma warning(suppress: 4267)
         *len = _conf.size();
-        //TODO: make it linux compatible
+        //TODO: Linux compatibility 
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
         _conf.copy(*conf, _conf.size());
         (*conf)[_conf.size()] = '\0';
@@ -288,7 +291,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* DataChannelGetLabel(DataChannelObject* dataChannelObj)
     {
         std::string tmp = dataChannelObj->GetLabel();
-        //TODO: make it linux compatible
+        //TODO: Linux compatibility 
         char* label = (char*)CoTaskMemAlloc(tmp.size() + sizeof(char));
         tmp.copy(label, tmp.size());
         label[tmp.size()] = '\0';
@@ -328,12 +331,6 @@ extern "C"
     UNITY_INTERFACE_EXPORT void SetCurrentContext(Context* context)
     {
         ContextManager::GetInstance()->curContext = context;
-    }
-
-    //TODO: design for multi-stream
-    UNITY_INTERFACE_EXPORT void SetResolution(int32 width, int32 height)
-    {
-        ContextManager::GetInstance()->curContext->SetResolution(width, height);
     }
 
     UNITY_INTERFACE_EXPORT void ProcessAudio(float* data, int32 size)

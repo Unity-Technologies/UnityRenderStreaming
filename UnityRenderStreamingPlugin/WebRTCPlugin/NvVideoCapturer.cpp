@@ -39,9 +39,8 @@ namespace WebRTC
         nvEncoder->SetRate(rate);
     }
 
-    void NvVideoCapturer::SetResolution(int32 width, int32 height)
+    void NvVideoCapturer::InitializeEncoder(int32 width, int32 height)
     {
-        //initialize Encoder
         nvEncoder = std::make_unique<NvEncoder>(width, height);
         nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
     }

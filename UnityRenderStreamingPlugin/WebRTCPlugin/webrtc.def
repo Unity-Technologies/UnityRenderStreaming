@@ -1,6 +1,0 @@
-LIBRARY
-
-EXPORTS
-   UnityPluginLoad
-   UnityPluginUnload
-   GetRenderEventFunc
