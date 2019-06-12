@@ -1,3 +1,6 @@
 ﻿#pragma once
 
-void LogPrint(const char* fmt, ...);
+namespace WebRTC
+{
+    void LogPrint(const char* fmt, ...);
+}

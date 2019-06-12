@@ -5,13 +5,12 @@ using Unity.WebRTC;
 
 public class Main : MonoBehaviour
 {
-    #pragma warning disable 0649
+#pragma warning disable 0649
     [SerializeField] private Button startButton;
     [SerializeField] private Button callButton;
     [SerializeField] private Button hangupButton;
-    #pragma warning restore 0649
+#pragma warning restore 0649
 
-    private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
     private Coroutine sdpCheck;
     private DelegateOnIceConnectionChange pc1OnIceConnectionChange;
@@ -35,7 +34,7 @@ public class Main : MonoBehaviour
     {
         WebRTC.Initialize();
 
-        startButton.onClick.AddListener(() => { StartCoroutine(Start()); });
+        startButton.onClick.AddListener(() => { Start(); });
         callButton.onClick.AddListener(() => { StartCoroutine(Call()); });
         hangupButton.onClick.AddListener(() => { Hangup(); });
     }
@@ -45,15 +44,8 @@ public class Main : MonoBehaviour
         WebRTC.Finalize();
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        Debug.Log("Requesting local stream");
-        var op = MediaDevices.GetUserMedia(new MediaStreamConstraints { audio = true, video = true });
-        yield return op;
-        var stream = op.stream;
-        Debug.Log("Received local stream");
-        localStream = stream;
-
         startButton.interactable = false;
         callButton.interactable = true;
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
@@ -91,16 +83,6 @@ public class Main : MonoBehaviour
         callButton.interactable = false;
         hangupButton.interactable = true;
 
-        var videoTracks = localStream.GetVideoTracks(); 
-        var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0)
-        {
-            Debug.Log($"Using video device: {videoTracks.Length}");
-        }
-        if (audioTracks.Length > 0)
-        {
-            Debug.Log($"Using audio device: {audioTracks.Length}");
-        }
         Debug.Log("GetSelectedSdpSemantics");
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
@@ -111,12 +93,6 @@ public class Main : MonoBehaviour
         Debug.Log("Created remote peer connection object pc2");
         pc2.OnIceCandidate = pc2OnIceCandidate;
         pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
-
-        foreach (var track in localStream.GetTracks())
-        {
-            pc1.AddTrack(track, localStream);
-        }
-        Debug.Log("Added local stream to pc1");
 
         Debug.Log("pc1 createOffer start");
         var op = pc1.CreateOffer(ref OfferOptions);

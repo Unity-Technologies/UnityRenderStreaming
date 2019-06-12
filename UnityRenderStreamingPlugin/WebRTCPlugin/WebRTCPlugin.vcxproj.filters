@@ -45,23 +45,20 @@
     <ClInclude Include="NvVideoCapturer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Unity\IUnityGraphics.h">
-      <Filter>Header Files\Unity</Filter>
-    </ClInclude>
-    <ClInclude Include="Unity\IUnityGraphicsD3D11.h">
-      <Filter>Header Files\Unity</Filter>
-    </ClInclude>
-    <ClInclude Include="Unity\IUnityInterface.h">
-      <Filter>Header Files\Unity</Filter>
-    </ClInclude>
     <ClInclude Include="PeerConnectionObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataChannelObject.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unity\include\IUnityGraphics.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unity\include\IUnityGraphicsD3D11.h">
+      <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unity\include\IUnityInterface.h">
+      <Filter>Header Files\Unity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +84,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NvVideoCapturer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Callback.cpp">

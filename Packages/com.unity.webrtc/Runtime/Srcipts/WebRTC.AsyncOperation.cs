@@ -6,22 +6,6 @@ namespace Unity.WebRTC
     /// <inheritdoc />
     /// <summary>
     /// </summary>
-    public class MediaDevicesAsyncOperation : CustomYieldInstruction
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public MediaStream stream = new MediaStream();
-
-        public override bool keepWaiting
-        {
-            get
-            {
-                return false;
-            }
-        }
-    }
-
     public class RTCSessionDescriptionAsyncOperation : CustomYieldInstruction
     {
         public bool isError;
@@ -38,7 +22,7 @@ namespace Unity.WebRTC
                 }
                 else
                 {
-                    return true;
+                    return true;  
                 }   
             }
         }

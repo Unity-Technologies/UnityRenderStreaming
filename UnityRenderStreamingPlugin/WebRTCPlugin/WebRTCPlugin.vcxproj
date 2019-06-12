@@ -105,6 +105,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>jsoncpp.lib;webrtc.lib;webrtc_opus.lib;audio_decoder_opus.lib;Winmm.lib;Msdmo.lib;Dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\webrtc\lib</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,6 +121,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -138,6 +142,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>jsoncpp.lib;webrtc.lib;webrtc_opus.lib;audio_decoder_opus.lib;Winmm.lib;Msdmo.lib;Dmoguids.lib;wmcodecdspuuid.lib;Secur32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\webrtc\lib</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,9 +162,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\unity\include\IUnityGraphics.h" />
+    <ClInclude Include="..\unity\include\IUnityGraphicsD3D11.h" />
+    <ClInclude Include="..\unity\include\IUnityInterface.h" />
     <ClInclude Include="Context.h" />
     <ClInclude Include="DataChannelObject.h" />
     <ClInclude Include="DummyAudioDevice.h" />
@@ -169,10 +180,6 @@
     <ClInclude Include="NvVideoCapturer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PeerConnectionObject.h" />
-    <ClInclude Include="Unity\IUnityGraphics.h" />
-    <ClInclude Include="Unity\IUnityGraphicsD3D11.h" />
-    <ClInclude Include="Unity\IUnityInterface.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="WebRTCPlugin.h" />
   </ItemGroup>
   <ItemGroup>
@@ -190,7 +197,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="PeerConnectionObject.cpp" />
-    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="WebRTCPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
