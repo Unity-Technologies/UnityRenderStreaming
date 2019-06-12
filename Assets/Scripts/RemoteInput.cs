@@ -13,9 +13,9 @@ namespace Unity.RenderStreaming
     enum EventType
     {
         Keyboard = 0,
-        Mouse = 2,
-        MouseWheel = 5,
-        Touch = 6
+        Mouse = 1,
+        MouseWheel = 2,
+        Touch = 3
     }
 
     public static class RemoteInput
