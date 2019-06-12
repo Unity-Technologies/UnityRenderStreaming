@@ -5,17 +5,15 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.RenderStreaming
 {
-    enum KeyEventType
+    enum KeyboardEventType
     {
-        KeyDown = 0,
-        KeyUp,
-        KeyPress
+        KeyUp = 0,
+        KeyDown = 1,
     }
     enum EventType
     {
         Keyboard = 0,
-        MouseDown = 2,
-        MouseMove = 4,
+        Mouse = 2,
         MouseWheel = 5,
         Touch = 6
     }
@@ -36,7 +34,7 @@ namespace Unity.RenderStreaming
             return InputSystem.AddDevice<TDevice>();
         }
 
-        static RemoteInput()
+        public static void Initialize()
         {
             Keyboard = GetOrAddDevice<Keyboard>();
             Mouse = GetOrAddDevice<Mouse>();
@@ -48,15 +46,21 @@ namespace Unity.RenderStreaming
             switch ((EventType)bytes[0])
             {
                 case EventType.Keyboard:
-                    ProcessKeyEvent((char)bytes[1]);
+                    var type = (KeyboardEventType)bytes[1];
+                    var repeat = bytes[2] == 1;
+                    var key = (char)bytes[3];
+                    ProcessKeyEvent(type, repeat, key);
                     break;
-                case EventType.MouseDown:
-                    ProcessMouseDownEvent(bytes[1]);
-                    break;
-                case EventType.MouseMove:
+                case EventType.Mouse:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
                     var deltaY = BitConverter.ToInt16(bytes, 3);
-                    ProcessMouseMoveEvent(deltaX, deltaY, bytes[5]);
+                    var button = bytes[5];
+                    ProcessMouseMoveEvent(deltaX, deltaY, button);
+                    break;
+                case EventType.MouseWheel:
+                    var scrollX = BitConverter.ToSingle(bytes, 1);
+                    var scrollY = BitConverter.ToSingle(bytes, 5);
+                    ProcessMouseWheelEvent(scrollX, scrollY);
                     break;
                 case EventType.Touch:
                     var phase = (PointerPhase)bytes[1];
@@ -71,14 +75,32 @@ namespace Unity.RenderStreaming
                         index += 8;
                     }
                     break;
-
             }
         }
 
-        static void ProcessKeyEvent(char keyCode)
+        public static void Reset()
         {
-            InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
-            InputSystem.QueueTextEvent(Keyboard, keyCode);
+            InputSystem.QueueStateEvent(Mouse, new MouseState());
+            InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
+            InputSystem.QueueStateEvent(Touch, new TouchState());
+            InputSystem.Update();
+        }
+
+        static void ProcessKeyEvent(KeyboardEventType state, bool repeat, char keyCode)
+        {
+            switch(state)
+            {
+                case KeyboardEventType.KeyDown:
+                    if (!repeat)
+                    {
+                        InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
+                    }
+                    InputSystem.QueueTextEvent(Keyboard, keyCode);
+                    break;
+                case KeyboardEventType.KeyUp:
+                    InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
+                    break;
+            }
             InputSystem.Update();
         }
 
@@ -88,9 +110,9 @@ namespace Unity.RenderStreaming
             InputSystem.Update();
         }
 
-        static void ProcessMouseDownEvent(byte button)
+        static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { buttons = button });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
             InputSystem.Update();
         }
 

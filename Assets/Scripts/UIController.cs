@@ -11,30 +11,44 @@ namespace Unity.RenderStreaming
     {
 #pragma warning disable 0649
         [SerializeField] RectTransform cursor;
+        [SerializeField] Text text;
+
 #pragma warning restore 0649
 
         Image image;
+        Vector2 baseSize;
+        float scroll = 1f;
+        float multiplier = 0.01f;
 
-        Mouse mouse;
-        Keyboard keyboard;
-        Touchscreen touch;
         void Start()
         {
             image = cursor.GetComponent<Image>();
-            mouse = RemoteInput.Mouse;
-            keyboard = RemoteInput.Keyboard;
-            touch = RemoteInput.Touch;
+            baseSize = cursor.sizeDelta;
+
+            RemoteInput.Initialize();
+            Keyboard.current.onTextInput += OnTextInput;
+        }
+
+        void OnTextInput(char c)
+        {
+            text.text += c;
         }
 
         void FixedUpdate()
         {
-            var delta = mouse.delta.ReadValue();
+            var delta = Mouse.current.delta.ReadValue();
             cursor.Translate(delta.x, -delta.y, 0);
 
-            if (touch.activeTouches.Count > 0)
+            if (Touchscreen.current.activeTouches.Count > 0)
             {
-                cursor.position = touch.activeTouches[0].position.ReadValue();
+                cursor.position = Touchscreen.current.activeTouches[0].position.ReadValue();
             }
+
+            if (!Keyboard.current.anyKey.isPressed)
+            {
+                text.text = string.Empty;
+            }
+
 
             if (Mouse.current.leftButton.ReadValue() > 0)
             {
@@ -51,6 +65,11 @@ namespace Unity.RenderStreaming
             else
             {
                 image.color = Color.white;
+            }
+            if(!Mathf.Approximately(Mouse.current.scroll.ReadValue().y, 0f))
+            {
+                scroll += Mouse.current.scroll.ReadValue().y * multiplier;
+                cursor.sizeDelta = baseSize * scroll;
             }
         }
     }
