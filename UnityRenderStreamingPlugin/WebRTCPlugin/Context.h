@@ -18,7 +18,7 @@ namespace WebRTC
         static bool GetNvEncSupported();
      
         void SetCurContext(Context*);
-        void LoadNvEncApi();
+        bool LoadNvEncApi();
         void TryNvEnc();
         void InitializeAndTryNvEnc();
 

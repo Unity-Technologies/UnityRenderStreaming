@@ -8,9 +8,11 @@ namespace WebRTC
 
     void ContextManager::InitializeAndTryNvEnc()
     {
-        LoadNvEncApi();
-        //Try to create encoder once
-        TryNvEnc();
+        if (LoadNvEncApi())
+        {
+            //Try to create encoder once
+            TryNvEnc();
+        }
     }
     Context* ContextManager::GetContext(int uid)
     {
@@ -137,7 +139,7 @@ namespace WebRTC
         }
     }
 
-    void ContextManager::LoadNvEncApi()
+    bool ContextManager::LoadNvEncApi()
     {
         pNvEncodeAPI = std::make_unique<NV_ENCODE_API_FUNCTION_LIST>();
         pNvEncodeAPI->version = NV_ENCODE_API_FUNCTION_LIST_VER;
@@ -155,7 +157,7 @@ namespace WebRTC
         {
             LogPrint("NVENC library file is not found. Please ensure NV driver is installed");
             nvEncSupported = false;
-            return;
+            return false;
         }
         hModule = module;
 
@@ -173,7 +175,7 @@ namespace WebRTC
         {
             LogPrint("Current Driver Version does not support this NvEncodeAPI version, please upgrade driver");
             nvEncSupported = false;
-            return;
+            return false;
         }
 
         using NvEncodeAPICreateInstance_Type = NVENCSTATUS(NVENCAPI *)(NV_ENCODE_API_FUNCTION_LIST*);
@@ -187,14 +189,16 @@ namespace WebRTC
         {
             LogPrint("Cannot find NvEncodeAPICreateInstance() entry in NVENC library");
             nvEncSupported = false;
-            return;
+            return false;
         }
         bool result = (NvEncodeAPICreateInstance(pNvEncodeAPI.get()) == NV_ENC_SUCCESS);
         checkf(result, "Unable to create NvEnc API function list");
         if (!result)
         {
             nvEncSupported = false;
+            return false;
         }
+        return true;
     }
 
     void ContextManager::DestroyContext(int uid)
