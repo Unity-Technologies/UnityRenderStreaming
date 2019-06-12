@@ -34,6 +34,16 @@ extern "C"
         context->InitializeEncoder(width, height);
         return context->CreateVideoStream(rt);
     }
+    //TODO: Multi-track support
+    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
+    {
+        ContextManager::GetInstance()->curContext->StopCapturer();
+    }
+
+    UNITY_INTERFACE_EXPORT bool GetNvEncSupported()
+    {
+        return ContextManager::GetNvEncSupported();
+    }
 
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureAudioStream(Context* context)
     {

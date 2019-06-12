@@ -172,7 +172,11 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1.RemoveTrack(sender);
         }
-        foreach(var sender in pc2Senders)
+        foreach (var track in videoStream.GetTracks())
+        {
+            track.Stop();
+        }
+        foreach (var sender in pc2Senders)
         {
             pc2.RemoveTrack(sender);
         }
@@ -205,6 +209,15 @@ public class AddMediaStream : MonoBehaviour
         audioStream = Audio.CaptureStream();
         videoStream = cam.CaptureStream(1280, 720);
         RtImage.texture = cam.targetTexture;
+        if (!WebRTC.HWEncoderSupport) 
+        {
+            addTracksButton.interactable = false;
+            infoText.text = "Current GPU doesn't support Nvidia Encdoer";
+        }
+        else
+        {
+            infoText.text = "Current GPU supports Nvidia Encdoer";
+        }
     }
 
     /// <summary>

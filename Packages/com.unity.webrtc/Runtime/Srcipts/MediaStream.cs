@@ -9,8 +9,11 @@ namespace Unity.WebRTC
     public class MediaStream
     {
         private IntPtr self;
+        private RenderTexture rt;
         private string id;
         public string Id { get => id; private set { } }
+
+        public RenderTexture Rt { get => rt; private set => rt = value; }
 
         public MediaStreamTrack[] GetTracks()
         {
@@ -26,7 +29,7 @@ namespace Unity.WebRTC
             MediaStreamTrack[] tracks = new MediaStreamTrack[audioTrackSize + videoTrackSize];
             for (int i = 0; i < audioTrackSize + videoTrackSize; i++)
             {
-                tracks[i] = new MediaStreamTrack(tracksPtr[i]);
+                tracks[i] = new MediaStreamTrack(Rt, tracksPtr[i]);
             }
             return tracks;
         }
@@ -58,7 +61,7 @@ namespace Unity.WebRTC
             MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
             for (int i = 0; i < trackSize; i++)
             {
-                tracks[i] = new MediaStreamTrack(tracksPtr[i]);
+                tracks[i] = new MediaStreamTrack(Rt, tracksPtr[i]);
             }
             return tracks;
         }
@@ -71,6 +74,12 @@ namespace Unity.WebRTC
         {
             NativeMethods.MediaStreamRemoveTrack(self, track.self);
         }
+        internal MediaStream(RenderTexture rt, IntPtr ptr)
+        {
+            self = ptr;
+            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
+            Rt = rt;
+        }
         internal MediaStream(IntPtr ptr)
         {
             self = ptr;
@@ -78,14 +87,32 @@ namespace Unity.WebRTC
         }
 
     }
-    internal class CamRTCleaner : MonoBehaviour
+    internal class Cleaner : MonoBehaviour
     {
-        public RenderTexture rt;
-        void OnDestroy()
+        private Action onDestroy;
+        private void OnDestroy()
         {
-            CameraExtension.RemoveRt(rt);
-            rt.Release();
-            Destroy(rt);
+            if (onDestroy != null)
+            {
+                onDestroy();
+            }
+        }
+        public static void AddCleanerCallback(GameObject obj, Action callback)
+        {
+            Cleaner cleaner = obj.GetComponent<Cleaner>();
+            if (!cleaner)
+            {
+                cleaner = obj.AddComponent<Cleaner>();
+                cleaner.hideFlags = HideFlags.HideAndDontSave;
+            }
+            cleaner.onDestroy += callback;
+        }
+    }
+    internal static class CleanerExtensions
+    {
+        public static void AddCleanerCallback(this GameObject obj, Action callback)
+        {
+            Cleaner.AddCleanerCallback(obj, callback);
         }
     }
     public static class CameraExtension
@@ -98,9 +125,17 @@ namespace Unity.WebRTC
             rt.Create();
             camCopyRts.Add(rt);
             cam.targetTexture = rt;
-            cam.gameObject.AddComponent<CamRTCleaner>().rt = rt;
+            cam.gameObject.AddCleanerCallback(() =>
+            {
+                if (rt != null)
+                {
+                    CameraExtension.RemoveRt(rt);
+                    rt.Release();
+                    UnityEngine.Object.Destroy(rt);
+                }
+            });
             started = true;
-            return new MediaStream(WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), width, height));
+            return new MediaStream(rt, WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), width, height));
         }
         public static void RemoveRt(RenderTexture rt)
         {
@@ -137,35 +172,49 @@ namespace Unity.WebRTC
     }
     public class AudioInput
     {
-        public ushort ChannelCount { get; private set; }
+        private ushort channelCount;
         private NativeArray<float> buffer;
 
         public void BeginRecording()
         {
-            ChannelCount = new Func<ushort>(() =>
+
+            switch (AudioSettings.speakerMode)
             {
-                switch (AudioSettings.speakerMode)
-                {
-                    case AudioSpeakerMode.Mono: return 1;
-                    case AudioSpeakerMode.Stereo: return 2;
-                    case AudioSpeakerMode.Quad: return 4;
-                    case AudioSpeakerMode.Surround: return 5;
-                    case AudioSpeakerMode.Mode5point1: return 6;
-                    case AudioSpeakerMode.Mode7point1: return 7;
-                    case AudioSpeakerMode.Prologic: return 2;
-                    default: return 1;
-                }
-            })();
+                case AudioSpeakerMode.Mono:
+                    channelCount = 1;
+                    break;
+                case AudioSpeakerMode.Stereo:
+                    channelCount = 2;
+                    break;
+                case AudioSpeakerMode.Quad:
+                    channelCount = 4;
+                    break;
+                case AudioSpeakerMode.Surround:
+                    channelCount = 5;
+                    break;
+                case AudioSpeakerMode.Mode5point1:
+                    channelCount = 6;
+                    break;
+                case AudioSpeakerMode.Mode7point1:
+                    channelCount = 7;
+                    break;
+                case AudioSpeakerMode.Prologic:
+                    channelCount = 2;
+                    break;
+                default:
+                    channelCount = 1;
+                    break;
+            }
             AudioRenderer.Start();
         }
 
         public void UpdateAudio()
         {
             var sampleCountFrame = AudioRenderer.GetSampleCountForCaptureFrame();
-            //process stereo audio only
-            if (ChannelCount == 2)
+            //process Stereo mode only(Prologic mode also have 2 channel)
+            if (AudioSettings.speakerMode == AudioSpeakerMode.Stereo)
             {
-                buffer = new NativeArray<float>((int)sampleCountFrame * (int)ChannelCount, Allocator.Temp);
+                buffer = new NativeArray<float>((int)sampleCountFrame * (int)channelCount, Allocator.Temp);
                 AudioRenderer.Render(buffer);
                 float[] audioData = buffer.ToArray();
                 NativeMethods.ProcessAudio(audioData, audioData.Length);

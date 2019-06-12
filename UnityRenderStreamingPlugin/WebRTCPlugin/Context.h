@@ -14,18 +14,28 @@ namespace WebRTC
     public:
         static Context* GetContext(int uid);
         static void DestroyContext(int uid);
+        static ContextManager* GetInstance() { return &s_instance; }
+        static bool GetNvEncSupported();
+     
+        void SetCurContext(Context*);
+        void LoadNvEncApi();
+        void TryNvEnc();
+        void InitializeAndTryNvEnc();
 
     public:
         using ContextPtr = std::unique_ptr<Context>;
-        void SetCurContext(Context*);
-        static ContextManager* GetInstance();
         Context* curContext = nullptr;
+        std::unique_ptr<NV_ENCODE_API_FUNCTION_LIST> pNvEncodeAPI;
+        void* hModule = nullptr;
+    private:
+        bool nvEncSupported = true;
+        bool nvEncTryInitialized = false;
+
     private:
         ~ContextManager();
 
         std::map<int, ContextPtr> m_contexts;
         static ContextManager s_instance;
-
     };
 
     class Context
@@ -38,9 +48,10 @@ namespace WebRTC
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
-        void InitializeEncoder(int32 width, int32 height);
-        void EncodeFrame();
-        void ProcessAudioData(const float* data, int32 size);
+        void InitializeEncoder(int32 width, int32 height) { nvVideoCapturer->InitializeEncoder(width, height); }
+        void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
+        void StopCapturer() { nvVideoCapturer->Stop(); }
+        void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
     private:
         int m_uid;
         std::unique_ptr<rtc::Thread> workerThread;

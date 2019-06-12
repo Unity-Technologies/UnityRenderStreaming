@@ -65,12 +65,13 @@ namespace WebRTC
     void LogPrint(const char* fmt, ...);
     void LogPrint(const wchar_t* fmt, ...);
     void checkf(bool result, const char* msg);
-    #define DebugLog(...)       LogPrint("webrtc Log: " __VA_ARGS__)
-    #define DebugWarning(...)   LogPrint("webrtc Warning: " __VA_ARGS__)
-    #define DebugError(...)     LogPrint("webrtc Error: "  __VA_ARGS__)
-    #define DebugLogW(...)      LogPrint(L"webrtc Log: " __VA_ARGS__)
-    #define DebugWarningW(...)  LogPrint(L"webrtc Warning: " __VA_ARGS__)
-    #define DebugErrorW(...)    LogPrint(L"webrtc Error: "  __VA_ARGS__)
+#define DebugLog(...)       LogPrint("webrtc Log: " __VA_ARGS__)
+#define DebugWarning(...)   LogPrint("webrtc Warning: " __VA_ARGS__)
+#define DebugError(...)     LogPrint("webrtc Error: "  __VA_ARGS__)
+#define DebugLogW(...)      LogPrint(L"webrtc Log: " __VA_ARGS__)
+#define DebugWarningW(...)  LogPrint(L"webrtc Warning: " __VA_ARGS__)
+#define DebugErrorW(...)    LogPrint(L"webrtc Error: "  __VA_ARGS__)
+#define NV_RESULT(NvFunction) NvFunction == NV_ENC_SUCCESS
 
     template<class ... Args>
     std::string StringFormat(const std::string& format, Args ... args)
@@ -80,7 +81,6 @@ namespace WebRTC
         snprintf(buf.get(), size, format.c_str(), args ...);
         return std::string(buf.get(), buf.get() + size - 1);
     }
-
     using UnityFrameBuffer = ID3D11Texture2D;
     using uint8 = unsigned char;
     using uint16 = unsigned short int;

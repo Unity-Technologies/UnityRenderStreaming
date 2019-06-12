@@ -20,7 +20,7 @@ namespace Unity.WebRTC
         /// <summary>
         ///
         /// </summary>
-        public bool video; 
+        public bool video;
     }
 
     public struct MediaStreamEvent
@@ -29,7 +29,7 @@ namespace Unity.WebRTC
     }
 
     public struct RTCIceCandidate​
-    { 
+    {
         [MarshalAs(UnmanagedType.LPStr)]
         public string candidate;
         [MarshalAs(UnmanagedType.LPStr)]
@@ -200,8 +200,7 @@ namespace Unity.WebRTC
         private static Context s_context;
         private static SynchronizationContext s_syncContext;
         private static ConcurrentQueue<string> s_dataChannelMsgs;
-        private static readonly object s_syncMsgObj = new object();
-        private static readonly object s_syncObj = new object();
+        private static bool hWEncoderSupport;
 
         public static void Initialize()
         {
@@ -211,7 +210,7 @@ namespace Unity.WebRTC
             s_syncContext = SynchronizationContext.Current;
             s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
-        public static IEnumerator Update() 
+        public static IEnumerator Update()
         {
             while (true)
             {
@@ -236,12 +235,10 @@ namespace Unity.WebRTC
             Debug.Log(str);
         }
 
-        internal static Context Context { get { return s_context; }  }
+        internal static Context Context { get { return s_context; } }
         internal static SynchronizationContext SyncContext { get { return s_syncContext; } }
 
-        internal static object S_syncMsgObj => s_syncMsgObj; 
-
-        internal static object S_syncObj => s_syncObj;
+        public static bool HWEncoderSupport { get => NativeMethods.GetNvEncSupported(); private set { } }
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -250,13 +247,13 @@ namespace Unity.WebRTC
     internal delegate void DelegateCreateSDSuccess(RTCSdpType type, [MarshalAs(UnmanagedType.LPStr)] string sdp);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateCreateSDFailure();
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateSetSDSuccess();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateSetSDFailure();
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnIceConnectionChange(RTCIceConnectionState state);
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateNativeOnIceCandidate([MarshalAs(UnmanagedType.LPStr)] string candidate, [MarshalAs(UnmanagedType.LPStr)] string sdpMid, int sdpMlineIndex);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnIceCandidate(RTCIceCandidate candidate);
@@ -272,7 +269,7 @@ namespace Unity.WebRTC
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void DelegateNativeOnDataChannel(IntPtr ptr);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void DelegateNativeOnMessage([MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] byte[] bytes, int size);
+    internal delegate void DelegateNativeOnMessage([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] byte[] bytes, int size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DelegateOnOpen();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -280,6 +277,10 @@ namespace Unity.WebRTC
 
     internal static class NativeMethods
     {
+        [DllImport(WebRTC.Lib)]
+        public static extern void StopMediaStreamTrack(IntPtr track);
+        [DllImport(WebRTC.Lib)]
+        public static extern bool GetNvEncSupported();
         [DllImport(WebRTC.Lib)]
         public static extern void RegisterDebugLog(DelegateDebugLog func);
         [DllImport(WebRTC.Lib)]
@@ -294,7 +295,7 @@ namespace Unity.WebRTC
         public static extern void PeerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
-        [DllImport(WebRTC.Lib)] 
+        [DllImport(WebRTC.Lib)]
         public static extern IntPtr PeerConnectionCreateDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, ref RTCDataChannelInit options);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionGetConfiguration(IntPtr ptr, ref IntPtr conf, ref int len);
@@ -386,14 +387,14 @@ namespace Unity.WebRTC
     {
         internal IntPtr self;
         internal static bool started = false;
-        public bool IsNull { get { return self == IntPtr.Zero; }  }
+        public bool IsNull { get { return self == IntPtr.Zero; } }
         public static implicit operator bool(Context v) { return v.self != IntPtr.Zero; }
         public static bool ToBool(Context v) { return v; }
-        public static Context Create(int uid=0) { return NativeMethods.ContextCreate(uid); }
+        public static Context Create(int uid = 0) { return NativeMethods.ContextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
         public IntPtr CaptureVideoStream(IntPtr rt, int width, int height) { return NativeMethods.CaptureVideoStream(self, rt, width, height); }
         public IntPtr CaptureAudioStream() { return NativeMethods.CaptureAudioStream(self); }
-       
+
     }
 }
 

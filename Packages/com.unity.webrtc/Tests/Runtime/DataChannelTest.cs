@@ -46,7 +46,7 @@ class DataChannelTest
     }
 
     [UnityTest]
-    [Timeout(1000)]
+    [Timeout(5000)]
     public IEnumerator DataChannel_EventsAreSentToOther()
     {
         RTCConfiguration config = default;
@@ -83,8 +83,8 @@ class DataChannelTest
         var op6 = peer1.SetRemoteDescription(ref op4.desc);
         yield return op6;
 
-        yield return new WaitUntil(() => peer1.IceConnectionState == RTCIceConnectionState.Connected);
-        yield return new WaitUntil(() => peer2.IceConnectionState == RTCIceConnectionState.Connected);
+        yield return new WaitUntil(() => peer1.IceConnectionState == RTCIceConnectionState.Connected || peer1.IceConnectionState == RTCIceConnectionState.Completed);
+        yield return new WaitUntil(() => peer2.IceConnectionState == RTCIceConnectionState.Connected || peer2.IceConnectionState == RTCIceConnectionState.Completed);
         yield return new WaitUntil(() => channel2 != null);
 
         Assert.AreEqual(channel1.Label, channel2.Label);

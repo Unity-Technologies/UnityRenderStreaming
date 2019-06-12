@@ -10,7 +10,7 @@ namespace WebRTC
     }
     void NvVideoCapturer::EncodeVideoData()
     {
-        if (captureStarted)
+        if (captureStarted && !captureStopped)
         {
             int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
             context->CopyResource(renderTextures[curFrameNum], unityRT);

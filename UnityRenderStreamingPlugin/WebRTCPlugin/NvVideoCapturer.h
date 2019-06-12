@@ -14,7 +14,11 @@ namespace WebRTC
             return cricket::CS_RUNNING;
         }
         // Stop the video capturer.
-        virtual void Stop() override {}
+        virtual void Stop() override
+        {
+            captureStopped = true;
+            nvEncoder.reset();
+        }
         // Check if the video capturer is running.
         virtual bool IsRunning() override
         {
@@ -49,7 +53,8 @@ namespace WebRTC
         const int32 height = 720;
         const int32 framerate = 60;
 
-        bool captureStarted = false; 
+        bool captureStarted = false;
+        bool captureStopped = false;
 
     };
 
