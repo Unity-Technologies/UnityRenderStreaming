@@ -172,10 +172,6 @@ public class AddMediaStream : MonoBehaviour
         {
             pc1.RemoveTrack(sender);
         }
-        foreach (var track in videoStream.GetTracks())
-        {
-            track.Stop();
-        }
         foreach (var sender in pc2Senders)
         {
             pc2.RemoveTrack(sender);
