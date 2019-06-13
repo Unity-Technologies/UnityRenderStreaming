@@ -5,26 +5,24 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace Unity.RenderStreaming
 {
-    enum KeyEventType
+    enum KeyboardEventType
     {
-        KeyDown = 0,
-        KeyUp,
-        KeyPress
+        KeyUp = 0,
+        KeyDown = 1,
     }
     enum EventType
     {
         Keyboard = 0,
-        MouseDown = 2,
-        MouseMove = 4,
-        MouseWheel = 5,
-        TouchMove = 6
+        Mouse = 1,
+        MouseWheel = 2,
+        Touch = 3
     }
 
     public static class RemoteInput
     {
-        static Keyboard keyboard;
-        static Mouse mouse;
-        static Touchscreen touch;
+        public static Keyboard Keyboard { get; private set; }
+        public static Mouse Mouse { get; private set; }
+        public static Touchscreen Touch { get; private set; }
 
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
         {
@@ -36,11 +34,11 @@ namespace Unity.RenderStreaming
             return InputSystem.AddDevice<TDevice>();
         }
 
-        static RemoteInput()
+        public static void Initialize()
         {
-            keyboard = GetOrAddDevice<Keyboard>();
-            mouse = GetOrAddDevice<Mouse>();
-            touch = GetOrAddDevice<Touchscreen>();
+            Keyboard = GetOrAddDevice<Keyboard>();
+            Mouse = GetOrAddDevice<Mouse>();
+            Touch = GetOrAddDevice<Touchscreen>();
         }
 
         public static void ProcessInput(byte[] bytes)
@@ -48,47 +46,86 @@ namespace Unity.RenderStreaming
             switch ((EventType)bytes[0])
             {
                 case EventType.Keyboard:
-                    ProcessKeyEvent((char)bytes[1]);
+                    var type = (KeyboardEventType)bytes[1];
+                    var repeat = bytes[2] == 1;
+                    var key = (char)bytes[3];
+                    ProcessKeyEvent(type, repeat, key);
                     break;
-                case EventType.MouseDown:
-                    ProcessMouseDownEvent(bytes[1]);
-                    break;
-                case EventType.MouseMove:
+                case EventType.Mouse:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
                     var deltaY = BitConverter.ToInt16(bytes, 3);
-                    ProcessMouseMoveEvent(deltaX, deltaY, bytes[5]);
+                    var button = bytes[5];
+                    ProcessMouseMoveEvent(deltaX, deltaY, button);
                     break;
-                case EventType.TouchMove:
-                    var pageX = BitConverter.ToInt16(bytes, 1);
-                    var pageY = BitConverter.ToInt16(bytes, 3);
-                    ProcessTouchMoveEvent(pageX, pageY);
+                case EventType.MouseWheel:
+                    var scrollX = BitConverter.ToSingle(bytes, 1);
+                    var scrollY = BitConverter.ToSingle(bytes, 5);
+                    ProcessMouseWheelEvent(scrollX, scrollY);
                     break;
-
+                case EventType.Touch:
+                    var phase = (PointerPhase)bytes[1];
+                    var length = bytes[2];
+                    var index = 3;
+                    for (int i = 0; i < length; i++)
+                    {
+                        var pageX = BitConverter.ToInt16(bytes, index);
+                        var pageY = BitConverter.ToInt16(bytes, index+2);
+                        var force = BitConverter.ToSingle(bytes, index+4);
+                        ProcessTouchMoveEvent(i, phase, pageX, pageY, force);
+                        index += 8;
+                    }
+                    break;
             }
         }
 
-        static void ProcessKeyEvent(char keyCode)
+        public static void Reset()
         {
-            InputSystem.QueueStateEvent(keyboard, new KeyboardState((Key)keyCode));
-            InputSystem.QueueTextEvent(keyboard, keyCode);
+            InputSystem.QueueStateEvent(Mouse, new MouseState());
+            InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
+            InputSystem.QueueStateEvent(Touch, new TouchState());
+            InputSystem.Update();
+        }
+
+        static void ProcessKeyEvent(KeyboardEventType state, bool repeat, char keyCode)
+        {
+            switch(state)
+            {
+                case KeyboardEventType.KeyDown:
+                    if (!repeat)
+                    {
+                        InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
+                    }
+                    InputSystem.QueueTextEvent(Keyboard, keyCode);
+                    break;
+                case KeyboardEventType.KeyUp:
+                    InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
+                    break;
+            }
             InputSystem.Update();
         }
 
         static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
         {
-            InputSystem.QueueStateEvent(mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
             InputSystem.Update();
         }
 
-        static void ProcessMouseDownEvent(byte button)
+        static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(mouse, new MouseState { buttons = button });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
             InputSystem.Update();
         }
 
-        static void ProcessTouchMoveEvent(short pageX, short pageY)
+        static void ProcessTouchMoveEvent(int index, PointerPhase phase, short pageX, short pageY, float force)
         {
-            InputSystem.QueueStateEvent(touch, new TouchState { position = new Vector2Int(pageX, pageY) });
+            InputSystem.QueueDeltaStateEvent(Touch.allTouchControls[index],
+                new TouchState
+                {
+                    touchId = index,
+                    phase = phase,
+                    position = new Vector2Int(pageX, pageY),
+                    pressure = force
+                });
             InputSystem.Update();
         }
     }

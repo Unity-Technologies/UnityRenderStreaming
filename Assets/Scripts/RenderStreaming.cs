@@ -174,7 +174,11 @@ namespace Unity.RenderStreaming
             }
             channels.Add(channel.Id, channel);
 
-            channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
+            if(channel.Label == "data")
+            {
+                channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
+                channel.OnClose = new DelegateOnClose(() => { RemoteInput.Reset(); });
+            }
         }
     }
 }
