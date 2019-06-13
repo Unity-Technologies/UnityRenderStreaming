@@ -199,7 +199,6 @@ namespace Unity.WebRTC
 
         private static Context s_context;
         private static SynchronizationContext s_syncContext;
-        private static bool hWEncoderSupport;
 
         public static void Initialize()
         {
