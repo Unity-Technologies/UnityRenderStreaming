@@ -199,7 +199,6 @@ namespace Unity.WebRTC
 
         private static Context s_context;
         private static SynchronizationContext s_syncContext;
-        private static ConcurrentQueue<string> s_dataChannelMsgs;
         private static bool hWEncoderSupport;
 
         public static void Initialize()
@@ -208,7 +207,6 @@ namespace Unity.WebRTC
             s_context = Context.Create();
             NativeMethods.SetCurrentContext(s_context.self);
             s_syncContext = SynchronizationContext.Current;
-            s_dataChannelMsgs = new ConcurrentQueue<string>();
         }
         public static IEnumerator Update()
         {
@@ -219,8 +217,8 @@ namespace Unity.WebRTC
                 if (CameraExtension.started)
                 {
                     GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
-                    Audio.Update();
                 }
+                Audio.Update();
             }
         }
 
@@ -386,7 +384,6 @@ namespace Unity.WebRTC
     internal struct Context
     {
         internal IntPtr self;
-        internal static bool started = false;
         public bool IsNull { get { return self == IntPtr.Zero; } }
         public static implicit operator bool(Context v) { return v.self != IntPtr.Zero; }
         public static bool ToBool(Context v) { return v; }

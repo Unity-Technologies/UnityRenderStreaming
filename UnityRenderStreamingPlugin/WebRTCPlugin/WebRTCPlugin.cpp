@@ -133,6 +133,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* MediaStreamTrackGetID(webrtc::MediaStreamTrackInterface* track)
     {
         auto idStr = track->id();
+        //TODO: Linux compatibility 
         char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
         idStr.copy(id, idStr.size());
         id[idStr.size()] = '\0';

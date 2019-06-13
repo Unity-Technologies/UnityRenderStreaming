@@ -51,6 +51,7 @@ namespace Unity.WebRTC
             kind = NativeMethods.MediaStreamTrackGetKind(self);
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
         }
+        //Disassociate track from its source(video or audio), not for destroying the track
         public void Stop()
         {
             if (kind == TrackKind.Video)
@@ -85,7 +86,6 @@ namespace Unity.WebRTC
         internal IntPtr self;
         private MediaStreamTrack track;
 
-        public MediaStreamTrack Track { get => track; set => track = value; }
         internal RTCRtpSender(IntPtr ptr)
         {
             self = ptr;

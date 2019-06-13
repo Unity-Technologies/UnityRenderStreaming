@@ -140,6 +140,10 @@ namespace Unity.WebRTC
         public static void RemoveRt(RenderTexture rt)
         {
             camCopyRts.Remove(rt);
+            if(camCopyRts.Count == 0)
+            {
+                started = false;
+            }
         }
 
     }
