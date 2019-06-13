@@ -17,6 +17,12 @@ namespace Unity.WebRTC
         private DelegateNativeOnDataChannel selfOnDataChannel;
         private DelegateNativeOnTrack selfOnTrack;
         private DelegateOnTrack onTrack;
+        private DelegateOnNegotiationNeeded onNegotiationNeeded;
+        private DelegateOnNegotiationNeeded selfOnNegotiationNeeded;
+        private DelegateCreateSDSuccess onCreateSDSuccess;
+        private DelegateCreateSDFailure onCreateSDFailure;
+        private DelegateSetSDSuccess onSetSDSuccess;
+        private DelegateSetSDFailure onSetSDFailure;
 
         private RTCIceCandidateRequestAsyncOperation opIceCandidateRequest;
         private RTCSessionDescriptionAsyncOperation m_opSessionDesc;
@@ -52,7 +58,7 @@ namespace Unity.WebRTC
                 onIceConnectionChange = value;
                 selfOnIceConnectionChange = new DelegateOnIceConnectionChange(PCOnIceConnectionChange);
                 NativeMethods.PeerConnectionRegisterIceConnectionChange(self, selfOnIceConnectionChange);
-            } 
+            }
         }
         public DelegateOnIceCandidate OnIceCandidate
         {
@@ -75,14 +81,25 @@ namespace Unity.WebRTC
             }
         }
 
+        public DelegateOnNegotiationNeeded OnNegotiationNeeded
+        {
+            get => onNegotiationNeeded;
+            set
+            {
+                onNegotiationNeeded = value;
+                selfOnNegotiationNeeded = new DelegateOnNegotiationNeeded(PCOnNegotiationNeeded);
+                NativeMethods.PeerConnectionRegisterOnRenegotiationNeeded(self, selfOnNegotiationNeeded);
+            }
+        }
+
         public DelegateOnTrack OnTrack
         {
             get => onTrack;
             set
             {
                 onTrack = value;
-                selfOnTrack = new DelegateNativeOnTrack(PCOnDataChannel);
-
+                selfOnTrack = new DelegateNativeOnTrack(PCOnTrack);
+                NativeMethods.PeerConnectionRegisterOnTrack(self, selfOnTrack);
             }
         }
 
@@ -90,7 +107,7 @@ namespace Unity.WebRTC
         {
             WebRTC.SyncContext.Post(_ =>
             {
-                RTCIceCandidate candidate = new RTCIceCandidate {candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
+                RTCIceCandidate candidate = new RTCIceCandidate { candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
                 OnIceCandidate(candidate);
             }, null);
         }
@@ -99,6 +116,13 @@ namespace Unity.WebRTC
             WebRTC.SyncContext.Post(_ =>
             {
                 OnIceConnectionChange(state);
+            }, null);
+        }
+        void PCOnNegotiationNeeded()
+        {
+            WebRTC.SyncContext.Post(_ =>
+            {
+                OnNegotiationNeeded();
             }, null);
         }
         void PCOnDataChannel(IntPtr ptr)
@@ -140,19 +164,23 @@ namespace Unity.WebRTC
             InitCallback();
         }
 
-        public RTCPeerConnection(ref RTCConfiguration config) 
+        public RTCPeerConnection(ref RTCConfiguration config)
         {
             m_id = GetHashCode();
             m_context = WebRTC.Context;
             string configStr = JsonUtility.ToJson(config);
-            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self,m_id, configStr);
+            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self, m_id, configStr);
             InitCallback();
         }
 
         void InitCallback()
         {
-            NativeMethods.PeerConnectionRegisterCallbackCreateSD(self, OnSuccessCreateSessionDesc, OnFailureCreateSessionDesc);
-            NativeMethods.PeerConnectionRegisterCallbackSetSD(self, OnSuccessSetSessionDesc, OnFailureSetSessionDesc);
+            onCreateSDSuccess = new DelegateCreateSDSuccess(OnSuccessCreateSessionDesc);
+            onCreateSDFailure = new DelegateCreateSDFailure(OnFailureCreateSessionDesc);
+            onSetSDSuccess = new DelegateSetSDSuccess(OnSuccessSetSessionDesc);
+            onSetSDFailure = new DelegateSetSDFailure(OnFailureSetSessionDesc);
+            NativeMethods.PeerConnectionRegisterCallbackCreateSD(self, onCreateSDSuccess, onCreateSDFailure);
+            NativeMethods.PeerConnectionRegisterCallbackSetSD(self, onSetSDSuccess, onSetSDFailure);
         }
 
         public void Close()
@@ -162,26 +190,16 @@ namespace Unity.WebRTC
 
         public RTCRtpSender AddTrack(MediaStreamTrack track)
         {
-            return new RTCRtpSender(IntPtr.Zero);
+            return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.self));
         }
         public void RemoveTrack(RTCRtpSender sender)
         {
-
+            NativeMethods.PeerConnectionRemoveTrack(self, sender.self);
         }
 
         public void AddIceCandidate(ref RTCIceCandidate​ candidate)
         {
             NativeMethods.PeerConnectionAddIceCandidate(self, ref candidate);
-        }
-
-        public void AddTrack(MediaStreamTrack track, MediaStream stream)
-        {
-            NativeMethods.PeerConnectionAddTrack(self, track, stream);
-        }
-
-        public void RemoveTrack()
-        {
-
         }
 
         public RTCSessionDescriptionAsyncOperation CreateOffer(ref RTCOfferOptions options)

@@ -1,61 +1,88 @@
 ﻿#pragma once
 #include "DummyAudioDevice.h"
+#include "DummyVideoEncoder.h"
 #include "PeerConnectionObject.h"
-
-using namespace WebRTC;
-class Context;
-class PeerSDPObserver;
-class NvVideoCapturer;
+#include "NvVideoCapturer.h"
 
 
-class ContextManager
+namespace WebRTC
 {
-public:
-    static Context* GetContext(int uid);
-    static void DestroyContext(int uid);
+    class Context;
+    class PeerSDPObserver;
+    class ContextManager
+    {
+    public:
+        static Context* GetContext(int uid);
+        static void DestroyContext(int uid);
+        static ContextManager* GetInstance() { return &s_instance; }
+        static bool GetNvEncSupported();
+     
+        void SetCurContext(Context*);
+        bool LoadNvEncApi();
+        void TryNvEnc();
+        void InitializeAndTryNvEnc();
 
-private:
-    ~ContextManager();
+    public:
+        using ContextPtr = std::unique_ptr<Context>;
+        Context* curContext = nullptr;
+        std::unique_ptr<NV_ENCODE_API_FUNCTION_LIST> pNvEncodeAPI;
+        void* hModule = nullptr;
+    private:
+        bool nvEncSupported = true;
+        bool nvEncTryInitialized = false;
 
-    using ContextPtr = std::unique_ptr<Context>;
-    std::map<int, ContextPtr> m_contexts;
-    static ContextManager s_instance;
-};
+    private:
+        ~ContextManager();
 
-class Context
-{
-public:
-    explicit Context(int uid = -1);
-    ~Context();
+        std::map<int, ContextPtr> m_contexts;
+        static ContextManager s_instance;
+    };
 
-    PeerConnectionObject* CreatePeerConnection(int id);
-    PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
-private:
-    int m_uid;
-    std::unique_ptr<rtc::Thread> workerThread;
-    std::unique_ptr<rtc::Thread> signalingThread;
-    std::map<int, rtc::scoped_refptr<PeerConnectionObject>> clients;
-    rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
-    NvVideoCapturer* nvVideoCapturer;
-    rtc::scoped_refptr<DummyAudioDevice> audioDevice;
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
-};
+    class Context
+    {
+    public:
+        explicit Context(int uid = -1);
+        webrtc::MediaStreamInterface* CreateVideoStream(UnityFrameBuffer* frameBuffer);
+        webrtc::MediaStreamInterface* CreateAudioStream();
+        ~Context();
 
-class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver
-{
-public:
-    static PeerSDPObserver* Create(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
-    virtual void OnSuccess();
-    virtual void OnFailure(const std::string& error);
-    DelegateSetSDSuccess onSuccess;
-    DelegateSetSDFailure onFailure;
-protected:
-    PeerSDPObserver() {}
-    ~PeerSDPObserver() {}
+        PeerConnectionObject* CreatePeerConnection(int id);
+        PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
+        void InitializeEncoder(int32 width, int32 height) { nvVideoCapturer->InitializeEncoder(width, height); }
+        void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
+        void StopCapturer() { nvVideoCapturer->Stop(); }
+        void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
+    private:
+        int m_uid;
+        std::unique_ptr<rtc::Thread> workerThread;
+        std::unique_ptr<rtc::Thread> signalingThread;
+        std::map<int, rtc::scoped_refptr<PeerConnectionObject>> clients;
+        rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
+        NvVideoCapturer* nvVideoCapturer;
+        std::unique_ptr<NvVideoCapturer> nvVideoCapturerUnique;
+        rtc::scoped_refptr<DummyAudioDevice> audioDevice;
+        rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> audioStream;
+        //TODO: move videoTrack to NvVideoCapturer and maintain multiple NvVideoCapturer here
+        std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> videoStreams;
+        std::map<UnityFrameBuffer*, rtc::scoped_refptr<webrtc::VideoTrackInterface>> videoTracks;
+    };
 
-};  // class PeerSDPObserver
+    class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver
+    {
+    public:
+        static PeerSDPObserver* Create(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure);
+        virtual void OnSuccess();
+        virtual void OnFailure(const std::string& error);
+        DelegateSetSDSuccess onSuccess;
+        DelegateSetSDFailure onFailure;
+    protected:
+        PeerSDPObserver() {}
+        ~PeerSDPObserver() {}
 
-extern void Convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config);
-extern webrtc::SdpType ConvertSdpType(RTCSdpType type);
-extern RTCSdpType ConvertSdpType(webrtc::SdpType type);
+    };  // class PeerSDPObserver
+
+    extern void Convert(const std::string& str, webrtc::PeerConnectionInterface::RTCConfiguration& config);
+    extern webrtc::SdpType ConvertSdpType(RTCSdpType type);
+    extern RTCSdpType ConvertSdpType(webrtc::SdpType type);
+}

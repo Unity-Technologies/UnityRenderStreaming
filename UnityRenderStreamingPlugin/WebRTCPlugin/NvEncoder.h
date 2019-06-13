@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 
-namespace NvCodec
+namespace WebRTC
 {
     using OutputFrame = NV_ENC_OUTPUT_PTR;
     class NvEncoder
@@ -29,7 +29,7 @@ namespace NvCodec
         };
 
     public:
-        NvEncoder();
+        NvEncoder(int width, int height);
         ~NvEncoder();
 
         void SetRate(uint32 rate);
@@ -39,10 +39,10 @@ namespace NvCodec
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
         sigslot::signal1<std::vector<uint8>&> CaptureFrame;
+        void InitEncoderResources();
 
     private:
         void LoadNvEncApi();
-        void InitEncoderResources();
         void ReleaseFrameInputBuffer(Frame& frame);
         void ReleaseEncoderResources();
         void ProcessEncodedFrame(Frame& frame);
@@ -50,16 +50,16 @@ namespace NvCodec
         NV_ENC_REGISTERED_PTR RegisterResource(void *pBuffer);
         void MapResources(InputFrame& inputFrame);
         NV_ENC_OUTPUT_PTR InitializeBitstreamBuffer();
-        std::unique_ptr<NV_ENCODE_API_FUNCTION_LIST> pNvEncodeAPI;
-        NV_ENC_INITIALIZE_PARAMS nvEncInitializeParams;
-        NV_ENC_CONFIG nvEncConfig;
+        NV_ENC_INITIALIZE_PARAMS nvEncInitializeParams = {};
+        NV_ENC_CONFIG nvEncConfig = {};
         _NVENCSTATUS errorCode;
         Frame bufferedFrames[bufferedFrameNum];
         uint64 frameCount = 0;
         void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
         bool isIdrFrame = false;
-        void* hModule = nullptr;
+        int width = 1920;
+        int height = 1080;
         //10Mbps
         int bitRate = 10000000;
         //100Mbps
@@ -67,8 +67,6 @@ namespace NvCodec
         //5Mbps
         const int minBitRate = 5000000;
         int frameRate = 45;
-        int width = 1920;
-        int height = 1080;
     };
 
 }

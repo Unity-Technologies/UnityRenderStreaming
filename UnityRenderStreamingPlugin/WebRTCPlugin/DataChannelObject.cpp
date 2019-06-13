@@ -1,42 +1,48 @@
 ﻿#include "pch.h"
 #include "DataChannelObject.h"
 
-DataChannelObject::DataChannelObject(rtc::scoped_refptr<webrtc::DataChannelInterface> channel, PeerConnectionObject& pc) : dataChannel(channel), peerConnectionObj(pc)
+namespace WebRTC
 {
-    dataChannel->RegisterObserver(this);
-}
-DataChannelObject::~DataChannelObject()
-{
-    dataChannel->UnregisterObserver();
-}
-
-void DataChannelObject::OnStateChange()
-{
-    auto state = dataChannel->state();
-    switch (state)
+    DataChannelObject::DataChannelObject(rtc::scoped_refptr<webrtc::DataChannelInterface> channel, PeerConnectionObject& pc) : dataChannel(channel), peerConnectionObj(pc)
     {
-    case webrtc::DataChannelInterface::kOpen:
-        if (onOpen != nullptr)
-        {
-            onOpen();
-        }
-        break;
-    case webrtc::DataChannelInterface::kClosed:
-        if (onClose != nullptr)
-        {
-            onClose();
-        }
-        break;
-    default:
-        break;
+        dataChannel->RegisterObserver(this);
     }
-}
-void DataChannelObject::OnMessage(const webrtc::DataBuffer& buffer)
-{
-    if (onMessage != nullptr)
+    DataChannelObject::~DataChannelObject()
     {
-        size_t size = buffer.data.size();
+        dataChannel->UnregisterObserver();
+    }
+
+    void DataChannelObject::OnStateChange()
+    {
+        auto state = dataChannel->state();
+        switch (state)
+        {
+        case webrtc::DataChannelInterface::kOpen:
+            if (onOpen != nullptr)
+            {
+                onOpen();
+            }
+            break;
+        case webrtc::DataChannelInterface::kClosed:
+            if (onClose != nullptr)
+            {
+                onClose();
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    void DataChannelObject::OnMessage(const webrtc::DataBuffer& buffer)
+    {
         if (onMessage != nullptr)
-            onMessage(buffer.data.data(), size);
+        {
+            size_t size = buffer.data.size();
+            if (onMessage != nullptr)
+            {
+#pragma warning(suppress: 4267)
+                onMessage(buffer.data.data(), size);
+            }
+        }
     }
 }

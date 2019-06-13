@@ -3,26 +3,161 @@
 #include "PeerConnectionObject.h"
 #include "Context.h"
 
-namespace NvCodec
+using namespace WebRTC;
+namespace WebRTC
 {
-    UnityFrameBuffer* unityRT;
-}
+    DelegateDebugLog delegateDebugLog = nullptr;
+    DelegateSetResolution delegateSetResolution = nullptr;
 
-DelegateDebugLog delegateDebugLog = nullptr;
-
-void debugLog(const char* buf)
-{
-    if (delegateDebugLog != nullptr)
+    void debugLog(const char* buf)
     {
-        delegateDebugLog(buf);
+        if (delegateDebugLog != nullptr)
+        {
+            delegateDebugLog(buf);
+        }
+    }
+
+    void SetResolution(int32* width, int32* length)
+    {
+        if (delegateSetResolution != nullptr)
+        {
+            delegateSetResolution(width, length);
+        }
     }
 }
 
+
 extern "C"
 {
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
+    {
+        context->InitializeEncoder(width, height);
+        return context->CreateVideoStream(rt);
+    }
+    //TODO: Multi-track support
+    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
+    {
+        ContextManager::GetInstance()->curContext->StopCapturer();
+    }
+
+    UNITY_INTERFACE_EXPORT bool GetNvEncSupported()
+    {
+        return ContextManager::GetNvEncSupported();
+    }
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureAudioStream(Context* context)
+    {
+        return context->CreateAudioStream();
+    }
+
+    UNITY_INTERFACE_EXPORT void MediaStreamAddTrack(webrtc::MediaStreamInterface* stream, webrtc::MediaStreamTrackInterface* track)
+    {
+        if (track->kind() == "audio")
+        {
+            stream->AddTrack((webrtc::AudioTrackInterface*)track);
+        }
+        else
+        {
+            stream->AddTrack((webrtc::VideoTrackInterface*)track);
+        }
+    }
+    UNITY_INTERFACE_EXPORT void MediaStreamRemoveTrack(webrtc::MediaStreamInterface* stream, webrtc::MediaStreamTrackInterface* track)
+    {
+        if (track->kind() == "audio")
+        {
+            stream->RemoveTrack((webrtc::AudioTrackInterface*)track);
+        }
+        else
+        {
+            stream->RemoveTrack((webrtc::VideoTrackInterface*)track);
+        }
+    }
+
+    UNITY_INTERFACE_EXPORT char* MediaStreamGetID(webrtc::MediaStreamInterface* stream)
+    {
+        auto idStr = stream->id();
+        //TODO: Linux compatibility 
+        char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
+        idStr.copy(id, idStr.size());
+        id[idStr.size()] = '\0';
+        return id;
+    }
+
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface** MediaStreamGetVideoTracks(webrtc::MediaStreamInterface* stream, int* length)
+    {
+        auto tracksVector = stream->GetVideoTracks();
+#pragma warning(suppress: 4267)
+        *length = tracksVector.size();
+        //TODO: Linux compatibility 
+        auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
+        for (int i = 0; i < tracksVector.size(); i++)
+        {
+            tracks[i] = tracksVector[i].get();
+        }
+        return tracks;
+    }
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface** MediaStreamGetAudioTracks(webrtc::MediaStreamInterface* stream, int* length)
+    {
+        auto tracksVector = stream->GetAudioTracks();
+#pragma warning(suppress: 4267)
+        *length = tracksVector.size();
+        //TODO: Linux compatibility 
+        auto tracks = (webrtc::MediaStreamTrackInterface**)CoTaskMemAlloc(sizeof(webrtc::MediaStreamTrackInterface*) * tracksVector.size());
+        for (int i = 0; i < tracksVector.size(); i++)
+        {
+            tracks[i] = tracksVector[i].get();
+        }
+        return tracks;
+    }
+
+    UNITY_INTERFACE_EXPORT TrackKind MediaStreamTrackGetKind(webrtc::MediaStreamTrackInterface* track)
+    {
+        auto kindStr = track->kind();
+        if (kindStr == "audio")
+        {
+            return TrackKind::Audio;
+        }
+        else
+        {
+            return TrackKind::Video;
+        }
+    }
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface::TrackState MediaStreamTrackGetReadyState(webrtc::MediaStreamTrackInterface* track)
+    {
+        return track->state();
+    }
+
+    UNITY_INTERFACE_EXPORT char* MediaStreamTrackGetID(webrtc::MediaStreamTrackInterface* track)
+    {
+        auto idStr = track->id();
+        //TODO: Linux compatibility 
+        char* id = (char*)CoTaskMemAlloc(idStr.size() + sizeof(char));
+        idStr.copy(id, idStr.size());
+        id[idStr.size()] = '\0';
+        return id;
+    }
+
+    UNITY_INTERFACE_EXPORT bool MediaStreamTrackGetEnabled(webrtc::MediaStreamTrackInterface* track)
+    {
+        return track->enabled();
+    }
+
+    UNITY_INTERFACE_EXPORT void MediaStreamTrackSetEnabled(webrtc::MediaStreamTrackInterface* track, bool enabled)
+    {
+        track->set_enabled(enabled);
+    }
+
     UNITY_INTERFACE_EXPORT void RegisterDebugLog(DelegateDebugLog func)
     {
         delegateDebugLog = func;
+    }
+
+    UNITY_INTERFACE_EXPORT void RegisterSetResolution(DelegateSetResolution func)
+    {
+        delegateSetResolution = func;
     }
 
     UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid)
@@ -48,18 +183,28 @@ extern "C"
     {
         obj->Close();
     }
+    UNITY_INTERFACE_EXPORT webrtc::RtpSenderInterface* PeerConnectionAddTrack(PeerConnectionObject* obj, webrtc::MediaStreamTrackInterface* track)
+    {
+        return obj->connection->AddTrack(rtc::scoped_refptr <webrtc::MediaStreamTrackInterface>(track), { "unity" }).value().get();
+    }
+
+    UNITY_INTERFACE_EXPORT void PeerConnectionRemoveTrack(PeerConnectionObject* obj, webrtc::RtpSenderInterface* sender)
+    {
+        obj->connection->RemoveTrack(sender);
+    }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
     {
-        obj->SetConfiguration(std::string(conf));
+        obj->SetConfiguration(std::string(conf)); 
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
     {
         std::string _conf;
         obj->GetConfiguration(_conf);
+#pragma warning(suppress: 4267)
         *len = _conf.size();
-        //TODO: make it linux compatible
+        //TODO: Linux compatibility 
         *conf = (char*)::CoTaskMemAlloc(_conf.size() + sizeof(char));
         _conf.copy(*conf, _conf.size());
         (*conf)[_conf.size()] = '\0';
@@ -135,6 +280,19 @@ extern "C"
         obj->RegisterOnDataChannel(callback);
     }
 
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnRenegotiationNeeded(PeerConnectionObject* obj, DelegateOnRenegotiationNeeded callback)
+    {
+        obj->RegisterOnRenegotiationNeeded(callback);
+    }
+
+    UNITY_INTERFACE_EXPORT void PeerConnectionRegisterOnTrack(PeerConnectionObject* obj, DelegateOnTrack callback)
+    {
+        obj->RegisterOnTrack(callback);
+    }
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* RtpTransceiverInterfaceGetTrack(webrtc::RtpTransceiverInterface* obj)
+    {
+        return obj->receiver()->track().get();
+    }
 
     UNITY_INTERFACE_EXPORT int DataChannelGetID(DataChannelObject* dataChannelObj)
     {
@@ -144,7 +302,7 @@ extern "C"
     UNITY_INTERFACE_EXPORT char* DataChannelGetLabel(DataChannelObject* dataChannelObj)
     {
         std::string tmp = dataChannelObj->GetLabel();
-        //TODO: make it linux compatible
+        //TODO: Linux compatibility 
         char* label = (char*)CoTaskMemAlloc(tmp.size() + sizeof(char));
         tmp.copy(label, tmp.size());
         label[tmp.size()] = '\0';
@@ -179,6 +337,19 @@ extern "C"
     UNITY_INTERFACE_EXPORT void DataChannelRegisterOnClose(DataChannelObject* dataChannelObj, DelegateOnClose callback)
     {
         dataChannelObj->RegisterOnClose(callback);
+    }
+
+    UNITY_INTERFACE_EXPORT void SetCurrentContext(Context* context)
+    {
+        ContextManager::GetInstance()->curContext = context;
+    }
+
+    UNITY_INTERFACE_EXPORT void ProcessAudio(float* data, int32 size)
+    {
+        if (ContextManager::GetInstance()->curContext)
+        {
+            ContextManager::GetInstance()->curContext->ProcessAudioData(data, size);
+        }
     }
 }
 

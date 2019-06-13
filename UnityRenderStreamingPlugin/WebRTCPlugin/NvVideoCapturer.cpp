@@ -3,17 +3,14 @@
 
 namespace WebRTC
 {
-    UnityFrameBuffer* unityRT;
     NvVideoCapturer::NvVideoCapturer()
     {
-        nvEncoder = std::make_unique<NvCodec::NvEncoder>();
-        nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
         set_enable_video_adapter(false);
         SetSupportedFormats(std::vector<cricket::VideoFormat>(1, cricket::VideoFormat(width, height, cricket::VideoFormat::FpsToInterval(framerate), cricket::FOURCC_H264)));
     }
     void NvVideoCapturer::EncodeVideoData()
     {
-        if (captureStarted)
+        if (captureStarted && !captureStopped)
         {
             int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
             context->CopyResource(renderTextures[curFrameNum], unityRT);
@@ -40,5 +37,11 @@ namespace WebRTC
     void NvVideoCapturer::SetRate(uint32 rate)
     {
         nvEncoder->SetRate(rate);
+    }
+
+    void NvVideoCapturer::InitializeEncoder(int32 width, int32 height)
+    {
+        nvEncoder = std::make_unique<NvEncoder>(width, height);
+        nvEncoder->CaptureFrame.connect(this, &NvVideoCapturer::CaptureFrame);
     }
 }

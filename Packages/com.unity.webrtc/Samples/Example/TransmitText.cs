@@ -13,7 +13,6 @@ public class TransmitText : MonoBehaviour
     [SerializeField] private InputField textReceive;
     #pragma warning restore 0649
 
-    private MediaStream localStream;
     private RTCPeerConnection pc1, pc2;
     private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
@@ -50,14 +49,8 @@ public class TransmitText : MonoBehaviour
         WebRTC.Finalize();
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
-        Debug.Log("Requesting local stream");
-        var op = MediaDevices.GetUserMedia(new MediaStreamConstraints { audio = true, video = true });
-        yield return op;
-        var stream = op.stream;
-        Debug.Log("Received local stream");
-        localStream = stream;
         callButton.interactable = true;
 
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
@@ -137,16 +130,6 @@ public class TransmitText : MonoBehaviour
     IEnumerator Call()
     {
         callButton.interactable = false;
-        var videoTracks = localStream.GetVideoTracks();
-        var audioTracks = localStream.GetAudioTracks();
-        if (videoTracks.Length > 0)
-        {
-            Debug.Log($"Using video device: {videoTracks.Length}");
-        }
-        if (audioTracks.Length > 0)
-        {
-            Debug.Log($"Using audio device: {audioTracks.Length}");
-        }
         Debug.Log("GetSelectedSdpSemantics");
         var configuration = GetSelectedSdpSemantics();
         pc1 = new RTCPeerConnection(ref configuration);
@@ -162,12 +145,6 @@ public class TransmitText : MonoBehaviour
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
         dataChannel.OnOpen = onDataChannelOpen;
-
-        foreach (var track in localStream.GetTracks())
-        {
-            pc1.AddTrack(track, localStream);
-        }
-        Debug.Log("Added local stream to pc1");
 
         Debug.Log("pc1 createOffer start");
         var op = pc1.CreateOffer(ref OfferOptions);

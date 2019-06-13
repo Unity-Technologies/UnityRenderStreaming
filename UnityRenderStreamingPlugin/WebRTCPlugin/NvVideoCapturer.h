@@ -14,7 +14,11 @@ namespace WebRTC
             return cricket::CS_RUNNING;
         }
         // Stop the video capturer.
-        virtual void Stop() override {}
+        virtual void Stop() override
+        {
+            captureStopped = true;
+            nvEncoder.reset();
+        }
         // Check if the video capturer is running.
         virtual bool IsRunning() override
         {
@@ -27,10 +31,13 @@ namespace WebRTC
             return false;
         }
         void StartEncoder();
+        void InitializeEncoder(int32 width, int32 height);
         void SetKeyFrame();
         void SetRate(uint32 rate);
         void CaptureFrame(std::vector<uint8>& data);
         bool CaptureStarted() { return captureStarted; }
+    public:
+        UnityFrameBuffer* unityRT = nullptr;
     private:
         // subclasses override this virtual method to provide a vector of fourccs, in
         // order of preference, that are expected by the media engine.
@@ -39,14 +46,15 @@ namespace WebRTC
             fourccs->push_back(cricket::FOURCC_H264);
             return true;
         }
-        std::unique_ptr<NvCodec::NvEncoder> nvEncoder;
+        std::unique_ptr<NvEncoder> nvEncoder;
 
         //just fake info
         const int32 width = 1280;
         const int32 height = 720;
         const int32 framerate = 60;
 
-        bool captureStarted = false; 
+        bool captureStarted = false;
+        bool captureStopped = false;
 
     };
 
