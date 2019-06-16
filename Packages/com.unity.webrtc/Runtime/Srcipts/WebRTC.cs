@@ -199,6 +199,7 @@ namespace Unity.WebRTC
 
         private static Context s_context;
         private static SynchronizationContext s_syncContext;
+        private static Material flipMat;
 
         public static void Initialize()
         {
@@ -206,6 +207,7 @@ namespace Unity.WebRTC
             s_context = Context.Create();
             NativeMethods.SetCurrentContext(s_context.self);
             s_syncContext = SynchronizationContext.Current;
+            flipMat = new Material(Shader.Find("Hidden/Flip"));
         }
         public static IEnumerator Update()
         {
@@ -215,6 +217,10 @@ namespace Unity.WebRTC
                 yield return new WaitForEndOfFrame();
                 if (CameraExtension.started)
                 {
+                    foreach(var rts in CameraExtension.camCopyRts)
+                    {
+                        Graphics.Blit(rts[0], rts[1], flipMat);
+                    }
                     GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
                 }
                 Audio.Update();

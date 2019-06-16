@@ -9,11 +9,11 @@ namespace Unity.WebRTC
     public class MediaStream
     {
         private IntPtr self;
-        private RenderTexture rt;
+        private RenderTexture[] rts;
         private string id;
         public string Id { get => id; private set { } }
 
-        public RenderTexture Rt { get => rt; private set => rt = value; }
+        public RenderTexture[] Rts { get => rts; private set => rts = value; }
 
         public MediaStreamTrack[] GetTracks()
         {
@@ -29,7 +29,7 @@ namespace Unity.WebRTC
             MediaStreamTrack[] tracks = new MediaStreamTrack[audioTrackSize + videoTrackSize];
             for (int i = 0; i < audioTrackSize + videoTrackSize; i++)
             {
-                tracks[i] = new MediaStreamTrack(Rt, tracksPtr[i]);
+                tracks[i] = new MediaStreamTrack(Rts, tracksPtr[i]);
             }
             return tracks;
         }
@@ -61,7 +61,7 @@ namespace Unity.WebRTC
             MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
             for (int i = 0; i < trackSize; i++)
             {
-                tracks[i] = new MediaStreamTrack(Rt, tracksPtr[i]);
+                tracks[i] = new MediaStreamTrack(Rts, tracksPtr[i]);
             }
             return tracks;
         }
@@ -74,11 +74,11 @@ namespace Unity.WebRTC
         {
             NativeMethods.MediaStreamRemoveTrack(self, track.self);
         }
-        internal MediaStream(RenderTexture rt, IntPtr ptr)
+        internal MediaStream(RenderTexture[] rts, IntPtr ptr)
         {
             self = ptr;
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
-            Rt = rt;
+            Rts = rts;
         }
         internal MediaStream(IntPtr ptr)
         {
@@ -117,29 +117,35 @@ namespace Unity.WebRTC
     }
     public static class CameraExtension
     {
-        private static List<RenderTexture> camCopyRts = new List<RenderTexture>();
+        internal static List<RenderTexture[]> camCopyRts = new List<RenderTexture[]>();
         internal static bool started = false;
         public static MediaStream CaptureStream(this Camera cam, int width, int height)
         {
-            RenderTexture rt = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
-            rt.Create();
-            camCopyRts.Add(rt);
-            cam.targetTexture = rt;
+            RenderTexture[] rts = new RenderTexture[2];
+            //rts[0] for render target, rts[1] for flip and WebRTC source
+            rts[0] = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
+            rts[1] = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
+            rts[0].Create();
+            rts[1].Create();
+            camCopyRts.Add(rts);
+            cam.targetTexture = rts[0];
             cam.gameObject.AddCleanerCallback(() =>
             {
-                if (rt != null)
+                if (rts != null)
                 {
-                    CameraExtension.RemoveRt(rt);
-                    rt.Release();
-                    UnityEngine.Object.Destroy(rt);
+                    CameraExtension.RemoveRt(rts);
+                    rts[0].Release();
+                    rts[1].Release();
+                    UnityEngine.Object.Destroy(rts[0]);
+                    UnityEngine.Object.Destroy(rts[1]);
                 }
             });
             started = true;
-            return new MediaStream(rt, WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), width, height));
+            return new MediaStream(rts, WebRTC.Context.CaptureVideoStream(rts[1].GetNativeTexturePtr(), width, height));
         }
-        public static void RemoveRt(RenderTexture rt)
+        public static void RemoveRt(RenderTexture[] rts)
         {
-            camCopyRts.Remove(rt);
+            camCopyRts.Remove(rts);
             if(camCopyRts.Count == 0)
             {
                 started = false;

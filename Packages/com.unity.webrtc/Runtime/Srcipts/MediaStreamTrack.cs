@@ -11,7 +11,7 @@ namespace Unity.WebRTC
         private string id;
         private bool enabled;
         private TrackState readyState;
-        private RenderTexture rt;
+        private RenderTexture[] rts;
 
         public bool Enabled
         {
@@ -36,14 +36,14 @@ namespace Unity.WebRTC
         public TrackKind Kind { get => kind; private set { } }
         public string Id { get => id; private set { } }
 
-        public RenderTexture Rt { get => rt; private set => rt = value; }
+        public RenderTexture[] Rts { get => rts; private set => rts = value; }
 
-        internal MediaStreamTrack(RenderTexture rt, IntPtr ptr)
+        internal MediaStreamTrack(RenderTexture[] rt, IntPtr ptr)
         {
             self = ptr;
             kind = NativeMethods.MediaStreamTrackGetKind(self);
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
-            Rt = rt;
+            Rts = rts;
         }
         internal MediaStreamTrack(IntPtr ptr) 
         {
@@ -57,11 +57,13 @@ namespace Unity.WebRTC
             if (kind == TrackKind.Video)
             {
                 NativeMethods.StopMediaStreamTrack(self);
-                if (Rt != null)
+                if (Rts != null)
                 {
-                    CameraExtension.RemoveRt(Rt);
-                    Rt.Release();
-                    UnityEngine.Object.Destroy(Rt);
+                    CameraExtension.RemoveRt(Rts);
+                    Rts[0].Release();
+                    Rts[1].Release();
+                    UnityEngine.Object.Destroy(Rts[0]);
+                    UnityEngine.Object.Destroy(Rts[1]);
                 }
             }
             else

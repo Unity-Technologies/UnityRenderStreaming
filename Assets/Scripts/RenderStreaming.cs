@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
+using System.Text.RegularExpressions;
 
 namespace Unity.RenderStreaming
 {
@@ -15,12 +16,13 @@ namespace Unity.RenderStreaming
 
         [SerializeField]
         private float interval = 5.0f;
-
         private Signaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
+        [SerializeField]
+        private Camera cam;
 
         public void Awake()
         {
@@ -90,8 +92,14 @@ namespace Unity.RenderStreaming
                 pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
                 pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
+                string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
+                _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
-
+                foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
+                {
+                    pc.AddTrack(track);
+                }
+                StartCoroutine(WebRTC.WebRTC.Update());
                 StartCoroutine(Answer(connectionId));
             }
         }
@@ -114,7 +122,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp); 
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {
@@ -163,7 +171,6 @@ namespace Unity.RenderStreaming
                 yield break;
             }
         }
-
         void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
         {
             Dictionary<int, RTCDataChannel> channels;
