@@ -207,11 +207,10 @@ namespace Unity.WebRTC
             s_context = Context.Create();
             NativeMethods.SetCurrentContext(s_context.self);
             s_syncContext = SynchronizationContext.Current;
-            Shader flipShader = Shader.Find("Hidden/Flip");
-            //flipShader is not loaded in test runner
+            Shader flipShader = Resources.Load<Shader>("Flip");
             if(flipShader != null)
             {
-                flipMat = new Material(flipShader);
+                flipMat = new Material(flipShader); 
             }
         }
         public static IEnumerator Update()
