@@ -221,6 +221,7 @@ namespace Unity.WebRTC
                 yield return new WaitForEndOfFrame();
                 if (CameraExtension.started)
                 {
+                    //Blit is for DirectX Rendering API Only
                     foreach(var rts in CameraExtension.camCopyRts)
                     {
                         Graphics.Blit(rts[0], rts[1], flipMat);

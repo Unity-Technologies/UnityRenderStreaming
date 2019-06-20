@@ -27,6 +27,7 @@ namespace Unity.RenderStreaming
         public void Awake()
         {
             WebRTC.WebRTC.Initialize();
+            RemoteInput.Initialize();
         }
 
         public void OnDestroy()
@@ -92,6 +93,7 @@ namespace Unity.RenderStreaming
                 pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
                 pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
+                //make video bit rate starts at 16000kbits, and 160000kbits at max.
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);

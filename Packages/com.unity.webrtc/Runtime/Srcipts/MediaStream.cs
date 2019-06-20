@@ -9,81 +9,118 @@ namespace Unity.WebRTC
     public class MediaStream
     {
         private IntPtr self;
-        private RenderTexture[] rts;
         private string id;
+        private Dictionary<MediaStreamTrack, RenderTexture[]> videoTrackToRts;
+        private List<MediaStreamTrack> audioTracks;
         public string Id { get => id; private set { } }
 
-        public RenderTexture[] Rts { get => rts; private set => rts = value; }
+        private Dictionary<MediaStreamTrack, RenderTexture[]> VideoTrackToRts { get => videoTrackToRts; set => videoTrackToRts = value; }
+        private List<MediaStreamTrack> AudioTracks { get => audioTracks; set => audioTracks = value; }
 
-        public MediaStreamTrack[] GetTracks()
+        public void StopTrack(MediaStreamTrack track)
         {
-            int audioTrackSize = 0, videoTrackSize = 0;
-            IntPtr audioPtr = NativeMethods.MediaStreamGetAudioTracks(self, ref audioTrackSize);
-            IntPtr videoPtr = NativeMethods.MediaStreamGetVideoTracks(self, ref videoTrackSize);
-            IntPtr[] tracksPtr = new IntPtr[audioTrackSize + videoTrackSize];
-            Marshal.Copy(audioPtr, tracksPtr, 0, audioTrackSize);
-            Marshal.Copy(videoPtr, tracksPtr, audioTrackSize, videoTrackSize);
-            //TODO: Linux compatibility 
-            Marshal.FreeCoTaskMem(audioPtr);
-            Marshal.FreeCoTaskMem(videoPtr);
-            MediaStreamTrack[] tracks = new MediaStreamTrack[audioTrackSize + videoTrackSize];
-            for (int i = 0; i < audioTrackSize + videoTrackSize; i++)
+
+            if (track.Kind == TrackKind.Video)
             {
-                tracks[i] = new MediaStreamTrack(Rts, tracksPtr[i]);
+                NativeMethods.StopMediaStreamTrack(track.self);
+                RenderTexture[] rts = VideoTrackToRts[track];
+                if (rts != null)
+                {
+                    CameraExtension.RemoveRt(rts);
+                    rts[0].Release();
+                    rts[1].Release();
+                    UnityEngine.Object.Destroy(rts[0]);
+                    UnityEngine.Object.Destroy(rts[1]);
+                }
             }
+            else
+            {
+                Audio.Stop();
+            }
+
+        }
+        public RenderTexture[] GetRts(MediaStreamTrack track)
+        {
+            return videoTrackToRts[track];
+        }
+        public MediaStreamTrack[] GetTracks() 
+        {
+            MediaStreamTrack[] tracks = new MediaStreamTrack[VideoTrackToRts.Keys.Count + AudioTracks.Count];
+            AudioTracks.CopyTo(tracks, 0);
+            VideoTrackToRts.Keys.CopyTo(tracks, AudioTracks.Count);
             return tracks;
         }
         public MediaStreamTrack[] GetAudioTracks()
         {
-            int trackSize = 0;
-            IntPtr ptr = NativeMethods.MediaStreamGetAudioTracks(self, ref trackSize);
-            IntPtr[] tracksPtr = new IntPtr[trackSize];
-            Marshal.Copy(ptr, tracksPtr, 0, trackSize);
-            //TODO: Linux compatibility 
-            Marshal.FreeCoTaskMem(ptr);
-
-            MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
-            for (int i = 0; i < trackSize; i++)
-            {
-                tracks[i] = new MediaStreamTrack(tracksPtr[i]);
-            }
-            return tracks;
+            return AudioTracks.ToArray();
         }
         public MediaStreamTrack[] GetVideoTracks()
         {
-            int trackSize = 0;
-            IntPtr ptr = NativeMethods.MediaStreamGetVideoTracks(self, ref trackSize);
-            IntPtr[] tracksPtr = new IntPtr[trackSize];
-            Marshal.Copy(ptr, tracksPtr, 0, trackSize);
-            //TODO: Linux compatibility 
-            Marshal.FreeCoTaskMem(ptr);
-
-            MediaStreamTrack[] tracks = new MediaStreamTrack[trackSize];
-            for (int i = 0; i < trackSize; i++)
-            {
-                tracks[i] = new MediaStreamTrack(Rts, tracksPtr[i]);
-            }
+            MediaStreamTrack[] tracks = new MediaStreamTrack[VideoTrackToRts.Keys.Count];
+            VideoTrackToRts.Keys.CopyTo(tracks, 0);
             return tracks;
         }
 
         public void AddTrack(MediaStreamTrack track)
         {
+            if(track.Kind == TrackKind.Video)
+            {
+                VideoTrackToRts[track] = track.getRts(track);
+            }
+            else
+            {
+                AudioTracks.Add(track);
+            }
             NativeMethods.MediaStreamAddTrack(self, track.self);
         }
         public void RemoveTrack(MediaStreamTrack track)
         {
             NativeMethods.MediaStreamRemoveTrack(self, track.self);
         }
+        //for camera CaptureStream
         internal MediaStream(RenderTexture[] rts, IntPtr ptr)
         {
             self = ptr;
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
-            Rts = rts;
+            VideoTrackToRts = new Dictionary<MediaStreamTrack, RenderTexture[]>();
+            AudioTracks = new List<MediaStreamTrack>();
+            //get initial tracks 
+            int trackSize = 0;
+            IntPtr tracksNativePtr = NativeMethods.MediaStreamGetVideoTracks(self, ref trackSize);
+            IntPtr[] tracksPtr = new IntPtr[trackSize];
+            Marshal.Copy(tracksNativePtr, tracksPtr, 0, trackSize);
+            //TODO: Linux compatibility 
+            Marshal.FreeCoTaskMem(tracksNativePtr);
+            for (int i = 0; i < trackSize; i++)
+            {
+                MediaStreamTrack track = new MediaStreamTrack(tracksPtr[i]);
+                track.stopTrack += StopTrack;
+                track.getRts += GetRts;
+                VideoTrackToRts[track] = rts;
+            }
         }
+        //for audio CaptureStream
         internal MediaStream(IntPtr ptr)
         {
             self = ptr;
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
+            VideoTrackToRts = new Dictionary<MediaStreamTrack, RenderTexture[]>();
+            AudioTracks = new List<MediaStreamTrack>();
+            //get initial tracks
+            int trackSize = 0;
+            IntPtr trackNativePtr = NativeMethods.MediaStreamGetAudioTracks(self, ref trackSize);
+            IntPtr[] tracksPtr = new IntPtr[trackSize];
+            Marshal.Copy(trackNativePtr, tracksPtr, 0, trackSize);
+            //TODO: Linux compatibility 
+            Marshal.FreeCoTaskMem(trackNativePtr);
+
+            for (int i = 0; i < trackSize; i++)
+            {
+                MediaStreamTrack track = new MediaStreamTrack(tracksPtr[i]);
+                track.stopTrack += StopTrack;
+                track.getRts += GetRts;
+                AudioTracks.Add(track);
+            }
         }
 
     }
@@ -146,7 +183,7 @@ namespace Unity.WebRTC
         public static void RemoveRt(RenderTexture[] rts)
         {
             camCopyRts.Remove(rts);
-            if(camCopyRts.Count == 0)
+            if (camCopyRts.Count == 0)
             {
                 started = false;
             }
