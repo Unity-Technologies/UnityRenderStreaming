@@ -11,7 +11,8 @@ namespace Unity.WebRTC
         private string id;
         private bool enabled;
         private TrackState readyState;
-        private RenderTexture rt;
+        internal Action<MediaStreamTrack> stopTrack;
+        internal Func<MediaStreamTrack, RenderTexture[]> getRts;
 
         public bool Enabled
         {
@@ -36,16 +37,7 @@ namespace Unity.WebRTC
         public TrackKind Kind { get => kind; private set { } }
         public string Id { get => id; private set { } }
 
-        public RenderTexture Rt { get => rt; private set => rt = value; }
-
-        internal MediaStreamTrack(RenderTexture rt, IntPtr ptr)
-        {
-            self = ptr;
-            kind = NativeMethods.MediaStreamTrackGetKind(self);
-            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
-            Rt = rt;
-        }
-        internal MediaStreamTrack(IntPtr ptr) 
+        internal MediaStreamTrack(IntPtr ptr)
         {
             self = ptr;
             kind = NativeMethods.MediaStreamTrackGetKind(self);
@@ -54,20 +46,7 @@ namespace Unity.WebRTC
         //Disassociate track from its source(video or audio), not for destroying the track
         public void Stop()
         {
-            if (kind == TrackKind.Video)
-            {
-                NativeMethods.StopMediaStreamTrack(self);
-                if (Rt != null)
-                {
-                    CameraExtension.RemoveRt(Rt);
-                    Rt.Release();
-                    UnityEngine.Object.Destroy(Rt);
-                }
-            }
-            else
-            {
-                Audio.Stop();
-            }
+            stopTrack(this);
         }
     }
 
