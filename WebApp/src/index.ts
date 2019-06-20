@@ -1,5 +1,7 @@
 import * as express from 'express';
+import * as https from 'https'
 import { Server } from 'http';
+import * as fs from 'fs';
 import { createServer } from './server';
 
 export interface Options {
@@ -31,7 +33,15 @@ export class RenderStreaming {
   constructor(options: Options) {
     this.options = options;
     this.server = createServer();
-    this.httpServer = this.server.listen(this.options.port);
+    if(true) {
+      this.httpServer = https.createServer({
+        key: fs.readFileSync('server.key'),
+        cert: fs.readFileSync('server.cert')
+      }, this.server).listen(443);
+    }
+    else {
+      this.httpServer = this.server.listen(this.options.port);
+    }
   }
 }
 

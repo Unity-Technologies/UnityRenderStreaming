@@ -34,6 +34,9 @@ export class VideoPlayer {
       this.pc.close();
       this.pc = null;
     }
+    let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    stream.getTracks().forEach(t => t.stop());
+
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
     this.pc.onsignalingstatechange = function (e) {
