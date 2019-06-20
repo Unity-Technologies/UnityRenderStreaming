@@ -15,7 +15,7 @@ namespace Unity.WebRTC
         private Dictionary<MediaStreamTrack, RenderTexture[]> VideoTrackToRts;
         private List<MediaStreamTrack> AudioTracks;
 
-        public void StopTrack(MediaStreamTrack track)
+        private void StopTrack(MediaStreamTrack track)
         {
 
             if (track.Kind == TrackKind.Video)
@@ -37,7 +37,7 @@ namespace Unity.WebRTC
             }
 
         }
-        public RenderTexture[] GetRts(MediaStreamTrack track)
+        private RenderTexture[] GetRts(MediaStreamTrack track)
         {
             return VideoTrackToRts[track];
         }
