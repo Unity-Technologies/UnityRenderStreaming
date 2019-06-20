@@ -10,12 +10,10 @@ namespace Unity.WebRTC
     {
         private IntPtr self;
         private string id;
-        private Dictionary<MediaStreamTrack, RenderTexture[]> videoTrackToRts;
-        private List<MediaStreamTrack> audioTracks;
         public string Id { get => id; private set { } }
 
-        private Dictionary<MediaStreamTrack, RenderTexture[]> VideoTrackToRts { get => videoTrackToRts; set => videoTrackToRts = value; }
-        private List<MediaStreamTrack> AudioTracks { get => audioTracks; set => audioTracks = value; }
+        private Dictionary<MediaStreamTrack, RenderTexture[]> VideoTrackToRts;
+        private List<MediaStreamTrack> AudioTracks;
 
         public void StopTrack(MediaStreamTrack track)
         {
@@ -41,7 +39,7 @@ namespace Unity.WebRTC
         }
         public RenderTexture[] GetRts(MediaStreamTrack track)
         {
-            return videoTrackToRts[track];
+            return VideoTrackToRts[track];
         }
         public MediaStreamTrack[] GetTracks() 
         {
