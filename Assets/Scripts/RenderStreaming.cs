@@ -8,20 +8,20 @@ namespace Unity.RenderStreaming
 {
     public class RenderStreaming : MonoBehaviour
     {
-        [SerializeField]
+        [SerializeField, Tooltip("Address for signaling server")]
         private string urlSignaling = "http://localhost";
 
-        [SerializeField]
+        [SerializeField, Tooltip("Address for stun server")]
         private string urlSTUN = "stun:stun.l.google.com:19302";
 
-        [SerializeField]
+        [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
         private Signaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        [SerializeField]
+        [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera cam;
 
         public void Awake()
