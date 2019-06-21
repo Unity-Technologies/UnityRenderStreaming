@@ -51,7 +51,7 @@ public class Main : MonoBehaviour
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
         pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc2, state); });
         pc1OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
-        pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
+        pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc2, candidate); });
     }
 
     private IEnumerator Loop()
