@@ -21,12 +21,14 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
+#pragma warning disable 0649
         [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera cam;
+#pragma warning restore 0649
 
         public void Awake()
         {
-            WebRTC.WebRTC.Initialize();
+            WebRTC.WebRTC.Initialize(); 
             RemoteInput.Initialize();
         }
 
