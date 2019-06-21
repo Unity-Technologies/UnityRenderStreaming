@@ -6,7 +6,6 @@ using Unity.WebRTC;
 public class Main : MonoBehaviour
 {
 #pragma warning disable 0649
-    [SerializeField] private Button startButton;
     [SerializeField] private Button callButton;
     [SerializeField] private Button hangupButton;
 #pragma warning restore 0649
@@ -34,7 +33,6 @@ public class Main : MonoBehaviour
     {
         WebRTC.Initialize();
 
-        startButton.onClick.AddListener(() => { Start(); });
         callButton.onClick.AddListener(() => { StartCoroutine(Call()); });
         hangupButton.onClick.AddListener(() => { Hangup(); });
     }
@@ -46,7 +44,6 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
-        startButton.interactable = false;
         callButton.interactable = true;
         pc1OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc1, state); });
         pc2OnIceConnectionChange = new DelegateOnIceConnectionChange(state => { OnIceConnectionChange(pc2, state); });
