@@ -79,8 +79,8 @@ publish:
         - "upm-ci~/templates/*.tgz"
   dependencies:
     - .yamato/upm-ci-template.yml#pack
-    {% for editor in test_editors %}
-    {% for platform in test_platforms %}
+    {% for editor in editors %}
+    {% for platform in platforms %}
     - .yamato/upm-ci-template.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
