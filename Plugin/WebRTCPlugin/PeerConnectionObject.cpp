@@ -69,7 +69,6 @@ namespace WebRTC
     }
     void PeerConnectionObject::OnIceCandidate(const webrtc::IceCandidateInterface* candidate)
     {
-        DebugLog("OnIceCandidate");
         std::string out;
 
         if (!candidate->ToString(&out))
@@ -84,7 +83,6 @@ namespace WebRTC
 
     void PeerConnectionObject::OnRenegotiationNeeded()
     {
-        DebugLog("OnRenegotiationNeeded");
         if (onRenegotiationNeeded != nullptr)
         {
             onRenegotiationNeeded();
@@ -93,7 +91,6 @@ namespace WebRTC
 
     void PeerConnectionObject::OnTrack(rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver)
     {
-        DebugLog("OnTrack");
         if (onTrack != nullptr)
         {
             onTrack(transceiver.get());
