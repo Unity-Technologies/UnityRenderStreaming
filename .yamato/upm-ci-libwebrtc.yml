@@ -1,0 +1,23 @@
+platforms:
+  - name: win
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: m1.xlarge
+    build_command: build_libwebrtc.cmd
+---
+{% for platform in platforms %}
+build_{{ platform.name }}:
+  name: Build {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  commands:
+    - {{ platform.build_command }}
+  artifacts:
+    webrtc-{{ platform.name }}:
+      paths:
+        - "include/**"
+        - "lib/**"
+        - "LICENSE.md"
+{% endfor %}
