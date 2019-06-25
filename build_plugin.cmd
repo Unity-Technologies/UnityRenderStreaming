@@ -2,7 +2,7 @@
 
 set WebRTC_VERSION=M72
 set LIBWEBRTC_DOWNLOAD_URL=https://github.com/karasusan/build-webrtc/releases/download/v0.1.0/webrtc-win.zip
-set SOLUTION_DIR=%cd%\UnityRenderStreamingPlugin
+set SOLUTION_DIR=%cd%\Plugin
 set PLUGIN_DIR=%cd%\Packages\com.unity.webrtc\Runtime\Plugins\x86_64
 
 echo -------------------
