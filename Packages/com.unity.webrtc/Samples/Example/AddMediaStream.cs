@@ -71,6 +71,16 @@ public class AddMediaStream : MonoBehaviour
         pc2OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(pc1, candidate); });
         pc2Ontrack = new DelegateOnTrack(e => { OnTrack(pc2, e); });
         pc1OnNegotiationNeeded = new DelegateOnNegotiationNeeded(() => { StartCoroutine(Pc1OnNegotiationNeeded()); });
+        if (!WebRTC.HWEncoderSupport)
+        {
+            addTracksButton.interactable = false;
+            callButton.interactable = false;
+            infoText.text = "Current GPU doesn't support Nvidia Encoder";
+        }
+        else
+        {
+            infoText.text = "Current GPU supports Nvidia Encoder";
+        }
     }
 
     RTCConfiguration GetSelectedSdpSemantics()
@@ -205,15 +215,7 @@ public class AddMediaStream : MonoBehaviour
         audioStream = Audio.CaptureStream();
         videoStream = cam.CaptureStream(1280, 720);
         RtImage.texture = cam.targetTexture;
-        if (!WebRTC.HWEncoderSupport) 
-        {
-            addTracksButton.interactable = false;
-            infoText.text = "Current GPU doesn't support Nvidia Encdoer";
-        }
-        else
-        {
-            infoText.text = "Current GPU supports Nvidia Encdoer";
-        }
+ 
     }
 
     /// <summary>
