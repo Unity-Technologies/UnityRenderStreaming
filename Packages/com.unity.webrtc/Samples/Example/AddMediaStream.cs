@@ -75,11 +75,11 @@ public class AddMediaStream : MonoBehaviour
         {
             addTracksButton.interactable = false;
             callButton.interactable = false;
-            infoText.text = "Current GPU doesn't support Nvidia Encdoer";
+            infoText.text = "Current GPU doesn't support Nvidia Encoder";
         }
         else
         {
-            infoText.text = "Current GPU supports Nvidia Encdoer";
+            infoText.text = "Current GPU supports Nvidia Encoder";
         }
     }
 
