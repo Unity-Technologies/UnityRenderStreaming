@@ -156,6 +156,11 @@ namespace Unity.WebRTC
         internal static bool started = false;
         public static MediaStream CaptureStream(this Camera cam, int width, int height)
         {
+            if (camCopyRts.Count > 0)
+            {
+                throw new NotImplementedException("Currently not allowed multiple MediaStream");
+            }
+
             RenderTexture[] rts = new RenderTexture[2];
             //rts[0] for render target, rts[1] for flip and WebRTC source
             rts[0] = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
