@@ -34,6 +34,14 @@ export class VideoPlayer {
       this.pc.close();
       this.pc = null;
     }
+
+    // RTCDataChannel don't work on iOS safari
+    // https://github.com/webrtc/samples/issues/1123
+    if (navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i)) {
+      let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      stream.getTracks().forEach(t => t.stop());
+    }
+
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
     this.pc.onsignalingstatechange = function (e) {

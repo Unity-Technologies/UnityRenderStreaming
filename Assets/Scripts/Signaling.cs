@@ -55,7 +55,15 @@ namespace Unity.RenderStreaming
     {
         public static UnityWebRequestAsyncOperation SendWebRequest<T>(this UnityWebRequest own)
         {
-            own.downloadHandler = new DownloadHandlerJson<T>();
+            if (typeof(T) != typeof(None))
+            {
+                own.downloadHandler = new DownloadHandlerJson<T>();
+            }
+
+            if (own.uri.Scheme == "https")
+            {
+                own = own.ToHttps();
+            }
             var req = own.SendWebRequest();
             return req;
         }
@@ -64,7 +72,25 @@ namespace Unity.RenderStreaming
         {
             return own.downloadHandler as DownloadHandlerJson<T>;
         }
+
+        public static UnityWebRequest ToHttps(this UnityWebRequest own)
+        {
+            own.certificateHandler = new AcceptAllCertificateHandler();
+            return own;
+        }
+
+        class AcceptAllCertificateHandler : CertificateHandler
+        {
+            protected override bool ValidateCertificate(byte[] certificateData)
+            {
+                // Workaround for Non-Secure web page
+                // You should implement the validation when you release your service publicly.
+                return true;
+            }
+        }
     }
+
+    class None {}
 
 #pragma warning disable 0649
     [Serializable]
@@ -167,7 +193,7 @@ namespace Unity.RenderStreaming
         public UnityWebRequestAsyncOperation Delete()
         {
             var req = new UnityWebRequest($"{Url}/signaling", "DELETE");
-            var op = req.SendWebRequest();
+            var op = req.SendWebRequest<None>();
             return op;
         }
 
@@ -187,7 +213,7 @@ namespace Unity.RenderStreaming
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest();
+            var op = req.SendWebRequest<None>();
             return op;
         }
 
@@ -199,7 +225,7 @@ namespace Unity.RenderStreaming
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest();
+            var op = req.SendWebRequest<None>();
             return op;
         }
         public UnityWebRequestAsyncOperation GetOffer(string sessionId)
@@ -217,7 +243,7 @@ namespace Unity.RenderStreaming
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest();
+            var op = req.SendWebRequest<None>();
             return op;
         }
         public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId)
@@ -236,7 +262,7 @@ namespace Unity.RenderStreaming
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest();
+            var op = req.SendWebRequest<None>();
             return op;
         }
         public UnityWebRequestAsyncOperation GetCandidate(string sessionId)
