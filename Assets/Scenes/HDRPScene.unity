@@ -1396,6 +1396,41 @@ MonoBehaviour:
   urlSTUN: stun:stun.l.google.com:19302
   interval: 5
   cam: {fileID: 1297650283}
+  arrayButtonClickEvent:
+  - elementId: 1
+    click:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2035111233}
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+      m_TypeName: Unity.RenderStreaming.ButtonClickEvent, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+  - elementId: 2
+    click:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2035111233}
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: Unity.RenderStreaming.ButtonClickEvent, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
 --- !u!4 &1131364783
 Transform:
   m_ObjectHideFlags: 0
