@@ -16,7 +16,6 @@ export class VideoPlayer {
       offerToReceiveVideo: true,
     };
     this.video = element;
-    this.video.id = 'Video';
     this.video.playsInline = true;
     this.video.addEventListener('loadedmetadata', function () {
       _this.video.play();
