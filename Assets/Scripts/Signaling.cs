@@ -145,11 +145,7 @@ namespace Unity.RenderStreaming
         public string sdpMid;
         public int sdpMLineIndex;
     }
-
-
-
 #pragma warning restore 0649
-
 
     public class Signaling
     {
@@ -180,7 +176,7 @@ namespace Unity.RenderStreaming
             public string connectionId;
             public string candidate;
             public string sdpMid;
-            public int sdpMlineIndex;
+            public int sdpMLineIndex;
         }
 
         public UnityWebRequestAsyncOperation Create()
@@ -256,7 +252,7 @@ namespace Unity.RenderStreaming
 
         public UnityWebRequestAsyncOperation PostCandidate(string sessionId, string connectionId, string candidate, string sdpMid, int sdpMlineIndex)
         {
-            var obj = new CandidateReqData { connectionId = connectionId, candidate = candidate, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
+            var obj = new CandidateReqData { connectionId = connectionId, candidate = candidate, sdpMid = sdpMid, sdpMLineIndex = sdpMlineIndex };
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
             var req = new UnityWebRequest($"{Url}/signaling/candidate", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
