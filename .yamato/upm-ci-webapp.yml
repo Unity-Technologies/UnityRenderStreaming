@@ -33,6 +33,16 @@ test_{{ platform.name }}:
     flavor: {{ platform.flavor}}
   commands:
     - {{ platform.test_command }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
+    pull_requests:
+      - targets:
+        only:
+          - "master"
   artifacts:
     logs:
       paths:

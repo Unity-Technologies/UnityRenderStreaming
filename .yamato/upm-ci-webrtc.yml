@@ -69,6 +69,10 @@ test_{{ platform.name }}_{{ editor.version }}:
       - "/.*/"
       except:
       - "master"
+    pull_requests:
+      - targets:
+        only:
+          - "master"
   artifacts:
     logs.zip:
       paths:
