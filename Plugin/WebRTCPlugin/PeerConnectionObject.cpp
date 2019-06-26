@@ -8,6 +8,12 @@ namespace WebRTC
 
     PeerConnectionObject::~PeerConnectionObject()
     {
+        auto senders = connection->GetSenders();
+        for (auto sender : senders)
+        {
+            connection->RemoveTrack(sender);
+        }
+
         auto state = connection->peer_connection_state();
         if (state != webrtc::PeerConnectionInterface::PeerConnectionState::kClosed)
         {
