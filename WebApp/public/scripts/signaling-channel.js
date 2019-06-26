@@ -49,16 +49,16 @@ export default class SignalingChannel {
     await fetch(this.url(''), {method: 'DELETE', headers: this.headers(sessionId)});
     return;
   };
-  async getOffer(sessionId) {
-    const response = await fetch(this.url('offer'), {method: 'GET', headers: this.headers(sessionId)});
+  async getOffer(sessionId, fromTime = 0) {
+    const response = await fetch(this.url(`offer?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
     return await response.json();
   };
-  async getAnswer(sessionId) {
-    const response = await fetch(this.url('answer'), {method: 'GET', headers: this.headers(sessionId)});
+  async getAnswer(sessionId, fromTime = 0) {
+    const response = await fetch(this.url(`answer?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
     return await response.json();
   };
-  async getCandidate(sessionId) {
-    const response = await fetch(this.url('candidate'), {method: 'GET', headers: this.headers(sessionId)});
+  async getCandidate(sessionId, fromTime = 0) {
+    const response = await fetch(this.url(`candidate?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
     return await response.json();
   };
 }

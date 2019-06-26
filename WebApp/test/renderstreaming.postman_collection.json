@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c4ee0e83-3ad3-400d-9947-187687d72f22",
+		"_postman_id": "e2e7fe3d-b575-41a7-a1ed-5edc96d55827",
 		"name": "renderstreaming",
 		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -396,6 +396,68 @@
 			"response": []
 		},
 		{
+			"name": "/signaling/offer?fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"offers\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.offers.length).to.be.equal(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
+						"exec": [
+							"// datetime in the future",
+							"let datetime = Date.now() + 30;",
+							"pm.environment.set(\"datetime\", datetime);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/offer?fromtime={{datetime}}",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"offer"
+					],
+					"query": [
+						{
+							"key": "fromtime",
+							"value": "{{datetime}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/signaling/answer",
 			"event": [
 				{
@@ -434,6 +496,68 @@
 					"path": [
 						"signaling",
 						"answer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/answer?fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"answers\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.answers.length).to.be.equal(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
+						"exec": [
+							"// datetime in the future",
+							"let datetime = Date.now() + 30;",
+							"pm.environment.set(\"datetime\", datetime);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/answer?fromtime={{datetime}}",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"answer"
+					],
+					"query": [
+						{
+							"key": "fromtime",
+							"value": "{{datetime}}"
+						}
 					]
 				}
 			},
@@ -480,6 +604,68 @@
 					"path": [
 						"signaling",
 						"candidate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/signaling/candidate?fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"candidates\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.candidates.length).to.be.equal(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
+						"exec": [
+							"// datetime in the future",
+							"let datetime = Date.now() + 30;",
+							"pm.environment.set(\"datetime\", datetime);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/candidate?fromtime={{datetime}}",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"candidate"
+					],
+					"query": [
+						{
+							"key": "fromtime",
+							"value": "{{datetime}}"
+						}
 					]
 				}
 			},
