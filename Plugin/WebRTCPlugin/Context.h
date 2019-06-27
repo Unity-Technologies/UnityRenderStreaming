@@ -52,6 +52,7 @@ namespace WebRTC
         void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
         void StopCapturer() { nvVideoCapturer->Stop(); }
         void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
+        void DeleteClient(int id) { clients.erase(id); }
     private:
         int m_uid;
         std::unique_ptr<rtc::Thread> workerThread;

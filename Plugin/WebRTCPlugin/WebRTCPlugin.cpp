@@ -179,9 +179,10 @@ extern "C"
     {
         return ctx->CreatePeerConnection(id, conf);
     }
-    UNITY_INTERFACE_EXPORT void PeerConnectionClose(PeerConnectionObject* obj)
+    UNITY_INTERFACE_EXPORT void PeerConnectionClose(PeerConnectionObject* obj, int id)
     {
         obj->Close();
+        ContextManager::GetInstance()->curContext->DeleteClient(id);
     }
     UNITY_INTERFACE_EXPORT webrtc::RtpSenderInterface* PeerConnectionAddTrack(PeerConnectionObject* obj, webrtc::MediaStreamTrackInterface* track)
     {
