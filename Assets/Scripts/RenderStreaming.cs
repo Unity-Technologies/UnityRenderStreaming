@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
@@ -58,8 +59,15 @@ namespace Unity.RenderStreaming
             StartCoroutine(LoopPolling());
         }
 
+        long lastTimeGetOfferRequest = 0;
+        long lastTimeGetCandidateRequest = 0;
+
         IEnumerator LoopPolling()
         {
+            // ignore messages arrived before 30 secs ago
+            lastTimeGetOfferRequest = DateTime.UtcNow.ToJsMilliseconds() - 30000;
+            lastTimeGetCandidateRequest = DateTime.UtcNow.ToJsMilliseconds() - 30000;
+
             while (true)
             {
                 yield return StartCoroutine(GetOffer());
@@ -70,14 +78,16 @@ namespace Unity.RenderStreaming
 
         IEnumerator GetOffer()
         {
-            var op = signaling.GetOffer(sessionId);
+            var op = signaling.GetOffer(sessionId, lastTimeGetOfferRequest);
             yield return op;
-
             if (op.webRequest.isNetworkError)
             {
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
+            var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
+            lastTimeGetOfferRequest = date.ToJsMilliseconds();
+
             var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
             if (obj == null)
             {
@@ -141,7 +151,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator GetCandidate()
         {
-            var op = signaling.GetCandidate(sessionId);
+            var op = signaling.GetCandidate(sessionId, lastTimeGetCandidateRequest);
             yield return op;
 
             if (op.webRequest.isNetworkError)
@@ -149,6 +159,9 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
+            var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
+            lastTimeGetCandidateRequest = date.ToJsMilliseconds();
+
             var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
             if (obj == null)
             {

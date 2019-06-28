@@ -224,9 +224,9 @@ namespace Unity.RenderStreaming
             var op = req.SendWebRequest<None>();
             return op;
         }
-        public UnityWebRequestAsyncOperation GetOffer(string sessionId)
+        public UnityWebRequestAsyncOperation GetOffer(string sessionId, long fromTime=0)
         {
-            var req = new UnityWebRequest($"{Url}/signaling/offer", "GET");
+            var req = new UnityWebRequest($"{Url}/signaling/offer?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
             var op = req.SendWebRequest<OfferResDataList>();
             return op;
@@ -242,9 +242,9 @@ namespace Unity.RenderStreaming
             var op = req.SendWebRequest<None>();
             return op;
         }
-        public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId)
+        public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId, long fromTime = 0)
         {
-            var req = new UnityWebRequest($"{Url}/signaling/answer", "GET");
+            var req = new UnityWebRequest($"{Url}/signaling/answer?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
             var op = req.SendWebRequest<AnswerResData>();
             return op;
@@ -261,9 +261,9 @@ namespace Unity.RenderStreaming
             var op = req.SendWebRequest<None>();
             return op;
         }
-        public UnityWebRequestAsyncOperation GetCandidate(string sessionId)
+        public UnityWebRequestAsyncOperation GetCandidate(string sessionId, long fromTime = 0)
         {
-            var req = new UnityWebRequest($"{Url}/signaling/candidate", "GET");
+            var req = new UnityWebRequest($"{Url}/signaling/candidate?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
             var op = req.SendWebRequest<CandidateContainerResDataList>();
             return op;

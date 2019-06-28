@@ -75,7 +75,8 @@ export class VideoPlayer {
     };
 
     const createResponse = await this.signalingChannel.create();
-    this.sessionId = createResponse.sessionId;
+    const data = await createResponse.json();
+    this.sessionId = data.sessionId;
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
@@ -91,7 +92,8 @@ export class VideoPlayer {
   async createConnection() {
     // signaling
     const res = await this.signalingChannel.createConnection(this.sessionId);
-    this.connectionId = res.connectionId;
+    const data = await res.json();
+    this.connectionId = data.connectionId;
   }
 
   async sendOffer(offer) {
@@ -102,26 +104,33 @@ export class VideoPlayer {
   }
 
   async loopGetAnswer(sessionId, interval) {
+    // receive answer message from 30secs ago
+    let lastTimeRequest = Date.now() - 30000;
+
     while(true) {
-      await this.sleep(interval);
+      const res = await this.signalingChannel.getAnswer(sessionId, lastTimeRequest);
+      const data = await res.json();
+      const answers = data.answers;
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
 
-      const state = this.pc.signalingState;
-      if(state === 'stable') {
-        continue;
-      }
-
-      const res = await this.signalingChannel.getAnswer(sessionId);
-      if(res.answers.length > 0) {
-        const answer = res.answers[0];
+      if(answers.length > 0) {
+        const answer = answers[0];
         await this.setAnswer(sessionId, answer.sdp);
       }
+      await this.sleep(interval);
     }
   }
 
   async loopGetCandidate(sessionId, interval) {
+    // receive answer message from 30secs ago
+    let lastTimeRequest = Date.now() - 30000;
+
     while(true) {
-      const res = await this.signalingChannel.getCandidate(sessionId);
-      const candidates = res.candidates.filter(v => v.connectionId = this.connectionId);
+      const res = await this.signalingChannel.getCandidate(sessionId, lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
       if(candidates.length > 0) {
         for(let candidate of candidates[0].candidates) {
           const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
