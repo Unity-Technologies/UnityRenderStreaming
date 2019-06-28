@@ -2,7 +2,8 @@ let InputEvent = {
   Keyboard: 0,
   Mouse: 1,
   MouseWheel: 2,
-  Touch: 3
+  Touch: 3,
+  ButtonClick: 4
 };
 
 let KeyboardEventType = {
@@ -69,7 +70,6 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   playerElement.addEventListener('touchend', playVideoWithTouch, false);
   playerElement.addEventListener('touchstart', sendTouchStart, false);
   playerElement.addEventListener('touchcancel', sendTouchCancel, false);
-  playerElement.addEventListener('touchend', sendTouchEnd, false);
   playerElement.addEventListener('touchmove', sendTouchMove, false);
 
   function pointerLockChange() {
@@ -102,6 +102,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     }
     isPlayMode = true;
     playerElement.removeEventListener('touchend', playVideoWithTouch);
+    playerElement.addEventListener('touchend', sendTouchEnd, false);
   }
 
   function sendTouch(e, phase) {
@@ -158,4 +159,11 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     data.setFloat32(5, e.deltaY, true);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
+}
+
+export function sendClickEvent(videoPlayer, elementId) {
+  let data = new DataView(new ArrayBuffer(3));
+  data.setUint8(0, InputEvent.ButtonClick);
+  data.setInt16(1, elementId, true);
+  videoPlayer && videoPlayer.sendMsg(data.buffer);
 }

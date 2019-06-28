@@ -7,8 +7,19 @@ using System.Text.RegularExpressions;
 
 namespace Unity.RenderStreaming
 {
+    [Serializable]
+    public class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
+
+    [Serializable]
+    public class ButtonClickElement
+    {
+        public int elementId;
+        public ButtonClickEvent click;
+    }
+
     public class RenderStreaming : MonoBehaviour
     {
+#pragma warning disable 0649
         [SerializeField, Tooltip("Address for signaling server")]
         private string urlSignaling = "http://localhost";
 
@@ -17,21 +28,26 @@ namespace Unity.RenderStreaming
 
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
+
+        [SerializeField, Tooltip("Camera to capture video stream")]
+        private Camera cam;
+
+        [SerializeField]
+        private ButtonClickElement[] arrayButtonClickEvent;
+#pragma warning restore 0649
+
         private Signaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
         private MediaStream videoStream;
-#pragma warning disable 0649
-        [SerializeField, Tooltip("Camera to capture video stream")]
-        private Camera cam;
-#pragma warning restore 0649
 
         public void Awake()
         {
             WebRTC.WebRTC.Initialize(); 
             RemoteInput.Initialize();
+            RemoteInput.ActionButtonClick = OnButtonClick;
         }
 
         public void OnDestroy()
@@ -222,6 +238,17 @@ namespace Unity.RenderStreaming
             {
                 channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
                 channel.OnClose = new DelegateOnClose(() => { RemoteInput.Reset(); });
+            }
+        }
+
+        void OnButtonClick(int elementId)
+        {
+            foreach (var element in arrayButtonClickEvent)
+            {
+                if (element.elementId == elementId)
+                {
+                    element.click.Invoke(elementId);
+                }
             }
         }
     }

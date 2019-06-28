@@ -15,7 +15,8 @@ namespace Unity.RenderStreaming
         Keyboard = 0,
         Mouse = 1,
         MouseWheel = 2,
-        Touch = 3
+        Touch = 3,
+        ButtonClick = 4
     }
 
     public static class RemoteInput
@@ -23,6 +24,7 @@ namespace Unity.RenderStreaming
         public static Keyboard Keyboard { get; private set; }
         public static Mouse Mouse { get; private set; }
         public static Touchscreen Touch { get; private set; }
+        public static Action<int> ActionButtonClick;
 
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
         {
@@ -74,6 +76,10 @@ namespace Unity.RenderStreaming
                         ProcessTouchMoveEvent(i, phase, pageX, pageY, force);
                         index += 8;
                     }
+                    break;
+                case EventType.ButtonClick:
+                    var elementId = BitConverter.ToInt16(bytes, 1);
+                    ProcessButtonClickEvent(elementId);
                     break;
             }
         }
@@ -127,6 +133,14 @@ namespace Unity.RenderStreaming
                     pressure = force
                 });
             InputSystem.Update();
+        }
+
+        static void ProcessButtonClickEvent(int elementId)
+        {
+            if (ActionButtonClick != null)
+            {
+                ActionButtonClick(elementId);
+            }
         }
     }
 }
