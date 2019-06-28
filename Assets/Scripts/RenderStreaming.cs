@@ -22,6 +22,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
+        private MediaStream videoStream;
 #pragma warning disable 0649
         [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera cam;
@@ -39,6 +40,11 @@ namespace Unity.RenderStreaming
         }
         public IEnumerator Start()
         {
+            if (!WebRTC.WebRTC.HWEncoderSupport)
+            {
+                yield break;
+            }
+            videoStream = cam.CaptureStream(1280, 720);
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;
@@ -113,7 +119,7 @@ namespace Unity.RenderStreaming
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
-                foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
+                foreach (var track in videoStream.GetTracks())
                 {
                     pc.AddTrack(track);
                 }
