@@ -31,13 +31,13 @@ namespace Unity.WebRTC
 
         public void Dispose()
         {
-            NativeMethods.PeerConnectionClose(self);
+            NativeMethods.PeerConnectionClose(self, m_id);
         }
 
         public RTCIceConnectionState IceConnectionState
         {
             get
-            {
+            { 
                 return NativeMethods.PeerConnectionIceConditionState(self);
             }
         }
@@ -185,7 +185,7 @@ namespace Unity.WebRTC
 
         public void Close()
         {
-            NativeMethods.PeerConnectionClose(self);
+            NativeMethods.PeerConnectionClose(self, m_id);
         }
 
         public RTCRtpSender AddTrack(MediaStreamTrack track)

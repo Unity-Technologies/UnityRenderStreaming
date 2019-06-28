@@ -213,7 +213,7 @@ namespace Unity.WebRTC
                 flipMat = new Material(flipShader); 
             }
         }
-        public static IEnumerator Update()
+        public static IEnumerator Update() 
         {
             while (true)
             {
@@ -300,7 +300,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionClose(IntPtr ptr);
+        public static extern void PeerConnectionClose(IntPtr ptr, int id);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
