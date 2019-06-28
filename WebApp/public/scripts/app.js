@@ -38,7 +38,7 @@ function onClickPlayButton() {
 
   // add green button sample
   const elementBlueButton = document.createElement('button');
-  elementBlueButton.id = "greenButton";
+  elementBlueButton.id = "blueButton";
   elementBlueButton.innerHTML = "Light on";
   playerDiv.appendChild(elementBlueButton);
   elementBlueButton.addEventListener ("click", function() {
@@ -47,7 +47,7 @@ function onClickPlayButton() {
 
   // add green button sample
   const elementGreenButton = document.createElement('button');
-  elementGreenButton.id = "blueButton";
+  elementGreenButton.id = "greenButton";
   elementGreenButton.innerHTML = "Light off";
   playerDiv.appendChild(elementGreenButton);
   elementGreenButton.addEventListener ("click", function() {
