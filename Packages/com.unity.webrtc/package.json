@@ -2,8 +2,8 @@
   "name": "com.unity.webrtc",
   "displayName": "WebRTC",
   "version": "0.0.1-preview",
-  "unity": "2018.3",
-  "description": "Render streaming is a set of tools that enable users to control applications built with unity in web browser.",
+  "unity": "2019.1",
+  "description": "This package implements RenderStreaming technology and provides C# WebRTC API for you to build WebRTC applications inside Unity.\n\nThe package contains several sample scenes that you could use as a starter.",
   "keywords": [
     "webrtc",
     "web"
