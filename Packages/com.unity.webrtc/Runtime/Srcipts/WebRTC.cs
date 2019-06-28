@@ -34,7 +34,7 @@ namespace Unity.WebRTC
         public string candidate;
         [MarshalAs(UnmanagedType.LPStr)]
         public string sdpMid;
-        public int sdpMlineIndex;
+        public int sdpMLineIndex;
     }
 
     public struct RTCDataChannelInit

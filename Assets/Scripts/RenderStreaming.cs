@@ -165,7 +165,7 @@ namespace Unity.RenderStreaming
                 {
                     RTCIceCandidate _candidate = default;
                     _candidate.candidate = candidate.candidate;
-                    _candidate.sdpMlineIndex = candidate.sdpMLineIndex;
+                    _candidate.sdpMLineIndex = candidate.sdpMLineIndex;
                     _candidate.sdpMid = candidate.sdpMid;
 
                     pcs[candidateContainer.connectionId].AddIceCandidate(ref _candidate);
@@ -175,7 +175,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate candidate)
         {
-            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMlineIndex);
+            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
             yield return opCandidate;
             if (opCandidate.webRequest.isNetworkError)
             {

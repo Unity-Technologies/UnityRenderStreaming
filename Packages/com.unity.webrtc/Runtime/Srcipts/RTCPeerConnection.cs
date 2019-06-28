@@ -107,7 +107,7 @@ namespace Unity.WebRTC
         {
             WebRTC.SyncContext.Post(_ =>
             {
-                RTCIceCandidate candidate = new RTCIceCandidate { candidate = sdp, sdpMid = sdpMid, sdpMlineIndex = sdpMlineIndex };
+                RTCIceCandidate candidate = new RTCIceCandidate { candidate = sdp, sdpMid = sdpMid, sdpMLineIndex = sdpMlineIndex };
                 OnIceCandidate(candidate);
             }, null);
         }
