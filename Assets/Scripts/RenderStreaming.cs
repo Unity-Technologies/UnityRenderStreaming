@@ -79,6 +79,10 @@ namespace Unity.RenderStreaming
                 yield break;
             }
             var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
+            if (obj == null)
+            {
+                yield break;
+            }
             foreach (var offer in obj.offers)
             {
                 RTCSessionDescription _desc = default;
@@ -146,6 +150,10 @@ namespace Unity.RenderStreaming
                 yield break;
             }
             var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
+            if (obj == null)
+            {
+                yield break;
+            }
             foreach (var candidateContainer in obj.candidates)
             {
                 RTCPeerConnection pc;
