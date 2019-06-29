@@ -1,4 +1,4 @@
-import SignalingChannel from "./signaling-channel.js"
+import Signaling from "./signaling.js"
 
 export class VideoPlayer {
   constructor(element, options) {
@@ -21,7 +21,7 @@ export class VideoPlayer {
       _this.video.play();
     }, true);
     this.interval = 3000;
-    this.signalingChannel = new SignalingChannel();
+    this.signaling = new Signaling();
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
 
@@ -58,7 +58,7 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
-        _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -73,7 +73,7 @@ export class VideoPlayer {
       console.log('Datachannel disconnected.');
     };
 
-    const createResponse = await this.signalingChannel.create();
+    const createResponse = await this.signaling.create();
     const data = await createResponse.json();
     this.sessionId = data.sessionId;
 
@@ -90,14 +90,14 @@ export class VideoPlayer {
 
   async createConnection() {
     // signaling
-    const res = await this.signalingChannel.createConnection(this.sessionId);
+    const res = await this.signaling.createConnection(this.sessionId);
     const data = await res.json();
     this.connectionId = data.connectionId;
   }
 
   async sendOffer(offer) {
     // signaling
-    await this.signalingChannel.sendOffer(this.sessionId, this.connectionId, offer.sdp);
+    await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
     this.loopGetAnswer(this.sessionId, this.interval);
     this.loopGetCandidate(this.sessionId, this.interval);
   }
@@ -107,7 +107,7 @@ export class VideoPlayer {
     let lastTimeRequest = Date.now() - 30000;
 
     while(true) {
-      const res = await this.signalingChannel.getAnswer(sessionId, lastTimeRequest);
+      const res = await this.signaling.getAnswer(sessionId, lastTimeRequest);
       const data = await res.json();
       const answers = data.answers;
       lastTimeRequest = Date.parse(res.headers.get('Date'));
@@ -125,7 +125,7 @@ export class VideoPlayer {
     let lastTimeRequest = Date.now() - 30000;
 
     while(true) {
-      const res = await this.signalingChannel.getCandidate(sessionId, lastTimeRequest);
+      const res = await this.signaling.getCandidate(sessionId, lastTimeRequest);
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
       const data = await res.json();
