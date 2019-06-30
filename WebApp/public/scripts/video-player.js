@@ -1,14 +1,9 @@
 import Signaling from "./signaling.js"
 
 export class VideoPlayer {
-  constructor(element, options) {
+  constructor(element, config) {
     const _this = this;
-    if(options === undefined) {
-      options = {};
-    }
-    this.cfg = options;
-    this.cfg.sdpSemantics = 'unified-plan';
-    this.cfg.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
     this.channel = null;
     this.offerOptions = {
@@ -22,7 +17,17 @@ export class VideoPlayer {
     }, true);
     this.interval = 3000;
     this.signaling = new Signaling();
+    this.ondisconnect = function(){};
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+  }
+
+  static getConfiguration(config) {
+    if(config === undefined) {
+      config = {};
+    }
+    config.sdpSemantics = 'unified-plan';
+    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    return config;
   }
 
   async setupConnection() {
@@ -48,6 +53,10 @@ export class VideoPlayer {
     };
     this.pc.oniceconnectionstatechange = function (e) {
       console.log('iceConnectionState changed:', e);
+      console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
+      if(_this.pc.iceConnectionState === 'disconnected') {
+        _this.ondisconnect();
+      }
     };
     this.pc.onicegatheringstatechange = function (e) {
       console.log('iceGatheringState changed:', e);
@@ -154,6 +163,9 @@ export class VideoPlayer {
   };
 
   sendMsg(msg) {
+    if(this.channel == null) {
+      return;
+    }
     switch (this.channel.readyState) {
       case 'connecting':
         console.log('Connection not ready');

@@ -230,7 +230,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
 
   function sendTouch(e, phase) {
     const changes = e.changedTouches;
-    console.log("touchMove: length:" + changes.length + " pageX" + changes[0].pageX + ", pageX: " + changes[0].pageY + ", force:" + changes[0].force);
+    console.log("touch phase:" + phase + " length:" + changes.length + " pageX" + changes[0].pageX + ", pageX: " + changes[0].pageY + ", force:" + changes[0].force);
 
     let data = new DataView(new ArrayBuffer(3 + 8 * changes.length));
     data.setUint8(0, InputEvent.Touch);
@@ -250,18 +250,22 @@ export function registerMouseEvents(videoPlayer, playerElement) {
 
   function sendTouchMove(e) {
     sendTouch(e, PointerPhase.Moved);
+    e.preventDefault();
   }
 
   function sendTouchStart(e) {
     sendTouch(e, PointerPhase.Began);
+    e.preventDefault();
   }
 
   function sendTouchEnd(e) {
     sendTouch(e, PointerPhase.Ended);
+    e.preventDefault();
   }
 
   function sendTouchCancel(e) {
     sendTouch(e, PointerPhase.Canceled);
+    e.preventDefault();
   }
 
   function sendMouse(e) {
