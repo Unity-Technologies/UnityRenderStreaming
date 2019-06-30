@@ -128,7 +128,7 @@ namespace Unity.RenderStreaming
 
         static void ProcessTouchMoveEvent(int index, PointerPhase phase, short pageX, short pageY, float force)
         {
-            InputSystem.QueueDeltaStateEvent(Touch.allTouchControls[index],
+            InputSystem.QueueStateEvent(Touch,
                 new TouchState
                 {
                     touchId = index,
