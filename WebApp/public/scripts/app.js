@@ -13,14 +13,14 @@ function showPlayButton() {
     elementPlayButton.src = 'images/Play.png';
     elementPlayButton.alt = 'Start Streaming';
     playButton = document.getElementById('player').appendChild(elementPlayButton);
-    playButton.addEventListener('click', function () {
-      onClickPlayButton();
-      playButton.style.display = 'none';
-    });
+    playButton.addEventListener('click', onClickPlayButton);
   }
 }
 
 function onClickPlayButton() {
+
+  playButton.style.display = 'none';
+
   const playerDiv = document.getElementById('player');
 
   // add video player
@@ -28,9 +28,7 @@ function onClickPlayButton() {
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
-  videoPlayer = setupVideoPlayer(elementVideo);
-  registerKeyboardEvents(videoPlayer);
-  registerMouseEvents(videoPlayer, elementVideo);
+  setupVideoPlayer(elementVideo).then(value => videoPlayer = value);
 
   // add green button
   const elementBlueButton = document.createElement('button');
@@ -78,10 +76,14 @@ function onClickPlayButton() {
   }
 }
 
-function setupVideoPlayer(element, config) {
+async function setupVideoPlayer(element, config) {
   const videoPlayer = new VideoPlayer(element, config);
-  videoPlayer.setupConnection();
+  await videoPlayer.setupConnection();
+
   videoPlayer.ondisconnect = onDisconnect;
+  registerKeyboardEvents(videoPlayer);
+  registerMouseEvents(videoPlayer, element);
+
   return videoPlayer;
 }
 
