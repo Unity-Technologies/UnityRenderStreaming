@@ -232,12 +232,14 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     const changes = e.changedTouches;
     console.log("touch phase:" + phase + " length:" + changes.length + " pageX" + changes[0].pageX + ", pageX: " + changes[0].pageY + ", force:" + changes[0].force);
 
-    let data = new DataView(new ArrayBuffer(3 + 8 * changes.length));
+    let data = new DataView(new ArrayBuffer(3 + 12 * changes.length));
     data.setUint8(0, InputEvent.Touch);
     data.setUint8(1, phase);
     data.setUint8(2, changes.length);
     let byteOffset = 3;
     for (let i = 0; i < changes.length; i++) {
+      data.setInt32(byteOffset, changes[i].identifier, true);
+      byteOffset += 4;
       data.setInt16(byteOffset, changes[i].pageX, true);
       byteOffset += 2;
       data.setInt16(byteOffset, changes[i].pageY, true);

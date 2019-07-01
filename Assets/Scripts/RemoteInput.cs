@@ -71,11 +71,12 @@ namespace Unity.RenderStreaming
                     var index = 3;
                     for (int i = 0; i < length; i++)
                     {
-                        var pageX = BitConverter.ToInt16(bytes, index);
-                        var pageY = BitConverter.ToInt16(bytes, index+2);
-                        var force = BitConverter.ToSingle(bytes, index+4);
-                        ProcessTouchMoveEvent(i, phase, pageX, pageY, force);
-                        index += 8;
+                        var identifier = BitConverter.ToInt32(bytes, index);
+                        var pageX = BitConverter.ToInt16(bytes, index+4);
+                        var pageY = BitConverter.ToInt16(bytes, index+6);
+                        var force = BitConverter.ToSingle(bytes, index+8);
+                        ProcessTouchMoveEvent(identifier, phase, pageX, pageY, force);
+                        index += 12;
                     }
                     break;
                 case EventType.ButtonClick:
@@ -126,12 +127,12 @@ namespace Unity.RenderStreaming
             InputSystem.Update();
         }
 
-        static void ProcessTouchMoveEvent(int index, PointerPhase phase, short pageX, short pageY, float force)
+        static void ProcessTouchMoveEvent(int identifier, PointerPhase phase, short pageX, short pageY, float force)
         {
             InputSystem.QueueStateEvent(Touch,
                 new TouchState
                 {
-                    touchId = index,
+                    touchId = identifier,
                     phase = phase,
                     position = new Vector2Int(pageX, pageY),
                     pressure = force
