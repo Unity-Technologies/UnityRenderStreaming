@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        private MediaStream2 videoStream;
+        private MediaStream videoStream;
 
         public void Awake()
         {
@@ -61,8 +61,9 @@ namespace Unity.RenderStreaming
                 yield break;
             }
             captureCamera.CreateRenderStreamTexture(1280, 720);
-            videoStream = new MediaStream2();
+            videoStream = new MediaStream();
             int texCount = captureCamera.getStreamTextureCount();
+
             for (int i = 0; i < texCount; ++i)
             {
                 videoStream.AddTrack(new VideoStreamTrack(captureCamera.getStreamTexture(i)));

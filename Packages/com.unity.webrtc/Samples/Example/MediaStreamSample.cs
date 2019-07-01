@@ -159,11 +159,11 @@ public class MediaStreamSample : MonoBehaviour
     }
     public void AddTracks() 
     {
-        foreach (var track in audioStream.GetTracks())
+        foreach (var track in audioStream.getTracks())
         {
             pc1Senders.Add (pc1.AddTrack(track));  
         }
-        foreach(var track in videoStream.GetTracks())
+        foreach(var track in videoStream.getTracks())
         {
             pc1Senders.Add(pc1.AddTrack(track));
         }
@@ -232,8 +232,8 @@ public class MediaStreamSample : MonoBehaviour
     {
         pc2Senders.Add(pc.AddTrack(e.Track));
         trackInfos.Append($"{GetName(pc)} receives remote track:\r\n");
-        trackInfos.Append($"Track kind: {e.Track.Kind}\r\n");
-        trackInfos.Append($"Track id: {e.Track.Id}\r\n");
+        trackInfos.Append($"Track kind: {e.Track.kind}\r\n");
+        trackInfos.Append($"Track id: {e.Track.id}\r\n");
         infoText.text = trackInfos.ToString();
     }
 

@@ -4,18 +4,40 @@ using UnityEngine;
 
 namespace Unity.WebRTC
 {
-    public class MediaStreamTrack2
+    public class MediaStreamTrack
     {
         public IntPtr nativePtr;
         public string id;
         public TrackKind kind;
-        public MediaStreamTrack2()
+        public MediaStreamTrack()
         {
 
         }
+
+        internal MediaStreamTrack(IntPtr ptr)
+        {
+            nativePtr = ptr;
+            kind = NativeMethods.MediaStreamTrackGetKind(nativePtr);
+            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(nativePtr));
+        }
+
+        //public bool Enabled
+        //{
+        //    get{return NativeMethods.MediaStreamTrackGetEnabled(nativePtr);}
+        //    set{NativeMethods.MediaStreamTrackSetEnabled(nativePtr, value);}
+        //}
+        //public TrackState ReadyState
+        //{
+        //    get
+        //    {return NativeMethods.MediaStreamTrackGetReadyState(nativePtr);}
+        //    private set { }
+        //}
+
+        //public TrackKind Kind { get => kind; private set { } }
+        //public string Id { get => id; private set { } }
     }
 
-    public class VideoStreamTrack : MediaStreamTrack2
+    public class VideoStreamTrack : MediaStreamTrack
     {
         public VideoStreamTrack(RenderTexture rt) : base()
         {
@@ -38,51 +60,51 @@ namespace Unity.WebRTC
 
 
 
-    public class MediaStreamTrack
-    {
-        internal IntPtr self;
-        private TrackKind kind;
-        private string id;
-        private bool enabled;
-        private TrackState readyState;
-        internal Action<MediaStreamTrack> stopTrack;
-        internal Func<MediaStreamTrack, RenderTexture[]> getRts;
+    //public class MediaStreamTrack
+    //{
+    //    internal IntPtr self;
+    //    private TrackKind kind;
+    //    private string id;
+    //    private bool enabled;
+    //    private TrackState readyState;
+    //    internal Action<MediaStreamTrack> stopTrack;
+    //    internal Func<MediaStreamTrack, RenderTexture[]> getRts;
 
-        public bool Enabled
-        {
-            get
-            {
-                return NativeMethods.MediaStreamTrackGetEnabled(self);
-            }
-            set
-            {
-                NativeMethods.MediaStreamTrackSetEnabled(self, value);
-            }
-        }
-        public TrackState ReadyState
-        {
-            get
-            {
-                return NativeMethods.MediaStreamTrackGetReadyState(self);
-            }
-            private set { }
-        }
+    //    public bool Enabled
+    //    {
+    //        get
+    //        {
+    //            return NativeMethods.MediaStreamTrackGetEnabled(self);
+    //        }
+    //        set
+    //        {
+    //            NativeMethods.MediaStreamTrackSetEnabled(self, value);
+    //        }
+    //    }
+    //    public TrackState ReadyState
+    //    {
+    //        get
+    //        {
+    //            return NativeMethods.MediaStreamTrackGetReadyState(self);
+    //        }
+    //        private set { }
+    //    }
 
-        public TrackKind Kind { get => kind; private set { } }
-        public string Id { get => id; private set { } }
+    //    public TrackKind Kind { get => kind; private set { } }
+    //    public string Id { get => id; private set { } }
 
-        internal MediaStreamTrack(IntPtr ptr)
-        {
-            self = ptr;
-            kind = NativeMethods.MediaStreamTrackGetKind(self);
-            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
-        }
-        //Disassociate track from its source(video or audio), not for destroying the track
-        public void Stop()
-        {
-            stopTrack(this);
-        }
-    }
+    //    internal MediaStreamTrack(IntPtr ptr)
+    //    {
+    //        self = ptr;
+    //        kind = NativeMethods.MediaStreamTrackGetKind(self);
+    //        id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(self));
+    //    }
+    //    //Disassociate track from its source(video or audio), not for destroying the track
+    //    public void Stop()
+    //    {
+    //        stopTrack(this);
+    //    }
+    //}
 
     public enum TrackKind
     {

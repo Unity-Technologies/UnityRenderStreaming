@@ -190,11 +190,6 @@ namespace Unity.WebRTC
 
         public RTCRtpSender AddTrack(MediaStreamTrack track)
         {
-            return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.self));
-        }
-
-        public RTCRtpSender AddTrack(MediaStreamTrack2 track)
-        {
             return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.nativePtr));
         }
 
