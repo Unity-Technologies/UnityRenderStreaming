@@ -338,3 +338,6 @@ MigrationBackup/
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
+
+# Exclude Documentation folder
+!Documentation~
