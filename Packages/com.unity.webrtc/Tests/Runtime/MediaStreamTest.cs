@@ -46,10 +46,20 @@ class MediaStreamTest
             {
                 pc2Senders.Add(peer2.AddTrack(e.Track));
             });
-            foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
+
+
+            cam.CreateRenderStreamTexture(1280, 720);
+            MediaStream videoStream = new MediaStream();
+            int texCount = cam.getStreamTextureCount();
+            for (int i = 0; i < texCount; ++i)
             {
-                pc1Senders.Add(peer1.AddTrack(track));
+                pc1Senders.Add(peer1.AddTrack(new VideoStreamTrack(cam.getStreamTexture(i))));
             }
+
+            //foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
+            //{
+            //    pc1Senders.Add(peer1.AddTrack(track));
+            //}
             var conf = new RTCDataChannelInit(true);
 
             RTCOfferOptions options1 = default;
