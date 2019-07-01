@@ -1393,9 +1393,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   urlSignaling: http://localhost
-  urlSTUN: stun:stun.l.google.com:19302
+  urlsIceServer:
+  - stun:stun.l.google.com:19302
   interval: 5
-  cam: {fileID: 1297650283}
+  captureCamera: {fileID: 1297650283}
   arrayButtonClickEvent:
   - elementId: 1
     click:
