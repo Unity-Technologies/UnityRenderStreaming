@@ -6,6 +6,34 @@ using System.Runtime.InteropServices;
 
 namespace Unity.WebRTC
 {
+    public class MediaStream2 
+    {
+        protected List<MediaStreamTrack2> mediaStreamTrackList = new List<MediaStreamTrack2>();
+
+        public MediaStream2() : base()
+        {
+            
+        }
+
+        public MediaStream2(MediaStreamTrack2[] tracks) : base()
+        {
+            foreach (var t in tracks)
+            {
+                mediaStreamTrackList.Add(t);
+            }
+        }
+
+        public void AddTrack(MediaStreamTrack2 track)
+        {
+            mediaStreamTrackList.Add(track);
+        }
+
+        public MediaStreamTrack2[] getTracks()
+        {
+            return mediaStreamTrackList.ToArray();
+        }
+    }
+
     public class MediaStream
     {
         private IntPtr self;
@@ -152,36 +180,62 @@ namespace Unity.WebRTC
     }
     public static class CameraExtension
     {
+        internal static RenderTexture camRenderTexture;
+        internal static List<RenderTexture> webRTCTextures = new List<RenderTexture>();
         internal static List<RenderTexture[]> camCopyRts = new List<RenderTexture[]>();
         internal static bool started = false;
-        public static MediaStream CaptureStream(this Camera cam, int width, int height)
+
+        public static int getStreamTextureCount(this Camera cam)
+        {
+            return webRTCTextures.Count;
+        }
+
+        public static RenderTexture getStreamTexture(this Camera cam, int index) {
+            return webRTCTextures[index];
+        }
+
+        public static void CreateRenderStreamTexture(this Camera cam, int width, int height)
         {
             if (camCopyRts.Count > 0)
             {
                 throw new NotImplementedException("Currently not allowed multiple MediaStream");
             }
 
-            RenderTexture[] rts = new RenderTexture[2];
-            //rts[0] for render target, rts[1] for flip and WebRTC source
-            rts[0] = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
-            rts[1] = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
-            rts[0].Create();
-            rts[1].Create();
-            camCopyRts.Add(rts);
-            cam.targetTexture = rts[0];
+            camRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
+            camRenderTexture.Create();
+
+            int mipCount = 1;
+            for (int i = 1, mipLevel = 1; i <= mipCount; ++i, mipLevel *= 2)
+            {
+                RenderTexture webRtcTex = new RenderTexture(width / mipLevel, height / mipLevel, 0, RenderTextureFormat.BGRA32);
+                webRtcTex.Create();
+                webRTCTextures.Add(webRtcTex);
+            }
+
+            cam.targetTexture = camRenderTexture;
             cam.gameObject.AddCleanerCallback(() =>
             {
-                if (rts != null)
+                camRenderTexture.Release();
+                UnityEngine.Object.Destroy(camRenderTexture);
+
+                foreach (var v in webRTCTextures)
                 {
-                    CameraExtension.RemoveRt(rts);
-                    rts[0].Release();
-                    rts[1].Release();
-                    UnityEngine.Object.Destroy(rts[0]);
-                    UnityEngine.Object.Destroy(rts[1]);
+                    v.Release();
+                    UnityEngine.Object.Destroy(v);
                 }
+                webRTCTextures.Clear();
             });
             started = true;
-            return new MediaStream(rts, WebRTC.Context.CaptureVideoStream(rts[1].GetNativeTexturePtr(), width, height));
+        }
+
+        public static MediaStream CaptureStream(this Camera cam, int width, int height)
+        {
+            cam.CreateRenderStreamTexture(width, height);
+
+            int textureIndex = 0;
+            int rtcMipLevel = (int)Math.Pow(2, textureIndex); //1 2 4 8
+            return new MediaStream(webRTCTextures.ToArray(), WebRTC.Context.CaptureVideoStream(webRTCTextures[textureIndex].GetNativeTexturePtr(), width/rtcMipLevel, height/rtcMipLevel));
+            //return new MediaStream2();
         }
         public static void RemoveRt(RenderTexture[] rts)
         {

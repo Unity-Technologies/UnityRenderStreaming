@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        private MediaStream videoStream;
+        private MediaStream2 videoStream;
 
         public void Awake()
         {
@@ -60,7 +60,16 @@ namespace Unity.RenderStreaming
             {
                 yield break;
             }
-            videoStream = cam.CaptureStream(1280, 720);
+            cam.CreateRenderStreamTexture(1280, 720);
+            videoStream = new MediaStream2();
+            int texCount = cam.getStreamTextureCount();
+            for (int i = 0; i < texCount; ++i)
+            {
+                videoStream.AddTrack(new VideoStreamTrack(cam.getStreamTexture(i)));
+            }
+            
+
+
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;
@@ -142,7 +151,7 @@ namespace Unity.RenderStreaming
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
-                foreach (var track in videoStream.GetTracks())
+                foreach (var track in videoStream.getTracks())
                 {
                     pc.AddTrack(track);
                 }

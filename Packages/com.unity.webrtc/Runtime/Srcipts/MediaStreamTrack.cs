@@ -4,6 +4,40 @@ using UnityEngine;
 
 namespace Unity.WebRTC
 {
+    public class MediaStreamTrack2
+    {
+        public IntPtr nativePtr;
+        public string id;
+        public TrackKind kind;
+        public MediaStreamTrack2()
+        {
+
+        }
+    }
+
+    public class VideoStreamTrack : MediaStreamTrack2
+    {
+        public VideoStreamTrack(RenderTexture rt) : base()
+        {
+            IntPtr nativeVideoStreamPtr = WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), rt.width, rt.height);
+            string nativeVideoStreamID = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(nativeVideoStreamPtr));
+
+            int trackSize = 0;
+            IntPtr tracksNativePtr = NativeMethods.MediaStreamGetVideoTracks(nativeVideoStreamPtr, ref trackSize);
+            IntPtr[] tracksPtr = new IntPtr[trackSize];
+            Marshal.Copy(tracksNativePtr, tracksPtr, 0, trackSize);
+            Marshal.FreeCoTaskMem(tracksNativePtr);
+
+            nativePtr = tracksPtr[0];
+            kind = NativeMethods.MediaStreamTrackGetKind(nativePtr);
+            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(nativePtr));
+
+        }
+    }
+
+
+
+
     public class MediaStreamTrack
     {
         internal IntPtr self;
