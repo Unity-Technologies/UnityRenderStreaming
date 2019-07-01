@@ -104,6 +104,20 @@ namespace UnityTemplateProjects
             {
                 direction += Vector3.up;
             }
+
+            if (Touchscreen.current.activeTouches.Count == 2)
+            {
+                var touchMovement = Touchscreen.current.activeTouches[0].delta.ReadValue();
+                if (!invertY)
+                {
+                    touchMovement.y *= -1;
+                }
+                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(touchMovement.magnitude) * 0.1f;
+
+                direction += Vector3.right * touchMovement.x * mouseSensitivityFactor;
+                direction += Vector3.back * touchMovement.y * mouseSensitivityFactor;
+            }
+
             return direction;
         }
 
@@ -144,7 +158,7 @@ namespace UnityTemplateProjects
             }
 
             // Rotation (Touch)
-            if (Touchscreen.current.activeTouches.Count > 0)
+            if (Touchscreen.current.activeTouches.Count == 1)
             {
                 var touchMovement = Touchscreen.current.activeTouches[0].delta.ReadValue();
                 if (!invertY)
@@ -155,7 +169,6 @@ namespace UnityTemplateProjects
 
                 m_TargetCameraState.yaw += touchMovement.x * mouseSensitivityFactor;
                 m_TargetCameraState.pitch += touchMovement.y * mouseSensitivityFactor;
-
             }
 
             // Translation
