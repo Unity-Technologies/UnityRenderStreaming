@@ -1,4 +1,4 @@
-export default class SignalingChannel {
+export default class Signaling {
   headers(sessionId) {
     if(sessionId != undefined)
     {

@@ -30,8 +30,8 @@ body{
 
 #greenButton{
     position: absolute;
-    top: 0px;
-    left: 0px;
+    bottom: 10px;
+    left: 10px;
     width: 160px;
     background-color: #4CAF50; /* Green */
     border: none;
@@ -44,8 +44,8 @@ body{
 }
 #blueButton{
     position: absolute;
-    top: 0px;
-    left: 170px;
+    bottom: 10px;
+    left: 180px;
     width: 160px;
     background-color: #447FAF; /* Blue */
     border: none;
@@ -55,4 +55,12 @@ body{
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+}
+
+#fullscreenButton{
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    width: 32px;
+    height: 32px;
 }

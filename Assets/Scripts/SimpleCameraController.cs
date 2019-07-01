@@ -143,6 +143,21 @@ namespace UnityTemplateProjects
                 m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
             }
 
+            // Rotation (Touch)
+            if (Touchscreen.current.activeTouches.Count > 0)
+            {
+                var touchMovement = Touchscreen.current.activeTouches[0].delta.ReadValue();
+                if (!invertY)
+                {
+                    touchMovement.y *= -1;
+                }
+                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(touchMovement.magnitude) * 0.1f;
+
+                m_TargetCameraState.yaw += touchMovement.x * mouseSensitivityFactor;
+                m_TargetCameraState.pitch += touchMovement.y * mouseSensitivityFactor;
+
+            }
+
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 

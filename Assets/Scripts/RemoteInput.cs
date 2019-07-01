@@ -50,8 +50,9 @@ namespace Unity.RenderStreaming
                 case EventType.Keyboard:
                     var type = (KeyboardEventType)bytes[1];
                     var repeat = bytes[2] == 1;
-                    var key = (char)bytes[3];
-                    ProcessKeyEvent(type, repeat, key);
+                    var key = bytes[3];
+                    var character = (char)bytes[4];
+                    ProcessKeyEvent(type, repeat, key, character);
                     break;
                 case EventType.Mouse:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
@@ -92,7 +93,7 @@ namespace Unity.RenderStreaming
             InputSystem.Update();
         }
 
-        static void ProcessKeyEvent(KeyboardEventType state, bool repeat, char keyCode)
+        static void ProcessKeyEvent(KeyboardEventType state, bool repeat, byte keyCode, char character)
         {
             switch(state)
             {
@@ -101,7 +102,10 @@ namespace Unity.RenderStreaming
                     {
                         InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
                     }
-                    InputSystem.QueueTextEvent(Keyboard, keyCode);
+                    if(character != 0)
+                    {
+                        InputSystem.QueueTextEvent(Keyboard, character);
+                    }
                     break;
                 case KeyboardEventType.KeyUp:
                     InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
@@ -124,7 +128,7 @@ namespace Unity.RenderStreaming
 
         static void ProcessTouchMoveEvent(int index, PointerPhase phase, short pageX, short pageY, float force)
         {
-            InputSystem.QueueDeltaStateEvent(Touch.allTouchControls[index],
+            InputSystem.QueueStateEvent(Touch,
                 new TouchState
                 {
                     touchId = index,

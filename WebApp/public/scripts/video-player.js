@@ -1,14 +1,9 @@
-import SignalingChannel from "./signaling-channel.js"
+import Signaling from "./signaling.js"
 
 export class VideoPlayer {
-  constructor(element, options) {
+  constructor(element, config) {
     const _this = this;
-    if(options === undefined) {
-      options = {};
-    }
-    this.cfg = options;
-    this.cfg.sdpSemantics = 'unified-plan';
-    this.cfg.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
     this.channel = null;
     this.offerOptions = {
@@ -21,8 +16,18 @@ export class VideoPlayer {
       _this.video.play();
     }, true);
     this.interval = 3000;
-    this.signalingChannel = new SignalingChannel();
+    this.signaling = new Signaling();
+    this.ondisconnect = function(){};
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+  }
+
+  static getConfiguration(config) {
+    if(config === undefined) {
+      config = {};
+    }
+    config.sdpSemantics = 'unified-plan';
+    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    return config;
   }
 
   async setupConnection() {
@@ -48,6 +53,10 @@ export class VideoPlayer {
     };
     this.pc.oniceconnectionstatechange = function (e) {
       console.log('iceConnectionState changed:', e);
+      console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
+      if(_this.pc.iceConnectionState === 'disconnected') {
+        _this.ondisconnect();
+      }
     };
     this.pc.onicegatheringstatechange = function (e) {
       console.log('iceGatheringState changed:', e);
@@ -58,7 +67,7 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
-        _this.signalingChannel.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -73,7 +82,7 @@ export class VideoPlayer {
       console.log('Datachannel disconnected.');
     };
 
-    const createResponse = await this.signalingChannel.create();
+    const createResponse = await this.signaling.create();
     const data = await createResponse.json();
     this.sessionId = data.sessionId;
 
@@ -90,14 +99,14 @@ export class VideoPlayer {
 
   async createConnection() {
     // signaling
-    const res = await this.signalingChannel.createConnection(this.sessionId);
+    const res = await this.signaling.createConnection(this.sessionId);
     const data = await res.json();
     this.connectionId = data.connectionId;
   }
 
   async sendOffer(offer) {
     // signaling
-    await this.signalingChannel.sendOffer(this.sessionId, this.connectionId, offer.sdp);
+    await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
     this.loopGetAnswer(this.sessionId, this.interval);
     this.loopGetCandidate(this.sessionId, this.interval);
   }
@@ -107,7 +116,7 @@ export class VideoPlayer {
     let lastTimeRequest = Date.now() - 30000;
 
     while(true) {
-      const res = await this.signalingChannel.getAnswer(sessionId, lastTimeRequest);
+      const res = await this.signaling.getAnswer(sessionId, lastTimeRequest);
       const data = await res.json();
       const answers = data.answers;
       lastTimeRequest = Date.parse(res.headers.get('Date'));
@@ -125,7 +134,7 @@ export class VideoPlayer {
     let lastTimeRequest = Date.now() - 30000;
 
     while(true) {
-      const res = await this.signalingChannel.getCandidate(sessionId, lastTimeRequest);
+      const res = await this.signaling.getCandidate(sessionId, lastTimeRequest);
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
       const data = await res.json();
@@ -154,6 +163,9 @@ export class VideoPlayer {
   };
 
   sendMsg(msg) {
+    if(this.channel == null) {
+      return;
+    }
     switch (this.channel.readyState) {
       case 'connecting':
         console.log('Connection not ready');
