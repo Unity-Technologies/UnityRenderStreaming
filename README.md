@@ -78,3 +78,4 @@ Unity 2018.3 は [New Input System](https://github.com/Unity-Technologies/InputS
 - [@karasusan](https://github.com/karasusan)
 - [@hiroki-o](https://github.com/hiroki-o)
 - [@flame99999](https://github.com/flame99999)
+- [koseyile](https://github.com/koseyile)
