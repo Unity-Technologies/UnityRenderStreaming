@@ -2,18 +2,17 @@
 
 - [English](../index.md)
 
-**Unity Render Streaming** は、ブラウザ上で Unity の高品位なレンダリングを実現するためのソリューションです。
-例えば、カーコンフィギュレータや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
-ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。
-WebRTC の API を提供しているため、デベロッパーがカスタマイズすることで様々なソリューションを構築することが可能です。
+**Unity Render Streaming** は、ブラウザ上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレータや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
+ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。デベロッパーがソリューションをカスタマイズすることで、様々なソリューションを構築することができます。
 
-<< gif アニメーションを貼る >>
+<img src="../images/multitouch.gif" width=500 align=center>
 
 ## ガイド
 
 * [チュートリアル](tutorial.md)
 * [ブラウザ入力](input.md)
 * [Web サーバ](webserver.md)
+* [クラスリファレンス](class-renderstreaming.md)
 * [FAQ](faq.md)
 
 
@@ -32,4 +31,4 @@ Unity 2019.1 で動作を確認しています。現在は Windows 64bit 環境�
 - Desktop Firefox
 - Desktop Safari
 - Android Chrome
-- iOS Safai
+- iOS Safari

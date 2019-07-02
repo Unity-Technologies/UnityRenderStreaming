@@ -62,17 +62,7 @@ Webサーバのソースコードは [WebApp](WebApp) に配置しています�
 
 <img src="../images/renderstreaming_inspector.png" width=300 align=center>
 
-インスペクタの各設定については以下を参照してください。
-
-|パラメータ|説明|デフォルト|
-|-------|-----|-----|
-|URL Signaling|シグナリングサーバのURLを指定します|http://localhost|
-|URLs Ice Server|STUN/TURN サーバをリストで指定します|\[stun:stun.l.google.com:19302\]|
-|Interval|シグナリングサーバへのポーリング頻度を秒単位で指定します|5|
-|Capture Camera|ストリーミング用のカメラを指定します||
-|Array Button Click Event|ブラウザ上のボタンクリックイベントを登録します||
-
-`URL Signaling` パラメータには、先ほど起動した Web サーバのアドレスを指定してください。
+`URL Signaling` パラメータには、先ほど起動した Web サーバのアドレスを指定してください。インスペクタの各設定については Render Streaming クラスの[リファレンス](class-renderstreaming.md)を参照してください。
 
 ### Webページへのアクセス
 

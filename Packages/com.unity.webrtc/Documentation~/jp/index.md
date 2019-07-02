@@ -2,29 +2,25 @@
 
 - [English](../index.md)
 
-WebRTC パッケージは、 Google が開発している [WebRTC テクノロジ](https://webrtc.org)を Unity で利用可能にするためのパッケージです。
+WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
 
 ## ガイド
 
-* [WebRTC](index.md)
 * [チュートリアル](tutorial.md)
 
 ## インストール方法
 パッケージをインストールするためには、パッケージマネージャから WebRTC for Unity を検索しインストールします。パッケージマネージャの利用方法は[ドキュメント](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html)を参照してください。
 
-![](../images/webrtc_package_manager.png) <br/>
+<img src="../images/webrtc_package_manager.png" width=600 align=center>
 
 ## サンプル
 パッケージでは以下の3つのサンプルを用意しています。
-- PeerConnection
-- DataChannel
-- MediaStream
 
-| シーン名        | 説明                                 |
-|----------------|-------------------------------------|
-| PeerConnection | 2つのピアを確立させる手続き確認用のシーン |
-| DataChannel    | テキスト送受信の確認用のシーン          |
-| MediaStream    | ビデオ/音声送受信の確認用のシーン       |
+| シーン名       | 説明                                 |
+| -------------- | ------------------------------------ |
+| PeerConnection | ピアを接続する手続きを確認するシーン |
+| DataChannel    | テキスト送受信を確認するシーン       |
+| MediaStream    | ビデオ/音声送受信を確認するシーン    |
 
 ## 制限事項
 
