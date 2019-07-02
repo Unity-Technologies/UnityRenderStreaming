@@ -24,13 +24,13 @@ namespace Unity.RenderStreaming
         private string urlSignaling = "http://localhost";
 
         [SerializeField, Tooltip("Address for stun server")]
-        private string urlSTUN = "stun:stun.l.google.com:19302";
+        private string[] urlsIceServer = new string[] { "stun:stun.l.google.com:19302" };
 
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
         [SerializeField, Tooltip("Camera to capture video stream")]
-        private Camera cam;
+        private Camera captureCamera;
 
         [SerializeField]
         private ButtonClickElement[] arrayButtonClickEvent;
@@ -60,7 +60,7 @@ namespace Unity.RenderStreaming
             {
                 yield break;
             }
-            videoStream = cam.CaptureStream(1280, 720);
+            videoStream = captureCamera.CaptureStream(1280, 720);
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;
@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming
             conf = default;
             conf.iceServers = new RTCIceServer[]
             {
-            new RTCIceServer { urls = new string[] { urlSTUN } }
+            new RTCIceServer { urls = urlsIceServer }
             };
             StartCoroutine(WebRTC.WebRTC.Update());
             StartCoroutine(LoopPolling());
