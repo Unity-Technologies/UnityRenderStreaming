@@ -6,9 +6,9 @@ namespace Unity.WebRTC
 {
     public class MediaStreamTrack
     {
-        public IntPtr nativePtr;
-        public string id;
-        public TrackKind kind;
+        internal IntPtr nativePtr;
+        protected string id;
+        protected TrackKind kind;
         public MediaStreamTrack()
         {
 
@@ -21,20 +21,21 @@ namespace Unity.WebRTC
             id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(nativePtr));
         }
 
-        //public bool Enabled
-        //{
-        //    get{return NativeMethods.MediaStreamTrackGetEnabled(nativePtr);}
-        //    set{NativeMethods.MediaStreamTrackSetEnabled(nativePtr, value);}
-        //}
-        //public TrackState ReadyState
-        //{
-        //    get
-        //    {return NativeMethods.MediaStreamTrackGetReadyState(nativePtr);}
-        //    private set { }
-        //}
+        public bool Enabled
+        {
+            get { return NativeMethods.MediaStreamTrackGetEnabled(nativePtr); }
+            set { NativeMethods.MediaStreamTrackSetEnabled(nativePtr, value); }
+        }
 
-        //public TrackKind Kind { get => kind; private set { } }
-        //public string Id { get => id; private set { } }
+        public TrackState ReadyState
+        {
+            get
+            { return NativeMethods.MediaStreamTrackGetReadyState(nativePtr); }
+            private set { }
+        }
+
+        public TrackKind Kind { get => kind; private set { } }
+        public string Id { get => id; private set { } }
     }
 
     public class VideoStreamTrack : MediaStreamTrack

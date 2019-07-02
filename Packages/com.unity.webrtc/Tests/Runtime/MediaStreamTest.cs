@@ -50,10 +50,10 @@ class MediaStreamTest
 
             cam.CreateRenderStreamTexture(1280, 720);
             MediaStream videoStream = new MediaStream();
-            int texCount = cam.getStreamTextureCount();
+            int texCount = cam.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                pc1Senders.Add(peer1.AddTrack(new VideoStreamTrack(cam.getStreamTexture(i))));
+                pc1Senders.Add(peer1.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i))));
             }
 
             //foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
