@@ -9,7 +9,7 @@ namespace Unity.WebRTC
         internal IntPtr nativePtr;
         protected string id;
         protected TrackKind kind;
-        public MediaStreamTrack()
+        internal MediaStreamTrack()
         {
 
         }
