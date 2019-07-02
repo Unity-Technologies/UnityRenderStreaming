@@ -9,9 +9,6 @@ namespace Unity.WebRTC
     public class MediaStream 
     {
         //to do : c++ create two mediastream named "audio" and "vedio". Actually we only need one.
-        //internal IntPtr nativePtr;
-        //protected string id;
-        //public string Id { get => id; private set { } }
         protected List<MediaStreamTrack> mediaStreamTrackList = new List<MediaStreamTrack>();
 
         public MediaStream() : base()

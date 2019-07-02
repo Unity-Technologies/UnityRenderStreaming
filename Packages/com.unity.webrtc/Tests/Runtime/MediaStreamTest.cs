@@ -56,10 +56,6 @@ class MediaStreamTest
                 pc1Senders.Add(peer1.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i))));
             }
 
-            //foreach (var track in cam.CaptureStream(1280, 720).GetTracks())
-            //{
-            //    pc1Senders.Add(peer1.AddTrack(track));
-            //}
             var conf = new RTCDataChannelInit(true);
 
             RTCOfferOptions options1 = default;
