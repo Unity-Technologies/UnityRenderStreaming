@@ -213,7 +213,16 @@ public class AddMediaStream : MonoBehaviour
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
         audioStream = Audio.CaptureStream();
-        videoStream = cam.CaptureStream(1280, 720);
+
+        cam.CreateRenderStreamTexture(1280, 720);
+        videoStream = new MediaStream();
+        int texCount = cam.GetStreamTextureCount();
+        for (int i = 0; i < texCount; ++i)
+        {
+            videoStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
+        }
+
+
         RtImage.texture = cam.targetTexture;
  
     }
