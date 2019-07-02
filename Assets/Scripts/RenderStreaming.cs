@@ -62,10 +62,10 @@ namespace Unity.RenderStreaming
             }
             cam.CreateRenderStreamTexture(1280, 720);
             videoStream = new MediaStream();
-            int texCount = cam.getStreamTextureCount();
+            int texCount = cam.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                videoStream.AddTrack(new VideoStreamTrack(cam.getStreamTexture(i)));
+                videoStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
             }
             
 
@@ -151,7 +151,7 @@ namespace Unity.RenderStreaming
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
-                foreach (var track in videoStream.getTracks())
+                foreach (var track in videoStream.GetTracks())
                 {
                     pc.AddTrack(track);
                 }

@@ -8,8 +8,8 @@ namespace Unity.WebRTC
 {
     public class MediaStream 
     {
-        public IntPtr self;
-        public string id;
+        internal IntPtr nativePtr;
+        protected string id;
         protected List<MediaStreamTrack> mediaStreamTrackList = new List<MediaStreamTrack>();
 
         public MediaStream() : base()
@@ -19,10 +19,10 @@ namespace Unity.WebRTC
 
         internal MediaStream(IntPtr ptr)
         {
-            self = ptr;
-            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(self));
+            nativePtr = ptr;
+            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(nativePtr));
             int trackSize = 0;
-            IntPtr trackNativePtr = NativeMethods.MediaStreamGetAudioTracks(self, ref trackSize);
+            IntPtr trackNativePtr = NativeMethods.MediaStreamGetAudioTracks(nativePtr, ref trackSize);
             IntPtr[] tracksPtr = new IntPtr[trackSize];
             Marshal.Copy(trackNativePtr, tracksPtr, 0, trackSize);
             //TODO: Linux compatibility 
@@ -50,7 +50,7 @@ namespace Unity.WebRTC
             mediaStreamTrackList.Add(track);
         }
 
-        public MediaStreamTrack[] getTracks()
+        public MediaStreamTrack[] GetTracks()
         {
             return mediaStreamTrackList.ToArray();
         }
@@ -207,12 +207,12 @@ namespace Unity.WebRTC
         internal static List<RenderTexture[]> camCopyRts = new List<RenderTexture[]>();
         internal static bool started = false;
 
-        public static int getStreamTextureCount(this Camera cam)
+        public static int GetStreamTextureCount(this Camera cam)
         {
             return webRTCTextures.Count;
         }
 
-        public static RenderTexture getStreamTexture(this Camera cam, int index) {
+        public static RenderTexture GetStreamTexture(this Camera cam, int index) {
             return webRTCTextures[index];
         }
 
