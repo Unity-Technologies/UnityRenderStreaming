@@ -53,17 +53,20 @@ namespace Unity.RenderStreaming
                     var key = bytes[3];
                     var character = (char)bytes[4];
                     ProcessKeyEvent(type, repeat, key, character);
+                    InputSystem.Update();
                     break;
                 case EventType.Mouse:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
                     var deltaY = BitConverter.ToInt16(bytes, 3);
                     var button = bytes[5];
                     ProcessMouseMoveEvent(deltaX, deltaY, button);
+                    InputSystem.Update();
                     break;
                 case EventType.MouseWheel:
                     var scrollX = BitConverter.ToSingle(bytes, 1);
                     var scrollY = BitConverter.ToSingle(bytes, 5);
                     ProcessMouseWheelEvent(scrollX, scrollY);
+                    InputSystem.Update();
                     break;
                 case EventType.Touch:
                     var phase = (PointerPhase)bytes[1];
@@ -78,6 +81,7 @@ namespace Unity.RenderStreaming
                         ProcessTouchMoveEvent(identifier, phase, pageX, pageY, force);
                         index += 12;
                     }
+                    InputSystem.Update();
                     break;
                 case EventType.ButtonClick:
                     var elementId = BitConverter.ToInt16(bytes, 1);
@@ -112,19 +116,16 @@ namespace Unity.RenderStreaming
                     InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
                     break;
             }
-            InputSystem.Update();
         }
 
         static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
         {
             InputSystem.QueueStateEvent(Mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
-            InputSystem.Update();
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
             InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
-            InputSystem.Update();
         }
 
         static void ProcessTouchMoveEvent(int identifier, PointerPhase phase, short pageX, short pageY, float force)
@@ -137,7 +138,6 @@ namespace Unity.RenderStreaming
                     position = new Vector2Int(pageX, pageY),
                     pressure = force
                 });
-            InputSystem.Update();
         }
 
         static void ProcessButtonClickEvent(int elementId)
