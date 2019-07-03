@@ -4,10 +4,13 @@ platforms:
     image: renderstreaming/win10:latest
     flavor: m1.xlarge
     build_command: build_libwebrtc.cmd
+projects:
+  - name: libwebrtc    
 ---
+{% for project in projects %}
 {% for platform in platforms %}
 build_{{ platform.name }}:
-  name: Build {{ platform.name }}
+  name: Build {{ project.name }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -20,4 +23,9 @@ build_{{ platform.name }}:
         - "include/**"
         - "lib/**"
         - "LICENSE.md"
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/        
+{% endfor %}
 {% endfor %}
