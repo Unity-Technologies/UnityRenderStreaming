@@ -17,11 +17,12 @@ set ARTIFACTS_DIR=%cd%
 cmd /k fetch.bat webrtc
 
 cd src
+cmd /k git.bat config --system core.longpaths true
 cmd /k git.bat branch -r
 cmd /k git.bat checkout -b my_branch refs/remotes/branch-heads/%WEBRTC_VERSION%
 cd ..
 
-cmd /k gclient.bat sync
+cmd /k gclient.bat sync -f
 
 REM change jsoncpp static library
 powershell -File .\ReplaceText.ps1 "src\third_party\jsoncpp\BUILD.gn" "source_set" "static_library"
