@@ -24,6 +24,8 @@ Unity 2019.1 で動作を確認しています。現在は Windows 64bit 環境�
 > [!NOTE]
 > <`Unity 2018.3` はサポートされていません。>
 
+バージョン1.0.0 現在、 NVIDIA が提供するグラフィックボードに最適化されています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを参照してください。
+
 ### 対応ブラウザ
 
 利用可能なブラウザについては、ブラウザ毎の WebRTC への対応状況に依存しています。
