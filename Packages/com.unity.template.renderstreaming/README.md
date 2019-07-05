@@ -16,3 +16,8 @@
     ├── images
     └── jp
 ```
+
+## License
+
+- [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+
