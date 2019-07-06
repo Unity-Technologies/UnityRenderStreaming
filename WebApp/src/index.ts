@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as https from 'https'
+import * as https from 'https';
 import { Server } from 'http';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -43,23 +43,22 @@ export class RenderStreaming {
   constructor(options: Options) {
     this.options = options;
     this.app = createServer();
-    if(this.options.secure) {
+    if (this.options.secure) {
       this.server = https.createServer({
         key: fs.readFileSync(options.keyfile),
-        cert: fs.readFileSync(options.certfile)
-      }, this.app).listen(this.options.port,() => {
+        cert: fs.readFileSync(options.certfile),
+      },                               this.app).listen(this.options.port, () => {
         const port = this.server.address()['port'];
         const addresses = this.getIPAddress();
-        for(const address of addresses) {
+        for (const address of addresses) {
           console.log(`https://${address}:${port}`);
         }
       });
-    }
-    else {
-      this.server = this.app.listen(this.options.port,() => {
+    } else {
+      this.server = this.app.listen(this.options.port, () => {
         const port = this.server.address()['port'];
         const addresses = this.getIPAddress();
-        for(const address of addresses) {
+        for (const address of addresses) {
           console.log(`http://${address}:${port}`);
         }
       });
@@ -68,7 +67,7 @@ export class RenderStreaming {
 
   getIPAddress(): string[] {
     const interfaces = os.networkInterfaces();
-    let addresses: string[] = [];
+    const addresses: string[] = [];
     for (const k in interfaces) {
       for (const k2 in interfaces[k]) {
         const address = interfaces[k][k2];
