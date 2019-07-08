@@ -15,6 +15,5 @@ echo -------------------
 echo Build UnityRenderStreaming Plugin 
 
 MSBuild %SOLUTION_DIR%\UnityRenderStreamingPlugin.sln -t:Rebuild -p:Configuration=Release
-copy %SOLUTION_DIR%\x64\Release\webrtc.dll %PLUGIN_DIR%\webrtc.dll
 if not %errorlevel% == 0 exit 1
 echo -------------------
