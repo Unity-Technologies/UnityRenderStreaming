@@ -5,6 +5,12 @@ platforms:
     flavor: m1.xlarge
     pack_command: pack_webapp.cmd
     test_command: test_webapp.cmd
+  - name: mac
+    type: Unity::VM::osx
+    image: buildfarm/mac:stable
+    flavor: m1.mac
+    pack_command: ./pack_webapp.sh
+    test_command: ./test_webapp.sh
 projects:
   - packagename: com.unity.webapp.renderstreaming
 ---
@@ -15,7 +21,7 @@ pack_{{ platform.name }}:
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
+    flavor: {{ platform.flavor }}
   commands:
     - {{ platform.pack_command }}
   artifacts:
@@ -30,9 +36,15 @@ test_{{ platform.name }}:
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
+    flavor: {{ platform.flavor }}
   commands:
     - {{ platform.test_command }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"    
   artifacts:
     logs:
       paths:
