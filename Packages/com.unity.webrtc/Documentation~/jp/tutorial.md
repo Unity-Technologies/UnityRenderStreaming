@@ -153,5 +153,3 @@ private void OnDestroy()
 }
 ```
 
-### ビデオストリームの追加
-
