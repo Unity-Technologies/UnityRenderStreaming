@@ -1,15 +1,15 @@
 ## Browser Input Process
 
-ブラウザからの入力は以下をサポートしています。
+The following browser inputs are supported. 
 
-- マウスイベント
-- キーボードイベント
-- タッチイベント
-- ボタンイベント
+- Mouse events
+- Keyboard events
+- Touch events
+- Button events
 
-ブラウザからバイト列を送信し、Unity 側で `New Input System` を利用しています。
+The browser sends byte sequences, and Unity uses the `New Input System`.
 
-### マウスイベント
+### Mouse Events
 
 |index|value|size|
 |-------|-----|-----|
@@ -18,14 +18,14 @@
 |3|position y|2|
 |5|button|1|
 
-### キーボードイベント
+### Keyboard Events
 
 |index|value|size|
 |-------|-----|-----|
 |0|1|1|
 |1|key code|1|
 
-### タッチイベント
+### Touch Events
 
 |index|value|size|
 |-------|-----|-----|
@@ -38,7 +38,7 @@
 
 ## HTML UI
 
-HTML UI のイベントはのボタンコンポーネントにのみ対応しています。
+HTML UI events are only supported for button components.
 
 ### Button
 
