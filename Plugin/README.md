@@ -17,9 +17,7 @@ version 1.0 現在、ビルドは **Visual Studio 2017** を利用していま�
 
 ### プロジェクトの設定
 
-プラグインの開発を行うためには、個別の環境に合わせて`WebRTCPlugin` プロジェクトのプロパティを変更する必要があります。`Output Directory` を `Packages\com.unity.webrtc\Runtime\Plugins\x86_64` に指定します。
-
-<img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
+プラグインの開発を行うためには、個別の環境に合わせて`WebRTCPlugin` プロジェクトのプロパティを変更する必要があります。
 
 `Command` に Unity の実行ファイルパス、`Command Arguments` にプロジェクトパスを指定してください。この設定を行うことで、デバッグ実行時に Unity エディタが起動し、ブレークポイントが有効になります。
 
