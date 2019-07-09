@@ -67,7 +67,12 @@ namespace WebRTC
         SetRate(allocation.get_sum_kbps() * 1000);
         return 0;
     }
-    DummyVideoEncoderFactory::DummyVideoEncoderFactory(NvVideoCapturer* videoCapturer):capturer(videoCapturer){}
+
+    DummyVideoEncoderFactory::DummyVideoEncoderFactory()
+    {
+
+    }
+
     std::vector<webrtc::SdpVideoFormat> DummyVideoEncoderFactory::GetSupportedFormats() const
     {
         const absl::optional<std::string> profileLevelId =

@@ -51,7 +51,9 @@ namespace WebRTC
         // Creates a VideoEncoder for the specified format.
         virtual std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
             const webrtc::SdpVideoFormat& format) override;
-        DummyVideoEncoderFactory(NvVideoCapturer* videoCapturer);
+        DummyVideoEncoderFactory();
+
+        void SetCapturer(NvVideoCapturer* _capturer) { capturer = _capturer; }
     private:
         NvVideoCapturer* capturer;
     };

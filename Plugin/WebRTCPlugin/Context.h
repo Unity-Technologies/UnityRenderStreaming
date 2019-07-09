@@ -42,13 +42,13 @@ namespace WebRTC
     {
     public:
         explicit Context(int uid = -1);
-        webrtc::MediaStreamInterface* CreateVideoStream(UnityFrameBuffer* frameBuffer);
+        webrtc::MediaStreamInterface* CreateVideoStream(UnityFrameBuffer* frameBuffer, int32 width, int32 height);
+        rtc::scoped_refptr<webrtc::VideoTrackInterface> CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height);
         webrtc::MediaStreamInterface* CreateAudioStream();
         ~Context();
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
-        void InitializeEncoder(int32 width, int32 height) { nvVideoCapturer->InitializeEncoder(width, height); }
         void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
         void StopCapturer() { nvVideoCapturer->Stop(); }
         void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
@@ -59,14 +59,14 @@ namespace WebRTC
         std::unique_ptr<rtc::Thread> signalingThread;
         std::map<int, rtc::scoped_refptr<PeerConnectionObject>> clients;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
+        DummyVideoEncoderFactory* pDummyVideoEncoderFactory;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> mediaStream;
+
         NvVideoCapturer* nvVideoCapturer;
         std::unique_ptr<NvVideoCapturer> nvVideoCapturerUnique;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
         rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
         rtc::scoped_refptr<webrtc::MediaStreamInterface> audioStream;
-        //TODO: move videoTrack to NvVideoCapturer and maintain multiple NvVideoCapturer here
-        std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> videoStreams;
-        std::map<UnityFrameBuffer*, rtc::scoped_refptr<webrtc::VideoTrackInterface>> videoTracks;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

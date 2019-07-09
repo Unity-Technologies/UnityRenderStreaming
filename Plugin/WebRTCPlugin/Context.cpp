@@ -292,9 +292,10 @@ namespace WebRTC
         rtc::InitializeSSL();
 
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
-        nvVideoCapturer = nvVideoCapturerUnique.get();
-        auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>(nvVideoCapturer);
+        //nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
+        //nvVideoCapturer = nvVideoCapturerUnique.get();
+        auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>();
+        pDummyVideoEncoderFactory = dummyVideoEncoderFactory.get();
 
         peerConnectionFactory = webrtc::CreatePeerConnectionFactory(
             workerThread.get(),
@@ -314,9 +315,8 @@ namespace WebRTC
         clients.clear();
         peerConnectionFactory = nullptr;
         audioTrack = nullptr;
-        videoTracks.clear();
         audioStream = nullptr;
-        videoStreams.clear();
+        mediaStream = nullptr;
 
         workerThread->Quit();
         workerThread.reset();
@@ -324,21 +324,28 @@ namespace WebRTC
         signalingThread.reset();
     }
 
-    webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer)
+    webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
-        //TODO: label and stream id should be maintained in some way for multi-stream
-        auto videoTrack = peerConnectionFactory->CreateVideoTrack(
-            "video", peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
-        if (!videoTracks.count(frameBuffer))
-        {
-            videoTracks[frameBuffer] = videoTrack;
-        }
-        auto videoStream = peerConnectionFactory->CreateLocalMediaStream("video");
-        videoStream->AddTrack(videoTrack);
-        videoStreams.push_back(videoStream);
+        ////TODO: label and stream id should be maintained in some way for multi-stream
+        //create track
+        auto videoTrack = CreateVideoTrack("video", frameBuffer, width, height);
+        //create stream
+        mediaStream = peerConnectionFactory->CreateLocalMediaStream("video");
+        mediaStream->AddTrack(videoTrack);
+        return mediaStream.get();
+    }
+
+    rtc::scoped_refptr<webrtc::VideoTrackInterface> Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    {
+        nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
+        nvVideoCapturer = nvVideoCapturerUnique.get();
+        nvVideoCapturer->InitializeEncoder(width, height);
+        pDummyVideoEncoderFactory->SetCapturer(nvVideoCapturer);
+        auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
         nvVideoCapturer->unityRT = frameBuffer;
         nvVideoCapturer->StartEncoder();
-        return videoStream.get();
+
+        return videoTrack;
     }
 
     webrtc::MediaStreamInterface* Context::CreateAudioStream()

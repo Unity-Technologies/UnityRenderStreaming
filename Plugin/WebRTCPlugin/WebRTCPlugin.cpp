@@ -31,8 +31,8 @@ extern "C"
 {
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
     {
-        context->InitializeEncoder(width, height);
-        return context->CreateVideoStream(rt);
+        //context->InitializeEncoder(width, height);
+        return context->CreateVideoStream(rt, width, height);
     }
     //TODO: Multi-track support
     UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
