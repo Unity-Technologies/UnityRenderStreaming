@@ -9,10 +9,10 @@ This solution takes advantage of [WebRTC](https://webrtc.org/) streaming technol
 
 ## Guide
 
-* [Tutorial](en/tutorial_EN.md)
-* [Input](en/input_EN.md)
-* [Web Server](en/webserver_EN.md)
-* [FAQ](en/faq_EN.md)
+* [Tutorial](tutorial_EN.md)
+* [Input](input_EN.md)
+* [Web Server](webserver_EN.md)
+* [FAQ](faq_EN.md)
 
 ## Requirements
 
