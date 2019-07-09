@@ -1,6 +1,6 @@
-# チュートリアル
+# Tutorial
 
-WebRTC パッケージの基本的な利用方法について説明します。
+This tutorial will cover the basics of using the WebRTC package.
 
 
 ### 名前空間の追加
