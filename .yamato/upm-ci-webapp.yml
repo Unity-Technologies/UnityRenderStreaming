@@ -54,6 +54,29 @@ test_{{ platform.name }}:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
-
 {% endfor %}
+
+publish_github_release:
+  name: Publish Github {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: m1.large
+  commands:
+    - npm install github-release-cli -g
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver.exe"
+  triggers:
+    tags:
+      only:
+        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    {% endfor %}
 {% endfor %}
