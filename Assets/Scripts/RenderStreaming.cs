@@ -60,7 +60,15 @@ namespace Unity.RenderStreaming
             {
                 yield break;
             }
-            videoStream = captureCamera.CaptureStream(1280, 720);
+
+            cam.CreateRenderStreamTexture(1280, 720);
+            videoStream = new MediaStream();
+            int texCount = cam.GetStreamTextureCount();
+            for (int i = 0; i < texCount; ++i)
+            {
+                videoStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
+            }
+
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;

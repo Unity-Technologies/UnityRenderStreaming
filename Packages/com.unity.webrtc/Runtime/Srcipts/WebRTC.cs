@@ -222,9 +222,9 @@ namespace Unity.WebRTC
                 if (CameraExtension.started)
                 {
                     //Blit is for DirectX Rendering API Only
-                    foreach(var rts in CameraExtension.camCopyRts)
+                    foreach(var rt in CameraExtension.webRTCTextures)
                     {
-                        Graphics.Blit(rts[0], rts[1], flipMat);
+                        Graphics.Blit(CameraExtension.camRenderTexture, rt, flipMat);
                     }
                     GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
                 }
