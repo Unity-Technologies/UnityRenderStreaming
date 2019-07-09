@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        private MediaStream videoStream;
+        private MediaStream mediaStream;
 
         public void Awake()
         {
@@ -52,6 +52,7 @@ namespace Unity.RenderStreaming
 
         public void OnDestroy()
         {
+            Audio.Stop();
             WebRTC.WebRTC.Finalize();
         }
         public IEnumerator Start()
@@ -61,13 +62,16 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            cam.CreateRenderStreamTexture(1280, 720);
-            videoStream = new MediaStream();
-            int texCount = cam.GetStreamTextureCount();
+            captureCamera.CreateRenderStreamTexture(1280, 720);
+            mediaStream = new MediaStream();
+            int texCount = captureCamera.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                videoStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
+                mediaStream.AddTrack(new VideoStreamTrack(captureCamera.GetStreamTexture(i)));
             }
+
+            mediaStream.AddTrack(new AudioStreamTrack());
+            Audio.Start();
 
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
@@ -150,10 +154,11 @@ namespace Unity.RenderStreaming
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
-                foreach (var track in videoStream.GetTracks())
+                foreach (var track in mediaStream.GetTracks())
                 {
                     pc.AddTrack(track);
                 }
+
                 StartCoroutine(Answer(connectionId));
             }
         }

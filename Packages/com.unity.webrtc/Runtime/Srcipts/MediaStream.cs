@@ -138,6 +138,7 @@ namespace Unity.WebRTC
             mediaStream.AddTrack(audioStreamTrack);
             return mediaStream;
         }
+
         public static void Update()
         {
             if (started)
@@ -145,6 +146,13 @@ namespace Unity.WebRTC
                 audioInput.UpdateAudio();
             }
         }
+
+        public static void Start()
+        {
+            audioInput.BeginRecording();
+            started = true;
+        }
+
         public static void Stop()
         {
             if (started)
