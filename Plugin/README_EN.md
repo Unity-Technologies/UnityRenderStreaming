@@ -3,6 +3,7 @@
 ### Embedding libwebrtc
 
 The plugin relies on **libwebrtc**, so building it requires a static link to libwebrtc. `webrtc-win.zip` can be found on the Github Release page.
+
  <img src="../Packages/com.unity.webrtc/Documentation~/images/libwebrtc_github_release.png" width=600 align=center>
 
 Extract the files from the zip, and place them in the Plugin folder.
@@ -21,6 +22,6 @@ Set the Output Directory to `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
 
-Set the Unity executable file path using Command, and set the project path using Command Arguments.
+Set the Unity executable file path under Command, and set the project path under Command Arguments.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
