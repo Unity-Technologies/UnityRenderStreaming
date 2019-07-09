@@ -2,25 +2,25 @@
 
 ### Embedding libwebrtc
 
-The plugin relies on **libwebrtc**, so building it requires a static link to libwebrtc. Github Release ページに `webrtc-win.zip` を配置しています。
+The plugin relies on **libwebrtc**, so building it requires a static link to libwebrtc. `webrtc-win.zip` can be found on the Github Release page.
  <img src="../Packages/com.unity.webrtc/Documentation~/images/libwebrtc_github_release.png" width=600 align=center>
 
-zip ファイルを展開後、Plugin フォルダ直下に配置します。
+Extract the files from the zip, and place them in the Plugin folder.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/deploy_libwebrtc.png" width=500 align=center>
 
-### ビルド
+### Build
 
-version 1.0 現在、ビルドは **Visual Studio 2017** を利用しています。version 1.2 以降は **CMake** への移行を検討しています。
+version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
 
-### デバッグ
+### Debug
 
-プラグインのランタイムデバッグを行うためには、WebRTCPlugin プロジェクトのプロパティを変更する必要があります。
+Runtime debugging requires changes to the WebRTCPlugin project's properties. 
 
-Output Directory を `Packages\com.unity.webrtc\Runtime\Plugins\x86_64` に指定します。
+Set the Output Directory to `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
 
-Command に Unity の実行ファイルパス、Command Arguments にプロジェクトパスを指定してください。
+Set the Unity executable file path using Command, and set the project path using Command Arguments.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
