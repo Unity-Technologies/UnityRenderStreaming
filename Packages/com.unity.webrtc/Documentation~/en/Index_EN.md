@@ -2,7 +2,7 @@
 
 - [English](../index.md)
 
-WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
+WebRTC for Unity is a package that allows [WebRTC](https://webrtc.org) to be used in Unity.
 
 ## ガイド
 
