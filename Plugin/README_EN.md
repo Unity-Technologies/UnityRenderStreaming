@@ -22,6 +22,6 @@ Set the Output Directory to `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
 
-Set the Unity executable file path under Command, and set the project path under Command Arguments.
+Set the Unity.exe file path under Command, and set the project path under Command Arguments.
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
