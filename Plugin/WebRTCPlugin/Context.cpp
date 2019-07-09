@@ -292,8 +292,6 @@ namespace WebRTC
         rtc::InitializeSSL();
 
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        //nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
-        //nvVideoCapturer = nvVideoCapturerUnique.get();
         auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>();
         pDummyVideoEncoderFactory = dummyVideoEncoderFactory.get();
 
@@ -308,14 +306,14 @@ namespace WebRTC
             webrtc::CreateBuiltinVideoDecoderFactory(),
             nullptr,
             nullptr);
+
+        mediaStream = peerConnectionFactory->CreateLocalMediaStream("mediaStream");
     }
 
     Context::~Context()
     {
         clients.clear();
         peerConnectionFactory = nullptr;
-        audioTrack = nullptr;
-        audioStream = nullptr;
         mediaStream = nullptr;
 
         workerThread->Quit();
@@ -327,10 +325,7 @@ namespace WebRTC
     webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
         ////TODO: label and stream id should be maintained in some way for multi-stream
-        //create track
         auto videoTrack = CreateVideoTrack("video", frameBuffer, width, height);
-        //create stream
-        mediaStream = peerConnectionFactory->CreateLocalMediaStream("video");
         mediaStream->AddTrack(videoTrack);
         return mediaStream.get();
     }
@@ -350,16 +345,21 @@ namespace WebRTC
 
     webrtc::MediaStreamInterface* Context::CreateAudioStream()
     {
+        auto audioTrack = CreateAudioTrack();
+        mediaStream->AddTrack(audioTrack);
+        return mediaStream.get();
+    }
+
+    rtc::scoped_refptr<webrtc::AudioTrackInterface> Context::CreateAudioTrack()
+    {
         //avoid optimization specially for voice
         cricket::AudioOptions audioOptions;
         audioOptions.auto_gain_control = false;
         audioOptions.noise_suppression = false;
         audioOptions.highpass_filter = false;
         //TODO: label and stream id should be maintained in some way for multi-stream
-        audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
-        audioStream = peerConnectionFactory->CreateLocalMediaStream("audio");
-        audioStream->AddTrack(audioTrack);
-        return audioStream.get();
+        auto audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
+        return audioTrack;
     }
 
     PeerSDPObserver* PeerSDPObserver::Create(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
