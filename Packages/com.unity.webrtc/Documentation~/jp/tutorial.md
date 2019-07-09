@@ -94,9 +94,9 @@ localConnection.OnIceConnectionChange = state => {
 }
 ```
 
-### DataChannel の接続
+### データチャネルの接続
 
-ICE の交換が完了すると、`OnDataChannel` が呼び出され、他方のピアの DataChannel が生成されます。
+ICE の交換が完了すると、`OnDataChannel` が呼び出され、他方のピアのデータチャネルが生成されます。
 `OnMessage` コールバックを登録して、メッセージ受信時の処理を記述します。
 
 ```CSharp
@@ -153,6 +153,3 @@ private void OnDestroy()
 }
 ```
 
-### ビデオストリーム
-
-ビデオストリームを取得するためには`Camera`の `CaptureStream()` を利用して `MediaStream` を利用します。

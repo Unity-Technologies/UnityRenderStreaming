@@ -21,3 +21,7 @@
 
 - [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
 
+## Change log
+
+- [CHANGELOG.md](CHANGELOG.md)
+

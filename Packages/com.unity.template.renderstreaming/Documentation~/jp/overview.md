@@ -47,7 +47,7 @@ Render Steraming パッケージには以下の内容が含まれています。
 
 ### WebRTC パッケージ
 
-WebRTC の C# API を提供します。  API の詳細は WebRTCパッケージのドキュメントを参照してください。
+WebRTC の C# API を提供します。  API の詳細は `com.unity.webrtc` のドキュメントを参照してください。
 
 <img src="../images/webrtc_package_manager.png" width=500 align=center>
 
