@@ -3,18 +3,18 @@
 This tutorial will cover the basics of using the WebRTC package.
 
 
-### 名前空間の追加
+### Adding a Namespace
 
-名前空間は `Unity.WebRTC` を指定します。
+The namespace specifies `Unity.WebRTC`.
 
 ```CSharp
 using UnityEngine;
 using Unity.WebRTC;
 ```
 
-### 初期化
+### Initialization
 
-`WebRTC` の利用時には初期化を行うために、 `WebRTC.Initialize()`を呼び出してください。また、終了時には `WebRTC.Finalize()` を呼び出します。
+Call `WebRTC.Initialize()` to initialize and use `WebRTC`. Call when `WebRTC.Finalize()` finished.
 
 ```CSharp
 public class MyPlayerScript : MonoBehaviour
@@ -27,9 +27,9 @@ public class MyPlayerScript : MonoBehaviour
 }
 ```
 
-### ローカルピアの作成
+### Creating a local peer
 
-ローカルピアを作成し `RTCDataChannel` を取得します。`RTCDataChannel` を利用してバイナリデータの送受信を行うことができます。`RTCDataChannel` の初期化時もしくは終了時に処理を行う場合は、 `OnOpen` と `OnClose` のコールバックを登録してください。また、メッセージの受信を行う場合は `OnMessage` にコールバックを指定します。
+Create a local peer and get `RTCDataChannel`. Use `RTCDataChannel` to enable binary data transmission. Register `OnOpen` and `OnClose` callbacks to run a process when `RTCDataChannel` starts or finishes. Set the `OnMessage` callback to receive messages.
 
 ```CSharp
     // Create local peer
@@ -39,9 +39,9 @@ public class MyPlayerScript : MonoBehaviour
     channel.OnClose = handleSendChannelStatusChange;
 ```
 
-### リモートピアの作成
+### Creating a remote peer
 
-リモートピアを作成し、`OnDataChannel` にコールバックを設定します。
+Create a remote peer and set the `OnDataChannel` callback.
 
 ```CSharp
     // Create remote peer
@@ -49,9 +49,9 @@ public class MyPlayerScript : MonoBehaviour
     remoteConnection.OnDataChannel = ReceiveChannelCallback;
 ```
 
-### 通信経路候補の登録
+### Register potential communication paths
 
-ピアの接続を行うために、ICE (Interactive Connectivity Establishment) の交換が必要になります。各ピアで通信経路候補が発見されたら、 `OnIceCandidate` が呼び出されます。各ピアのにコールバックで `AddIceCandidate` を呼び出して経路候補の登録を行います。
+An ICE (Interactive Connectivity Establishment) exchange is required to establish a peer connection. Once the potential communication paths for all peers have been discovered, `OnIceCandidate` is called. Use callbacks to call `AddIceCandidate` on each peer to register potential paths.
 
 
 ```CSharp
@@ -63,11 +63,11 @@ remoteConnection.OnIceCandidate = e => { !string.IsNullOrEmpty(e.candidate)
 
 ```
 
-### シグナリング処理
+### The Signaling Process
 
-ピア間で SDP の交換を行います。最初に `CreateOffer` でオファーSDP を作成します。オファーSDP を取得後、ローカルピアとリモートピアの双方に SDP を設定します。このとき `SetLocalDescription` と `SetRemoteDescription` を取り違えないよう気をつけてください。
+SDP exchanges happen between peers. `CreateOffer` creates the initial Offer SDP. After getting the Offer SDP, both the local and remote peers set the SDP. Be careful not to mix up `SetLocalDescription` and `SetRemoteDescription` during this exchange. 
 
-オファー SDP の設定が完了したら、 `CreateAnswer` を呼び出してアンサー SDP を作成します。オファーSDP と同様に、アンサー SDP もローカルピアとリモートピアの双方に設定します。
+Once the Offer SDP is set, call `CreateAnswer` to create an Answer SDP. Like the Offer SDP, the Answer SDP is set on both the local and remote peers.
 
 ```csharp
 var op1 = localConnection.CreateOffer();
@@ -84,9 +84,9 @@ var op6 = localConnection.setRemoteDescription(op4.desc);
 yield return op6;
 ```
 
-### ICE の接続状態の確認
+### Check the ICE Connection Status
 
-ピア間で SDP の交換を行うと、ICE の交換が開始されます。ICE の接続状態を確認するには `OnIceConnectionChange` のコールバックを利用します。
+When SDP exchanges happen between peers, ICE exchanges begin. Use the `OnIceConnectionChange` callback to check the ICE connection status.
 
 ```CSharp
 localConnection.OnIceConnectionChange = state => {
@@ -94,10 +94,10 @@ localConnection.OnIceConnectionChange = state => {
 }
 ```
 
-### DataChannel の接続
+### The Data Channel Connection
 
-ICE の交換が完了すると、`OnDataChannel` が呼び出され、他方のピアの DataChannel が生成されます。
-`OnMessage` コールバックを登録して、メッセージ受信時の処理を記述します。
+When the ICE exchange is finished, `OnDataChannel` is called and a one-way peer Data Channel is created.
+Register the `OnMessage` callback and describe the procdure for when a message is received.
 
 ```CSharp
 RTCDataChannel receiveChannel;
@@ -108,9 +108,9 @@ void ReceiveChannelCallback(RTCDataChannel channel)
 }
 ```
 
-### メッセージの送信
+### Sending Messages
 
-ピア双方の `RTCDataChannel` がオープンすると、メッセージのやり取りが可能になります。送信可能なメッセージの形式は `string` もしくは `byte[]` を利用できます。
+When both peers' `RTCDataChannel` is open, it's possible to send messages. `string` or `byte[]` message types can be sent. 
 
 ```csharp
 void SendMessage(string message)
@@ -124,9 +124,9 @@ void SendBinary(byte[] bytes)
 }
 ```
 
-### メッセージの受信
+### Receiving Messages
 
-メッセージ受信時には `OnMessage` に登録したコールバックが呼ばれます。`byte[]` 形式で取得することができ、文字列として扱う場合は以下のように変換します。
+When a message is received, the callback registered to `OnMessage` is called. `byte[]` type messages can be received, and when treated like character strings they are converted as shown below.
 
 ```csharp
 void HandleReceiveMessage(byte[] bytes)
@@ -136,9 +136,9 @@ void HandleReceiveMessage(byte[] bytes)
 }
 ```
 
-### 終了処理
+### The End Process
 
-利用を終了するときには、`RTCDataChannel`と `RTCPeerConnection`の`Close()`を呼び出す必要があります。最終的に、オブジェクトを破棄したあと `WebRTC.Finalize()` を呼び出してください。
+When finished, `Close()` must be called for `RTCDataChannel` and `RTCPeerConnection`. Finally, after the object is destoyed, call `WebRTC.Finalize()`.
 
 ```csharp
 private void OnDestroy()
@@ -153,6 +153,6 @@ private void OnDestroy()
 }
 ```
 
-### ビデオストリーム
+### Video Streaming
 
-ビデオストリームを取得するためには`Camera`の `CaptureStream()` を利用して `MediaStream` を利用します。
+Use the `Camera`'s `CaptureStream()` to use `MediaStream` in order to capture the video stream. 
