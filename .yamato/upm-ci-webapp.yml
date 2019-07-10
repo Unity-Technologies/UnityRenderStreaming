@@ -54,6 +54,5 @@ test_{{ platform.name }}:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
-
 {% endfor %}
 {% endfor %}
