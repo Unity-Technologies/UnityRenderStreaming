@@ -50,7 +50,7 @@ Confirm that the following log displays in the command prompt. The web server's 
 
 <img src="../images/launch_webserver_cmd.png" width=400 align=center>
 
-The web server's source code is located in the [WebApp](WebApp). Additionally, [Node.js](https://nodejs.org) must be installed in order to run the source code. Download the installer from the website.
+The web server's source code is located in the [WebApp](UnityRenderStreaming/WebApp). Additionally, [Node.js](https://nodejs.org) must be installed in order to run the source code. Download the installer from the website.
 
 ### Unity Settings
 
