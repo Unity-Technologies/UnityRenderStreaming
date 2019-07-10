@@ -2,24 +2,24 @@
 
 <img src="https://img.shields.io/badge/unity-2019.1-green.svg?style=flat-square" alt="unity 2019.1">
 
-**Unity Render Streaming** は、ブラウザ上で Unity の高品位なレンダリングを実現するためのソリューションです。例えば、カーコンフィギュレータや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
-ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。WebRTC の API を提供しているため、デベロッパーがカスタマイズすることで様々なソリューションを構築することが可能です。
+**Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
+This solution takes advantage of [WebRTC](https://webrtc.org/) streaming technology, and developers can customize Unity Render Streaming to create their own unique solutions.
 
 << gif アニメーションを貼る >>
 
-このリポジトリでは2つのパッケージを管理します。各パッケージの README.md に、より詳細な情報を提供しています。
+This repository manages 2 packages. Details can be found in the README.md for each package.
 
 - [com.unity.template.renderstreming](Packages/com.unity.template.renderstreaming)
 - [com.unity.webrtc](Packages/com.unity.webrtc)
 
-## 動作環境
+## Operating Environment
 
-Unity 2019.1 で動作を確認しています。現在は Windows 64bit 環境でのみ動作を確認しています。
-Unity 2018.3 は [New Input System](https://github.com/Unity-Technologies/InputSystem) に依存しているため動作しません。
+Functionality confirmed with Unity 2019.1. Currently only runs in a Windows 64bit environment.
+Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so this solution cannot be used.
 
-### 対応ブラウザ
+### Supported Browsers
 
-利用可能なブラウザについては、ブラウザ毎の WebRTC への対応状況に依存しています。
+Browser support depends on each browser's WebRTC support status.
 
 - Desktop Chrome
 - Desktop Firefox
@@ -27,20 +27,20 @@ Unity 2018.3 は [New Input System](https://github.com/Unity-Technologies/InputS
 - Android Chrome
 - iOS Safai
 
-### ライセンス
+### License
 
-`com.unity.template.renderstreaming` のライセンス
+`com.unity.template.renderstreaming` license
 - [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
 
-`com.unity.webrtc` のライセンス
+`com.unity.webrtc` license
 - [LICENSE.md](Packages/com.unity.webrtc/LICENSE.md)
 - [Third Party Notices.md](Packages/com.unity.webrtc/Third%20Party%20Notices.md)
 
-### グラフィックボード
+### Graphics Cards
 
-このソリューションは、 NVIDIA が提供するグラフィックボードに最適化されています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを参照してください。
+This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with the lowest latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
-## パッケージ構成
+## Package Structure
 
 ```
 <root>
@@ -63,7 +63,7 @@ Unity 2018.3 は [New Input System](https://github.com/Unity-Technologies/InputS
     └── test
 ```
 
-## ロードマップ
+## Roadmap
 
 |Version|libwebrtc|Focus|
 |-------|-----|-----|
@@ -73,7 +73,7 @@ Unity 2018.3 は [New Input System](https://github.com/Unity-Technologies/InputS
 
 ## FAQ
 
-## Contributer
+## Contributors
 
 - [@karasusan](https://github.com/karasusan)
 - [@hiroki-o](https://github.com/hiroki-o)
