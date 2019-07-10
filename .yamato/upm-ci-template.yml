@@ -83,29 +83,4 @@ publish:
     - .yamato/upm-ci-template.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
-
-publish_github_release:
-  name: Publish Github {{ project.packagename }}
-  agent:
-    type: Unity::VM
-    image: package-ci/win10:stable
-    flavor: m1.large
-  commands:
-    - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.template.renderstreaming-%GIT_TAG%.tgz"
-  triggers:
-    tags:
-      only:
-        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
-    packages:
-      paths:
-        - "upm-ci~/packages/*.tgz"
-        - "upm-ci~/templates/*.tgz"
-  dependencies:
-    - .yamato/upm-ci-template.yml#pack
 {% endfor %}
