@@ -49,7 +49,7 @@ This command will show the help menu.
 
 ### Editing the Web Application
 
-The Web application's source code is located in the [WebApp](WebApp) folder. [Node.js](https://nodejs.org/) must also be installed in order to use the source code.
+The Web application's source code is located in the [WebApp](../WebApp) folder. [Node.js](https://nodejs.org/) must also be installed in order to use the source code.
 
 This is how to use **Node.js** to open the command prompt.
 
