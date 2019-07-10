@@ -1,6 +1,6 @@
 # WebRTC
 
-- [Japanese](jp/index.md)
+- [Japanese](Documentation~/jp/index.md)
 
 WebRTC for Unity is a package that allows [WebRTC](https://webrtc.org) to be used in Unity.
 
