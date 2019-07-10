@@ -2,59 +2,59 @@
 
 The following is an explanation the general concepts of the Render Streaming system. 
 
-### システム構成
+### System Structure
 
-Render Streaming のシステムは以下の３つで構成されます。
+The Render Streaming system consists of the following 3 components
 
-- Unity （エディタもしくはアプリケーション）
-- Web サーバ
-- Web ブラウザ 
+- Unity (Editor or Application)
+- Web server
+- Web browser 
 
 <img src="../images/renderstreaming_overview.png" width=500 align=center>
 
-Render Streaming では、**Unity** と **Web ブラウザ** が P2P ネットワークを構成し、UDP/IP を利用して通信を行います。**Web サーバ** は Web ブラウザと Unity の情報のやり取りを仲介します。この情報のやり取りのことをシグナリングと呼びます。
+Render Streaming creates a P2Pnetwork between **Unity** and the **Web browser**, and sends data via UDP/IP. The **Web server** enables communication between the Web browser and Unity. This communication is called signaling. 
 
 > [!NOTE]
-> バージョン 0.1.0 現在、以下の機能に対応していません。
+> Version 0.1.0 currently does not support the following features.
 >
-> - ブラウザから Unity へのビデオ送信
-> - ブラウザから Unity へのオーディオ送信
+> - Streaming video from the browser to Unity
+> - Streaming audio from the browser to Unity
 
-### シグナリング処理の流れ
+### The Signaling Process
 
-シグナリング処理の流れを説明します。
+The following is an explanation of how signaling works. 
 
  <img src="../images/renderstreaming_sequence.png" width=600 align=center>
 
-1. Web ブラウザから Web サーバに **Offer SDP** を送信します。
-2. Unity から Web サーバに問い合わせて、未処理の **Offer SDP** を取得します。
-3. Unity から Web サーバに **Answer SDP** を送信します。
-4. Web ブラウザから Web サーバに問い合わせて、未処理の **Answer SDP** を取得します。
-5. Web ブラウザから Web サーバに **ICE Candidate** を送信します。
-6. Unity から Web サーバに問い合わせて、未処理の **ICE Candidate** を取得します。
-7. Unity から Web サーバに **ICE Candidate** を送信します。
-8. Web ブラウザから Web サーバに問い合わせて、未処理の **ICE Candidate** を取得します。
+1. Web browser sends **Offer SDP** to the Web server.
+2. Unity checks the Web server for unprocessed **Offer SDPs** and receives any found.
+3. Unity sends **Answer SDP** to the Web server.
+4. Web browser checks the Web server for unprocessed **Answer SDPs** and receives any found.
+5. Web sends **ICE Candidate** to the Web server.
+6. Unity checks the Web server for unprocessed **ICE Candidates** and receives any found. 
+7. Unity sends **ICE Candidate**to the Web server.
+8. Web browser checks the Web server for unprocessed **ICE Candidate** and receives any found. 
 
-##パッケージ構成 
+##Package Structure 
 
-Render Steraming パッケージには以下の内容が含まれています。
+The Render Steraming package includes the following.
 
-- WebRTC パッケージ
-- サンプルコード / アセット
-- ウェブアプリケーション
+- WebRTC package
+- Sample code / assets
+- Web application
 
 <img src="../images/package_renderstreaming.png" width=300 align=center>
 
-### WebRTC パッケージ
+### WebRTC Package
 
-WebRTC の C# API を提供します。  API の詳細は WebRTCパッケージのドキュメントを参照してください。
+This provides the WebRTC C# API. See the WebRTC package documentation for details on the API.
 
 <img src="../images/webrtc_package_manager.png" width=500 align=center>
 
-### サンプルコード / アセット
+### Sample Code / Assets
 
-HDRP テンプレートのサンプルに Render Streaming を組み込んだテンプレートプロジェクトです。
+This is a template project containing an HDRP template sample which also includes Render Streaming.
 
-### ウェブアプリケーション
+### Web Application
 
-クライアントサイド及びサーバサイドのサンプルを含みます。また、シグナリングサーバの機能を提供しています。ウェブアプリケーションの詳細については[ドキュメント](webserver.md)を参照してください。
+Includes a client side and server side sample. Also provides the signaling server features. For details, see the [documentation](webserver_EN.md).
