@@ -1,78 +1,78 @@
-## Web Applications
+## The Web Application
 
-A **Web application** can be
+The **Web application** 
 
-- Unity - Web ブラウザ間のシグナリングの仲介
-- Web ページの配置 
-
-
-
-## Web クライアント
+- handles signaling between Unity and the Web browser
+- is the location of the Web page 
 
 
 
-## Web サーバ
+## The Web Client
 
-Web サーバは環境構築の手間を省略するために、[pkg](https://www.npmjs.com/package/pkg) を利用してバイナリとして配布しています。`Assets/bin~/` フォルダに実行ファイルを配置しています。
+
+
+## The Web Server
+
+The Web server is distributed as a binary using [pkg](https://www.npmjs.com/package/pkg) in order to lessen the effort required to set up the environment. The .exe file is located in the `Assets/bin~/` folder.
 
 <img src="../images/launch_webserver_explorer.png" width=500 align=center>
 
-### コマンドオプション
+### Command Options
 
-|オプション|説明|デフォルト|
+|Option|Details|Default|
 |-------|-----|-------|
-|-h --help|ヘルプを表示します||
-|-p —port \<number\>|ポート番号を指定します|80|
-|-s --secure|https を使用します||
-|-k —keyfile \<path\>|https で使用する秘密鍵ファイルを指定します|server.key|
-|-c —certfile \<path\>|https で使用する証明書ファイルを指定します|server.cert|
+|-h --help|Show the help menu||
+|-p —port \<number\>|Set the port number|80|
+|-s --secure|Enable https||
+|-k —keyfile \<path\>|Designate the private key file to use with https|server.key|
+|-c —certfile \<path\>|Designate the certification file to use with https|server.cert|
 
-### コマンドの例
+### Command Examples
 
-以下のコマンドを実行すると http として起動します。ポートは80番を利用します。
+This command will run the web application as http. Port 80 is used.
 
 ```shell
 .\webserver
 ```
 
-以下のコマンドを実行すると https として起動します。ポートは443番を利用します。
+This command will run the web application as https. Port 443 is used.
 
 ```shell
 .\webserver -s -p 443
 ```
 
-以下のコマンドを実行するとヘルプを表示します。
+This command will show the help menu. 
 
 ```shell
 .\webserver -h
 ```
 
-### Web アプリケーションの編集
+### Editing the Web Application
 
-Web アプリケーションのソースコードは [WebApp](WebApp) フォルダに配置しています。ソースコードを利用するには [Node.js](https://nodejs.org/) をインストールする必要があります。
+The Web application's source code is located in the [WebApp](WebApp) folder. [Node.js](https://nodejs.org/) must also be installed in order to use the source code.
 
-**Node.js** を利用してコマンドを実行する場合は以下のようになります。
+This is how to use **Node.js** to open the command prompt.
 
 ```shell
 npm run start
 ```
 
-以下のコマンドでヘルプを表示します。
+This command displays the help menu. 
 
 ```shell
 npm run start -- -h
 ```
 
-以下のコマンドで `ts-node` を利用してサーバを起動します。
+This command will use `ts-node` to activate the server.
 
 ```shell
 npm run dev
 ```
 
-### Web API の確認
+### Checking the Web API
 
-Render Streaming のシグナリングはシンプルな Web API で実現しています。API の確認には [Postman](https://www.getpostman.com/) を利用することができます。
+Render Streaming signaling uses a simple Web API. The API can be checked in [Postman](https://www.getpostman.com/).
 
-Postman で `WebApp/test/renderstreaming.postman_collection.json` をインポートすると、API の一覧を確認することができます。また、Web サーバを起動した状態であれば API の動作テストを行うことができます。
+Import `WebApp/test/renderstreaming.postman_collection.json` through Postman to view a summary of the API. Additionally, API operation tests can be run while the Web server is active.
 
 <img src="../images/postman_example.png" width=600 align=center>
