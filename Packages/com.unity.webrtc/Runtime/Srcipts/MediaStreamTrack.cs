@@ -9,10 +9,6 @@ namespace Unity.WebRTC
         internal IntPtr nativePtr;
         protected string id;
         protected TrackKind kind;
-        internal MediaStreamTrack()
-        {
-
-        }
 
         internal MediaStreamTrack(IntPtr ptr)
         {
@@ -40,41 +36,15 @@ namespace Unity.WebRTC
 
     public class VideoStreamTrack : MediaStreamTrack
     {
-        public VideoStreamTrack(RenderTexture rt) : base()
+        public VideoStreamTrack(RenderTexture rt) : base(WebRTC.Context.CreateVideoTrack("videoTrack", rt.GetNativeTexturePtr(), rt.width, rt.height))
         {
-            IntPtr nativeVideoStreamPtr = WebRTC.Context.CaptureVideoStream(rt.GetNativeTexturePtr(), rt.width, rt.height);
-            string nativeVideoStreamID = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(nativeVideoStreamPtr));
-
-            int trackSize = 0;
-            IntPtr tracksNativePtr = NativeMethods.MediaStreamGetVideoTracks(nativeVideoStreamPtr, ref trackSize);
-            IntPtr[] tracksPtr = new IntPtr[trackSize];
-            Marshal.Copy(tracksNativePtr, tracksPtr, 0, trackSize);
-            Marshal.FreeCoTaskMem(tracksNativePtr);
-
-            nativePtr = tracksPtr[0];
-            kind = NativeMethods.MediaStreamTrackGetKind(nativePtr);
-            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(nativePtr));
-
         }
     }
 
     public class AudioStreamTrack : MediaStreamTrack
     {
-        public AudioStreamTrack() : base()
+        public AudioStreamTrack() : base(WebRTC.Context.CreateAudioTrack("audioTrack"))
         {
-            IntPtr nativeAudioStreamPtr = WebRTC.Context.CaptureAudioStream();
-            string nativeAudioStreamID = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamGetID(nativeAudioStreamPtr));
-
-            int trackSize = 0;
-            IntPtr trackNativePtr = NativeMethods.MediaStreamGetAudioTracks(nativeAudioStreamPtr, ref trackSize);
-            IntPtr[] tracksPtr = new IntPtr[trackSize];
-            Marshal.Copy(trackNativePtr, tracksPtr, 0, trackSize);
-            //TODO: Linux compatibility 
-            Marshal.FreeCoTaskMem(trackNativePtr);
-
-            nativePtr = tracksPtr[0];
-            kind = NativeMethods.MediaStreamTrackGetKind(nativePtr);
-            id = Marshal.PtrToStringAnsi(NativeMethods.MediaStreamTrackGetID(nativePtr));
         }
     }
 

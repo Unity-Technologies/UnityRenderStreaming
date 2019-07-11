@@ -362,7 +362,11 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr CaptureVideoStream(IntPtr context, IntPtr rt, int width, int height);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr CaptureAudioStream(IntPtr context);
+        public static extern IntPtr CreateMediaStream(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr CreateVideoTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr rt, int width, int height);
+        [DllImport(WebRTC.Lib)]
+        public static extern IntPtr CreateAudioTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label);
         [DllImport(WebRTC.Lib)]
         public static extern void MediaStreamAddTrack(IntPtr stream, IntPtr track);
         [DllImport(WebRTC.Lib)]
@@ -399,9 +403,9 @@ namespace Unity.WebRTC
         public static bool ToBool(Context v) { return v; }
         public static Context Create(int uid = 0) { return NativeMethods.ContextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
-        public IntPtr CaptureVideoStream(IntPtr rt, int width, int height) { return NativeMethods.CaptureVideoStream(self, rt, width, height); }
-        public IntPtr CaptureAudioStream() { return NativeMethods.CaptureAudioStream(self); }
-
+        public IntPtr CreateMediaStream(string label) { return NativeMethods.CreateMediaStream(self, label); }
+        public IntPtr CreateVideoTrack(string label, IntPtr rt, int width, int height) { return NativeMethods.CreateVideoTrack(self, label, rt, width, height); }
+        public IntPtr CreateAudioTrack(string label) {return NativeMethods.CreateAudioTrack(self, label);}
     }
 }
 

@@ -307,14 +307,17 @@ namespace WebRTC
             nullptr,
             nullptr);
 
-        mediaStream = peerConnectionFactory->CreateLocalMediaStream("mediaStream");
     }
 
     Context::~Context()
     {
         clients.clear();
         peerConnectionFactory = nullptr;
-        mediaStream = nullptr;
+
+        videoTrack = nullptr;
+        audioTrack = nullptr;
+
+        mediaStreamMap.clear();
 
         workerThread->Quit();
         workerThread.reset();
@@ -322,35 +325,31 @@ namespace WebRTC
         signalingThread.reset();
     }
 
-    webrtc::MediaStreamInterface* Context::CreateVideoStream(UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    webrtc::MediaStreamInterface* Context::CreateMediaStream(const std::string& stream_id)
     {
-        ////TODO: label and stream id should be maintained in some way for multi-stream
-        auto videoTrack = CreateVideoTrack("video", frameBuffer, width, height);
-        mediaStream->AddTrack(videoTrack);
-        return mediaStream.get();
+        if (mediaStreamMap.count(stream_id) == 0)
+        {
+            mediaStreamMap[stream_id] = peerConnectionFactory->CreateLocalMediaStream(stream_id);
+        }
+
+        return mediaStreamMap[stream_id];
     }
 
-    rtc::scoped_refptr<webrtc::VideoTrackInterface> Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
         nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
         nvVideoCapturer = nvVideoCapturerUnique.get();
         nvVideoCapturer->InitializeEncoder(width, height);
         pDummyVideoEncoderFactory->SetCapturer(nvVideoCapturer);
-        auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
+
+        videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
         nvVideoCapturer->unityRT = frameBuffer;
         nvVideoCapturer->StartEncoder();
 
         return videoTrack;
     }
 
-    webrtc::MediaStreamInterface* Context::CreateAudioStream()
-    {
-        auto audioTrack = CreateAudioTrack();
-        mediaStream->AddTrack(audioTrack);
-        return mediaStream.get();
-    }
-
-    rtc::scoped_refptr<webrtc::AudioTrackInterface> Context::CreateAudioTrack()
+    webrtc::MediaStreamTrackInterface* Context::CreateAudioTrack(const std::string& label)
     {
         //avoid optimization specially for voice
         cricket::AudioOptions audioOptions;
@@ -358,7 +357,7 @@ namespace WebRTC
         audioOptions.noise_suppression = false;
         audioOptions.highpass_filter = false;
         //TODO: label and stream id should be maintained in some way for multi-stream
-        auto audioTrack = peerConnectionFactory->CreateAudioTrack("audio", peerConnectionFactory->CreateAudioSource(audioOptions));
+        audioTrack = peerConnectionFactory->CreateAudioTrack(label, peerConnectionFactory->CreateAudioSource(audioOptions));
         return audioTrack;
     }
 

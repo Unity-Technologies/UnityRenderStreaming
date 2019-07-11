@@ -42,10 +42,9 @@ namespace WebRTC
     {
     public:
         explicit Context(int uid = -1);
-        webrtc::MediaStreamInterface* CreateVideoStream(UnityFrameBuffer* frameBuffer, int32 width, int32 height);
-        rtc::scoped_refptr<webrtc::VideoTrackInterface> CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height);
-        webrtc::MediaStreamInterface* CreateAudioStream();
-        rtc::scoped_refptr<webrtc::AudioTrackInterface> CreateAudioTrack();
+        webrtc::MediaStreamInterface* CreateMediaStream(const std::string& stream_id);
+        webrtc::MediaStreamTrackInterface* CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height);
+        webrtc::MediaStreamTrackInterface* CreateAudioTrack(const std::string& label);
         ~Context();
 
         PeerConnectionObject* CreatePeerConnection(int id);
@@ -61,11 +60,14 @@ namespace WebRTC
         std::map<int, rtc::scoped_refptr<PeerConnectionObject>> clients;
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
         DummyVideoEncoderFactory* pDummyVideoEncoderFactory;
-        rtc::scoped_refptr<webrtc::MediaStreamInterface> mediaStream;
+        std::map<const std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface>> mediaStreamMap;
 
         NvVideoCapturer* nvVideoCapturer;
         std::unique_ptr<NvVideoCapturer> nvVideoCapturerUnique;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
+
+        rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
+        rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

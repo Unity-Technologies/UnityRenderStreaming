@@ -49,11 +49,13 @@ class MediaStreamTest
 
 
             cam.CreateRenderStreamTexture(1280, 720);
-            MediaStream videoStream = new MediaStream();
+            MediaStream mediaStream = new MediaStream("mediaStream");
             int texCount = cam.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                pc1Senders.Add(peer1.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i))));
+                VideoStreamTrack videoStreamTrack = new VideoStreamTrack(cam.GetStreamTexture(i));
+                mediaStream.AddTrack(videoStreamTrack);
+                pc1Senders.Add(peer1.AddTrack(videoStreamTrack));
             }
 
             var conf = new RTCDataChannelInit(true);

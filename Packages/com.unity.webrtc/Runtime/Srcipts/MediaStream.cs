@@ -8,24 +8,27 @@ namespace Unity.WebRTC
 {
     public class MediaStream 
     {
-        //to do : c++ create two mediastream named "audio" and "vedio". Actually we only need one.
+        internal IntPtr nativePtr;
         protected List<MediaStreamTrack> mediaStreamTrackList = new List<MediaStreamTrack>();
 
-        public MediaStream() : base()
+        public MediaStream(string label) : base()
         {
-            
+            nativePtr = WebRTC.Context.CreateMediaStream(label);
         }
 
-        public MediaStream(MediaStreamTrack[] tracks) : base()
+        public MediaStream(string label, MediaStreamTrack[] tracks) : base()
         {
+            nativePtr = WebRTC.Context.CreateMediaStream(label);
+
             foreach (var t in tracks)
             {
-                mediaStreamTrackList.Add(t);
+                AddTrack(t);
             }
         }
 
         public void AddTrack(MediaStreamTrack track)
         {
+            NativeMethods.MediaStreamAddTrack(nativePtr, track.nativePtr);
             mediaStreamTrackList.Add(track);
         }
 
@@ -128,16 +131,6 @@ namespace Unity.WebRTC
     {
         private static bool started = false;
         private static AudioInput audioInput = new AudioInput();
-        public static MediaStream CaptureStream()
-        {
-            audioInput.BeginRecording();
-            started = true;
-
-            MediaStream mediaStream = new MediaStream();
-            AudioStreamTrack audioStreamTrack = new AudioStreamTrack();
-            mediaStream.AddTrack(audioStreamTrack);
-            return mediaStream;
-        }
 
         public static void Update()
         {

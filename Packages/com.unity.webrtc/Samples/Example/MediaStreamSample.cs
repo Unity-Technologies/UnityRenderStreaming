@@ -19,7 +19,7 @@ public class MediaStreamSample : MonoBehaviour
 
     private RTCPeerConnection pc1, pc2;
     private List<RTCRtpSender> pc1Senders, pc2Senders;
-    private Unity.WebRTC.MediaStream audioStream, videoStream;
+    private Unity.WebRTC.MediaStream mediaStream;
     private RTCDataChannel dataChannel, remoteDataChannel;
     private Coroutine sdpCheck;
     private string msg;
@@ -159,14 +159,11 @@ public class MediaStreamSample : MonoBehaviour
     }
     public void AddTracks() 
     {
-        foreach (var track in audioStream.GetTracks())
+        foreach (var track in mediaStream.GetTracks())
         {
             pc1Senders.Add (pc1.AddTrack(track));  
         }
-        foreach(var track in videoStream.GetTracks())
-        {
-            pc1Senders.Add(pc1.AddTrack(track));
-        }
+
         if(!videoUpdateStarted)
         {
             StartCoroutine(WebRTC.Update());
@@ -212,16 +209,17 @@ public class MediaStreamSample : MonoBehaviour
 
         RTCDataChannelInit conf = new RTCDataChannelInit(true);
         dataChannel = pc1.CreateDataChannel("data", ref conf);
-        audioStream = Audio.CaptureStream();
 
         cam.CreateRenderStreamTexture(1280, 720);
-        videoStream = new MediaStream();
+        mediaStream = new MediaStream("mediaStream");
         int texCount = cam.GetStreamTextureCount();
         for (int i = 0; i < texCount; ++i)
         {
-            videoStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
+            mediaStream.AddTrack(new VideoStreamTrack(cam.GetStreamTexture(i)));
         }
 
+        mediaStream.AddTrack(new AudioStreamTrack());
+        Audio.Start();
 
         RtImage.texture = cam.targetTexture;
  

@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming
             }
 
             captureCamera.CreateRenderStreamTexture(1280, 720);
-            mediaStream = new MediaStream();
+            mediaStream = new MediaStream("MediaStream");
             int texCount = captureCamera.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {

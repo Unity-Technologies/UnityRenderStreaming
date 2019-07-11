@@ -29,11 +29,21 @@ namespace WebRTC
 
 extern "C"
 {
-    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CreateMediaStream(Context* context, const char* label)
     {
-        //context->InitializeEncoder(width, height);
-        return context->CreateVideoStream(rt, width, height);
+        return context->CreateMediaStream(label);
     }
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* CreateVideoTrack(Context* context, const char* label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    {
+        return context->CreateVideoTrack(label, frameBuffer, width, height);
+    }
+
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* CreateAudioTrack(Context* context, const char* label)
+    {
+        return context->CreateAudioTrack(label);
+    }
+    
     //TODO: Multi-track support
     UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
     {
@@ -43,11 +53,6 @@ extern "C"
     UNITY_INTERFACE_EXPORT bool GetNvEncSupported()
     {
         return ContextManager::GetNvEncSupported();
-    }
-
-    UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureAudioStream(Context* context)
-    {
-        return context->CreateAudioStream();
     }
 
     UNITY_INTERFACE_EXPORT void MediaStreamAddTrack(webrtc::MediaStreamInterface* stream, webrtc::MediaStreamTrackInterface* track)
@@ -61,6 +66,7 @@ extern "C"
             stream->AddTrack((webrtc::VideoTrackInterface*)track);
         }
     }
+
     UNITY_INTERFACE_EXPORT void MediaStreamRemoveTrack(webrtc::MediaStreamInterface* stream, webrtc::MediaStreamTrackInterface* track)
     {
         if (track->kind() == "audio")
