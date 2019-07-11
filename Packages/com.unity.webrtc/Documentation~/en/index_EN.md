@@ -24,7 +24,7 @@ The package contains the following 3 samples.
 
 ## Limitations
 
-This package uses GPU hardware acceleration for video encoding, so it only runs on graphics boards that support NVCodec.
+This package uses GPU hardware acceleration for video encoding, so it only runs on graphics cards that support NVCodec.
 
 ## Update History
 
