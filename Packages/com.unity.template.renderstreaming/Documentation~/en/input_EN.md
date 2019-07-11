@@ -38,7 +38,7 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 
 ## HTML UI
 
-HTML UI events are only supported for button components.
+HTML UI events only support button components.
 
 ### Button
 
