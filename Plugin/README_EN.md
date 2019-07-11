@@ -1,8 +1,8 @@
-# Building the plugin
+# Building the Plugin
 
 ### Embedding libwebrtc
 
-The plugin relies on **libwebrtc**, so building it requires a static link to libwebrtc. `webrtc-win.zip` can be found on the Github Release page.
+The plugin relies on **libwebrtc**, so building it requires a static libwebrtc link. `webrtc-win.zip` can be found on the Github Release page.
 
  <img src="../Packages/com.unity.webrtc/Documentation~/images/libwebrtc_github_release.png" width=600 align=center>
 
@@ -12,7 +12,7 @@ Extract the files from the zip, and place them in the Plugin folder.
 
 ### Build
 
-version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
+Version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
 
 ### Debug
 
