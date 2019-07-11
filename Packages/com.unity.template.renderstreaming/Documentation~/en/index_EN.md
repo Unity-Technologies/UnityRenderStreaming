@@ -3,7 +3,7 @@
 - [Japanese](jp/index.md)
 
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
-This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/),  and developers can even use the WebRTC API to create their own unique solutions.
+This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/),  and through customization developers can create their own unique solutions
 
 <img src="../images/multitouch.gif" width=500 align=center>
 
