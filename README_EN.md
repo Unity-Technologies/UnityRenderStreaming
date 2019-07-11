@@ -2,8 +2,8 @@
 
 <img src="https://img.shields.io/badge/unity-2019.1-green.svg?style=flat-square" alt="unity 2019.1">
 
-**Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
-This solution takes advantage of [WebRTC](https://webrtc.org/) streaming technology, and developers can customize Unity Render Streaming to create their own unique solutions.
+**Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
+This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the WebRTC API to create their own unique solutions.
 
 << gif アニメーションを貼る >>
 
@@ -14,18 +14,18 @@ This repository manages 2 packages. Details can be found in the README.md for ea
 
 ## Operating Environment
 
-Functionality confirmed with Unity 2019.1. Currently only runs in a Windows 64bit environment.
-Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so this solution cannot be used.
+This solution is compatible with Unity 2019.1. Currently it only runs in a Windows 64-bit environment.
+Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so it is incompatible with this solution.
 
 ### Supported Browsers
 
-Browser support depends on each browser's WebRTC support status.
+Browser support depends on the status of each browser's WebRTC support.
 
 - Desktop Chrome
 - Desktop Firefox
 - Desktop Safari
 - Android Chrome
-- iOS Safai
+- iOS Safari
 
 ### License
 
@@ -38,7 +38,7 @@ Browser support depends on each browser's WebRTC support status.
 
 ### Graphics Cards
 
-This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with the lowest latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
+This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
 ## Package Structure
 
