@@ -5,7 +5,7 @@
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution takes advantage of [WebRTC](https://webrtc.org/) streaming technology, and developers can customize Unity Render Streaming to create their own unique solutions.
 
-<img src="./images/multitouch.gif" width=500 align=center>
+<img src="../images/multitouch.gif" width=500 align=center>
 
 ## Guide
 
