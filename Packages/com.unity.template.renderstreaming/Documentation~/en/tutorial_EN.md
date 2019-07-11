@@ -12,11 +12,11 @@ If you decide to download the package, please download these 2 packages.
 - com.unity.webrtc.tgz
 - com.unity.template.renderstreaming.tgz
 
-Put the packages in a designated folder in order to use them as a project template.
+Put the packages in a dedicated folder in order to use them as a project template.
 
 ### Project Template (Experimental)
 
-The project template can be set as a template when creating a new Unity project. 
+The project template can be selected as a template when creating a new Unity project. 
 
 <img src="../images/template_in_unityhub.png" width=600 align=center>
 
