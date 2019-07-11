@@ -14,7 +14,7 @@ using Unity.WebRTC;
 
 ### Initialization
 
-Call `WebRTC.Initialize()` to initialize and use `WebRTC`. Call when `WebRTC.Finalize()` finished.
+Call `WebRTC.Initialize()` to initialize and use `WebRTC`. Call `WebRTC.Finalize()` when finished.
 
 ```CSharp
 public class MyPlayerScript : MonoBehaviour
@@ -110,7 +110,7 @@ void ReceiveChannelCallback(RTCDataChannel channel)
 
 ### Sending Messages
 
-When both peers' `RTCDataChannel` is open, it's possible to send messages. `string` or `byte[]` message types can be sent. 
+When both peers' `RTCDataChannel` is open, it's possible to exchange messages. `string` or `byte[]` message types can be sent. 
 
 ```csharp
 void SendMessage(string message)
@@ -138,7 +138,7 @@ void HandleReceiveMessage(byte[] bytes)
 
 ### The End Process
 
-When finished, `Close()` must be called for `RTCDataChannel` and `RTCPeerConnection`. Finally, after the object is destoyed, call `WebRTC.Finalize()`.
+When finished, `Close()` must be called for `RTCDataChannel` and `RTCPeerConnection`. Finally, after the object is discarded, call `WebRTC.Finalize()`.
 
 ```csharp
 private void OnDestroy()
