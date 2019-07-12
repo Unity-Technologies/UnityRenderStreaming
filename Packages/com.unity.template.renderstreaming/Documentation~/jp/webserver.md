@@ -1,19 +1,28 @@
 ## Web アプリケーション
 
-**Web アプリケーション** は
+**Web アプリケーション** は2つの機能を提供しています。
 
-- Unity - Web ブラウザ間のシグナリングの仲介
-- Web ページの配置 
-
-
+- Unity と Web ブラウザ間のシグナリングの仲介
+- Web ページの配信
 
 ## Web クライアント
 
+**Render Streaming** の Web アプリケーションは WebRTC テクノロジを使用しているため、ブラウザが WebRTC に対応している必要があります。各種ブラウザの対応状況は[別ページ](https://caniuse.com/#search=webrtc)を確認してください。
 
+動作を確認しているブラウザは以下になります。
+
+- Chrome
+- Safari
+- Firefox
+- iOS Safari
+- Chrome for Android
+
+> [!NOTE]
+> **Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** で利用する必要があります。
 
 ## Web サーバ
 
-Web サーバは環境構築の手間を省略するために、[pkg](https://www.npmjs.com/package/pkg) を利用してバイナリとして配布しています。`Assets/bin~/` フォルダに実行ファイルを配置しています。
+`Assets/bin~/` フォルダに実行ファイルを配置しています。コマンドライン上で起動してください。
 
 <img src="../images/launch_webserver_explorer.png" width=500 align=center>
 
@@ -35,7 +44,7 @@ Web サーバは環境構築の手間を省略するために、[pkg](https://ww
 .\webserver
 ```
 
-以下のコマンドを実行すると https として起動します。ポートは443番を利用します。
+以下のコマンドを実行すると https として起動します。ポートは443番を利用します。なお https として起動する際は証明書（`server.cert`）及び鍵（`server.key`）の指定が必要になります。
 
 ```shell
 .\webserver -s -p 443
@@ -46,33 +55,3 @@ Web サーバは環境構築の手間を省略するために、[pkg](https://ww
 ```shell
 .\webserver -h
 ```
-
-### Web アプリケーションの編集
-
-Web アプリケーションのソースコードは [WebApp](WebApp) フォルダに配置しています。ソースコードを利用するには [Node.js](https://nodejs.org/) をインストールする必要があります。
-
-**Node.js** を利用してコマンドを実行する場合は以下のようになります。
-
-```shell
-npm run start
-```
-
-以下のコマンドでヘルプを表示します。
-
-```shell
-npm run start -- -h
-```
-
-以下のコマンドで `ts-node` を利用してサーバを起動します。
-
-```shell
-npm run dev
-```
-
-### Web API の確認
-
-Render Streaming のシグナリングはシンプルな Web API で実現しています。API の確認には [Postman](https://www.getpostman.com/) を利用することができます。
-
-Postman で `WebApp/test/renderstreaming.postman_collection.json` をインポートすると、API の一覧を確認することができます。また、Web サーバを起動した状態であれば API の動作テストを行うことができます。
-
-<img src="../images/postman_example.png" width=600 align=center>

@@ -1,0 +1,26 @@
+platforms:
+  - name: win
+  - name: mac
+---
+publish_github_release:
+  name: Publish Github Release
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: m1.large
+  commands:
+    - npm install github-release-cli -g
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.webrtc-%GIT_TAG%.tgz"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.template.renderstreaming-%GIT_TAG%.tgz"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver.exe"
+  triggers:
+    tags:
+      only:
+        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  dependencies:
+    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-template.yml#pack
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    {% endfor %}

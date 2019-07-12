@@ -2,15 +2,10 @@
 
 ### パッケージのダウンロード
 
-RenderStreaming の利用を開始するためには、以下の2つの方法があります。
+Render Streaming の利用を開始するためには、[Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) からパッケージをダウンロードしてください。2つのパッケージをダウンロードします。
 
-- [Github リポジトリ](https://github.com/Unity-Technologies/UnityRenderStreaming) から最新のソースコードをダウンロードする
-- [Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) からパッケージをダウンロードする
-
-パッケージをダウンロードする場合、2つのパッケージをダウンロードしてください。
-
-- com.unity.webrtc.tgz
-- com.unity.template.renderstreaming.tgz
+- `com.unity.webrtc.tgz`
+- `com.unity.template.renderstreaming.tgz`
 
 ダウンロードしたパッケージを所定のフォルダに移動することで、プロジェクトテンプレートとして利用することが可能です。
 
@@ -71,5 +66,10 @@ Web サーバのアドレスにアクセスしてください。以下のよう�
 
 <img src="../images/browser_hdrpscene.png" width=600 align=center>
 
-動作が確認できない場合、ブラウザのバージョンが古い可能性があります。最新のバージョンをインストールしてください。
+### トラブルシューティング
+
+- **Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** を利用する必要があります。
+- ブラウザの動作が確認できない場合、ブラウザのバージョンが古い可能性があります。最新のバージョンをインストールしてください。
+- **Nvcodec** が利用可能なグラフィックボードが利用可能であることを確認してください。また、グラフィックドライバは最新のバージョンをインストールしてください。
+- `com.unity.webrtc` のドキュメントも確認してください。
 
