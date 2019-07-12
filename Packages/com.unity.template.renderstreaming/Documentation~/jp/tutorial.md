@@ -49,7 +49,7 @@ Webサーバのソースコードは [WebApp](WebApp) に配置しています�
 
 ### Unity 側の設定
 
-サンプルシーン `Assets/Scenes/HDRPScene.unity` を開きます。
+サンプルシーン `Assets/Scenes/samplescene.unity` を開きます。
 
 <img src="../images/hdrpscene.png" width=600 align=center>
 

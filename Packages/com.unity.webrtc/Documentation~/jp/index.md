@@ -1,6 +1,6 @@
 # WebRTC
 
-- [English](../index.md)
+- [English](../en/index_EN.md)
 
 WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
 

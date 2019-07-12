@@ -4,7 +4,7 @@
 
 ## Documentation
 
-- [English](./Documentation~/en/index.md)
+- [English](./Documentation~/index.md)
 - [Japanese]( ./Documentation~/jp/index.md)
 
 ## Package Structure
