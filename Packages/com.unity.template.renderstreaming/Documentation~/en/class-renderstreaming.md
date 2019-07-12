@@ -6,7 +6,7 @@
 - Streaming input from cameras 
 - Associating browser input with events
 
-<img src="/Users/kazuki/UnityRenderStreaming/Packages/com.unity.template.renderstreaming/Documentation~/images/renderstreaming_inspector.png" width=400 align=center>
+<img src="../images/renderstreaming_inspector.png" width=400 align=center>
 
 ## Properties
 

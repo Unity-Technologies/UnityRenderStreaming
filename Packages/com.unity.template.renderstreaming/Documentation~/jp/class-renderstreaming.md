@@ -6,7 +6,7 @@
 - カメラからの入力をストリームとして送信
 - ブラウザからの入力とイベントとの関連付け
 
-<img src="/Users/kazuki/UnityRenderStreaming/Packages/com.unity.template.renderstreaming/Documentation~/images/renderstreaming_inspector.png" width=400 align=center>
+<img src="../images/renderstreaming_inspector.png" width=400 align=center>
 
 ## プロパティー
 
