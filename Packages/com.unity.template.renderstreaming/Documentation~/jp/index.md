@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-- [English](../en/index_EN.md)
+- [English](../index.md)
 
 **Unity Render Streaming** は、ブラウザ上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレータや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
 ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。デベロッパーがソリューションをカスタマイズすることで、様々なソリューションを構築することができます。

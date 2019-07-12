@@ -57,4 +57,4 @@ This is a template project containing an HDRP template sample which also incorpo
 
 ### Web Application
 
-Includes a client side and server side sample. Also provides the signaling server features. For details, see the [documentation](webserver_EN.md).
+Includes a client side and server side sample. Also provides the signaling server features. For details, see the [documentation](webserver.md).

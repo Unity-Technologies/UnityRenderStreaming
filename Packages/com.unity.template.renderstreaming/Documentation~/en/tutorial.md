@@ -50,7 +50,7 @@ Confirm that the following log displays in the command prompt. The web server's 
 
 <img src="../images/launch_webserver_cmd.png" width=400 align=center>
 
-The web server's source code is located in the [WebApp](WebApp). Additionally, [Node.js](https://nodejs.org) must be installed in order to run the source code. Download the installer from the website.
+The web server's source code is located in the `WebApp` folder. Additionally, [Node.js](https://nodejs.org) must be installed in order to run the source code. Download the installer from the website.
 
 ### Unity Settings
 
@@ -62,7 +62,7 @@ Select `RenderStreaming` in the Hierarchy. Check the `Render Streaming`component
 
 <img src="../images/renderstreaming_inspector.png" width=300 align=center>
 
-Set the address of the web server you just activated under the `URL Signaling` parameter. For details on the various settings in the Inspector, see the Render Streaming class [reference](class-renderstreaming_EN.md). 
+Set the address of the web server you just activated under the `URL Signaling` parameter. For details on the various settings in the Inspector, see the Render Streaming class [reference](class-renderstreaming.md). 
 
 ### Accessing the Web Page
 
