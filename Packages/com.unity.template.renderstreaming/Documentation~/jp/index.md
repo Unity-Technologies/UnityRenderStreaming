@@ -13,7 +13,7 @@
 * [チュートリアル](tutorial.md)
 * [ブラウザ入力](input.md)
 * [Web サーバ](webserver.md)
-* [クラスリファレンス](class-renderstreaming.md)
+* [Render Streaming リファレンス](class-renderstreaming.md)
 * [FAQ](faq.md)
 
 

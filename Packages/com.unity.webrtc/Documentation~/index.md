@@ -1,35 +1,33 @@
-# WebRTC for Unity
+# WebRTC
 
-- [Japanese](jp/index.md)
+- [Japanese](../jp/index.md)
 
-WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
+WebRTC for Unity is a package that allows [WebRTC](https://webrtc.org) to be used in Unity.
 
 ## Guide
 
-- [Tutorial](en/tutorial.md)
+* [Tutorial](../en/tutorial.md)
 
-## Install
+## Installation
+To install the package, download WebRTC for Unity from the package manager. See the [documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html) for details on how to use the package manager. 
 
-パッケージをインストールするためには、パッケージマネージャから `WebRTC` を検索しインストールします。パッケージマネージャの利用方法は[ドキュメント](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html)を参照してください。
+<img src="../images/webrtc_package_manager.png" width=600 align=center>
 
-<img src="./images/webrtc_package_manager.png" width=600 align=center>
+## Samples
+The package contains the following 3 samples. 
 
-## Sample
-パッケージでは以下の3つのサンプルを用意しています。
+| Scene       | Details                                 |
+| -------------- | ------------------------------------ |
+| PeerConnection | A scene for checking the process of connecting to a peer |
+| DataChannel    | A scene for sending and receiving text       |
+| MediaStream    | A scene for sending and receiving video/audio    |
 
-| シーン名 | 説明 |
-|---|---|
-| PeerConnection | ピアを接続する手続きを確認するシーン |
-| DataChannel | テキスト送受信を確認するシーン |
-| MediaStream | ビデオ/音声送受信を確認するシーン |
+## Limitations
 
-## Limitation
+This package uses GPU hardware acceleration for video encoding, so it only runs on graphics cards that support NVCodec.
 
-- Windows x64 でのみ動作します
-- NVCodec 対応のグラフィックボードにのみ動作しています
-
-## 更新履歴
+## Update History
 
 |Date|Reason|
 |---|---|
-|June 21, 2019|ドキュメント公開|
+|June 21, 2019|Document Released|
