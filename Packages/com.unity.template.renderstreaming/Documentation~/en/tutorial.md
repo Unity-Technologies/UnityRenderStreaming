@@ -54,7 +54,7 @@ The web server's source code is located in the `WebApp` folder. Additionally, [N
 
 ### Unity Settings
 
-Open the `Assets/Scenes/HDRPScene.unity` sample scene.
+Open the `Assets/Scenes/samplescene.unity` sample scene.
 
 <img src="../images/hdrpscene.png" width=600 align=center>
 
