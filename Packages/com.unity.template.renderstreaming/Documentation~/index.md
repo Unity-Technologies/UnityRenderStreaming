@@ -13,6 +13,7 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 * [Tutorial](./en/tutorial.md)
 * [Input](./en/input.md)
 * [Web Server](./en/webserver.md)
+* [Render Streaming Reference](en/class-renderstreaming.md)
 * [FAQ](./en/faq.md)
 
 ## Requirements
