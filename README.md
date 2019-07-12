@@ -9,8 +9,8 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 This repository manages 2 packages. Details can be found in the README.md for each package.
 
-- [com.unity.template.renderstreming](Packages/com.unity.template.renderstreaming)
-- [com.unity.webrtc](Packages/com.unity.webrtc)
+- [com.unity.template.renderstreming](Packages/com.unity.template.renderstreaming/Documentation~/index.md)
+- [com.unity.webrtc](Packages/com.unity.webrtc/Documentation~/index.md)
 
 ## Operating Environment
 
