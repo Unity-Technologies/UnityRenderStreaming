@@ -53,8 +53,8 @@ namespace WebRTC
             const webrtc::SdpVideoFormat& format) override;
         DummyVideoEncoderFactory();
 
-        void SetCapturer(NvVideoCapturer* _capturer) { capturer = _capturer; }
+        void AddCapturer(NvVideoCapturer* _capturer) { capturers.push_back(_capturer); }
     private:
-        NvVideoCapturer* capturer;
+        std::list<NvVideoCapturer*> capturers;
     };
 }

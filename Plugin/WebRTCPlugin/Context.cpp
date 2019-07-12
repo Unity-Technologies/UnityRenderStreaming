@@ -314,15 +314,30 @@ namespace WebRTC
         clients.clear();
         peerConnectionFactory = nullptr;
 
-        videoTrack = nullptr;
-        audioTrack = nullptr;
-
+        mediaSteamTrackList.clear();
         mediaStreamMap.clear();
+        nvVideoCapturerList.clear();
 
         workerThread->Quit();
         workerThread.reset();
         signalingThread->Quit();
         signalingThread.reset();
+    }
+
+    void Context::EncodeFrame()
+    {
+        for (std::list<NvVideoCapturer*>::iterator it= nvVideoCapturerList.begin(); it!= nvVideoCapturerList.end(); ++it)
+        {
+            (*it)->EncodeVideoData();
+        }
+    }
+
+    void Context::StopCapturer()
+    {
+        for (std::list<NvVideoCapturer*>::iterator it = nvVideoCapturerList.begin(); it != nvVideoCapturerList.end(); ++it)
+        {
+            (*it)->Stop();
+        }
     }
 
     webrtc::MediaStreamInterface* Context::CreateMediaStream(const std::string& stream_id)
@@ -337,15 +352,16 @@ namespace WebRTC
 
     webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
-        nvVideoCapturerUnique = std::make_unique<NvVideoCapturer>();
-        nvVideoCapturer = nvVideoCapturerUnique.get();
-        nvVideoCapturer->InitializeEncoder(width, height);
-        pDummyVideoEncoderFactory->SetCapturer(nvVideoCapturer);
+        NvVideoCapturer* pNvVideoCapturer = new NvVideoCapturer();
+        pNvVideoCapturer->InitializeEncoder(width, height);
+        pDummyVideoEncoderFactory->AddCapturer(pNvVideoCapturer);
 
-        videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(std::move(nvVideoCapturerUnique)));
-        nvVideoCapturer->unityRT = frameBuffer;
-        nvVideoCapturer->StartEncoder();
+        auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(pNvVideoCapturer));
+        pNvVideoCapturer->unityRT = frameBuffer;
+        pNvVideoCapturer->StartEncoder();
 
+        nvVideoCapturerList.push_back(pNvVideoCapturer);
+        mediaSteamTrackList.push_back(videoTrack);
         return videoTrack;
     }
 
@@ -357,7 +373,8 @@ namespace WebRTC
         audioOptions.noise_suppression = false;
         audioOptions.highpass_filter = false;
         //TODO: label and stream id should be maintained in some way for multi-stream
-        audioTrack = peerConnectionFactory->CreateAudioTrack(label, peerConnectionFactory->CreateAudioSource(audioOptions));
+        auto audioTrack = peerConnectionFactory->CreateAudioTrack(label, peerConnectionFactory->CreateAudioSource(audioOptions));
+        mediaSteamTrackList.push_back(audioTrack);
         return audioTrack;
     }
 

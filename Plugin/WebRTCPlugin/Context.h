@@ -49,8 +49,8 @@ namespace WebRTC
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
-        void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
-        void StopCapturer() { nvVideoCapturer->Stop(); }
+        void EncodeFrame();
+        void StopCapturer();
         void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
         void DeleteClient(int id) { clients.erase(id); }
     private:
@@ -61,13 +61,10 @@ namespace WebRTC
         rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peerConnectionFactory;
         DummyVideoEncoderFactory* pDummyVideoEncoderFactory;
         std::map<const std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface>> mediaStreamMap;
+        std::list<rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>> mediaSteamTrackList;
 
-        NvVideoCapturer* nvVideoCapturer;
-        std::unique_ptr<NvVideoCapturer> nvVideoCapturerUnique;
+        std::list<NvVideoCapturer*> nvVideoCapturerList;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
-
-        rtc::scoped_refptr<webrtc::VideoTrackInterface> videoTrack;
-        rtc::scoped_refptr<webrtc::AudioTrackInterface> audioTrack;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

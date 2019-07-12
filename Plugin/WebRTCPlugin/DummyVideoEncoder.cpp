@@ -92,8 +92,15 @@ namespace WebRTC
         const webrtc::SdpVideoFormat& format)
     {
         auto dummyVideoEncoder = std::make_unique<DummyVideoEncoder>();
-        dummyVideoEncoder->SetKeyFrame.connect(capturer, &NvVideoCapturer::SetKeyFrame);
-        dummyVideoEncoder->SetRate.connect(capturer, &NvVideoCapturer::SetRate);
+
+        {
+            //todo: According to condition of format choose different capturer.
+            NvVideoCapturer* pCapturer = *capturers.begin();
+    
+            dummyVideoEncoder->SetKeyFrame.connect(pCapturer, &NvVideoCapturer::SetKeyFrame);
+            dummyVideoEncoder->SetRate.connect(pCapturer, &NvVideoCapturer::SetRate);
+        }
+
         return dummyVideoEncoder;
     }
 }
