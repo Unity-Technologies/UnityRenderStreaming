@@ -29,20 +29,20 @@ namespace WebRTC
 
 extern "C"
 {
+    UNITY_INTERFACE_EXPORT CodecInitializationResult GetCodecInitializationResult()
+    {
+        return ContextManager::GetInstance()->GetCodecInitializationResult();
+    }
+
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureVideoStream(Context* context, UnityFrameBuffer* rt, int32 width, int32 height)
     {
         context->InitializeEncoder(width, height);
         return context->CreateVideoStream(rt);
     }
     //TODO: Multi-track support
-    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
+    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(Context* context, webrtc::MediaStreamTrackInterface* track)
     {
-        ContextManager::GetInstance()->curContext->StopCapturer();
-    }
-
-    UNITY_INTERFACE_EXPORT bool GetNvEncSupported()
-    {
-        return ContextManager::GetNvEncSupported();
+        context->StopCapturer();
     }
 
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CaptureAudioStream(Context* context)
@@ -162,12 +162,12 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid)
     {
-        return ContextManager::GetContext(uid);
+        return ContextManager::GetInstance()->GetContext(uid);
     }
 
     UNITY_INTERFACE_EXPORT void ContextDestroy(int uid)
     {
-        ContextManager::DestroyContext(uid);
+        ContextManager::GetInstance()->DestroyContext(uid);
     }
 
     UNITY_INTERFACE_EXPORT PeerConnectionObject* ContextCreatePeerConnection(Context* ctx, int id)
