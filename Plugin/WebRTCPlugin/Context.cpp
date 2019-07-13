@@ -9,7 +9,7 @@ namespace WebRTC
     CodecInitializationResult ContextManager::InitializeAndTryNvEnc()
     {
         auto result = LoadNvEncApi();
-        if (result == CodecInitializationResult::Succeed)
+        if (result == CodecInitializationResult::Success)
         {
             //Try to create encoder once
             result = TryNvEnc();
@@ -132,7 +132,7 @@ namespace WebRTC
             checkf(result, "Failed to destroy NV encoder interface");
             pEncoderInterface = nullptr;
         }
-        return CodecInitializationResult::Succeed;
+        return CodecInitializationResult::Success;
     }
 
     CodecInitializationResult ContextManager::LoadNvEncApi()
@@ -190,7 +190,7 @@ namespace WebRTC
         {
             return CodecInitializationResult::APINotFound;
         }
-        return CodecInitializationResult::Succeed;
+        return CodecInitializationResult::Success;
     }
 
     void ContextManager::DestroyContext(int uid)

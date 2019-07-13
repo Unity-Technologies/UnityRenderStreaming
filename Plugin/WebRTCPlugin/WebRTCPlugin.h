@@ -22,7 +22,7 @@ namespace WebRTC
     enum class CodecInitializationResult
     {
         NotInitialized,
-        Succees,
+        Success,
         DriverNotInstalled,
         DriverVersionDoesNotSupportAPI,
         APINotFound,
