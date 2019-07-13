@@ -4,7 +4,7 @@ editors:
   - version: trunk
 platforms:
   - name: win
-    type: Unity::VM
+    type: Unity::VM::GPU
     # currently the projects depends MSBuild. we should replace CMake
     # image: package-ci/win10:stable
     image: renderstreaming/win10:latest
