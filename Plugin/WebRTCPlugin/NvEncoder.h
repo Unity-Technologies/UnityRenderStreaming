@@ -29,12 +29,12 @@ namespace WebRTC
         };
 
     public:
-        NvEncoder(int width, int height);
+        NvEncoder();
         ~NvEncoder();
 
         void SetRate(uint32 rate);
-        void UpdateSettings();
-        void EncodeFrame();
+        void UpdateSettings(int width, int height);
+        void EncodeFrame(int width, int height);
         bool IsSupported() const { return isNvEncoderSupported; }
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
@@ -58,8 +58,10 @@ namespace WebRTC
         void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
         bool isIdrFrame = false;
-        int width = 1920;
-        int height = 1080;
+        //const int encodeWidth = 1920;
+        //const int encodeHeight = 1080;
+        const int encodeWidth = 1280;
+        const int encodeHeight = 720;
         //10Mbps
         int bitRate = 10000000;
         //100Mbps

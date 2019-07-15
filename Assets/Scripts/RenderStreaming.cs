@@ -67,10 +67,11 @@ namespace Unity.RenderStreaming
             int texCount = captureCamera.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                mediaStream.AddTrack(new VideoStreamTrack(captureCamera.GetStreamTexture(i)));
+                VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, captureCamera.GetStreamTexture(i));
+                mediaStream.AddTrack(videoTrack);
             }
 
-            mediaStream.AddTrack(new AudioStreamTrack());
+            mediaStream.AddTrack(new AudioStreamTrack("audioTrack"));
             Audio.Start();
 
             signaling = new Signaling(urlSignaling);

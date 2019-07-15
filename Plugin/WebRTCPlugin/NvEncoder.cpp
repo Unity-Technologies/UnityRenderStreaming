@@ -6,11 +6,11 @@
 
 namespace WebRTC
 {
-    NvEncoder::NvEncoder(int width, int height) :width(width), height(height)
+    NvEncoder::NvEncoder()
     {
-        LogPrint(StringFormat("width is %d, height is %d", width, height).c_str());
+        LogPrint(StringFormat("width is %d, height is %d", encodeWidth, encodeHeight).c_str());
         checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");
-        checkf(width > 0 && height > 0, "Invalid width or height!");
+        checkf(encodeWidth > 0 && encodeHeight > 0, "Invalid width or height!");
         bool result = true;
 #pragma region open an encode session
         //open an encode session
@@ -25,10 +25,10 @@ namespace WebRTC
 #pragma endregion
 #pragma region set initialization parameters
         nvEncInitializeParams.version = NV_ENC_INITIALIZE_PARAMS_VER;
-        nvEncInitializeParams.encodeWidth = width;
-        nvEncInitializeParams.encodeHeight = height;
-        nvEncInitializeParams.darWidth = width;
-        nvEncInitializeParams.darHeight = height;
+        nvEncInitializeParams.encodeWidth = encodeWidth;
+        nvEncInitializeParams.encodeHeight = encodeHeight;
+        nvEncInitializeParams.darWidth = encodeWidth;
+        nvEncInitializeParams.darHeight = encodeHeight;
         nvEncInitializeParams.encodeGUID = NV_ENC_CODEC_H264_GUID;
         nvEncInitializeParams.presetGUID = NV_ENC_PRESET_LOW_LATENCY_HQ_GUID;
         nvEncInitializeParams.frameRateNum = frameRate;
@@ -87,7 +87,7 @@ namespace WebRTC
      
     }
 
-    void NvEncoder::UpdateSettings()
+    void NvEncoder::UpdateSettings(int width, int height)
     {
         bool settingChanged = false;
         if (nvEncConfig.rcParams.averageBitRate != bitRate)
@@ -121,9 +121,9 @@ namespace WebRTC
         }
     }
     //entry for encoding a frame
-    void NvEncoder::EncodeFrame()
+    void NvEncoder::EncodeFrame(int width, int height)
     {
-        UpdateSettings();
+        UpdateSettings(width, height);
         uint32 bufferIndexToWrite = frameCount % bufferedFrameNum;
         Frame& frame = bufferedFrames[bufferIndexToWrite];
 #pragma region set frame params
@@ -140,8 +140,8 @@ namespace WebRTC
         picParams.pictureStruct = NV_ENC_PIC_STRUCT_FRAME;
         picParams.inputBuffer = frame.inputFrame.mappedResource;
         picParams.bufferFmt = frame.inputFrame.bufferFormat;
-        picParams.inputWidth = nvEncInitializeParams.encodeWidth;
-        picParams.inputHeight = nvEncInitializeParams.encodeHeight;
+        picParams.inputWidth = encodeWidth;
+        picParams.inputHeight = encodeHeight;
         picParams.outputBitstream = frame.outputFrame;
         picParams.inputTimeStamp = frameCount;
 #pragma endregion
@@ -191,8 +191,8 @@ namespace WebRTC
     {
         ID3D11Texture2D* inputTextures = nullptr;
         D3D11_TEXTURE2D_DESC desc = { 0 };
-        desc.Width = width;
-        desc.Height = height;
+        desc.Width = encodeWidth;
+        desc.Height = encodeHeight;
         desc.MipLevels = 1;
         desc.ArraySize = 1;
         desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -212,8 +212,8 @@ namespace WebRTC
 
         if (!registerResource.resourceToRegister)
             LogPrint("resource is not initialized");
-        registerResource.width = width;
-        registerResource.height = height;
+        registerResource.width = encodeWidth;
+        registerResource.height = encodeHeight;
         LogPrint(StringFormat("nvEncRegisterResource: width is %d, height is %d", registerResource.width, registerResource.height).c_str());
         registerResource.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
         checkf(NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncRegisterResource(pEncoderInterface, &registerResource))),

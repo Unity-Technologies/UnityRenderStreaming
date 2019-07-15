@@ -65,6 +65,7 @@ namespace WebRTC
 
         std::list<NvVideoCapturer*> nvVideoCapturerList;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
+        NvEncoder* nvEncoder;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

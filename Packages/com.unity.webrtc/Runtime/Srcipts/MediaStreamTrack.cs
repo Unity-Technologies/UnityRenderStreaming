@@ -36,14 +36,14 @@ namespace Unity.WebRTC
 
     public class VideoStreamTrack : MediaStreamTrack
     {
-        public VideoStreamTrack(RenderTexture rt) : base(WebRTC.Context.CreateVideoTrack("videoTrack", rt.GetNativeTexturePtr(), rt.width, rt.height))
+        public VideoStreamTrack(string label, RenderTexture rt) : base(WebRTC.Context.CreateVideoTrack(label, rt.GetNativeTexturePtr(), rt.width, rt.height))
         {
         }
     }
 
     public class AudioStreamTrack : MediaStreamTrack
     {
-        public AudioStreamTrack() : base(WebRTC.Context.CreateAudioTrack("audioTrack"))
+        public AudioStreamTrack(string label) : base(WebRTC.Context.CreateAudioTrack(label))
         {
         }
     }

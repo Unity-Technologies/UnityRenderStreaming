@@ -3,10 +3,15 @@
 
 namespace WebRTC
 {
+    class testNvVideoCapturer : public cricket::VideoCapturer
+    {
+
+    };
+
     class NvVideoCapturer : public cricket::VideoCapturer
     {
     public:
-        NvVideoCapturer();
+        NvVideoCapturer(NvEncoder* pEncoder, int _width, int _height);
         void EncodeVideoData();
         // Start the video capturer with the specified capture format.
         virtual cricket::CaptureState Start(const cricket::VideoFormat& Format) override
@@ -17,7 +22,7 @@ namespace WebRTC
         virtual void Stop() override
         {
             captureStopped = true;
-            nvEncoder.reset();
+            //nvEncoder.reset();
         }
         // Check if the video capturer is running.
         virtual bool IsRunning() override
@@ -46,11 +51,12 @@ namespace WebRTC
             fourccs->push_back(cricket::FOURCC_H264);
             return true;
         }
-        std::unique_ptr<NvEncoder> nvEncoder;
+        //std::unique_ptr<NvEncoder> nvEncoder;
+        NvEncoder* nvEncoder;
 
         //just fake info
-        const int32 width = 1280;
-        const int32 height = 720;
+        int32 width;
+        int32 height;
         const int32 framerate = 60;
 
         bool captureStarted = false;
