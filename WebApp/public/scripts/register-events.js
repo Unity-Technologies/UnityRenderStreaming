@@ -229,22 +229,38 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   }
 
   function sendTouch(e, phase) {
-    const changes = e.changedTouches;
-    console.log("touch phase:" + phase + " length:" + changes.length + " pageX" + changes[0].pageX + ", pageX: " + changes[0].pageY + ", force:" + changes[0].force);
+    const changedTouches = Array.from(e.changedTouches);
+    const touches = Array.from(e.touches);
+    const phrases = [];
 
-    let data = new DataView(new ArrayBuffer(3 + 12 * changes.length));
+    for(var i = 0; i < changedTouches.length; i++) {
+      if(touches.find(function(t) { return t.identifier == changedTouches[i].identifier} ) === undefined) {
+        touches.push(changedTouches[i]);
+      }
+    }
+
+    for(var i = 0; i < touches.length; i++) {
+      touches[i].identifier;
+      phrases[i] = changedTouches.find(
+        function(e) { return e.identifier == touches[i].identifier }) === undefined ? PointerPhase.Stationary : phase;
+    }
+
+    console.log("touch phase:" + phase + " length:" + changedTouches.length + " pageX" + changedTouches[0].pageX + ", pageX: " + changedTouches[0].pageY + ", force:" + changedTouches[0].force);
+
+    let data = new DataView(new ArrayBuffer(2 + 13 * touches.length));
     data.setUint8(0, InputEvent.Touch);
-    data.setUint8(1, phase);
-    data.setUint8(2, changes.length);
-    let byteOffset = 3;
-    for (let i = 0; i < changes.length; i++) {
-      data.setInt32(byteOffset, changes[i].identifier, true);
+    data.setUint8(1, touches.length);
+    let byteOffset = 2;
+    for (let i = 0; i < touches.length; i++) {
+      data.setInt32(byteOffset, touches[i].identifier, true);
       byteOffset += 4;
-      data.setInt16(byteOffset, changes[i].pageX, true);
+      data.setUint8(byteOffset, phrases[i]);
+      byteOffset += 1;
+      data.setInt16(byteOffset, touches[i].pageX, true);
       byteOffset += 2;
-      data.setInt16(byteOffset, changes[i].pageY, true);
+      data.setInt16(byteOffset, touches[i].pageY, true);
       byteOffset += 2;
-      data.setFloat32(byteOffset, changes[i].force, true);
+      data.setFloat32(byteOffset, touches[i].force, true);
       byteOffset += 4;
     }
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
