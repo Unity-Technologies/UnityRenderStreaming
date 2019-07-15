@@ -66,7 +66,7 @@ namespace Unity.RenderStreaming
 
             for (int i = 0; i < texCount; ++i)
             {
-                videoStream.AddTrack(new VideoStreamTrack(captureCamera.getStreamTexture(i)));
+                videoStream.AddTrack(new VideoStreamTrack(captureCamera.GetStreamTexture(i)));
             }
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
