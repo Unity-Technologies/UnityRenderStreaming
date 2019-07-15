@@ -49,7 +49,7 @@ class MediaStreamTest
 
 
             cam.CreateRenderStreamTexture(1280, 720);
-            MediaStream mediaStream = new MediaStream("mediaStream");
+            MediaStream mediaStream = new MediaStream();
             int texCount = cam.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {

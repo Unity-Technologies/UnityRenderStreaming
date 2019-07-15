@@ -211,7 +211,7 @@ public class MediaStreamSample : MonoBehaviour
         dataChannel = pc1.CreateDataChannel("data", ref conf);
 
         cam.CreateRenderStreamTexture(1280, 720);
-        mediaStream = new MediaStream("mediaStream");
+        mediaStream = new MediaStream();
         int texCount = cam.GetStreamTextureCount();
         for (int i = 0; i < texCount; ++i)
         {

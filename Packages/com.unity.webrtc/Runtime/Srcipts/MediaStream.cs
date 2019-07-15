@@ -11,14 +11,14 @@ namespace Unity.WebRTC
         internal IntPtr nativePtr;
         protected List<MediaStreamTrack> mediaStreamTrackList = new List<MediaStreamTrack>();
 
-        public MediaStream(string label) : base()
+        public MediaStream() : base()
         {
-            nativePtr = WebRTC.Context.CreateMediaStream(label);
+            nativePtr = WebRTC.Context.CreateMediaStream("MediaStream");
         }
 
-        public MediaStream(string label, MediaStreamTrack[] tracks) : base()
+        public MediaStream(MediaStreamTrack[] tracks) : base()
         {
-            nativePtr = WebRTC.Context.CreateMediaStream(label);
+            nativePtr = WebRTC.Context.CreateMediaStream("MediaStream");
 
             foreach (var t in tracks)
             {
