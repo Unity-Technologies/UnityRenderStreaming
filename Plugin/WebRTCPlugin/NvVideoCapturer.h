@@ -3,11 +3,6 @@
 
 namespace WebRTC
 {
-    class testNvVideoCapturer : public cricket::VideoCapturer
-    {
-
-    };
-
     class NvVideoCapturer : public cricket::VideoCapturer
     {
     public:
