@@ -123,25 +123,6 @@ namespace UnityTemplateProjects
 
         void FixedUpdate()
         {
-            // Exit Sample  
-
-            if (Keyboard.current.escapeKey.isPressed)
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            }
-            // Hide and lock cursor when right mouse button pressed
-            if (Mouse.current.rightButton.isPressed)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-            else
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
 
             // Rotation
             if (Mouse.current.rightButton.isPressed)
