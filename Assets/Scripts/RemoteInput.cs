@@ -69,19 +69,36 @@ namespace Unity.RenderStreaming
                     InputSystem.Update();
                     break;
                 case EventType.Touch:
-                    var phase = (PointerPhase)bytes[1];
-                    var length = bytes[2];
-                    var index = 3;
+                    var length = bytes[1];
+                    var index = 2;
+                    var touches = new TouchState[length];
                     for (int i = 0; i < length; i++)
                     {
                         var identifier = BitConverter.ToInt32(bytes, index);
-                        var pageX = BitConverter.ToInt16(bytes, index+4);
-                        var pageY = BitConverter.ToInt16(bytes, index+6);
-                        var force = BitConverter.ToSingle(bytes, index+8);
-                        ProcessTouchMoveEvent(identifier, phase, pageX, pageY, force);
-                        index += 12;
+                        index += 4;
+                        var phase = (PointerPhase)bytes[index];
+                        index += 1;
+                        var pageX = BitConverter.ToInt16(bytes, index);
+                        index += 2;
+                        var pageY = BitConverter.ToInt16(bytes, index);
+                        index += 2;
+                        var force = BitConverter.ToSingle(bytes, index);
+                        index += 4;
+                        touches[i] = new TouchState
+                        {
+                            touchId = identifier,
+                            phase = phase,
+                            position = new Vector2Int(pageX, pageY),
+                            pressure = force
+                        };
                     }
+                    ProcessTouchMoveEvent(touches);
                     InputSystem.Update();
+                    if (Touchscreen.current.activeTouches.Count > length)
+                    {
+                        ChangeEndStateUnusedTouches(touches);
+                        InputSystem.Update();
+                    }
                     break;
                 case EventType.ButtonClick:
                     var elementId = BitConverter.ToInt16(bytes, 1);
@@ -128,16 +145,27 @@ namespace Unity.RenderStreaming
             InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
         }
 
-        static void ProcessTouchMoveEvent(int identifier, PointerPhase phase, short pageX, short pageY, float force)
+        static void ProcessTouchMoveEvent(TouchState[] touches)
         {
-            InputSystem.QueueStateEvent(Touch,
-                new TouchState
+            for (var i = 0; i < touches.Length; i++)
+            {
+                InputSystem.QueueStateEvent(Touch, touches[i]);
+            }
+        }
+        static void ChangeEndStateUnusedTouches(TouchState[] touches)
+        {
+            for (var i = 0; i < Touchscreen.current.activeTouches.Count; i++)
+            {
+                var touchId = Touchscreen.current.activeTouches[i].touchId.ReadValue();
+                if (!Array.Exists(touches, v => v.touchId == touchId))
                 {
-                    touchId = identifier,
-                    phase = phase,
-                    position = new Vector2Int(pageX, pageY),
-                    pressure = force
-                });
+                    InputSystem.QueueStateEvent(Touch, new TouchState
+                    {
+                        touchId = touchId,
+                        phase = PointerPhase.Ended
+                    });
+                }
+            }
         }
 
         static void ProcessButtonClickEvent(int elementId)
