@@ -55,11 +55,15 @@ namespace UnityTemplateProjects
         CameraState m_InterpolatingCameraState = new CameraState();
 
         [Header("Movement Settings")]
+        [Tooltip("Movement Sensitivity Factor."), Range(0.001f, 1f)]
+        [SerializeField] float       m_movementSensitivityFactor = 0.1f;
+
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
         public float boost = 3.5f;
 
         [Tooltip("Time it takes to interpolate camera position 99% of the way to the target."), Range(0.001f, 1f)]
         public float positionLerpTime = 0.2f;
+
 
         [Header("Rotation Settings")]
         [Tooltip("X = Change in mouse position.\nY = Multiplicative factor for camera rotation.")]
@@ -76,6 +80,34 @@ namespace UnityTemplateProjects
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
         }
+
+//---------------------------------------------------------------------------------------------------------------------
+        Vector3 GetTranslationFromInput(Vector2 input) {
+            if (!invertY) {
+                input.y *= -1;
+            }
+
+            Vector3 dir = Vector3.right * input.x * m_movementSensitivityFactor;
+            dir += Vector3.back * input.y * m_movementSensitivityFactor;
+
+            return dir;
+        }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+        void UpdateTargetCameraStateFromInput(Vector2 input)
+        {
+            if (!invertY) {
+                input.y *= -1;
+            }
+            float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude) * 0.1f;
+
+            m_TargetCameraState.yaw += input.x * mouseSensitivityFactor;
+            m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
+
+        }
+
+//---------------------------------------------------------------------------------------------------------------------
 
         Vector3 GetInputTranslationDirection()
         {
@@ -105,17 +137,12 @@ namespace UnityTemplateProjects
                 direction += Vector3.up;
             }
 
+            //Translation
             if (Touchscreen.current.activeTouches.Count == 2)
             {
-                var touchMovement = Touchscreen.current.activeTouches[0].delta.ReadValue();
-                if (!invertY)
-                {
-                    touchMovement.y *= -1;
-                }
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(touchMovement.magnitude) * 0.1f;
-
-                direction += Vector3.right * touchMovement.x * mouseSensitivityFactor;
-                direction += Vector3.back * touchMovement.y * mouseSensitivityFactor;
+                direction = GetTranslationFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
+            } else if (Mouse.current.leftButton.isPressed) {
+                direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
             }
 
             return direction;
@@ -124,32 +151,11 @@ namespace UnityTemplateProjects
         void FixedUpdate()
         {
 
-            // Rotation
-            if (Mouse.current.rightButton.isPressed)
-            {
-                var mouseMovement = Mouse.current.delta.ReadValue();
-                if (!invertY)
-                {
-                    mouseMovement.y *= -1;
-                }
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude) * 0.1f;
-
-                m_TargetCameraState.yaw += mouseMovement.x * mouseSensitivityFactor;
-                m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
-            }
-
-            // Rotation (Touch)
-            if (Touchscreen.current.activeTouches.Count == 1)
-            {
-                var touchMovement = Touchscreen.current.activeTouches[0].delta.ReadValue();
-                if (!invertY)
-                {
-                    touchMovement.y *= -1;
-                }
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(touchMovement.magnitude) * 0.1f;
-
-                m_TargetCameraState.yaw += touchMovement.x * mouseSensitivityFactor;
-                m_TargetCameraState.pitch += touchMovement.y * mouseSensitivityFactor;
+            // Rotation 
+            if (Mouse.current.rightButton.isPressed) {
+                UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
+            } else if (Touchscreen.current.activeTouches.Count == 1) {
+                UpdateTargetCameraStateFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
             }
 
             // Translation
