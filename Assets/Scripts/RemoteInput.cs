@@ -26,6 +26,8 @@ namespace Unity.RenderStreaming
         public static Touchscreen Touch { get; private set; }
         public static Action<int> ActionButtonClick;
 
+        static bool m_isInitialized = false;
+
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
         {
             var device = InputSystem.GetDevice<TDevice>();
@@ -41,12 +43,15 @@ namespace Unity.RenderStreaming
             Keyboard = GetOrAddDevice<Keyboard>();
             RemoteMouse = InputSystem.AddDevice<Mouse>();
             Touch = GetOrAddDevice<Touchscreen>();
+            m_isInitialized = true;
         }
 
 //---------------------------------------------------------------------------------------------------------------------
         public static void Destroy()
         {
             InputSystem.RemoveDevice(RemoteMouse);
+            RemoteMouse = null;
+            m_isInitialized = false;
         }
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -116,6 +121,9 @@ namespace Unity.RenderStreaming
 
         public static void Reset()
         {
+            if (!m_isInitialized)
+                return;
+
             InputSystem.QueueStateEvent(RemoteMouse, new MouseState());
             InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
             InputSystem.QueueStateEvent(Touch, new TouchState());

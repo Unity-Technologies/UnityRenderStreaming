@@ -7,7 +7,7 @@ using UnityEngine.Experimental.Rendering.HDPipeline; //HDAdditionalCameraData
 [RequireComponent(typeof(Camera)), RequireComponent(typeof(HDAdditionalCameraData))]
 public class HDRPRenderTextureBlitter : MonoBehaviour
 {
-    [SerializeField] Camera m_rtCamera;
+    [SerializeField] Camera m_rtCamera = null;
 
     Camera                  m_cam;
     HDAdditionalCameraData  m_hdData;
