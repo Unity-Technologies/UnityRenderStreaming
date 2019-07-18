@@ -209,8 +209,8 @@ _pkginfo.txt
 
 # Others
 ClientBin/
-~$*
-*~
+Bin~/
+upm-ci~/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
