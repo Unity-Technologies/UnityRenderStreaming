@@ -53,6 +53,7 @@ namespace Unity.RenderStreaming
         public void OnDestroy()
         {
             WebRTC.WebRTC.Finalize();
+            RemoteInput.Destroy();
         }
         public IEnumerator Start()
         {
