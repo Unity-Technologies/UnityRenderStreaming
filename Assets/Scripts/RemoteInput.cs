@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming
     public static class RemoteInput
     {
         public static Keyboard Keyboard { get; private set; }
-        public static Mouse Mouse { get; private set; }
+        public static Mouse RemoteMouse { get; private set; }
         public static Touchscreen Touch { get; private set; }
         public static Action<int> ActionButtonClick;
 
@@ -39,9 +39,16 @@ namespace Unity.RenderStreaming
         public static void Initialize()
         {
             Keyboard = GetOrAddDevice<Keyboard>();
-            Mouse = GetOrAddDevice<Mouse>();
+            RemoteMouse = InputSystem.AddDevice<Mouse>();
             Touch = GetOrAddDevice<Touchscreen>();
         }
+
+//---------------------------------------------------------------------------------------------------------------------
+        public static void Destroy()
+        {
+            InputSystem.RemoveDevice(RemoteMouse);
+        }
+//---------------------------------------------------------------------------------------------------------------------
 
         public static void ProcessInput(byte[] bytes)
         {
@@ -109,7 +116,7 @@ namespace Unity.RenderStreaming
 
         public static void Reset()
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState());
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState());
             InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
             InputSystem.QueueStateEvent(Touch, new TouchState());
             InputSystem.Update();
@@ -137,12 +144,12 @@ namespace Unity.RenderStreaming
 
         static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
         }
 
         static void ProcessTouchMoveEvent(TouchState[] touches)

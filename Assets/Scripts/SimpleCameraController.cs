@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.RenderStreaming;
 
 namespace UnityTemplateProjects
 {
@@ -141,8 +142,10 @@ namespace UnityTemplateProjects
             if (Touchscreen.current.activeTouches.Count == 2)
             {
                 direction = GetTranslationFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
-            } else if (Mouse.current.leftButton.isPressed) {
+            } else if (IsMouseDragged(Mouse.current,true)) {
                 direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
+            } else if (IsMouseDragged(RemoteInput.RemoteMouse,true)) {
+                direction = GetTranslationFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
             }
 
             return direction;
@@ -152,8 +155,10 @@ namespace UnityTemplateProjects
         {
 
             // Rotation 
-            if (Mouse.current.rightButton.isPressed) {
+            if (IsMouseDragged(Mouse.current,false)) {
                 UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
+            } else if (IsMouseDragged(RemoteInput.RemoteMouse,false)) {
+                UpdateTargetCameraStateFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
             } else if (Touchscreen.current.activeTouches.Count == 1) {
                 UpdateTargetCameraStateFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
             }
@@ -179,6 +184,22 @@ namespace UnityTemplateProjects
 
             m_InterpolatingCameraState.UpdateTransform(transform);
         }
+//---------------------------------------------------------------------------------------------------------------------
+        static bool IsMouseDragged(Mouse m, bool useLeftButton) {
+            if (null == m)
+                return false;
+
+            if (Screen.safeArea.Contains(m.position.ReadValue())) {
+                //check left/right click
+                if ((useLeftButton && m.leftButton.isPressed) || (!useLeftButton && m.rightButton.isPressed)) {               
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }
+
 
 }
