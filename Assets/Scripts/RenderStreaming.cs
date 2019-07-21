@@ -24,7 +24,13 @@ namespace Unity.RenderStreaming
         private string urlSignaling = "http://localhost";
 
         [SerializeField, Tooltip("Address for stun server")]
-        private string[] urlsIceServer = new string[] { "stun:stun.l.google.com:19302" };
+        private RTCIceServer[] iceServers = new RTCIceServer[]
+        {
+            new RTCIceServer()
+            {
+                urls = new string[] { "stun:stun.l.google.com:19302" }
+            }
+        };
 
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
@@ -74,10 +80,7 @@ namespace Unity.RenderStreaming
             sessionId = newResData.sessionId;
 
             conf = default;
-            conf.iceServers = new RTCIceServer[]
-            {
-            new RTCIceServer { urls = urlsIceServer }
-            };
+            conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
             StartCoroutine(LoopPolling());
         }
