@@ -10,7 +10,7 @@
 
 ## License
 
-- [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+- [LICENSE.md](LICENSE.md)
 
 ## Change log
 
