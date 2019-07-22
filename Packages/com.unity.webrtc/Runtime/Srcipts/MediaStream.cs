@@ -82,7 +82,7 @@ namespace Unity.WebRTC
             return webRTCTextures[index];
         }
 
-        public static void CreateRenderStreamTexture(this Camera cam, int width, int height)
+        public static void CreateRenderStreamTexture(this Camera cam, int width, int height, int count = 1)
         {
             if (camCopyRts.Count > 0)
             {
@@ -92,7 +92,7 @@ namespace Unity.WebRTC
             camRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
             camRenderTexture.Create();
 
-            int mipCount = 1;
+            int mipCount = count;
             for (int i = 1, mipLevel = 1; i <= mipCount; ++i, mipLevel *= 2)
             {
                 RenderTexture webRtcTex = new RenderTexture(width / mipLevel, height / mipLevel, 0, RenderTextureFormat.BGRA32);
