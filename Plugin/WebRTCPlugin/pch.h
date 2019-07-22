@@ -91,8 +91,7 @@ namespace WebRTC
     using int32 = signed int;
     using int64 = signed long long;
 
-    const uint32 bufferedFrameNum = 3;
-    extern UnityFrameBuffer* renderTextures[bufferedFrameNum];
+    const uint32 bufferedFrameNum = 1;
     extern ID3D11DeviceContext* context;
     extern ID3D11Device* g_D3D11Device;
 }

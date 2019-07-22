@@ -18,6 +18,7 @@ namespace WebRTC
         virtual uint64 GetCurrentFrameCount() = 0;
         virtual void InitEncoder(int width, int height) = 0;
         virtual void InitEncoderResources() = 0;
+        virtual void* getRenderTexture() = 0;
     };
 }
 

@@ -12,8 +12,7 @@ namespace WebRTC
     {
         if (captureStarted && !captureStopped)
         {
-            int curFrameNum = nvEncoder->GetCurrentFrameCount() % bufferedFrameNum;
-            context->CopyResource(renderTextures[curFrameNum], unityRT);
+            context->CopyResource((ID3D11Resource*)nvEncoder->getRenderTexture(), unityRT);
             nvEncoder->EncodeFrame(width, height);
         }
     }

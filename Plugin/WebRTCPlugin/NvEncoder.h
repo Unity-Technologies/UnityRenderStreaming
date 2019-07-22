@@ -41,6 +41,7 @@ namespace WebRTC
         uint64 GetCurrentFrameCount() { return frameCount; }
         void InitEncoder(int width, int height);
         void InitEncoderResources();
+        void* getRenderTexture() { return nvRenderTexture; }
 
     private:
         void ReleaseFrameInputBuffer(Frame& frame);
@@ -68,6 +69,8 @@ namespace WebRTC
         //5Mbps
         const int minBitRate = 5000000;
         int frameRate = 45;
+
+        UnityFrameBuffer* nvRenderTexture;
     };
 
 }

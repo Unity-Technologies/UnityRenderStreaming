@@ -216,7 +216,7 @@ namespace WebRTC
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.BindFlags = D3D11_BIND_RENDER_TARGET;
         desc.CPUAccessFlags = 0;
-        g_D3D11Device->CreateTexture2D(&desc, NULL, &inputTextures);
+        HRESULT r = g_D3D11Device->CreateTexture2D(&desc, NULL, &inputTextures);
         return inputTextures;
     }
     NV_ENC_REGISTERED_PTR NvEncoder::RegisterResource(void *buffer)
@@ -255,15 +255,13 @@ namespace WebRTC
     }
     void NvEncoder::InitEncoderResources()
     {
-        for (uint32 i = 0; i < bufferedFrameNum; i++)
-        {
-            renderTextures[i] = AllocateInputBuffers();
-            Frame& frame = bufferedFrames[i];
-            frame.inputFrame.registeredResource = RegisterResource(renderTextures[i]);
-            frame.inputFrame.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
-            MapResources(frame.inputFrame);
-            frame.outputFrame = InitializeBitstreamBuffer();
-        }
+        nvRenderTexture = AllocateInputBuffers();
+        Frame& frame = bufferedFrames[0];
+        frame.inputFrame.registeredResource = RegisterResource(nvRenderTexture);
+        frame.inputFrame.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
+        MapResources(frame.inputFrame);
+        frame.outputFrame = InitializeBitstreamBuffer();
+
     }
     void NvEncoder::ReleaseFrameInputBuffer(Frame& frame)
     {
@@ -284,6 +282,9 @@ namespace WebRTC
             checkf(result, "Failed to destroy output buffer bit stream");
             frame.outputFrame = nullptr;
         }
+
+        nvRenderTexture->Release();
+        nvRenderTexture = nullptr;
     }
 }
 
