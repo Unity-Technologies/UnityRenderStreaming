@@ -3,7 +3,7 @@
 
 namespace WebRTC
 {
-    UnityVideoCapturer::UnityVideoCapturer(NvEncoder* pEncoder, int _width, int _height) : nvEncoder(pEncoder), width(_width), height(_height)
+    UnityVideoCapturer::UnityVideoCapturer(UnityEncoder* pEncoder, int _width, int _height) : nvEncoder(pEncoder), width(_width), height(_height)
     {
         set_enable_video_adapter(false);
         SetSupportedFormats(std::vector<cricket::VideoFormat>(1, cricket::VideoFormat(width, height, cricket::VideoFormat::FpsToInterval(framerate), cricket::FOURCC_H264)));

@@ -4,11 +4,12 @@
 #include "nvEncodeAPI.h"
 #include <thread>
 #include <atomic>
+#include "UnityEncoder.h"
 
 namespace WebRTC
 {
     using OutputFrame = NV_ENC_OUTPUT_PTR;
-    class NvEncoder
+    class NvEncoder : public UnityEncoder
     {
     private:
         struct InputFrame
@@ -38,12 +39,10 @@ namespace WebRTC
         bool IsSupported() const { return isNvEncoderSupported; }
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
-        sigslot::signal1<std::vector<uint8>&> CaptureFrame;
         void InitEncoder(int width, int height);
         void InitEncoderResources();
 
     private:
-        void LoadNvEncApi();
         void ReleaseFrameInputBuffer(Frame& frame);
         void ReleaseEncoderResources();
         void ProcessEncodedFrame(Frame& frame);

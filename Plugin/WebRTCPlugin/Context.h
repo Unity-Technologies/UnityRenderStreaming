@@ -3,7 +3,7 @@
 #include "DummyVideoEncoder.h"
 #include "PeerConnectionObject.h"
 #include "UnityVideoCapturer.h"
-
+#include "NvEncoder.h"
 
 namespace WebRTC
 {
@@ -65,7 +65,7 @@ namespace WebRTC
 
         std::list<UnityVideoCapturer*> nvVideoCapturerList;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
-        NvEncoder* nvEncoder;
+        UnityEncoder* pUnityEncoder;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

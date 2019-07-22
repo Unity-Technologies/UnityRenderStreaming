@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include "NvEncoder.h"
+#include "UnityEncoder.h"
 
 namespace WebRTC
 {
     class UnityVideoCapturer : public cricket::VideoCapturer
     {
     public:
-        UnityVideoCapturer(NvEncoder* pEncoder, int _width, int _height);
+        UnityVideoCapturer(UnityEncoder* pEncoder, int _width, int _height);
         void EncodeVideoData();
         // Start the video capturer with the specified capture format.
         virtual cricket::CaptureState Start(const cricket::VideoFormat& Format) override
@@ -47,7 +47,7 @@ namespace WebRTC
             return true;
         }
         //std::unique_ptr<NvEncoder> nvEncoder;
-        NvEncoder* nvEncoder;
+        UnityEncoder* nvEncoder;
 
         //just fake info
         int32 width;

@@ -292,7 +292,7 @@ namespace WebRTC
         rtc::InitializeSSL();
 
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        nvEncoder = new NvEncoder();
+        pUnityEncoder = new NvEncoder();
 
         auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>();
         pDummyVideoEncoderFactory = dummyVideoEncoderFactory.get();
@@ -319,8 +319,8 @@ namespace WebRTC
         mediaSteamTrackList.clear();
         mediaStreamMap.clear();
         nvVideoCapturerList.clear();
-        delete nvEncoder;
-        nvEncoder = NULL;
+        delete pUnityEncoder;
+        pUnityEncoder = NULL;
 
         workerThread->Quit();
         workerThread.reset();
@@ -356,8 +356,8 @@ namespace WebRTC
 
     webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
-        nvEncoder->InitEncoder(width, height);
-        UnityVideoCapturer* pUnityVideoCapturer = new UnityVideoCapturer(nvEncoder, width, height);
+        pUnityEncoder->InitEncoder(width, height);
+        UnityVideoCapturer* pUnityVideoCapturer = new UnityVideoCapturer(pUnityEncoder, width, height);
         pUnityVideoCapturer->InitializeEncoder(width, height);
         pDummyVideoEncoderFactory->AddCapturer(pUnityVideoCapturer);
 
