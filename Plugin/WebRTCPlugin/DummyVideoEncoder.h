@@ -38,6 +38,13 @@ namespace WebRTC
         webrtc::VideoBitrateAllocation lastBitrate;
     };
 
+    enum EncoderPlatform
+    {
+        Nvidia,
+        Amd,
+        Soft,
+    };
+
     class DummyVideoEncoderFactory : public webrtc::VideoEncoderFactory
     {
     public:
@@ -52,9 +59,12 @@ namespace WebRTC
         virtual std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
             const webrtc::SdpVideoFormat& format) override;
         DummyVideoEncoderFactory();
+        void Destroy();
 
         void AddCapturer(UnityVideoCapturer* _capturer) { capturers.push_back(_capturer); }
+        UnityEncoder* CreatePlatformEncoder(EncoderPlatform platform, int width, int height);
     private:
         std::list<UnityVideoCapturer*> capturers;
+        std::list<UnityEncoder*> unityEncoders;
     };
 }

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "UnityEncoder.h"
 #include "DummyAudioDevice.h"
 #include "DummyVideoEncoder.h"
 #include "PeerConnectionObject.h"
@@ -65,7 +66,6 @@ namespace WebRTC
 
         std::list<UnityVideoCapturer*> nvVideoCapturerList;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
-        UnityEncoder* pUnityEncoder;
     };
 
     class PeerSDPObserver : public webrtc::SetSessionDescriptionObserver

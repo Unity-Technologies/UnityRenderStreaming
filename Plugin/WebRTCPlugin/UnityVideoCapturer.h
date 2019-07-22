@@ -31,7 +31,7 @@ namespace WebRTC
             return false;
         }
         void StartEncoder();
-        void InitializeEncoder(int32 width, int32 height);
+        void InitializeEncoder();
         void SetKeyFrame();
         void SetRate(uint32 rate);
         void CaptureFrame(std::vector<uint8>& data);

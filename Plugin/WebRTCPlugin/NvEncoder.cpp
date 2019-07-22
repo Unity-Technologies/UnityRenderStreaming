@@ -6,23 +6,25 @@
 
 namespace WebRTC
 {
+    void* NvEncoder::pEncoderInterface = nullptr;
     NvEncoder::NvEncoder()
     {
-        LogPrint(StringFormat("width is %d, height is %d", encodeWidth, encodeHeight).c_str());
-        checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");
-        checkf(encodeWidth > 0 && encodeHeight > 0, "Invalid width or height!");
-        bool result = true;
+        if (pEncoderInterface==nullptr)
+        {
+            bool result = true;
 #pragma region open an encode session
-        //open an encode session
-        NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS openEncdoeSessionExParams = { 0 };
-        openEncdoeSessionExParams.version = NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER;
-        openEncdoeSessionExParams.device = g_D3D11Device;
-        openEncdoeSessionExParams.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
-        openEncdoeSessionExParams.apiVersion = NVENCAPI_VERSION;
-        result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncOpenEncodeSessionEx(&openEncdoeSessionExParams, &pEncoderInterface)));
-        checkf(result, "Unable to open NvEnc encode session");
-        LogPrint(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
-#pragma endregion       
+            //open an encode session
+            NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS openEncdoeSessionExParams = { 0 };
+            openEncdoeSessionExParams.version = NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER;
+            openEncdoeSessionExParams.device = g_D3D11Device;
+            openEncdoeSessionExParams.deviceType = NV_ENC_DEVICE_TYPE_DIRECTX;
+            openEncdoeSessionExParams.apiVersion = NVENCAPI_VERSION;
+            result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncOpenEncodeSessionEx(&openEncdoeSessionExParams, &pEncoderInterface)));
+            checkf(result, "Unable to open NvEnc encode session");
+            LogPrint(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
+#pragma endregion    
+        }
+  
     }
 
     NvEncoder::~NvEncoder()
@@ -41,6 +43,11 @@ namespace WebRTC
     {
         encodeWidth = width;
         encodeHeight = height;
+
+        LogPrint(StringFormat("width is %d, height is %d", encodeWidth, encodeHeight).c_str());
+        checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");
+        checkf(encodeWidth > 0 && encodeHeight > 0, "Invalid width or height!");
+
         bool result = true;
 #pragma region set initialization parameters
         nvEncInitializeParams.version = NV_ENC_INITIALIZE_PARAMS_VER;

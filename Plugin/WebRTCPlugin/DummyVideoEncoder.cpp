@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
+#include "UnityEncoder.h"
 #include "DummyVideoEncoder.h"
 #include "UnityVideoCapturer.h"
 #include <algorithm>
+#include "NvEncoder.h"
 
 namespace WebRTC
 {
@@ -73,6 +75,15 @@ namespace WebRTC
 
     }
 
+    void DummyVideoEncoderFactory::Destroy()
+    {
+        for (std::list<UnityEncoder*>::iterator it = unityEncoders.begin(); it!= unityEncoders.end(); ++it)
+        {
+            delete *it;
+        }
+        unityEncoders.clear();
+    }
+
     std::vector<webrtc::SdpVideoFormat> DummyVideoEncoderFactory::GetSupportedFormats() const
     {
         const absl::optional<std::string> profileLevelId =
@@ -103,4 +114,25 @@ namespace WebRTC
 
         return dummyVideoEncoder;
     }
+
+    UnityEncoder* DummyVideoEncoderFactory::CreatePlatformEncoder(EncoderPlatform platform, int width, int height)
+    {
+        UnityEncoder* pEncoder = NULL;
+        switch (platform)
+        {
+        case WebRTC::Nvidia:
+            pEncoder = new NvEncoder();
+            break;
+        case WebRTC::Amd:
+            break;
+        case WebRTC::Soft:
+            break;
+        default:
+            break;
+        }
+        pEncoder->InitEncoder(width, height);
+        unityEncoders.push_back(pEncoder);
+        return pEncoder;
+    }
+
 }

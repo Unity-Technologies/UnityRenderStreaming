@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "WebRTCPlugin.h"
+#include "UnityEncoder.h"
 #include "Context.h"
 
 namespace WebRTC
@@ -292,7 +293,6 @@ namespace WebRTC
         rtc::InitializeSSL();
 
         audioDevice = new rtc::RefCountedObject<DummyAudioDevice>();
-        pUnityEncoder = new NvEncoder();
 
         auto dummyVideoEncoderFactory = std::make_unique<DummyVideoEncoderFactory>();
         pDummyVideoEncoderFactory = dummyVideoEncoderFactory.get();
@@ -319,13 +319,14 @@ namespace WebRTC
         mediaSteamTrackList.clear();
         mediaStreamMap.clear();
         nvVideoCapturerList.clear();
-        delete pUnityEncoder;
-        pUnityEncoder = NULL;
 
         workerThread->Quit();
         workerThread.reset();
         signalingThread->Quit();
         signalingThread.reset();
+
+        pDummyVideoEncoderFactory->Destroy();
+
     }
 
     void Context::EncodeFrame()
@@ -356,9 +357,9 @@ namespace WebRTC
 
     webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
-        pUnityEncoder->InitEncoder(width, height);
+        UnityEncoder* pUnityEncoder = pDummyVideoEncoderFactory->CreatePlatformEncoder(WebRTC::Nvidia, width, height);
         UnityVideoCapturer* pUnityVideoCapturer = new UnityVideoCapturer(pUnityEncoder, width, height);
-        pUnityVideoCapturer->InitializeEncoder(width, height);
+        pUnityVideoCapturer->InitializeEncoder();
         pDummyVideoEncoderFactory->AddCapturer(pUnityVideoCapturer);
 
         auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(pUnityVideoCapturer));
