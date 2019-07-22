@@ -2,7 +2,7 @@
 #include "DummyAudioDevice.h"
 #include "DummyVideoEncoder.h"
 #include "PeerConnectionObject.h"
-#include "NvVideoCapturer.h"
+#include "UnityVideoCapturer.h"
 
 
 namespace WebRTC
@@ -63,7 +63,7 @@ namespace WebRTC
         std::map<const std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface>> mediaStreamMap;
         std::list<rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>> mediaSteamTrackList;
 
-        std::list<NvVideoCapturer*> nvVideoCapturerList;
+        std::list<UnityVideoCapturer*> nvVideoCapturerList;
         rtc::scoped_refptr<DummyAudioDevice> audioDevice;
         NvEncoder* nvEncoder;
     };

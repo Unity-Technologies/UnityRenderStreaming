@@ -177,7 +177,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="nvEncodeAPI.h" />
     <ClInclude Include="NvEncoder.h" />
-    <ClInclude Include="NvVideoCapturer.h" />
+    <ClInclude Include="UnityVideoCapturer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PeerConnectionObject.h" />
     <ClInclude Include="WebRTCPlugin.h" />
@@ -190,7 +190,7 @@
     <ClCompile Include="DummyVideoEncoder.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="NvEncoder.cpp" />
-    <ClCompile Include="NvVideoCapturer.cpp" />
+    <ClCompile Include="UnityVideoCapturer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

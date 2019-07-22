@@ -330,7 +330,7 @@ namespace WebRTC
 
     void Context::EncodeFrame()
     {
-        for (std::list<NvVideoCapturer*>::iterator it= nvVideoCapturerList.begin(); it!= nvVideoCapturerList.end(); ++it)
+        for (std::list<UnityVideoCapturer*>::iterator it= nvVideoCapturerList.begin(); it!= nvVideoCapturerList.end(); ++it)
         {
             (*it)->EncodeVideoData();
         }
@@ -338,7 +338,7 @@ namespace WebRTC
 
     void Context::StopCapturer()
     {
-        for (std::list<NvVideoCapturer*>::iterator it = nvVideoCapturerList.begin(); it != nvVideoCapturerList.end(); ++it)
+        for (std::list<UnityVideoCapturer*>::iterator it = nvVideoCapturerList.begin(); it != nvVideoCapturerList.end(); ++it)
         {
             (*it)->Stop();
         }
@@ -356,15 +356,16 @@ namespace WebRTC
 
     webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
     {
-        NvVideoCapturer* pNvVideoCapturer = new NvVideoCapturer(nvEncoder, width, height);
-        pNvVideoCapturer->InitializeEncoder(width, height);
-        pDummyVideoEncoderFactory->AddCapturer(pNvVideoCapturer);
+        nvEncoder->InitEncoder(width, height);
+        UnityVideoCapturer* pUnityVideoCapturer = new UnityVideoCapturer(nvEncoder, width, height);
+        pUnityVideoCapturer->InitializeEncoder(width, height);
+        pDummyVideoEncoderFactory->AddCapturer(pUnityVideoCapturer);
 
-        auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(pNvVideoCapturer));
-        pNvVideoCapturer->unityRT = frameBuffer;
-        pNvVideoCapturer->StartEncoder();
+        auto videoTrack = peerConnectionFactory->CreateVideoTrack(label, peerConnectionFactory->CreateVideoSource(pUnityVideoCapturer));
+        pUnityVideoCapturer->unityRT = frameBuffer;
+        pUnityVideoCapturer->StartEncoder();
 
-        nvVideoCapturerList.push_back(pNvVideoCapturer);
+        nvVideoCapturerList.push_back(pUnityVideoCapturer);
         mediaSteamTrackList.push_back(videoTrack);
         return videoTrack;
     }

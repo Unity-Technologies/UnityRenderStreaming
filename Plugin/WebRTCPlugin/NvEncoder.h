@@ -39,6 +39,7 @@ namespace WebRTC
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
         sigslot::signal1<std::vector<uint8>&> CaptureFrame;
+        void InitEncoder(int width, int height);
         void InitEncoderResources();
 
     private:
@@ -57,11 +58,10 @@ namespace WebRTC
         uint64 frameCount = 0;
         void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
+        bool isInitialize = false;
         bool isIdrFrame = false;
-        //const int encodeWidth = 1920;
-        //const int encodeHeight = 1080;
-        const int encodeWidth = 1280;
-        const int encodeHeight = 720;
+        int encodeWidth;
+        int encodeHeight;
         //10Mbps
         int bitRate = 10000000;
         //100Mbps

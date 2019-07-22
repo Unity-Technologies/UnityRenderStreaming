@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "DummyVideoEncoder.h"
-#include "NvVideoCapturer.h"
+#include "UnityVideoCapturer.h"
 #include <algorithm>
 
 namespace WebRTC
@@ -95,10 +95,10 @@ namespace WebRTC
 
         {
             //todo: According to condition of format choose different capturer.
-            NvVideoCapturer* pCapturer = *capturers.begin();
+            UnityVideoCapturer* pCapturer = *capturers.begin();
     
-            dummyVideoEncoder->SetKeyFrame.connect(pCapturer, &NvVideoCapturer::SetKeyFrame);
-            dummyVideoEncoder->SetRate.connect(pCapturer, &NvVideoCapturer::SetRate);
+            dummyVideoEncoder->SetKeyFrame.connect(pCapturer, &UnityVideoCapturer::SetKeyFrame);
+            dummyVideoEncoder->SetRate.connect(pCapturer, &UnityVideoCapturer::SetRate);
         }
 
         return dummyVideoEncoder;

@@ -42,9 +42,6 @@
     <ClInclude Include="NvEncoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NvVideoCapturer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PeerConnectionObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -59,6 +56,9 @@
     </ClInclude>
     <ClInclude Include="..\unity\include\IUnityInterface.h">
       <Filter>Header Files\Unity</Filter>
+    </ClInclude>
+    <ClInclude Include="UnityVideoCapturer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,9 +83,6 @@
     <ClCompile Include="NvEncoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NvVideoCapturer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Callback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DataChannelObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnityVideoCapturer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

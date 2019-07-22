@@ -2,7 +2,7 @@
 
 namespace WebRTC
 {
-    class NvVideoCapturer;
+    class UnityVideoCapturer;
     class DummyVideoEncoder : public webrtc::VideoEncoder
     {
     public:
@@ -53,8 +53,8 @@ namespace WebRTC
             const webrtc::SdpVideoFormat& format) override;
         DummyVideoEncoderFactory();
 
-        void AddCapturer(NvVideoCapturer* _capturer) { capturers.push_back(_capturer); }
+        void AddCapturer(UnityVideoCapturer* _capturer) { capturers.push_back(_capturer); }
     private:
-        std::list<NvVideoCapturer*> capturers;
+        std::list<UnityVideoCapturer*> capturers;
     };
 }

@@ -22,7 +22,26 @@ namespace WebRTC
         result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncOpenEncodeSessionEx(&openEncdoeSessionExParams, &pEncoderInterface)));
         checkf(result, "Unable to open NvEnc encode session");
         LogPrint(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
-#pragma endregion
+#pragma endregion       
+    }
+
+    NvEncoder::~NvEncoder()
+    {
+        ReleaseEncoderResources();
+        if (pEncoderInterface)
+        {
+            bool result = NV_RESULT(ContextManager::GetInstance()->pNvEncodeAPI->nvEncDestroyEncoder(pEncoderInterface));
+            checkf(result, "Failed to destroy NV encoder interface");
+            pEncoderInterface = nullptr;
+        }
+     
+    }
+
+    void NvEncoder::InitEncoder(int width, int height)
+    {
+        encodeWidth = width;
+        encodeHeight = height;
+        bool result = true;
 #pragma region set initialization parameters
         nvEncInitializeParams.version = NV_ENC_INITIALIZE_PARAMS_VER;
         nvEncInitializeParams.encodeWidth = encodeWidth;
@@ -37,8 +56,8 @@ namespace WebRTC
         nvEncInitializeParams.reportSliceOffsets = 0;
         nvEncInitializeParams.enableSubFrameWrite = 0;
         nvEncInitializeParams.encodeConfig = &nvEncConfig;
-        nvEncInitializeParams.maxEncodeWidth = 3840;
-        nvEncInitializeParams.maxEncodeHeight = 2160;
+        nvEncInitializeParams.maxEncodeWidth = encodeWidth;//3840;
+        nvEncInitializeParams.maxEncodeHeight = encodeHeight;//2160;
 #pragma endregion
 #pragma region get preset ocnfig and set it
         NV_ENC_PRESET_CONFIG presetConfig = { 0 };
@@ -74,17 +93,7 @@ namespace WebRTC
 #pragma endregion
         InitEncoderResources();
         isNvEncoderSupported = true;
-    }
-    NvEncoder::~NvEncoder()
-    {
-        ReleaseEncoderResources();
-        if (pEncoderInterface)
-        {
-            bool result = NV_RESULT(ContextManager::GetInstance()->pNvEncodeAPI->nvEncDestroyEncoder(pEncoderInterface));
-            checkf(result, "Failed to destroy NV encoder interface");
-            pEncoderInterface = nullptr;
-        }
-     
+        isInitialize = true;
     }
 
     void NvEncoder::UpdateSettings(int width, int height)
@@ -140,8 +149,8 @@ namespace WebRTC
         picParams.pictureStruct = NV_ENC_PIC_STRUCT_FRAME;
         picParams.inputBuffer = frame.inputFrame.mappedResource;
         picParams.bufferFmt = frame.inputFrame.bufferFormat;
-        picParams.inputWidth = encodeWidth;
-        picParams.inputHeight = encodeHeight;
+        picParams.inputWidth = width;
+        picParams.inputHeight = height;
         picParams.outputBitstream = frame.outputFrame;
         picParams.inputTimeStamp = frameCount;
 #pragma endregion
