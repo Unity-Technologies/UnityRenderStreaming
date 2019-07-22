@@ -148,7 +148,8 @@ namespace Unity.RenderStreaming
                 {
                     if(state == RTCIceConnectionState.Disconnected)
                     {
-                        pc.Close();  
+                        pc.Close();
+                        pcs.Remove(offer.connectionId);
                     }
                 });
                 //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -216,6 +217,7 @@ namespace Unity.RenderStreaming
                 {
                     continue;
                 }
+
                 foreach (var candidate in candidateContainer.candidates)
                 {
                     RTCIceCandidate _candidate = default;
