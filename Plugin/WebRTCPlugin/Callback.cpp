@@ -14,6 +14,8 @@ namespace WebRTC
     ID3D11Device* g_D3D11Device = nullptr;
     //natively created ID3D11Texture2D ptrs
     UnityFrameBuffer* renderTextures[bufferedFrameNum];
+
+    Context* s_context;
 }
 using namespace WebRTC;
 //get d3d11 device
@@ -70,14 +72,14 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginUnload()
 
 static void UNITY_INTERFACE_API OnRenderEvent(int eventID)
 {
-    if (ContextManager::GetInstance() != nullptr)
+    if (s_context != nullptr)
     {
-        ContextManager::GetInstance()->curContext->EncodeFrame();
+        s_context->EncodeFrame();
     }
 }
 
-
-extern "C" UnityRenderingEvent UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API GetRenderEventFunc()
+extern "C" UnityRenderingEvent UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API GetRenderEventFunc(Context* context)
 {
+    s_context = context;
     return OnRenderEvent;
 }

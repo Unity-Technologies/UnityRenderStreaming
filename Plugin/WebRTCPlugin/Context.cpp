@@ -6,20 +6,22 @@ namespace WebRTC
 {
     ContextManager ContextManager::s_instance;
 
-    void ContextManager::InitializeAndTryNvEnc()
+    CodecInitializationResult ContextManager::InitializeAndTryNvEnc()
     {
-        if (nvEncSupported = LoadNvEncApi())
+        auto result = LoadNvEncApi();
+        if (result == CodecInitializationResult::Success)
         {
             //Try to create encoder once
-            TryNvEnc();
+            result = TryNvEnc();
         }
+        return result;
     }
+
     Context* ContextManager::GetContext(int uid)
     {
-        if (!s_instance.nvEncTryInitialized)
+        if (s_instance.codecInitializationResult == CodecInitializationResult::NotInitialized)
         {
-            s_instance.InitializeAndTryNvEnc();
-            s_instance.nvEncTryInitialized = true;
+            s_instance.codecInitializationResult = s_instance.InitializeAndTryNvEnc();
         }
         auto it = s_instance.m_contexts.find(uid);
         if (it != s_instance.m_contexts.end()) {
@@ -32,20 +34,16 @@ namespace WebRTC
         DebugLog("Register context with ID %d", uid);
         return ctx;
     }
-    bool ContextManager::GetNvEncSupported()
+    CodecInitializationResult ContextManager::GetCodecInitializationResult() const
     {
-        if (!s_instance.nvEncTryInitialized)
-        {
-            s_instance.InitializeAndTryNvEnc();
-            s_instance.nvEncTryInitialized = true;
-        }
-        return s_instance.nvEncSupported;
+        return s_instance.codecInitializationResult;
     }
+
     void ContextManager::SetCurContext(Context* context)
     {
         curContext = context;
     }
-    void ContextManager::TryNvEnc()
+    CodecInitializationResult ContextManager::TryNvEnc()
     {
         NV_ENC_INITIALIZE_PARAMS nvEncInitializeParams = {};
         NV_ENC_CONFIG nvEncConfig = {};
@@ -64,8 +62,7 @@ namespace WebRTC
         LogPrint(StringFormat("OpenEncodeSession Error is %d", errorCode).c_str());
         if (!result)
         {
-            nvEncSupported = false;
-            return;
+            return CodecInitializationResult::EncoderInitializationFailed;
         }
 #pragma endregion
 #pragma region set initialization parameters
@@ -93,8 +90,7 @@ namespace WebRTC
         checkf(result, "Failed to select NVEncoder preset config");
         if(!result)
         {
-            nvEncSupported = false;
-            return;
+            return CodecInitializationResult::EncoderInitializationFailed;
         }
         std::memcpy(&nvEncConfig, &presetConfig.presetCfg, sizeof(NV_ENC_CONFIG));
         nvEncConfig.profileGUID = NV_ENC_H264_PROFILE_BASELINE_GUID;
@@ -117,8 +113,7 @@ namespace WebRTC
         checkf(result, "Failded to get NVEncoder capability params");
         if (!result)
         {
-            nvEncSupported = false;
-            return;
+            return CodecInitializationResult::EncoderInitializationFailed;
         }
         nvEncInitializeParams.enableEncodeAsync = 0;
 #pragma endregion
@@ -128,7 +123,7 @@ namespace WebRTC
         LogPrint(StringFormat("nvEncInitializeEncoder error is %d", errorCode).c_str());
         if (!result)
         {
-            nvEncSupported = false;
+            return CodecInitializationResult::EncoderInitializationFailed;
         }
 #pragma endregion
         if (pEncoderInterface)
@@ -137,9 +132,10 @@ namespace WebRTC
             checkf(result, "Failed to destroy NV encoder interface");
             pEncoderInterface = nullptr;
         }
+        return CodecInitializationResult::Success;
     }
 
-    bool ContextManager::LoadNvEncApi()
+    CodecInitializationResult ContextManager::LoadNvEncApi()
     {
         pNvEncodeAPI = std::make_unique<NV_ENCODE_API_FUNCTION_LIST>();
         pNvEncodeAPI->version = NV_ENCODE_API_FUNCTION_LIST_VER;
@@ -156,7 +152,7 @@ namespace WebRTC
         if (module == nullptr)
         {
             LogPrint("NVENC library file is not found. Please ensure NV driver is installed");
-            return false;
+            return CodecInitializationResult::DriverNotInstalled;
         }
         hModule = module;
 
@@ -173,7 +169,7 @@ namespace WebRTC
         if (currentVersion > version)
         {
             LogPrint("Current Driver Version does not support this NvEncodeAPI version, please upgrade driver");
-            return false;
+            return CodecInitializationResult::DriverVersionDoesNotSupportAPI;
         }
 
         using NvEncodeAPICreateInstance_Type = NVENCSTATUS(NVENCAPI *)(NV_ENCODE_API_FUNCTION_LIST*);
@@ -186,15 +182,15 @@ namespace WebRTC
         if (!NvEncodeAPICreateInstance)
         {
             LogPrint("Cannot find NvEncodeAPICreateInstance() entry in NVENC library");
-            return false;
+            return CodecInitializationResult::APINotFound;
         }
         bool result = (NvEncodeAPICreateInstance(pNvEncodeAPI.get()) == NV_ENC_SUCCESS);
         checkf(result, "Unable to create NvEnc API function list");
         if (!result)
         {
-            return false;
+            return CodecInitializationResult::APINotFound;
         }
-        return true;
+        return CodecInitializationResult::Success;
     }
 
     void ContextManager::DestroyContext(int uid)
@@ -269,17 +265,6 @@ namespace WebRTC
         }
     }
 #pragma warning(pop)
-
-    /*
-    static RTCErrorDetailType convertError(webrtc::RTCErrorType type)
-    {
-        switch (type)
-        {
-        case webrtc::RTCErrorType::INTERNAL_ERROR:
-            return RTCErrorDetailType::
-        }
-    }
-    */
 
     Context::Context(int uid)
         : m_uid(uid)

@@ -20,7 +20,7 @@ namespace Unity.WebRTC
 
             if (track.Kind == TrackKind.Video)
             {
-                NativeMethods.StopMediaStreamTrack(track.self);
+                WebRTC.Context.StopMediaStreamTrack(track.self);
                 RenderTexture[] rts = VideoTrackToRts[track];
                 if (rts != null)
                 {
