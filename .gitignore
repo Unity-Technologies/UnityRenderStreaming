@@ -343,3 +343,10 @@ MigrationBackup/
 
 # Exclude Documentation folder
 !Documentation~
+
+# Exclude webrtc source 
+Plugin/webrtc
+
+
+
+
