@@ -17,7 +17,6 @@ namespace WebRTC
         virtual void Stop() override
         {
             captureStopped = true;
-            //nvEncoder.reset();
         }
         // Check if the video capturer is running.
         virtual bool IsRunning() override
@@ -46,7 +45,6 @@ namespace WebRTC
             fourccs->push_back(cricket::FOURCC_H264);
             return true;
         }
-        //std::unique_ptr<NvEncoder> nvEncoder;
         UnityEncoder* nvEncoder;
 
         //just fake info
