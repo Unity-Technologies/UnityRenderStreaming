@@ -21,7 +21,7 @@ projects:
 {% for project in projects %}
 {% for platform in platforms %}
 prepack_{{ project.name }}_{{ platform.name }}:
-  name: Build {{ project.packagename }} {{ platform.name }}
+  name: Prepack {{ project.packagename }} {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
