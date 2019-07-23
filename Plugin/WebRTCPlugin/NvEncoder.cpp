@@ -6,7 +6,7 @@
 
 namespace WebRTC
 {
-    void* NvEncoder::pEncoderInterface = nullptr;
+
     NvEncoder::NvEncoder()
     {
         if (pEncoderInterface==nullptr)

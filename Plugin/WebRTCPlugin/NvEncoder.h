@@ -56,7 +56,7 @@ namespace WebRTC
         _NVENCSTATUS errorCode;
         Frame bufferedFrames[bufferedFrameNum];
         uint64 frameCount = 0;
-        static void* pEncoderInterface;
+        void* pEncoderInterface = nullptr;
         bool isNvEncoderSupported = false;
         bool isInitialize = false;
         bool isIdrFrame = false;
