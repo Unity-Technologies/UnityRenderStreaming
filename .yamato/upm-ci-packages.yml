@@ -1,4 +1,4 @@
-# .yamato/upm-ci-webrtc.yml
+# .yamato/upm-ci-packages.yml
 editors:
   - version: 2019.1
   - version: trunk
@@ -48,7 +48,7 @@ pack:
         - "com.unity.webrtc/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-webrtc.yml#build_{{ platform.name }}
+    - .yamato/upm-ci-packages.yml#build_{{ platform.name }}
     {% endfor %}
 
 {% for editor in editors %}
@@ -73,7 +73,7 @@ test_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-packages.yml#pack
 {% endfor %}
 {% endfor %}
 
@@ -95,10 +95,10 @@ publish:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-packages.yml#pack
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-webrtc.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-packages.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
 {% endfor %}
