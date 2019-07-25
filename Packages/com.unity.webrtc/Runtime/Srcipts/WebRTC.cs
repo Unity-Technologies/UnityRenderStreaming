@@ -332,7 +332,9 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionClose(IntPtr ptr, int id);
+        public static extern void ContextDeletePeerConnection(IntPtr ptr, int id);
+        [DllImport(WebRTC.Lib)]
+        public static extern void PeerConnectionClose(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]

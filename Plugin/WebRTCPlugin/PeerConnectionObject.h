@@ -33,7 +33,7 @@ namespace WebRTC
         void CreateOffer(const RTCOfferOptions& options);
         void CreateAnswer(const RTCAnswerOptions& options);
         void AddIceCandidate(const RTCIceCandidate& candidate);
-        DataChannelObject* createDataChannel(const char* label, const RTCDataChannelInit& options);
+        DataChannelObject* CreateDataChannel(const char* label, const RTCDataChannelInit& options);
 
         void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
         {
