@@ -175,9 +175,9 @@ namespace Unity.WebRTC
             return JsonUtility.FromJson<RTCConfiguration>(str);
         }
 
-        public void SetConfiguration(ref RTCConfiguration config)
+        public RTCErrorType SetConfiguration(ref RTCConfiguration config)
         {
-            NativeMethods.PeerConnectionSetConfiguration(self, JsonUtility.ToJson(config));
+            return NativeMethods.PeerConnectionSetConfiguration(self, JsonUtility.ToJson(config));
         }
 
         public RTCPeerConnection()

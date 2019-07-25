@@ -181,11 +181,17 @@ namespace WebRTC
         connection->SetRemoteDescription(observer, _desc.release());
     }
 
-    void PeerConnectionObject::SetConfiguration(const std::string& conf)
+    webrtc::RTCErrorType PeerConnectionObject::SetConfiguration(const std::string& config)
     {
-        webrtc::PeerConnectionInterface::RTCConfiguration _conf;
-        Convert(conf, _conf);
-        connection->SetConfiguration(_conf);
+        webrtc::PeerConnectionInterface::RTCConfiguration _config;
+        Convert(config, _config);
+
+        webrtc::RTCError error;
+        if (!connection->SetConfiguration(_config, &error))
+        {
+            LogPrint(error.message());
+        }
+        return error.type();
     }
 
     void PeerConnectionObject::GetConfiguration(std::string& config) const
