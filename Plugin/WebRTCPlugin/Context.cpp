@@ -231,8 +231,14 @@ namespace WebRTC
             {
                 iceServer.urls.push_back(url.asString());
             }
-            iceServer.username = iceServerJson["username"].asString();
-            iceServer.password = iceServerJson["credential"].asString();
+            if (!iceServerJson["username"].isNull())
+            {
+                iceServer.username = iceServerJson["username"].asString();
+            }
+            if (!iceServerJson["username"].isNull())
+            {
+                iceServer.password = iceServerJson["credential"].asString();
+            }
             config.servers.push_back(iceServer);
         }
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;

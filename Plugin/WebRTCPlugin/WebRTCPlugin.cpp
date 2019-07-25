@@ -197,9 +197,9 @@ extern "C"
         obj->connection->RemoveTrack(sender);
     }
 
-    UNITY_INTERFACE_EXPORT void PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
+    UNITY_INTERFACE_EXPORT webrtc::RTCErrorType PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
     {
-        obj->SetConfiguration(std::string(conf)); 
+        return obj->SetConfiguration(std::string(conf)); 
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
