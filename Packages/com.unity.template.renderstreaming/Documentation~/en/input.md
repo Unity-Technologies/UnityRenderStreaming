@@ -1,4 +1,4 @@
-## Browser Input Process
+# Browser Input Process
 
 The following browser inputs are supported. 
 

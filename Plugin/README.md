@@ -27,3 +27,5 @@ version 1.0 現在、ビルドは **Visual Studio 2017** を利用していま�
 
 ビルド実行すると、`webrtc.dll` が `Packages\com.unity.webrtc\Runtime\Plugins\x86_64` に配置されます。このとき Unity のインスペクタ上で以下の設定になっていることを確認してください。
 
+<img src="../Packages/com.unity.webrtc/Documentation~/images/inspector_webrtc_plugin.png" width=600 align=center>
+
