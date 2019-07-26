@@ -1,5 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.Experimental.Rendering.HDPipeline; //HDAdditionalCameraData
+
+#if UNITY_2019_1 || UNITY_2019_2 //HDRP 5.x, 6.x
+using UnityEngine.Experimental.Rendering.HDPipeline; 
+#else //HDRP 7.x and above
+using UnityEngine.Rendering.HighDefinition;
+#endif
 
 //Blits the render texture of a camera into the screen.
 //Uses RenderPipelineManager.beginCameraRendering instead of OnPostRender() since OnPostRender() is being reworked on HDRP
