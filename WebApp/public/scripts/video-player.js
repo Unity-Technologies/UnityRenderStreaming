@@ -41,7 +41,11 @@ export class VideoPlayer {
 
     // RTCDataChannel don't work on iOS safari
     // https://github.com/webrtc/samples/issues/1123
-    if (navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i)) {
+    if (
+      navigator.userAgent.match(/iPad/i) ||
+      navigator.userAgent.match(/iPhone/i) ||
+      navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i)
+    ) {
       let stream = await navigator.mediaDevices.getUserMedia({audio: true});
       stream.getTracks().forEach(t => t.stop());
     }
