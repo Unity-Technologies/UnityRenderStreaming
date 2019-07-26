@@ -234,7 +234,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 183cbd347d25080429f42b520742bbd8, type: 2}
+  sharedProfile: {fileID: 11400000, guid: e4ad4d52956ef024f8c0689f9beee68c, type: 2}
 --- !u!4 &581876911
 Transform:
   m_ObjectHideFlags: 0
@@ -371,8 +371,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   urlSignaling: http://localhost
-  urlsIceServer:
-  - stun:stun.l.google.com:19302
+  iceServers:
+  - credential: 
+    credentialType: 0
+    urls:
+    - stun:stun.l.google.com:19302
+    username: 
   interval: 5
   captureCamera: {fileID: 1299133684}
   arrayButtonClickEvent:
@@ -567,6 +571,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   volumeAnchorOverride: {fileID: 0}
   antialiasing: 0
+  SMAAQuality: 2
   dithering: 1
   stopNaNs: 0
   physicalParameters:
@@ -737,6 +742,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   volumeAnchorOverride: {fileID: 0}
   antialiasing: 2
+  SMAAQuality: 2
   dithering: 1
   stopNaNs: 0
   physicalParameters:
@@ -990,7 +996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 441482e8936e35048a1dffac814e3ef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Profile: {fileID: 11400000, guid: dab0766de4a4b5349b80ce1a86555414, type: 2}
+  m_Profile: {fileID: 11400000, guid: 45dd55e6d5c39ef49acc3f3aba22cf49, type: 2}
   m_StaticLightingSkyUniqueID: 2
 --- !u!114 &2011204168
 MonoBehaviour:
@@ -1008,7 +1014,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: dab0766de4a4b5349b80ce1a86555414, type: 2}
+  sharedProfile: {fileID: 0}
 --- !u!4 &2011204169
 Transform:
   m_ObjectHideFlags: 0
