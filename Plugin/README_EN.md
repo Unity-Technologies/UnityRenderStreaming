@@ -1,5 +1,7 @@
 # Building the Plugin
 
+`com.unity.webrtc` が依存するネイティブプラグインのビルド及び配置の方法について説明します。
+
 ### Embedding libwebrtc
 
 The plugin relies on **libwebrtc**, so building it requires a static libwebrtc link. `webrtc-win.zip` can be found on the Github Release page.
