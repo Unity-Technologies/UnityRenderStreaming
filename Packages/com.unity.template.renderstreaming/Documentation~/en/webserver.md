@@ -5,11 +5,20 @@ The **Web application**
 - handles signaling between Unity and the Web browser
 - is the location of the Web page 
 
-
-
 ## The Web Client
 
+**Render Streaming** の Web アプリケーションは WebRTC テクノロジを使用しているため、ブラウザが WebRTC に対応している必要があります。各種ブラウザの対応状況は[別ページ](https://caniuse.com/#search=webrtc)を確認してください。
 
+動作を確認しているブラウザは以下になります。
+
+- Chrome
+- Safari
+- Firefox
+- iOS Safari
+- Chrome for Android
+
+> [!NOTE]
+> **Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** で利用する必要があります。
 
 ## The Web Server
 
@@ -27,52 +36,22 @@ The Web server is distributed as a binary using [pkg](https://www.npmjs.com/pack
 |-k —keyfile \<path\>|Designate the private key file to use with https|server.key|
 |-c —certfile \<path\>|Designate the certification file to use with https|server.cert|
 
-### Command Examples
+### コマンドの例
 
-This command will run the web application as http. Port 80 is used.
+以下のコマンドを実行すると http として起動します。ポートは80番を利用します。
 
 ```shell
 .\webserver
 ```
 
-This command will run the web application as https. Port 443 is used. mode detail [here](https.md).
+以下のコマンドを実行すると https として起動します。ポートは443番を利用します。なお https として起動する際は証明書（`server.cert`）及び鍵（`server.key`）の指定が必要になります（[詳細](../en/https.md)）。
 
 ```shell
 .\webserver -s -p 443
 ```
 
-This command will show the help menu. 
+以下のコマンドを実行するとヘルプを表示します。
 
 ```shell
 .\webserver -h
 ```
-
-### Editing the Web Application
-
-The Web application's source code is located in the `WebApp` folder. [Node.js](https://nodejs.org/) must also be installed in order to use the source code.
-
-This is how to use **Node.js** to open the command prompt.
-
-```shell
-npm run start
-```
-
-This command displays the help menu. 
-
-```shell
-npm run start -- -h
-```
-
-This command will use `ts-node` to activate the server.
-
-```shell
-npm run dev
-```
-
-### Checking the Web API
-
-Render Streaming signaling uses a simple Web API. The API can be checked in [Postman](https://www.getpostman.com/).
-
-Import `WebApp/test/renderstreaming.postman_collection.json` through Postman to view a summary of the API. Additionally, API operation tests can be run while the Web server is active.
-
-<img src="../images/postman_example.png" width=600 align=center>
