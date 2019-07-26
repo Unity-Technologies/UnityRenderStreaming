@@ -50,11 +50,11 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 │   ├── Scripts
 │   └── Tests
 ├── Packages
+│   ├── com.unity.renderstreaming
 │   ├── com.unity.template.renderstreaming
 │   └── com.unity.webrtc
 ├── ProjectSettings
-├── UnityRenderStreamingPlugin
-│   ├── UnityRenderStreamingPlugin
+├── Plugin
 │   ├── WebRTCPlugin
 │   └── unity
 └── WebApp
@@ -65,17 +65,19 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 
 ## Roadmap
 
-|Version|libwebrtc|Focus|
+|Version|libwebrtc version|Focus|
 |-------|-----|-----|
-|`0.1-preview`|M72|- <br>- <br>- <br>- |
-|`0.2-preview`|M72|- <br>- <br>- <br>- |
-|`0.3-preview`|M72|- <br>- <br>- <br>- |
+|`1.0`|[M72](https://groups.google.com/forum/#!msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)|- First release |
+|`2.0`||- Multi camera <br>- Simulcast |
+|`2.1`||- Linux support <br>- Add HW encoder<br>- <br>- |
 
 ## FAQ
+
+Read [this page](Packages/com.unity.template.renderstreaming/Documentation~/en/faq.md).
 
 ## Contributors
 
 - [@karasusan](https://github.com/karasusan)
 - [@hiroki-o](https://github.com/hiroki-o)
 - [@flame99999](https://github.com/flame99999)
-- [koseyile](https://github.com/koseyile)
+- [@koseyile](https://github.com/koseyile)
