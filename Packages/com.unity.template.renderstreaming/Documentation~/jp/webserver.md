@@ -44,7 +44,7 @@
 .\webserver
 ```
 
-以下のコマンドを実行すると https として起動します。ポートは443番を利用します。なお https として起動する際は証明書（`server.cert`）及び鍵（`server.key`）の指定が必要になります。
+以下のコマンドを実行すると https として起動します。ポートは443番を利用します。なお https として起動する際は証明書（`server.cert`）及び鍵（`server.key`）の指定が必要になります（[詳細](../en/https.md)）。
 
 ```shell
 .\webserver -s -p 443
