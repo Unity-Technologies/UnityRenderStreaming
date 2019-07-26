@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "com.unity.code-analysis": "0.0.1-preview.3",
-    "com.unity.package-manager-doctools": "1.1.0-preview.1",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.render-pipelines.high-definition": "5.7.2-preview",
     "com.unity.textmeshpro": "2.0.1",
@@ -39,6 +38,5 @@
   },
   "testables": [
     "com.unity.webrtc"
-  ],
-  "registry": "https://staging-packages.unity.com"
+  ]
 }
