@@ -5,7 +5,6 @@
 ### Embedding libwebrtc
 
 The plugin relies on **libwebrtc**, so building it requires a static libwebrtc link. `webrtc-win.zip` can be found on the Github Release page.
-
  <img src="../Packages/com.unity.webrtc/Documentation~/images/libwebrtc_github_release.png" width=600 align=center>
 
 Extract the files from the zip, and place them in the Plugin folder.
@@ -16,14 +15,17 @@ Extract the files from the zip, and place them in the Plugin folder.
 
 Version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
 
-### Debug
+### プロジェクトの設定
 
-Runtime debugging requires changes to the WebRTCPlugin project's properties. 
+プラグインの開発を行うためには、個別の環境に合わせて`WebRTCPlugin` プロジェクトのプロパティを変更する必要があります。
 
-Set the Output Directory to `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`.
-
-<img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
-
-Set the Unity.exe file path under Command, and set the project path under Command Arguments.
+`Command` に Unity の実行ファイルパス、`Command Arguments` にプロジェクトパスを指定してください。この設定を行うことで、デバッグ実行時に Unity エディタが起動し、ブレークポイントが有効になります。
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
+
+### プラグインの配置
+
+ビルド実行すると、`webrtc.dll` が `Packages\com.unity.webrtc\Runtime\Plugins\x86_64` に配置されます。このとき Unity のインスペクタ上で以下の設定になっていることを確認してください。
+
+<img src="../Packages/com.unity.webrtc/Documentation~/images/inspector_webrtc_plugin.png" width=600 align=center>
+
