@@ -7,7 +7,7 @@ using System.IO; //Path
 public class RenderStreamingUtility
 {
     // Add a menu item named "Do Something" to MyMenu in the menu bar.
-    [MenuItem("Assets/Render Streaming/Import HDRP Sample")]
+    [MenuItem("Assets/Render Streaming/Import Simple HDRP Sample")]
     static void ImportHDRPSample()
     {
         UnityEditor.PackageManager.Client.Add("com.unity.render-pipelines.high-definition");
@@ -16,6 +16,6 @@ public class RenderStreamingUtility
         StackFrame sf = st.GetFrame(0);
 
         string sampleDir = Path.GetDirectoryName(sf.GetFileName());
-        AssetDatabase.ImportPackage(sampleDir + "/RenderStreaming.unitypackage",true);
+        AssetDatabase.ImportPackage(sampleDir + "/RenderStreamingHDRPSimple.unitypackage",true);
     }
 }

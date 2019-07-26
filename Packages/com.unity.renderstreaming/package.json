@@ -12,9 +12,9 @@
  "samples": [
 
    {
-     "displayName": "Simple",
-     "description": "Simple RenderStreaming Sample",
-     "path": "Samples~/Simple"
+     "displayName": "HDRP",
+     "description": "HDRP RenderStreaming Sample",
+     "path": "Samples~/HDRP"
    }
  ]  
 
