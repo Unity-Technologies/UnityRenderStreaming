@@ -139,7 +139,7 @@ const Keymap = {
   // "OEM4": 109,
   // "OEM5": 110,
   // "IMESelected": 111,
-}
+};
 
 
 let isPlayMode = false;
@@ -159,7 +159,7 @@ export function registerKeyboardEvents(videoPlayer) {
 
   function sendKey(e, type) {
     const key = Keymap[e.code];
-    const character = e.key.length == 1 ? e.key.charCodeAt(0) : 0;
+    const character = e.key.length === 1 ? e.key.charCodeAt(0) : 0;
     console.log("key down " + key + ", repeat = " + e.repeat + ", character = " + character);
     _videoPlayer && _videoPlayer.sendMsg(new Uint8Array([InputEvent.Keyboard, type, e.repeat, key, character]).buffer);
   }
@@ -233,16 +233,20 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     const touches = Array.from(e.touches);
     const phrases = [];
 
-    for(var i = 0; i < changedTouches.length; i++) {
-      if(touches.find(function(t) { return t.identifier == changedTouches[i].identifier} ) === undefined) {
+    for (let i = 0; i < changedTouches.length; i++) {
+      if (touches.find(function (t) {
+        return t.identifier === changedTouches[i].identifier
+      }) === undefined) {
         touches.push(changedTouches[i]);
       }
     }
 
-    for(var i = 0; i < touches.length; i++) {
+    for (let i = 0; i < touches.length; i++) {
       touches[i].identifier;
       phrases[i] = changedTouches.find(
-        function(e) { return e.identifier == touches[i].identifier }) === undefined ? PointerPhase.Stationary : phase;
+        function (e) {
+          return e.identifier === touches[i].identifier
+        }) === undefined ? PointerPhase.Stationary : phase;
     }
 
     console.log("touch phase:" + phase + " length:" + changedTouches.length + " pageX" + changedTouches[0].pageX + ", pageX: " + changedTouches[0].pageY + ", force:" + changedTouches[0].force);
