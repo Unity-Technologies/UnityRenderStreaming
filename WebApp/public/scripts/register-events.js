@@ -169,13 +169,6 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   const _videoPlayer = videoPlayer;
   const _playerElement = playerElement;
   const _document = document;
-  playerElement.requestPointerLock = playerElement.requestPointerLock ||
-    playerElement.mozRequestPointerLock || playerElement.webkitRequestPointerLock;
-
-  // Listen to lock state change events
-  document.addEventListener('pointerlockchange', pointerLockChange, false);
-  document.addEventListener('mozpointerlockchange', pointerLockChange, false);
-  document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 
   // Listen to mouse events
   playerElement.addEventListener('click', sendMouse, false);
@@ -195,39 +188,6 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   playerElement.addEventListener('touchstart', sendTouchStart, false);
   playerElement.addEventListener('touchcancel', sendTouchCancel, false);
   playerElement.addEventListener('touchmove', sendTouchMove, false);
-
-  function pointerLockChange() {
-    if (_document.pointerLockElement === playerElement ||
-      _document.mozPointerLockElement === playerElement ||
-      _document.webkitPointerLockElement === playerElement) {
-      isPlayMode = false;
-      console.log('Pointer locked');
-
-      document.addEventListener('mousemove', sendMouse, false);
-    } else {
-      console.log('The pointer lock status is now unlocked');
-      document.removeEventListener('mousemove', sendMouse, false);
-    }
-  }
-
-  function playVideo() {
-    if (_playerElement.paused) {
-      _playerElement.play();
-    }
-    if (!isPlayMode) {
-      _playerElement.requestPointerLock();
-      isPlayMode = true;
-    }
-  }
-
-  function playVideoWithTouch() {
-    if (_playerElement.paused) {
-      _playerElement.play();
-    }
-    isPlayMode = true;
-    playerElement.removeEventListener('touchend', playVideoWithTouch);
-    playerElement.addEventListener('touchend', sendTouchEnd, false);
-  }
 
   function sendTouch(e, phase) {
     const changedTouches = Array.from(e.changedTouches);
