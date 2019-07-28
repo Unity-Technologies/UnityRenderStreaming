@@ -6,6 +6,10 @@ let videoPlayer;
 
 showPlayButton();
 
+document.oncontextmenu = function () {
+  return false;     // cancel default menu
+}
+
 function showPlayButton() {
   if (!document.getElementById('playButton')) {
     let elementPlayButton = document.createElement('img');

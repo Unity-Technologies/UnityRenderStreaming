@@ -178,9 +178,10 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 
   // Listen to mouse events
-  playerElement.addEventListener('click', playVideo, false);
+  playerElement.addEventListener('click', sendMouse, false);
   playerElement.addEventListener('mousedown', sendMouse, false);
   playerElement.addEventListener('mouseup', sendMouse, false);
+  playerElement.addEventListener('mousemove', sendMouse, false);
   playerElement.addEventListener('wheel', sendMouseWheel, false);
 
   // ios workaround for not allowing auto-play
@@ -190,7 +191,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   // Touch event Level1 https://www.w3.org/TR/touch-events/
   // Touch event Level2 https://w3c.github.io/touch-events/
   //
-  playerElement.addEventListener('touchend', playVideoWithTouch, false);
+  playerElement.addEventListener('touchend', sendTouchEnd, false);
   playerElement.addEventListener('touchstart', sendTouchStart, false);
   playerElement.addEventListener('touchcancel', sendTouchCancel, false);
   playerElement.addEventListener('touchmove', sendTouchMove, false);
@@ -291,11 +292,20 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   }
 
   function sendMouse(e) {
-    console.log("deltaX: " + e.movementX + ", deltaY: " + e.movementY + " mouse button:" + e.buttons);
+    const scale = _videoPlayer.videoScale;
+    const originX = _videoPlayer.videoOriginX;
+    const originY = _videoPlayer.videoOriginY;
+
+    const x = (e.clientX - originX) / scale;
+    // According to Unity Coordinate system
+    // const y = (e.clientY - originY) / scale;
+    const y = _videoPlayer.videoHeight - (e.clientY - originY) / scale;
+
+    console.log("x: " + x + ", y: " + y + ", scale: " + scale + ", originX: " + originX + ", originY: " + originY + " mouse button:" + e.buttons);
     let data = new DataView(new ArrayBuffer(6));
     data.setUint8(0, InputEvent.Mouse);
-    data.setInt16(1, e.movementX, true);
-    data.setInt16(3, e.movementY, true);
+    data.setInt16(1, x, true);
+    data.setInt16(3, y, true);
     data.setUint8(5, e.buttons);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
