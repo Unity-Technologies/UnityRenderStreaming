@@ -150,9 +150,11 @@ namespace Unity.RenderStreaming
             }
         }
 
-        static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
+        static void ProcessMouseMoveEvent(short x, short y, byte button)
         {
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
+            var position = new Vector2Int(x, y);
+            var delta = position - Mouse.current.position.ReadValue();
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { position = position, delta = delta, buttons = button });
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
