@@ -1,6 +1,6 @@
 # Building the Plugin
 
-`com.unity.webrtc` が依存するネイティブプラグインのビルド及び配置の方法について説明します。
+This guide will cover building and deploying the native plugin which `com.unity.webrtc` depends on.
 
 ### Embedding libwebrtc
 
@@ -15,17 +15,17 @@ Extract the files from the zip, and place them in the Plugin folder.
 
 Version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
 
-### プロジェクトの設定
+### Project Settings
 
-プラグインの開発を行うためには、個別の環境に合わせて`WebRTCPlugin` プロジェクトのプロパティを変更する必要があります。
+The `WebRTCPlugin` project properties must be adjusted to match your environment in order to build the plugin. 
 
-`Command` に Unity の実行ファイルパス、`Command Arguments` にプロジェクトパスを指定してください。この設定を行うことで、デバッグ実行時に Unity エディタが起動し、ブレークポイントが有効になります。
+Set the Unity .exe path under `Command` and the project path under `Command Arguments`. Once set, during debugging the Unity Editor will run and breakpoints will be enabled.  
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
 
-### プラグインの配置
+### Deploying the Plugin
 
-ビルド実行すると、`webrtc.dll` が `Packages\com.unity.webrtc\Runtime\Plugins\x86_64` に配置されます。このとき Unity のインスペクタ上で以下の設定になっていることを確認してください。
+When you run the build, `webrtc.dll` will be placed in `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`. You should then be able to verify the following settings in the Unity Inspector window. 
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/inspector_webrtc_plugin.png" width=600 align=center>
 
