@@ -1,5 +1,7 @@
 # FAQ
 
+## Errors
+
 ### Video stream not showing in browser
 
 The browser version might be too old. Make sure that the latest version is installed.
