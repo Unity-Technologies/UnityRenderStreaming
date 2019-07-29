@@ -217,13 +217,23 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     data.setUint8(1, touches.length);
     let byteOffset = 2;
     for (let i = 0; i < touches.length; i++) {
+
+      const scale = _videoPlayer.videoScale;
+      const originX = _videoPlayer.videoOriginX;
+      const originY = _videoPlayer.videoOriginY;
+
+      const x = (touches[i].pageX - originX) / scale;
+      // According to Unity Coordinate system
+      // const y = (touches[i].pageX - originY) / scale;
+      const y = _videoPlayer.videoHeight - (touches[i].pageY - originY) / scale;
+
       data.setInt32(byteOffset, touches[i].identifier, true);
       byteOffset += 4;
       data.setUint8(byteOffset, phrases[i]);
       byteOffset += 1;
-      data.setInt16(byteOffset, touches[i].pageX, true);
+      data.setInt16(byteOffset, x, true);
       byteOffset += 2;
-      data.setInt16(byteOffset, touches[i].pageY, true);
+      data.setInt16(byteOffset, y, true);
       byteOffset += 2;
       data.setFloat32(byteOffset, touches[i].force, true);
       byteOffset += 4;
