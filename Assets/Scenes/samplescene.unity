@@ -793,7 +793,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 183cbd347d25080429f42b520742bbd8, type: 2}
+  sharedProfile: {fileID: 11400000, guid: e4ad4d52956ef024f8c0689f9beee68c, type: 2}
 --- !u!4 &581876911
 Transform:
   m_ObjectHideFlags: 0
@@ -1521,7 +1521,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1297650280}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91897ec1ea9fcd140821be299f3cf42a, type: 3}
+  m_Script: {fileID: 11500000, guid: 88167b61ef2361446aefab18c3c7a843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_rtCamera: {fileID: 1299133684}
@@ -1800,6 +1800,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8a636f62116c0a40bbfefdf876d4608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_movementSensitivityFactor: 0.1
   boost: 3.5
   positionLerpTime: 0.2
   mouseSensitivityCurve:
@@ -2166,7 +2167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 441482e8936e35048a1dffac814e3ef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Profile: {fileID: 11400000, guid: dab0766de4a4b5349b80ce1a86555414, type: 2}
+  m_Profile: {fileID: 11400000, guid: 45dd55e6d5c39ef49acc3f3aba22cf49, type: 2}
   m_StaticLightingSkyUniqueID: 2
 --- !u!114 &2011204168
 MonoBehaviour:
@@ -2184,7 +2185,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: dab0766de4a4b5349b80ce1a86555414, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 45dd55e6d5c39ef49acc3f3aba22cf49, type: 2}
 --- !u!4 &2011204169
 Transform:
   m_ObjectHideFlags: 0
