@@ -1,6 +1,6 @@
 # Building the Plugin
 
-This guide will cover building and deploying the native plugin which `com.unity.webrtc` depends on.
+This guide will cover building and deploying the native plugin `com.unity.webrtc` depends on.
 
 ### Embedding libwebrtc
 
