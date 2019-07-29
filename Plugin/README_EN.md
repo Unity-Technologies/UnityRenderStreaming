@@ -5,6 +5,7 @@ This guide will cover building and deploying the native plugin `com.unity.webrtc
 ### Embedding libwebrtc
 
 The plugin relies on **libwebrtc**, so building it requires a static libwebrtc link. `webrtc-win.zip` can be found on the Github Release page.
+
  <img src="../Packages/com.unity.webrtc/Documentation~/images/libwebrtc_github_release.png" width=600 align=center>
 
 Extract the files from the zip, and place them in the Plugin folder.
