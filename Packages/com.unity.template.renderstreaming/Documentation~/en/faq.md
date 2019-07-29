@@ -1,57 +1,55 @@
 # FAQ
 
-## トラブルに関する質問
+### Video stream not showing in browser
 
-### ブラウザにストリームが表示されない
+The browser version might be too old. Make sure that the latest version is installed.
 
-ブラウザのバージョンが古い可能性があります。最新のバージョンをインストールしてください。
+### Web app doesn't run on iOS Safari 
 
-### iOS Safari で動作しない
+Check the web server's[startup options](webserver.md). In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
 
-Web サーバの[起動時オプション](webserver.md)を確認してください。**Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** を利用する必要があります。
+### Unity's initial startup fails
 
-### Unity 実行時の初期化に失敗する
+Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
 
-**Nvcodec** が利用可能なグラフィックボードが利用可能であることを確認してください。また、グラフィックドライバは最新のバージョンをインストールしてください。`com.unity.webrtc` のドキュメントも確認してください。
+### Web server fails to run 
 
-### Web サーバの起動に失敗する
+Make sure the graphics card isn't being used by another service. 
 
-ポートがすでにほかのサービスに使われているかどうか確認してください。
+## Issues with the environment
 
-## 利用環境に関する質問
+### Which versions of Unity can be used?
 
-### 利用可能な Unity バージョンは？
+Unity 2019.1 and later.
 
-Unity 2019.1 以降で利用可能です。
+### Which OS can be used?
 
-### 利用可能な OS は？
+Windows10 x64. Support for other OS' will be provided later.
 
-Windows10 x64で利用可能です。他の OS にも順次対応予定です。
+### Are there any hardware constraints?
 
-### ハードウェアの制約は？
+The hardware code uses NVCodec, so an NVIDIA graphics card is required. See the NVIDIA [site](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) for information on graphics cards that support NVCodec.
 
-ハードウェアエンコードに NVCodec を利用しているために、 NVIDIA のグラフィックボードが必須になります。NVIDIA の[サイト](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)で、NVCodec が利用可能なグラフィックボードであることを確認してください。
+### Which browsers are supported?
 
-### 利用可能なブラウザは？
+Any browser, as long as it supports WebRTC.
 
-各種ブラウザの WebRTC の対応状況に依存しています。
+## Questions about features
 
-## 機能に関する質問
+### Is it possible to broadcast to multiple devices?
 
-### 複数の端末に配信できる？
+Yes. However, the more devices being transmitted to, the greater the burden on the transmitting device. For example, on a new desktop PC it's possible to transmit 720p video to about 5 devices, but anything more than that will require using an [SFU](https://webrtcglossary.com/sfu/) broadcast server.
 
-可能です。ただし、配信端末の数が増えるほど、配信側に負荷がかかります。最新の デスクトップ PC であれば720p の解像度で5台程度の配信は可能ですが、それ以上は [SFU](https://webrtcglossary.com/sfu/) と呼ばれる配信サーバを介して利用する必要があります。
+### Is simulcast supported?
 
-### Simulcast には対応している？
+Currently, version 1.0 does not support simulcast.
 
-バージョン1.0 現在未対応です。
+### Can you broadcast the feed from multiple cameras?
 
-### 複数のカメラの映像を配信することは可能？
+Currently, version 1.0 cannot.
 
-バージョン1.0 現在未対応です。
+### How do you increase the video quality?
 
-### 画像品質を上げるには？
-
-画像品質はネットワーク品質に依存します。
+Video quality depends on the quality of the network. 
 
 
