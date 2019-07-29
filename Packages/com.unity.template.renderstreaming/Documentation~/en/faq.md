@@ -16,7 +16,7 @@ Make sure you're using a graphics card that supports **Nvcodec**. Also confirm t
 
 ### Web server fails to run 
 
-Make sure the graphics card isn't being used by another service. 
+Make sure the port isn't being used by another service. 
 
 ## Issues with the environment
 
