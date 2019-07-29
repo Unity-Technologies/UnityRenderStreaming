@@ -2,41 +2,41 @@
 
 ### Implementing the Web Application
 
-Web アプリケーションのソースコードは  `WebApp` フォルダに配置しています。ソースコードを利用するには [Node.js](https://nodejs.org/) をインストールする必要があります。
+The web application source code can be found in the `WebApp` folder. [Node.js](https://nodejs.org/) must also be installed to use the source code.
 
-**Node.js** を利用してWeb アプリケーションを起動するには、以下のコマンドを実行します。
+Use the following commands to start the web app through **Node.js**:
 
 ```shell
 npm run build
 npm run start
 ```
 
-以下のコマンドでヘルプを表示します。
+Use this command to display the help guide: 
 
 ```shell
 npm run start -- -h
 ```
 
-オプションの詳細については[ドキュメント](../Packages/com.unity.template.renderstreaming/Documentation~/jp/webserver.md)を参照してください。
+See [the documentation](../Packages/com.unity.template.renderstreaming/Documentation~/jp/webserver.md) for details on the options.
 
-また、以下のコマンドで `ts-node` を利用してサーバを起動します。
+This command will start the server using `ts-node`: 
 
 ```shell
 npm run dev
 ```
 
-### Web アプリケーションの配布
+### Distributing the web app
 
-Web アプリケーションを配布する際、環境構築の手間を省略するために、Web アプリケーションを実行可能なバイナリに変換することが可能です。以下コマンドでバイナリに変換します。
+When distributing the web app, the app can be converted into executable binary in order to cut the effort required to set up the environment. Use the following command: 
 
 ```shell
 npm run pack
 ```
 
-### Web API の確認
+### Checking the web API
 
-Render Streaming のシグナリングはシンプルな Web API で実現しています。API の確認には [Postman](https://www.getpostman.com/) が利用できます。
+Render Streaming uses a simple web API for signaling. [Postman](https://www.getpostman.com/) can be used to check the API.
 
-Postman で `WebApp/test/renderstreaming.postman_collection.json` をインポートすると、API の一覧を確認することができます。また、Web サーバを起動した状態であれば API の動作テストを行うことができます。
+View a summary of the API by importing `WebApp/test/renderstreaming.postman_collection.json` in Postman. Operation tests can also be run on the API while the web server is active. 
 
 <img src="/Users/kazuki/UnityRenderStreaming/Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
