@@ -7,9 +7,9 @@ The **Web application**
 
 ## The Web Client
 
-**Render Streaming** の Web アプリケーションは WebRTC テクノロジを使用しているため、ブラウザが WebRTC に対応している必要があります。各種ブラウザの対応状況は[別ページ](https://caniuse.com/#search=webrtc)を確認してください。
+The **Render Streaming** web application uses WebRTC technologies, which means that your browser must also support WebRTC. See [this page](https://caniuse.com/#search=webrtc) for details on which browsers support WebRTC.
 
-動作を確認しているブラウザは以下になります。
+The following browsers are compatible:
 
 - Chrome
 - Safari
@@ -18,11 +18,11 @@ The **Web application**
 - Chrome for Android
 
 > [!NOTE]
-> **Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** で利用する必要があります。
+> In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
 
 ## The Web Server
 
-The Web server is distributed as a binary using [pkg](https://www.npmjs.com/package/pkg) in order to lessen the effort required to set up the environment. The .exe file is located in the `Assets/bin~/` folder.
+ The .exe file is located in the `Assets/bin~/` folder. Run it from the command line.
 
 <img src="../images/launch_webserver_explorer.png" width=500 align=center>
 
@@ -32,25 +32,25 @@ The Web server is distributed as a binary using [pkg](https://www.npmjs.com/pack
 |-------|-----|-------|
 |-h --help|Show the help menu||
 |-p —port \<number\>|Set the port number|80|
-|-s --secure|Enable https||
+|-s --secure|Use https||
 |-k —keyfile \<path\>|Designate the private key file to use with https|server.key|
 |-c —certfile \<path\>|Designate the certification file to use with https|server.cert|
 
-### コマンドの例
+### Command Examples
 
-以下のコマンドを実行すると http として起動します。ポートは80番を利用します。
+Use the following command to start the server as http. Port 80 will be used.
 
 ```shell
 .\webserver
 ```
 
-以下のコマンドを実行すると https として起動します。ポートは443番を利用します。なお https として起動する際は証明書（`server.cert`）及び鍵（`server.key`）の指定が必要になります（[詳細](../en/https.md)）。
+This command will run the server as https. Port 443 will be used. A certificate (`server.cert`) and a key (`server.key`) must also be set up ([details](../en/https.md)).
 
 ```shell
 .\webserver -s -p 443
 ```
 
-以下のコマンドを実行するとヘルプを表示します。
+Use this command to display the help guide. 
 
 ```shell
 .\webserver -h
