@@ -32,23 +32,14 @@ namespace Unity.WebRTC
 
         ~RTCPeerConnection()
         {
-            this.Dispose(false);
+            this.Dispose();
         }
 
         public void Dispose()
         {
-            this.Dispose(true);
-        }
-
-        protected void Dispose(bool disposing)
-        {
             if (this.disposed)
             {
                 return;
-            }
-            if (disposing)
-            {
-                // release managed resource
             }
             if(self != IntPtr.Zero && !WebRTC.Context.IsNull)
             {
