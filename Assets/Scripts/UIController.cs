@@ -6,12 +6,12 @@ namespace Unity.RenderStreaming
 {
     public class UIController : MonoBehaviour
     {
-#pragma warning disable 0649
-        [SerializeField] TextMeshProUGUI text;
-        [SerializeField] CanvasGroup canvasGroup;
+        [SerializeField] TextMeshProUGUI text = null;
+        [SerializeField] CanvasGroup canvasGroup = null;
         [SerializeField] private AnimationCurve transitionCurve =
-            new AnimationCurve(new Keyframe(0.75f, 1f, 0f, 0f), new Keyframe(1f, 0f, 0f, 0f));
-#pragma warning restore 0649
+            new AnimationCurve(
+                new Keyframe(0.75f, 1f, 0f, 0f),
+                new Keyframe(1f, 0f, 0f, 0f));
 
         private float timeTransition;
 
