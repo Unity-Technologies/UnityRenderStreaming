@@ -14,10 +14,7 @@ export class VideoPlayer {
     this.video.playsInline = true;
     this.video.addEventListener('loadedmetadata', function () {
       _this.video.play();
-      _this._resizeVideo();
-    }, true);
-    this.video.addEventListener('onresize', function() {
-      _this._resizeVideo();
+      _this.resizeVideo();
     }, true);
     this.interval = 3000;
     this.signaling = new Signaling();
@@ -162,7 +159,7 @@ export class VideoPlayer {
     await this.pc.setRemoteDescription(desc);
   }
 
-  _resizeVideo() {
+  resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
     const videoRatio = this.videoWidth / this.videoHeight;
     const clientRatio = clientRect.width / clientRect.height;
