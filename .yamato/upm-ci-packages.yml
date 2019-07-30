@@ -1,7 +1,8 @@
 # .yamato/upm-ci-packages.yml
 editors:
   - version: 2019.1
-  - version: trunk
+  - version: 2019.2  
+#  - version: trunk
 platforms:
   - name: win
     type: Unity::VM::GPU
