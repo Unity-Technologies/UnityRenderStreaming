@@ -7,8 +7,7 @@ namespace Unity.WebRTC
     public class RTCPeerConnection : IDisposable
     {
         private int m_id;
-        private IntPtr self;
-        private Context m_context;
+        private IntPtr self = IntPtr.Zero;
         private DelegateOnIceConnectionChange onIceConnectionChange;
         private DelegateOnIceConnectionChange selfOnIceConnectionChange;
         private DelegateOnIceCandidate onIceCandidate;
@@ -29,9 +28,25 @@ namespace Unity.WebRTC
         private RTCSessionDescriptionAsyncOperation m_opSetDesc;
         private RTCSessionDescriptionAsyncOperation m_opSetRemoteDesc;
 
+        private bool disposed;
+
+        ~RTCPeerConnection()
+        {
+            this.Dispose();
+        }
+
         public void Dispose()
         {
-            NativeMethods.PeerConnectionClose(self, m_id);
+            if (this.disposed)
+            {
+                return;
+            }
+            if(self != IntPtr.Zero && !WebRTC.Context.IsNull)
+            {
+                Close();
+                NativeMethods.ContextDeletePeerConnection(WebRTC.Context.self, m_id);
+            }
+            this.disposed = true;
         }
 
         public RTCIceConnectionState IceConnectionState
@@ -151,25 +166,31 @@ namespace Unity.WebRTC
             return JsonUtility.FromJson<RTCConfiguration>(str);
         }
 
-        public void SetConfiguration(ref RTCConfiguration config)
+        public RTCErrorType SetConfiguration(ref RTCConfiguration config)
         {
-            NativeMethods.PeerConnectionSetConfiguration(self, JsonUtility.ToJson(config));
+            return NativeMethods.PeerConnectionSetConfiguration(self, JsonUtility.ToJson(config));
         }
 
         public RTCPeerConnection()
         {
             m_id = GetHashCode();
-            m_context = WebRTC.Context;
-            self = NativeMethods.ContextCreatePeerConnection(m_context.self, m_id);
+            self = NativeMethods.ContextCreatePeerConnection(WebRTC.Context.self, m_id);
+            if (self == IntPtr.Zero)
+            {
+                throw new ArgumentException("Could not instantiate RTCPeerConnection");
+            }
             InitCallback();
         }
 
         public RTCPeerConnection(ref RTCConfiguration config)
         {
             m_id = GetHashCode();
-            m_context = WebRTC.Context;
             string configStr = JsonUtility.ToJson(config);
-            self = NativeMethods.ContextCreatePeerConnectionWithConfig(m_context.self, m_id, configStr);
+            self = NativeMethods.ContextCreatePeerConnectionWithConfig(WebRTC.Context.self, m_id, configStr);
+            if(self == IntPtr.Zero)
+            {
+                throw new ArgumentException("Could not instantiate RTCPeerConnection");
+            }
             InitCallback();
         }
 
@@ -185,7 +206,10 @@ namespace Unity.WebRTC
 
         public void Close()
         {
-            NativeMethods.PeerConnectionClose(self, m_id);
+            if(self != IntPtr.Zero)
+            {
+                NativeMethods.PeerConnectionClose(self);
+            }
         }
 
         public RTCRtpSender AddTrack(MediaStreamTrack track)

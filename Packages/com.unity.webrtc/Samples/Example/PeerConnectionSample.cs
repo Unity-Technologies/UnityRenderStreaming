@@ -16,12 +16,13 @@ public class PeerConnectionSample : MonoBehaviour
     private DelegateOnIceConnectionChange pc2OnIceConnectionChange;
     private DelegateOnIceCandidate pc1OnIceCandidate;
     private DelegateOnIceCandidate pc2OnIceCandidate;
+    private RTCDataChannel dataChannel;
 
     private RTCOfferOptions OfferOptions = new RTCOfferOptions
     {
         iceRestart = false,
         offerToReceiveAudio = true,
-        offerToReceiveVideo = false
+        offerToReceiveVideo = true
     };
 
     private RTCAnswerOptions AnswerOptions = new RTCAnswerOptions
@@ -39,6 +40,10 @@ public class PeerConnectionSample : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (pc1 != null)
+            pc1.Close();
+        if (pc1 != null)
+            pc2.Close();
         WebRTC.Finalize();
     }
 
@@ -59,9 +64,6 @@ public class PeerConnectionSample : MonoBehaviour
 
             var desc = pc1.GetLocalDescription();
             Debug.Log($"pc1 sdp: {desc.sdp}");
-
-            //var conf = pc1.GetConfiguration();
-            //Debug.Log($"ice servers count {conf.iceServers.Length}");
         }
     }
 
@@ -90,8 +92,11 @@ public class PeerConnectionSample : MonoBehaviour
         Debug.Log("Created remote peer connection object pc2");
         pc2.OnIceCandidate = pc2OnIceCandidate;
         pc2.OnIceConnectionChange = pc2OnIceConnectionChange;
-
         Debug.Log("pc1 createOffer start");
+
+        var conf = new RTCDataChannelInit(true);
+        dataChannel = pc1.CreateDataChannel("data", ref conf);
+
         var op = pc1.CreateOffer(ref OfferOptions);
         yield return op;
 

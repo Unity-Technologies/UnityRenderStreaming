@@ -224,17 +224,23 @@ namespace WebRTC
         Json::Value iceServersJson = configJson["iceServers"];
         if (!iceServersJson)
             return;
-        webrtc::PeerConnectionInterface::IceServer stunServer;
         for (auto iceServerJson : iceServersJson)
         {
+            webrtc::PeerConnectionInterface::IceServer iceServer;
             for (auto url : iceServerJson["urls"])
             {
-                stunServer.urls.push_back(url.asString());
+                iceServer.urls.push_back(url.asString());
             }
-            stunServer.username = iceServerJson["username"].asString();
-            stunServer.password = iceServerJson["credential"].asString();
+            if (!iceServerJson["username"].isNull())
+            {
+                iceServer.username = iceServerJson["username"].asString();
+            }
+            if (!iceServerJson["username"].isNull())
+            {
+                iceServer.password = iceServerJson["credential"].asString();
+            }
+            config.servers.push_back(iceServer);
         }
-        config.servers.push_back(stunServer);
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
     }
 #pragma warning(push)

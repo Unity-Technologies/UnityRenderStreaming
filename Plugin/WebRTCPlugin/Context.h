@@ -45,11 +45,11 @@ namespace WebRTC
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
+        void DeletePeerConnection(int id) { clients.erase(id); }
         void InitializeEncoder(int32 width, int32 height) { nvVideoCapturer->InitializeEncoder(width, height); }
         void EncodeFrame() { nvVideoCapturer->EncodeVideoData(); }
         void StopCapturer() { nvVideoCapturer->Stop(); }
         void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
-        void DeleteClient(int id) { clients.erase(id); }
     private:
         int m_uid;
         std::unique_ptr<rtc::Thread> workerThread;

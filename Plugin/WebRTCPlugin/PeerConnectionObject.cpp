@@ -8,6 +8,10 @@ namespace WebRTC
 
     PeerConnectionObject::~PeerConnectionObject()
     {
+        if (connection == nullptr)
+        {
+            return;
+        }
         auto senders = connection->GetSenders();
         for (auto sender : senders)
         {
@@ -28,6 +32,12 @@ namespace WebRTC
         webrtc::PeerConnectionInterface::RTCConfiguration _config;
         _config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
         obj->connection = peerConnectionFactory->CreatePeerConnection(_config, nullptr, nullptr, obj);
+
+        if (obj->connection == nullptr)
+        {
+            return nullptr;
+        }
+        
         clients[id] = std::move(obj);
         return clients[id].get();
     }
@@ -38,6 +48,10 @@ namespace WebRTC
         webrtc::PeerConnectionInterface::RTCConfiguration _config;
         Convert(conf, _config);
         obj->connection = peerConnectionFactory->CreatePeerConnection(_config, nullptr, nullptr, obj);
+        if (obj->connection == nullptr)
+        {
+            return nullptr;
+        }
         clients[id] = std::move(obj);
         return clients[id].get();
     }
@@ -133,7 +147,10 @@ namespace WebRTC
 
     void PeerConnectionObject::Close()
     {
-        connection->Close();
+        if (connection != nullptr)
+        {
+            connection->Close();
+        }
     }
 
     void PeerConnectionObject::SetLocalDescription(const RTCSessionDescription& desc)
@@ -164,11 +181,17 @@ namespace WebRTC
         connection->SetRemoteDescription(observer, _desc.release());
     }
 
-    void PeerConnectionObject::SetConfiguration(const std::string& conf)
+    webrtc::RTCErrorType PeerConnectionObject::SetConfiguration(const std::string& config)
     {
-        webrtc::PeerConnectionInterface::RTCConfiguration _conf;
-        Convert(conf, _conf);
-        connection->SetConfiguration(_conf);
+        webrtc::PeerConnectionInterface::RTCConfiguration _config;
+        Convert(config, _config);
+
+        webrtc::RTCError error;
+        if (!connection->SetConfiguration(_config, &error))
+        {
+            LogPrint(error.message());
+        }
+        return error.type();
     }
 
     void PeerConnectionObject::GetConfiguration(std::string& config) const
@@ -231,7 +254,7 @@ namespace WebRTC
         desc.sdp[out.size()] = '\0';
     }
 
-    DataChannelObject* PeerConnectionObject::createDataChannel(const char* label, const RTCDataChannelInit& options)
+    DataChannelObject* PeerConnectionObject::CreateDataChannel(const char* label, const RTCDataChannelInit& options)
     {
         webrtc::DataChannelInit config;
         config.reliable = options.reliable;

@@ -99,6 +99,21 @@ namespace Unity.WebRTC
         Max
     }
 
+    public enum RTCErrorType
+    {
+        None,
+        UnsupportedOperation,
+        UnsupportedParameter,
+        InvalidParameter,
+        InvalidRange,
+        SyntaxError,
+        InvalidState,
+        InvalidModification,
+        NetworkError,
+        ResourceExhausted,
+        InternalError
+    }
+
     public enum RTCPeerConnectionEventType
     {
         ConnectionStateChange,
@@ -332,9 +347,11 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionClose(IntPtr ptr, int id);
+        public static extern void ContextDeletePeerConnection(IntPtr ptr, int id);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
+        public static extern void PeerConnectionClose(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern RTCErrorType PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr PeerConnectionCreateDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, ref RTCDataChannelInit options);
         [DllImport(WebRTC.Lib)]
