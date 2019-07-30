@@ -1,7 +1,8 @@
-# .yamato/upm-ci-webrtc.yml
+# .yamato/upm-ci-packages.yml
 editors:
   - version: 2019.1
-  - version: trunk
+  - version: 2019.2  
+#  - version: trunk
 platforms:
   - name: win
     type: Unity::VM::GPU
@@ -9,28 +10,32 @@ platforms:
     # image: package-ci/win10:stable
     image: renderstreaming/win10:latest
     flavor: m1.large
-    build_command: build_plugin.cmd
 projects:
   - name: webrtc
     packagename: com.unity.webrtc
+    prepack_command: build_plugin.cmd
+  - name: renderstreaming
+    packagename: com.unity.renderstreaming
+    prepack_command: 
+    
 ---
 {% for project in projects %}
 {% for platform in platforms %}
-build_{{ platform.name }}:
-  name: Build {{ project.packagename }} {{ platform.name }}
+prepack_{{ project.name }}_{{ platform.name }}:
+  name: Prepack {{ project.packagename }} {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - {{ platform.build_command }}
+    - {{ project.prepack_command}}
   artifacts:
     build:
       paths:
-        - "Packages/com.unity.webrtc/**/*"
+        - "Packages/{{ project.packagename }}/**/*"
 {% endfor %}
 
-pack:
+pack_{{ project.name }}:
   name: Pack {{ project.packagename }}
   agent:
     type: Unity::VM
@@ -38,22 +43,22 @@ pack:
     flavor: m1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package pack --package-path Packages/com.unity.webrtc
+    - upm-ci package pack --package-path Packages/{{ project.packagename }}
   artifacts:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
     build:
       paths:
-        - "com.unity.webrtc/**/*"
+        - "{{ project.packagename }}/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-webrtc.yml#build_{{ platform.name }}
+    - .yamato/upm-ci-packages.yml#prepack_{{ project.name }}_{{ platform.name }}
     {% endfor %}
 
 {% for editor in editors %}
 {% for platform in platforms %}
-test_{{ platform.name }}_{{ editor.version }}:
+test_{{ project.name }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
@@ -61,7 +66,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package test -u {{ editor.version }} --package-path Packages/com.unity.webrtc
+    - upm-ci package test -u {{ editor.version }} --package-path Packages/{{ project.packagename }}
   triggers:
     branches:
       only:
@@ -73,11 +78,11 @@ test_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-packages.yml#pack_{{ project.name }}
 {% endfor %}
 {% endfor %}
 
-publish:
+publish_{{ project.name }}:
   name: Publish {{ project.packagename }}
   agent:
     type: Unity::VM
@@ -85,7 +90,7 @@ publish:
     flavor: m1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package publish --package-path Packages/com.unity.webrtc
+    - upm-ci package publish --package-path Packages/{{ project.packagename }}
   triggers:
     tags:
       only:
@@ -95,10 +100,10 @@ publish:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-packages.yml#pack_{{ project.name }}
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-webrtc.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-packages.yml#test_{{ project.name }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
 {% endfor %}
