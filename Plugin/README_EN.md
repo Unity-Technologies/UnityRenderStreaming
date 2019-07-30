@@ -1,5 +1,7 @@
 # Building the Plugin
 
+This guide will cover building and deploying the native plugin `com.unity.webrtc` depends on.
+
 ### Embedding libwebrtc
 
 The plugin relies on **libwebrtc**, so building it requires a static libwebrtc link. `webrtc-win.zip` can be found on the Github Release page.
@@ -12,16 +14,19 @@ Extract the files from the zip, and place them in the Plugin folder.
 
 ### Build
 
-Version 1.0 is currently built with **Visual Studio 2017**. Version 1.2 and after may migrate to **CMake**.
+Version 1.0 is currently built with **Visual Studio 2017**. 
 
-### Debug
+### Project Settings
 
-Runtime debugging requires changes to the WebRTCPlugin project's properties. 
+The `WebRTCPlugin` project properties must be adjusted to match your environment in order to build the plugin. 
 
-Set the Output Directory to `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`.
-
-<img src="../Packages/com.unity.webrtc/Documentation~/images/outputdirectory_config_vs2017.png" width=600 align=center>
-
-Set the Unity.exe file path under Command, and set the project path under Command Arguments.
+Set the Unity .exe path under `Command` and the project path under `Command Arguments`. Once set, during debugging the Unity Editor will run and breakpoints will be enabled.  
 
 <img src="../Packages/com.unity.webrtc/Documentation~/images/command_config_vs2017.png" width=600 align=center>
+
+### Deploying the Plugin
+
+When you run the build, `webrtc.dll` will be placed in `Packages\com.unity.webrtc\Runtime\Plugins\x86_64`. You should then be able to verify the following settings in the Unity Inspector window. 
+
+<img src="../Packages/com.unity.webrtc/Documentation~/images/inspector_webrtc_plugin.png" width=600 align=center>
+
