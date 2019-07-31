@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 
@@ -8,12 +9,14 @@ namespace Unity.RenderStreaming
     {
         [SerializeField] TextMeshProUGUI text = null;
         [SerializeField] CanvasGroup canvasGroup = null;
+        [SerializeField] Image pointer = null;
         [SerializeField] private AnimationCurve transitionCurve =
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
                 new Keyframe(1f, 0f, 0f, 0f));
 
-        private float timeTransition;
+        private float timeTransition = 0f;
+        private Color transparentColor = new Color(0, 0, 0, 0);
 
         void Start()
         {
@@ -32,6 +35,22 @@ namespace Unity.RenderStreaming
                 {
                     text.text = string.Empty;
                 }
+            }
+            if (Mouse.current.leftButton.isPressed || Mouse.current.rightButton.isPressed)
+            {
+                var position = Mouse.current.position.ReadValue();
+                pointer.rectTransform.anchoredPosition = position;
+                pointer.color = Color.red;
+            }
+            else if (Touchscreen.current.activeTouches.Count > 0)
+            {
+                var position = Touchscreen.current.activeTouches[0].position.ReadValue();
+                pointer.rectTransform.anchoredPosition = position;
+                pointer.color = Color.red;
+            }
+            else
+            {
+                pointer.color = transparentColor;
             }
         }
 

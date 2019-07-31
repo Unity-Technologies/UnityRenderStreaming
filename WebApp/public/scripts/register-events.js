@@ -139,7 +139,7 @@ const Keymap = {
   // "OEM4": 109,
   // "OEM5": 110,
   // "IMESelected": 111,
-}
+};
 
 
 let isPlayMode = false;
@@ -159,7 +159,7 @@ export function registerKeyboardEvents(videoPlayer) {
 
   function sendKey(e, type) {
     const key = Keymap[e.code];
-    const character = e.key.length == 1 ? e.key.charCodeAt(0) : 0;
+    const character = e.key.length === 1 ? e.key.charCodeAt(0) : 0;
     console.log("key down " + key + ", repeat = " + e.repeat + ", character = " + character);
     _videoPlayer && _videoPlayer.sendMsg(new Uint8Array([InputEvent.Keyboard, type, e.repeat, key, character]).buffer);
   }
@@ -169,18 +169,12 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   const _videoPlayer = videoPlayer;
   const _playerElement = playerElement;
   const _document = document;
-  playerElement.requestPointerLock = playerElement.requestPointerLock ||
-    playerElement.mozRequestPointerLock || playerElement.webkitRequestPointerLock;
-
-  // Listen to lock state change events
-  document.addEventListener('pointerlockchange', pointerLockChange, false);
-  document.addEventListener('mozpointerlockchange', pointerLockChange, false);
-  document.addEventListener('webkitpointerlockchange', pointerLockChange, false);
 
   // Listen to mouse events
-  playerElement.addEventListener('click', playVideo, false);
+  playerElement.addEventListener('click', sendMouse, false);
   playerElement.addEventListener('mousedown', sendMouse, false);
   playerElement.addEventListener('mouseup', sendMouse, false);
+  playerElement.addEventListener('mousemove', sendMouse, false);
   playerElement.addEventListener('wheel', sendMouseWheel, false);
 
   // ios workaround for not allowing auto-play
@@ -190,59 +184,30 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   // Touch event Level1 https://www.w3.org/TR/touch-events/
   // Touch event Level2 https://w3c.github.io/touch-events/
   //
-  playerElement.addEventListener('touchend', playVideoWithTouch, false);
+  playerElement.addEventListener('touchend', sendTouchEnd, false);
   playerElement.addEventListener('touchstart', sendTouchStart, false);
   playerElement.addEventListener('touchcancel', sendTouchCancel, false);
   playerElement.addEventListener('touchmove', sendTouchMove, false);
-
-  function pointerLockChange() {
-    if (_document.pointerLockElement === playerElement ||
-      _document.mozPointerLockElement === playerElement ||
-      _document.webkitPointerLockElement === playerElement) {
-      isPlayMode = false;
-      console.log('Pointer locked');
-
-      document.addEventListener('mousemove', sendMouse, false);
-    } else {
-      console.log('The pointer lock status is now unlocked');
-      document.removeEventListener('mousemove', sendMouse, false);
-    }
-  }
-
-  function playVideo() {
-    if (_playerElement.paused) {
-      _playerElement.play();
-    }
-    if (!isPlayMode) {
-      _playerElement.requestPointerLock();
-      isPlayMode = true;
-    }
-  }
-
-  function playVideoWithTouch() {
-    if (_playerElement.paused) {
-      _playerElement.play();
-    }
-    isPlayMode = true;
-    playerElement.removeEventListener('touchend', playVideoWithTouch);
-    playerElement.addEventListener('touchend', sendTouchEnd, false);
-  }
 
   function sendTouch(e, phase) {
     const changedTouches = Array.from(e.changedTouches);
     const touches = Array.from(e.touches);
     const phrases = [];
 
-    for(var i = 0; i < changedTouches.length; i++) {
-      if(touches.find(function(t) { return t.identifier == changedTouches[i].identifier} ) === undefined) {
+    for (let i = 0; i < changedTouches.length; i++) {
+      if (touches.find(function (t) {
+        return t.identifier === changedTouches[i].identifier
+      }) === undefined) {
         touches.push(changedTouches[i]);
       }
     }
 
-    for(var i = 0; i < touches.length; i++) {
+    for (let i = 0; i < touches.length; i++) {
       touches[i].identifier;
       phrases[i] = changedTouches.find(
-        function(e) { return e.identifier == touches[i].identifier }) === undefined ? PointerPhase.Stationary : phase;
+        function (e) {
+          return e.identifier === touches[i].identifier
+        }) === undefined ? PointerPhase.Stationary : phase;
     }
 
     console.log("touch phase:" + phase + " length:" + changedTouches.length + " pageX" + changedTouches[0].pageX + ", pageX: " + changedTouches[0].pageY + ", force:" + changedTouches[0].force);
@@ -252,13 +217,23 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     data.setUint8(1, touches.length);
     let byteOffset = 2;
     for (let i = 0; i < touches.length; i++) {
+
+      const scale = _videoPlayer.videoScale;
+      const originX = _videoPlayer.videoOriginX;
+      const originY = _videoPlayer.videoOriginY;
+
+      const x = (touches[i].pageX - originX) / scale;
+      // According to Unity Coordinate system
+      // const y = (touches[i].pageX - originY) / scale;
+      const y = _videoPlayer.videoHeight - (touches[i].pageY - originY) / scale;
+
       data.setInt32(byteOffset, touches[i].identifier, true);
       byteOffset += 4;
       data.setUint8(byteOffset, phrases[i]);
       byteOffset += 1;
-      data.setInt16(byteOffset, touches[i].pageX, true);
+      data.setInt16(byteOffset, x, true);
       byteOffset += 2;
-      data.setInt16(byteOffset, touches[i].pageY, true);
+      data.setInt16(byteOffset, y, true);
       byteOffset += 2;
       data.setFloat32(byteOffset, touches[i].force, true);
       byteOffset += 4;
@@ -287,11 +262,20 @@ export function registerMouseEvents(videoPlayer, playerElement) {
   }
 
   function sendMouse(e) {
-    console.log("deltaX: " + e.movementX + ", deltaY: " + e.movementY + " mouse button:" + e.buttons);
+    const scale = _videoPlayer.videoScale;
+    const originX = _videoPlayer.videoOriginX;
+    const originY = _videoPlayer.videoOriginY;
+
+    const x = (e.clientX - originX) / scale;
+    // According to Unity Coordinate system
+    // const y = (e.clientY - originY) / scale;
+    const y = _videoPlayer.videoHeight - (e.clientY - originY) / scale;
+
+    console.log("x: " + x + ", y: " + y + ", scale: " + scale + ", originX: " + originX + ", originY: " + originY + " mouse button:" + e.buttons);
     let data = new DataView(new ArrayBuffer(6));
     data.setUint8(0, InputEvent.Mouse);
-    data.setInt16(1, e.movementX, true);
-    data.setInt16(3, e.movementY, true);
+    data.setInt16(1, x, true);
+    data.setInt16(3, y, true);
     data.setUint8(5, e.buttons);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }

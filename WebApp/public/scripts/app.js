@@ -6,6 +6,15 @@ let videoPlayer;
 
 showPlayButton();
 
+window.document.oncontextmenu = function () {
+  return false;     // cancel default menu
+}
+
+window.addEventListener('resize', function() {
+  videoPlayer.resizeVideo();
+}, true);
+
+
 function showPlayButton() {
   if (!document.getElementById('playButton')) {
     let elementPlayButton = document.createElement('img');
