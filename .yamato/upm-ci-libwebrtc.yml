@@ -4,6 +4,7 @@ platforms:
     image: renderstreaming/win10:latest
     flavor: m1.xlarge
     build_command: build_libwebrtc.cmd
+    artifact_path: webrtc-win.zip
 projects:
   - name: libwebrtc    
 ---
@@ -18,11 +19,9 @@ build_{{ platform.name }}:
   commands:
     - {{ platform.build_command }}
   artifacts:
-    webrtc-{{ platform.name }}:
+    build:
       paths:
-        - "include/**"
-        - "lib/**"
-        - "LICENSE.md"
+        - "artifacts/**/*.zip"
   triggers:
     tags:
       only:

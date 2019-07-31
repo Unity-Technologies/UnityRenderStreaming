@@ -11,9 +11,11 @@ publish_github_release:
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.webrtc-%GIT_TAG%.tgz"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.renderstreaming-%GIT_TAG%.tgz"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.template.renderstreaming-%GIT_TAG%.tgz"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "Assets/bin~/webserver.exe"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "artifacts/webrtc-win.zip"
   triggers:
     tags:
       only:
