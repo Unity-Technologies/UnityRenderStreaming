@@ -4,9 +4,6 @@ if not exist depot_tools (
 git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 )
 
-REM workaround
-REM set PATH=%PATH:C:\ProgramData\chocolatey\bin;=%
-
 set PATH=%cd%\depot_tools;%PATH%
 set WEBRTC_VERSION=72
 set DEPOT_TOOLS_WIN_TOOLCHAIN=0
