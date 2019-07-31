@@ -15,7 +15,7 @@ The Render Streaming system consists of the following 3 components
 In Render Streaming a P2P network is created between **Unity** and the **Web browser**, and this network sends data via UDP/IP. The **Web server** enables communication between the Web browser and Unity. This communication is called signaling. 
 
 > [!NOTE]
-> Version 0.1.0 currently does not support the following features.
+> Currently does not support the following features.
 >
 > - Streaming video from the browser to Unity
 > - Streaming audio from the browser to Unity

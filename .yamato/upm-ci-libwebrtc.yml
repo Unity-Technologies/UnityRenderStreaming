@@ -1,7 +1,7 @@
 platforms:
   - name: win
     type: Unity::VM
-    image: renderstreaming/win10:latest
+    image: renderstreaming/win10:v0.1.2-276056
     flavor: m1.xlarge
     build_command: build_libwebrtc.cmd
 projects:
@@ -18,11 +18,9 @@ build_{{ platform.name }}:
   commands:
     - {{ platform.build_command }}
   artifacts:
-    webrtc-{{ platform.name }}:
+    build:
       paths:
-        - "include/**"
-        - "lib/**"
-        - "LICENSE.md"
+        - "artifacts/**/*.zip"
   triggers:
     tags:
       only:

@@ -1,9 +1,8 @@
+@echo off
+
 if not exist depot_tools (
 git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 )
-
-REM workaround
-set PATH=%PATH:C:\ProgramData\chocolatey\bin;=%
 
 set PATH=%cd%\depot_tools;%PATH%
 set WEBRTC_VERSION=72
@@ -12,7 +11,7 @@ set CPPFLAGS=/WX-
 set GYP_GENERATORS=ninja,msvs-ninja
 set GYP_MSVS_VERSION=2017
 set OUTPUT_DIR=out
-set ARTIFACTS_DIR=%cd%
+set ARTIFACTS_DIR=%cd%\artifacts
 
 cmd /k fetch.bat webrtc
 
@@ -54,3 +53,7 @@ for %%G in (webrtc.lib audio_decoder_opus.lib webrtc_opus.lib jsoncpp.lib) do fo
 
 REM copy license
 copy %OUTPUT_DIR%\LICENSE.md %ARTIFACTS_DIR%
+
+REM create zip
+cd %ARTIFACTS_DIR%
+7z a -tzip webrtc-win.zip *
