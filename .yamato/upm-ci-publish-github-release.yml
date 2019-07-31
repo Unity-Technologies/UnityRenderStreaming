@@ -21,7 +21,7 @@ publish_github_release:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
-    - .yamato/upm-ci-webrtc.yml#pack
+    - .yamato/upm-ci-packages.yml#pack
     - .yamato/upm-ci-template.yml#pack
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
