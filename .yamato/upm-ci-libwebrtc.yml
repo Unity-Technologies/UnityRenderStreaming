@@ -4,7 +4,6 @@ platforms:
     image: renderstreaming/win10:v0.1.2-276056
     flavor: m1.xlarge
     build_command: build_libwebrtc.cmd
-    artifact_path: webrtc-win.zip
 projects:
   - name: libwebrtc    
 ---
