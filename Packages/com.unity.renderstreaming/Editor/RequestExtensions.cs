@@ -1,12 +1,12 @@
 ﻿using UnityEditor.PackageManager.Requests;  //ListRequest
-using UnityEditor.PackageManager;  
+using UnityEditor.PackageManager;       //PackageCollection  
 using System.Collections.Generic;       //IEnumerable
 
 
 namespace Unity.RenderStreaming.Editor {
-    public static class ListRequestExtensions
+    public static class RequestExtensions
     {
-        public static PackageInfo FindPackage(this ListRequest listRequest, string packageName) {
+        public static PackageInfo FindPackage(this Request<PackageCollection> listRequest, string packageName) {
             IEnumerable<PackageInfo> packageInfoCollection = listRequest.Result as IEnumerable<PackageInfo>;
             if (null == packageInfoCollection) {
                 return null;
