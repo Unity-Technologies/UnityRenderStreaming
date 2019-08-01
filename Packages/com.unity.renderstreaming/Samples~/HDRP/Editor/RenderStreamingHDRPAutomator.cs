@@ -50,7 +50,7 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
         string[] assetPaths = { m_automatorAssetPath };
         UnityEditor.AssetDatabase.ForceReserializeAssets(assetPaths, UnityEditor.ForceReserializeAssetsOptions.ReserializeAssets);
 
-        //Change the C# file to trigger recompilation.
+        //Change the C# file to trigger recompilation next time "Import in project" is pushed again
         string cScript = Path.ChangeExtension(m_automatorAssetPath, ".cs");
         File.AppendAllText(cScript, System.Environment.NewLine + "//Automatically Modified to trigger recompilation");
         UnityEditor.AssetDatabase.ImportAsset(cScript);
