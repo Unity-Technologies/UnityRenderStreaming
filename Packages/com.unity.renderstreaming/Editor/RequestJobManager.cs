@@ -16,6 +16,12 @@ public class RequestJobManager
 
 //---------------------------------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// [TODO-sin: 2019-8-1] 
+    /// </summary>
+    /// <param name="todo"></param>
+    /// <returns></returns>
+    /// 
     public static void CreateListRequest(bool offlineMode, bool includeIndirectIndependencies,
        Action<Request<PackageCollection>> onSuccess, Action<Request<PackageCollection>> onFail)
     {
@@ -24,6 +30,12 @@ public class RequestJobManager
 
 //---------------------------------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// [TODO-sin: 2019-8-1] 
+    /// </summary>
+    /// <param name="todo"></param>
+    /// <returns></returns>
+    /// 
     public static void CreateAddRequest(string packageName,
         Action<Request<PackageInfo>> onSuccess, Action<Request<PackageInfo>> onFail)
     {
