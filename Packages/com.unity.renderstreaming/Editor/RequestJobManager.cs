@@ -16,8 +16,6 @@ public class RequestJobManager
 
 //---------------------------------------------------------------------------------------------------------------------
 
-   
-
     public static void CreateListRequest(bool offlineMode, bool includeIndirectIndependencies,
        Action<Request<PackageCollection>> onSuccess, Action<Request<PackageCollection>> onFail)
     {
