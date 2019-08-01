@@ -7,13 +7,6 @@ using UnityEngine;                          //ScriptableObject
 [UnityEditor.InitializeOnLoad]
 public class RenderStreamingHDRPAutomator : ScriptableObject 
 {
-    void ImportHDRPSample() {
-        string path = UnityEditor.AssetDatabase.GetAssetPath(m_samplePackage);
-        UnityEditor.AssetDatabase.ImportPackage(path, true);
-    }
-
-//---------------------------------------------------------------------------------------------------------------------
-
     public void OnEnable() {
 
         //Two steps are necessary to "hack" so that Unity will execute this file everytime we click "Import in project"
@@ -29,7 +22,8 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
             return;
         }
         
-        RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);       
+        RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);
+        UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.1f );
     }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -70,8 +64,20 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
 
 //---------------------------------------------------------------------------------------------------------------------
 
+    void ImportHDRPSample() {
+        UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.8f );
+
+        string path = UnityEditor.AssetDatabase.GetAssetPath(m_samplePackage);
+        UnityEditor.AssetDatabase.ImportPackage(path, true);
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+
     [SerializeField] private string m_version = null;
     [SerializeField] Object m_samplePackage = null;
+
+    readonly string PROGRESS_BAR_TITLE = "RenderStreaming";
+    readonly string PROGRESS_BAR_INFO  = "Installing HDRP Sample";
 
 }
 
