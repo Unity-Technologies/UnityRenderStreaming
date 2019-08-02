@@ -29,7 +29,6 @@ public class RequestJobManager
     ///     to include only the packages listed directly in the project manifest.</param>
     /// <param name="onSuccess">Action which is executed if the request succeeded</param>
     /// <param name="onFail">Action which is executed if the request failed </param>
-    /// <returns></returns>
     /// 
     public static void CreateListRequest(bool offlineMode, bool includeIndirectIndependencies,
        Action<Request<PackageCollection>> onSuccess, Action<Request<PackageCollection>> onFail)
@@ -46,7 +45,6 @@ public class RequestJobManager
     ///     the latest version of the package is installed.</param>
     /// <param name="onSuccess">Action which is executed if the request succeeded</param>
     /// <param name="onFail">Action which is executed if the request failed </param>
-    /// <returns></returns>
     /// 
     public static void CreateAddRequest(string packageName,
         Action<Request<PackageInfo>> onSuccess, Action<Request<PackageInfo>> onFail)
