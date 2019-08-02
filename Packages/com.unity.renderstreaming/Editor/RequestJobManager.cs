@@ -7,10 +7,14 @@ using System;                               //Action
 namespace Unity.RenderStreaming.Editor {
 
 
+/// <summary>
+/// An editor class to manage requests to UnityEditor.PackageManager.Client
+/// This class will perform its operations in background while Unity is running.
+/// </summary>
 public class RequestJobManager 
 {
     [UnityEditor.InitializeOnLoadMethod]
-    static void OnLoad() {
+    static void OnLoad() {    
         UnityEditor.EditorApplication.update+=UpdateRequestJobs;        
     }
 
