@@ -17,9 +17,18 @@ public class RequestJobManager
 //---------------------------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// [TODO-sin: 2019-8-1] 
+    /// Queue a job to create a ListRequest instance
     /// </summary>
-    /// <param name="todo"></param>
+    /// <param name="offlineMode">Specifies whether or not the Package Manager requests the latest information about
+    ///     the project's packages from the remote Unity package registry. When offlineMode is true,
+    ///     the PackageInfo objects in the PackageCollection returned by the Package Manager contain information
+    ///     obtained from the local package cache, which could be out of date.</param>
+    /// <param name="includeIndirectIndependencies">Set to true to include indirect dependencies in the
+    ///     PackageCollection returned by the Package Manager. Indirect dependencies include packages referenced
+    ///     in the manifests of project packages or in the manifests of other indirect dependencies. Set to false
+    ///     to include only the packages listed directly in the project manifest.</param>
+    /// <param name="onSuccess">Action which is executed if the request succeeded</param>
+    /// <param name="onFail">Action which is executed if the request failed </param>
     /// <returns></returns>
     /// 
     public static void CreateListRequest(bool offlineMode, bool includeIndirectIndependencies,
@@ -31,9 +40,12 @@ public class RequestJobManager
 //---------------------------------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// [TODO-sin: 2019-8-1] 
+    /// Queue a job to create an AddRequest instance
     /// </summary>
-    /// <param name="todo"></param>
+    /// <param name="packageName">The name or ID of the package to add. If only the name is specified,
+    ///     the latest version of the package is installed.</param>
+    /// <param name="onSuccess">Action which is executed if the request succeeded</param>
+    /// <param name="onFail">Action which is executed if the request failed </param>
     /// <returns></returns>
     /// 
     public static void CreateAddRequest(string packageName,

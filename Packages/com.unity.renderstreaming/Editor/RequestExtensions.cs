@@ -7,9 +7,9 @@ namespace Unity.RenderStreaming.Editor {
     public static class RequestExtensions
     {
         /// <summary>
-        /// [TODO-sin: 2019-8-1] 
+        /// Find a package having the passed parameter 
         /// </summary>
-        /// <param name="todo"></param>
+        /// <param name="packageName">the package name</param>
         /// <returns></returns>
         /// 
         public static PackageInfo FindPackage(this Request<PackageCollection> listRequest, string packageName) {
