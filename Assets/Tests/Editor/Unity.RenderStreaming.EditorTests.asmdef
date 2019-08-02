@@ -1,6 +1,8 @@
 {
     "name": "Unity.RenderStreaming.EditorTests",
-    "references": [],
+    "references": [
+        "GUID:7e479a0c97f111c48b6a279fad867f28"
+    ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
