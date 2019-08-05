@@ -1,4 +1,5 @@
-﻿using System.Collections;                   //IEnumerator
+﻿using NUnit.Framework;                      //Timeout, Assert
+using System.Collections;                   //IEnumerator
 using UnityEngine;                          //Debug
 using UnityEngine.TestTools;                //UnityTest
 using Unity.RenderStreaming.Editor;         //RequestJobManager
@@ -10,13 +11,14 @@ namespace Unity.RenderStreaming
 public class RequestJobTest
 {
     [UnityTest]
+    [Timeout(5000)]
     public IEnumerator VerifyRenderStreamingPackage() {
 
         RequestJobManager.CreateListRequest(false, false, OnListRequestSucceeded, OnListRequestFailed);
         while (!m_listRequestCompleted)
             yield return null;
 
-        Debug.Assert(m_packageFound);
+        Assert.True(m_packageFound);
     }
 
 //---------------------------------------------------------------------------------------------------------------------
