@@ -178,11 +178,19 @@ namespace Unity.WebRTC
         All
     }
 
+    public enum RTCBundlePolicy
+    {
+        kBundlePolicyBalanced,
+        kBundlePolicyMaxBundle,
+        kBundlePolicyMaxCompat
+    };
+
     [Serializable]
     public struct RTCConfiguration
     {
         public RTCIceServer[] iceServers;
         public RTCIceTransportPolicy iceTransportPolicy;
+        public RTCBundlePolicy bundle_policy;
     }
 
     public static class WebRTC
@@ -326,7 +334,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionSetRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr PeerConnectionAddTrack(IntPtr pc, IntPtr track);
+        public static extern IntPtr PeerConnectionAddTrack(IntPtr pc, IntPtr track, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string mediaStreamId);
         [DllImport(WebRTC.Lib)]
         public static extern void PeerConnectionRemoveTrack(IntPtr pc, IntPtr sender);
         [DllImport(WebRTC.Lib)]
@@ -364,7 +372,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr CreateMediaStream(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr CreateVideoTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr rt, int width, int height);
+        public static extern IntPtr CreateVideoTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr rt, int width, int height, int bitRate);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr CreateAudioTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label);
         [DllImport(WebRTC.Lib)]
@@ -404,7 +412,7 @@ namespace Unity.WebRTC
         public static Context Create(int uid = 0) { return NativeMethods.ContextCreate(uid); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
         public IntPtr CreateMediaStream(string label) { return NativeMethods.CreateMediaStream(self, label); }
-        public IntPtr CreateVideoTrack(string label, IntPtr rt, int width, int height) { return NativeMethods.CreateVideoTrack(self, label, rt, width, height); }
+        public IntPtr CreateVideoTrack(string label, IntPtr rt, int width, int height, int bitRate) { return NativeMethods.CreateVideoTrack(self, label, rt, width, height, bitRate); }
         public IntPtr CreateAudioTrack(string label) {return NativeMethods.CreateAudioTrack(self, label);}
     }
 }

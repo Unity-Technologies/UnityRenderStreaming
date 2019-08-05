@@ -106,16 +106,16 @@ namespace WebRTC
 
         {
             //todo: According to condition of format choose different capturer.
-            UnityVideoCapturer* pCapturer = *capturers.begin();
+            //UnityVideoCapturer* pCapturer = *(++capturers.begin());
     
-            dummyVideoEncoder->SetKeyFrame.connect(pCapturer, &UnityVideoCapturer::SetKeyFrame);
-            dummyVideoEncoder->SetRate.connect(pCapturer, &UnityVideoCapturer::SetRate);
+            //dummyVideoEncoder->SetKeyFrame.connect(pCapturer, &UnityVideoCapturer::SetKeyFrame);
+            //dummyVideoEncoder->SetRate.connect(pCapturer, &UnityVideoCapturer::SetRate);
         }
 
         return dummyVideoEncoder;
     }
 
-    UnityEncoder* DummyVideoEncoderFactory::CreatePlatformEncoder(EncoderPlatform platform, int width, int height)
+    UnityEncoder* DummyVideoEncoderFactory::CreatePlatformEncoder(EncoderPlatform platform, int width, int height, int bitRate)
     {
         UnityEncoder* pEncoder = NULL;
         switch (platform)
@@ -130,7 +130,7 @@ namespace WebRTC
         default:
             break;
         }
-        pEncoder->InitEncoder(width, height);
+        pEncoder->InitEncoder(width, height, bitRate);
         unityEncoders.push_back(pEncoder);
         return pEncoder;
     }

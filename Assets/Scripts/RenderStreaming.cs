@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        private MediaStream mediaStream;
+        private MediaStream[] mediaStreams = new MediaStream[2];
 
         public void Awake()
         {
@@ -62,16 +62,19 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            captureCamera.CreateRenderStreamTexture(1280, 720);
-            mediaStream = new MediaStream();
+            captureCamera.CreateRenderStreamTexture(1280, 720, mediaStreams.Length);
+            
             int texCount = captureCamera.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, captureCamera.GetStreamTexture(i));
-                mediaStream.AddTrack(videoTrack);
+                int index = i;
+                mediaStreams[i] = new MediaStream();
+                RenderTexture rt = captureCamera.GetStreamTexture(index);
+                VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt);
+                mediaStreams[i].AddTrack(videoTrack);
             }
 
-            mediaStream.AddTrack(new AudioStreamTrack("audioTrack"));
+            mediaStreams[0].AddTrack(new AudioStreamTrack("audioTrack"));
             Audio.Start();
 
             signaling = new Signaling(urlSignaling);
@@ -138,11 +141,16 @@ namespace Unity.RenderStreaming
                 {
                     continue;
                 }
-                var pc = new RTCPeerConnection();
-                pcs.Add(offer.connectionId, pc);
 
+                RTCConfiguration config = default;
+                config.iceServers = new RTCIceServer[]
+                {
+                    new RTCIceServer { urls = urlsIceServer },
+                };
+                config.bundle_policy = RTCBundlePolicy.kBundlePolicyMaxBundle;
+                var pc = new RTCPeerConnection(ref config);
+                pcs.Add(offer.connectionId, pc);
                 pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
-                pc.SetConfiguration(ref conf);
                 pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
                 pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
                 {
@@ -152,13 +160,21 @@ namespace Unity.RenderStreaming
                         pcs.Remove(offer.connectionId);
                     }
                 });
+
                 //make video bit rate starts at 16000kbits, and 160000kbits at max.
                 string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
+                Debug.Log("remote sdp---------------------------------------------------------");
+                Debug.Log(_desc.sdp);
+
                 pc.SetRemoteDescription(ref _desc);
-                foreach (var track in mediaStream.GetTracks())
+
+                foreach (var mediaStream in mediaStreams)
                 {
-                    pc.AddTrack(track);
+                    foreach (var track in mediaStream.GetTracks())
+                    {
+                        pc.AddTrack(track, mediaStream.Id);
+                    }
                 }
 
                 StartCoroutine(Answer(connectionId));
@@ -178,12 +194,14 @@ namespace Unity.RenderStreaming
             }
             var opLocalDesc = pc.SetLocalDescription(ref op.desc);
             yield return opLocalDesc;
+            Debug.Log("local sdp---------------------------------------------------------");
+            Debug.Log(op.desc.sdp);
             if (opLocalDesc.isError)
             {
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp); 
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {

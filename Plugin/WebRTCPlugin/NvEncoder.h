@@ -39,7 +39,7 @@ namespace WebRTC
         bool IsSupported() const { return isNvEncoderSupported; }
         void SetIdrFrame() { isIdrFrame = true; }
         uint64 GetCurrentFrameCount() { return frameCount; }
-        void InitEncoder(int width, int height);
+        void InitEncoder(int width, int height, int _bitRate);
         void InitEncoderResources();
         void* getRenderTexture() { return nvRenderTexture; }
 

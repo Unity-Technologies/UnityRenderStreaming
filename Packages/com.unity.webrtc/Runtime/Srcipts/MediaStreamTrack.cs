@@ -36,7 +36,7 @@ namespace Unity.WebRTC
 
     public class VideoStreamTrack : MediaStreamTrack
     {
-        public VideoStreamTrack(string label, RenderTexture rt) : base(WebRTC.Context.CreateVideoTrack(label, rt.GetNativeTexturePtr(), rt.width, rt.height))
+        public VideoStreamTrack(string label, RenderTexture rt, int bitRateMbps=10000000) : base(WebRTC.Context.CreateVideoTrack(label, rt.GetNativeTexturePtr(), rt.width, rt.height, bitRateMbps))
         {
         }
     }

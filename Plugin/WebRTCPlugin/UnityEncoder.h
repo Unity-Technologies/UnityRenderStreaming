@@ -16,7 +16,7 @@ namespace WebRTC
         virtual bool IsSupported() const = 0;
         virtual void SetIdrFrame() = 0;
         virtual uint64 GetCurrentFrameCount() = 0;
-        virtual void InitEncoder(int width, int height) = 0;
+        virtual void InitEncoder(int width, int height, int _bitRate) = 0;
         virtual void InitEncoderResources() = 0;
         virtual void* getRenderTexture() = 0;
     };

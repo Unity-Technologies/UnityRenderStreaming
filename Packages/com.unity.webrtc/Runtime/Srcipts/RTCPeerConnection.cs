@@ -188,9 +188,9 @@ namespace Unity.WebRTC
             NativeMethods.PeerConnectionClose(self, m_id);
         }
 
-        public RTCRtpSender AddTrack(MediaStreamTrack track)
+        public RTCRtpSender AddTrack(MediaStreamTrack track, string mediaStreamId="unity")
         {
-            return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.nativePtr));
+            return new RTCRtpSender(NativeMethods.PeerConnectionAddTrack(self, track.nativePtr, mediaStreamId));
         }
 
         public void RemoveTrack(RTCRtpSender sender)

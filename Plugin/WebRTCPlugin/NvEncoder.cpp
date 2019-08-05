@@ -39,10 +39,11 @@ namespace WebRTC
      
     }
 
-    void NvEncoder::InitEncoder(int width, int height)
+    void NvEncoder::InitEncoder(int width, int height, int _bitRate)
     {
         encodeWidth = width;
         encodeHeight = height;
+        bitRate = _bitRate;
 
         LogPrint(StringFormat("width is %d, height is %d", encodeWidth, encodeHeight).c_str());
         checkf(g_D3D11Device != nullptr, "D3D11Device is invalid");

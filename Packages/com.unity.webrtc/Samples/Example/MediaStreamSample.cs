@@ -215,7 +215,8 @@ public class MediaStreamSample : MonoBehaviour
         int texCount = cam.GetStreamTextureCount();
         for (int i = 0; i < texCount; ++i)
         {
-            mediaStream.AddTrack(new VideoStreamTrack("videoTrack"+1, cam.GetStreamTexture(i)));
+            RenderTexture rt = cam.GetStreamTexture(i);
+            mediaStream.AddTrack(new VideoStreamTrack("videoTrack"+1, rt));
         }
 
         mediaStream.AddTrack(new AudioStreamTrack("audioTrack"));

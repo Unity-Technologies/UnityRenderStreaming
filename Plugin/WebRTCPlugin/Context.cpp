@@ -241,6 +241,9 @@ namespace WebRTC
         }
         config.servers.push_back(stunServer);
         config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
+
+        Json::Value bundle_policy = configJson["bundle_policy"];
+        config.bundle_policy = (webrtc::PeerConnectionInterface::BundlePolicy)bundle_policy.asInt();
     }
 #pragma warning(push)
 #pragma warning(disable: 4715)
@@ -313,6 +316,7 @@ namespace WebRTC
 
     Context::~Context()
     {
+        pDummyVideoEncoderFactory->Destroy();
         clients.clear();
         peerConnectionFactory = nullptr;
 
@@ -324,9 +328,6 @@ namespace WebRTC
         workerThread.reset();
         signalingThread->Quit();
         signalingThread.reset();
-
-        pDummyVideoEncoderFactory->Destroy();
-
     }
 
     void Context::EncodeFrame()
@@ -355,9 +356,9 @@ namespace WebRTC
         return mediaStreamMap[stream_id];
     }
 
-    webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    webrtc::MediaStreamTrackInterface* Context::CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height, int32 bitRate)
     {
-        UnityEncoder* pUnityEncoder = pDummyVideoEncoderFactory->CreatePlatformEncoder(WebRTC::Nvidia, width, height);
+        UnityEncoder* pUnityEncoder = pDummyVideoEncoderFactory->CreatePlatformEncoder(WebRTC::Nvidia, width, height, bitRate);
         UnityVideoCapturer* pUnityVideoCapturer = new UnityVideoCapturer(pUnityEncoder, width, height);
         pUnityVideoCapturer->InitializeEncoder();
         pDummyVideoEncoderFactory->AddCapturer(pUnityVideoCapturer);

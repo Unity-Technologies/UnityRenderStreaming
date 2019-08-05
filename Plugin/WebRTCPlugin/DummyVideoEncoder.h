@@ -62,7 +62,7 @@ namespace WebRTC
         void Destroy();
 
         void AddCapturer(UnityVideoCapturer* _capturer) { capturers.push_back(_capturer); }
-        UnityEncoder* CreatePlatformEncoder(EncoderPlatform platform, int width, int height);
+        UnityEncoder* CreatePlatformEncoder(EncoderPlatform platform, int width, int height, int bitRate);
     private:
         std::list<UnityVideoCapturer*> capturers;
         std::list<UnityEncoder*> unityEncoders;

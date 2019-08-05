@@ -34,9 +34,9 @@ extern "C"
         return context->CreateMediaStream(label);
     }
 
-    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* CreateVideoTrack(Context* context, const char* label, UnityFrameBuffer* frameBuffer, int32 width, int32 height)
+    UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* CreateVideoTrack(Context* context, const char* label, UnityFrameBuffer* frameBuffer, int32 width, int32 height, int32 bitRate)
     {
-        return context->CreateVideoTrack(label, frameBuffer, width, height);
+        return context->CreateVideoTrack(label, frameBuffer, width, height, bitRate);
     }
 
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamTrackInterface* CreateAudioTrack(Context* context, const char* label)
@@ -190,9 +190,9 @@ extern "C"
         obj->Close();
         ContextManager::GetInstance()->curContext->DeleteClient(id);
     }
-    UNITY_INTERFACE_EXPORT webrtc::RtpSenderInterface* PeerConnectionAddTrack(PeerConnectionObject* obj, webrtc::MediaStreamTrackInterface* track)
+    UNITY_INTERFACE_EXPORT webrtc::RtpSenderInterface* PeerConnectionAddTrack(PeerConnectionObject* obj, webrtc::MediaStreamTrackInterface* track, const char* mediaStreamId)
     {
-        return obj->connection->AddTrack(rtc::scoped_refptr <webrtc::MediaStreamTrackInterface>(track), { "unity" }).value().get();
+        return obj->connection->AddTrack(rtc::scoped_refptr <webrtc::MediaStreamTrackInterface>(track), { mediaStreamId }).value().get();
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionRemoveTrack(PeerConnectionObject* obj, webrtc::RtpSenderInterface* sender)

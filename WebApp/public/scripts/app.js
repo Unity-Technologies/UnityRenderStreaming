@@ -48,6 +48,16 @@ function onClickPlayButton() {
     sendClickEvent(videoPlayer, 2);
   });
 
+  // add Switch Resolution button
+  const elementSwitchResolutionButton = document.createElement('button');
+  elementSwitchResolutionButton.id = "switchResolutionButton";
+  elementSwitchResolutionButton.innerHTML = "Switch Resolution";
+  playerDiv.appendChild(elementSwitchResolutionButton);
+  elementSwitchResolutionButton.addEventListener ("click", function() {
+    videoPlayer.switchStream();
+  });
+
+
   // add fullscreen button
   const elementFullscreenButton = document.createElement('img');
   elementFullscreenButton.id = 'fullscreenButton';

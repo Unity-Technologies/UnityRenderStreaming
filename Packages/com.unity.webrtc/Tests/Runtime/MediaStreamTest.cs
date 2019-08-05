@@ -53,7 +53,8 @@ class MediaStreamTest
             int texCount = cam.GetStreamTextureCount();
             for (int i = 0; i < texCount; ++i)
             {
-                VideoStreamTrack videoStreamTrack = new VideoStreamTrack("videoTrack"+i,cam.GetStreamTexture(i));
+                RenderTexture rt = cam.GetStreamTexture(i);
+                VideoStreamTrack videoStreamTrack = new VideoStreamTrack("videoTrack"+i, rt);
                 mediaStream.AddTrack(videoStreamTrack);
                 pc1Senders.Add(peer1.AddTrack(videoStreamTrack));
             }

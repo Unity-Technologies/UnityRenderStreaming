@@ -1,11 +1,14 @@
 import Signaling from "./signaling.js"
 
 export class VideoPlayer {
+
   constructor(element, config) {
     const _this = this;
     this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
     this.channel = null;
+    this.UnityStreams = [];
+    this.UnityStreamIndex = 0;
     this.offerOptions = {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
@@ -27,6 +30,7 @@ export class VideoPlayer {
     }
     config.sdpSemantics = 'unified-plan';
     config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    config.bundlePolicy = "max-bundle";
     return config;
   }
 
@@ -48,6 +52,10 @@ export class VideoPlayer {
 
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
+    this.pc.addTransceiver("video");
+    this.pc.addTransceiver("audio");
+    this.pc.addTransceiver("video");
+
     this.pc.onsignalingstatechange = function (e) {
       console.log('signalingState changed:', e);
     };
@@ -64,6 +72,10 @@ export class VideoPlayer {
     this.pc.ontrack = function (e) {
       console.log('New track added: ', e.streams);
       _this.video.srcObject = e.streams[0];
+      if (_this.UnityStreams.indexOf(e.streams[0])==-1)
+      {
+        _this.UnityStreams.push(e.streams[0]);
+      }
     };
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
@@ -92,6 +104,7 @@ export class VideoPlayer {
     await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
+
     const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
     await this.pc.setLocalDescription(desc);
     await this.sendOffer(offer);
@@ -159,6 +172,15 @@ export class VideoPlayer {
       console.log('Close current PeerConnection');
       this.pc.close();
       this.pc = null;
+    }
+  };
+
+  switchStream(){
+    this.video.srcObject = this.UnityStreams[this.UnityStreamIndex];
+    this.UnityStreamIndex++;
+    if (this.UnityStreamIndex>=this.UnityStreams.length)
+    {
+      this.UnityStreamIndex = 0;
     }
   };
 

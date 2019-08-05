@@ -9,16 +9,24 @@ namespace Unity.WebRTC
     public class MediaStream 
     {
         internal IntPtr nativePtr;
+        internal string id;
         protected List<MediaStreamTrack> mediaStreamTrackList = new List<MediaStreamTrack>();
+        private static int sMediaStreamCount = 0;
+
+        public string Id { get => id; private set { } }
 
         public MediaStream() : base()
         {
-            nativePtr = WebRTC.Context.CreateMediaStream("MediaStream");
+            sMediaStreamCount++;
+            id = "MediaStream" + sMediaStreamCount;
+            nativePtr = WebRTC.Context.CreateMediaStream(id);
         }
 
         public MediaStream(MediaStreamTrack[] tracks) : base()
         {
-            nativePtr = WebRTC.Context.CreateMediaStream("MediaStream");
+            sMediaStreamCount++;
+            id = "MediaStream" + sMediaStreamCount;
+            nativePtr = WebRTC.Context.CreateMediaStream(id);
 
             foreach (var t in tracks)
             {
@@ -93,7 +101,7 @@ namespace Unity.WebRTC
             camRenderTexture.Create();
 
             int mipCount = count;
-            for (int i = 1, mipLevel = 1; i <= mipCount; ++i, mipLevel *= 2)
+            for (int i = 1, mipLevel = 1; i <= mipCount; ++i, mipLevel *= 4)
             {
                 RenderTexture webRtcTex = new RenderTexture(width / mipLevel, height / mipLevel, 0, RenderTextureFormat.BGRA32);
                 webRtcTex.Create();

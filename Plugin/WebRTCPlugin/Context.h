@@ -44,7 +44,7 @@ namespace WebRTC
     public:
         explicit Context(int uid = -1);
         webrtc::MediaStreamInterface* CreateMediaStream(const std::string& stream_id);
-        webrtc::MediaStreamTrackInterface* CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height);
+        webrtc::MediaStreamTrackInterface* CreateVideoTrack(const std::string& label, UnityFrameBuffer* frameBuffer, int32 width, int32 height, int32 bitRate);
         webrtc::MediaStreamTrackInterface* CreateAudioTrack(const std::string& label);
         ~Context();
 
