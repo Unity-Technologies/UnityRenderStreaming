@@ -8,17 +8,17 @@ public class HDRPPostProcessor : AssetPostprocessor
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
         string[] movedAssets, string[] movedFromAssetPaths)
     {
+        if (null != GraphicsSettings.renderPipelineAsset) {
+            return;
+        }
         
         int numImportedAssets = importedAssets.Length;
         for (int i=0;i< numImportedAssets; ++i) {
             string curAssetPath = importedAssets[i];
 
             if (curAssetPath == "Assets/RenderPipeline/HDRP/HDRenderPipelineAsset.asset") {
-
-                if (null == GraphicsSettings.renderPipelineAsset) {
-                    HDRenderPipelineAsset pipelineAsset = AssetDatabase.LoadAssetAtPath<HDRenderPipelineAsset>(curAssetPath);
-                    GraphicsSettings.renderPipelineAsset = pipelineAsset;                    
-                }
+                HDRenderPipelineAsset pipelineAsset = AssetDatabase.LoadAssetAtPath<HDRenderPipelineAsset>(curAssetPath);
+                GraphicsSettings.renderPipelineAsset = pipelineAsset;                    
             }
         }
     }
