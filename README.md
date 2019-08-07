@@ -7,9 +7,10 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 <img src="Packages/com.unity.template.renderstreaming/Documentation~/images/multitouch.gif" width=500 align=center>
 
-This repository manages 2 packages. Details can be found in the README.md for each package.
+This repository manages 3 packages. Details can be found in the README.md for each package.
 
-- [com.unity.template.renderstreming](Packages/com.unity.template.renderstreaming/Documentation~/index.md)
+- [com.unity.template.renderstreaming](Packages/com.unity.template.renderstreaming/Documentation~/index.md)
+- [com.unity.renderstreaming](Packages/com.unity.renderstreaming/Documentation~/index.md)
 - [com.unity.webrtc](Packages/com.unity.webrtc/Documentation~/index.md)
 
 ## Operating Environment
@@ -57,6 +58,8 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 ├── Plugin
 │   ├── WebRTCPlugin
 │   └── unity
+├── RenderStreamingSampleSrc~
+│   └── RS_HDRPSampleSrc_1.x
 └── WebApp
     ├── public
     ├── src
@@ -75,9 +78,13 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 
 Read [this page](Packages/com.unity.template.renderstreaming/Documentation~/en/faq.md).
 
+## Sample Sources
+- [HDRP](RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x/Documentation/index.md)
+
 ## Contributors
 
 - [@karasusan](https://github.com/karasusan)
 - [@hiroki-o](https://github.com/hiroki-o)
 - [@flame99999](https://github.com/flame99999)
 - [@koseyile](https://github.com/koseyile)
+- [@sindharta](https://github.com/sindharta)
