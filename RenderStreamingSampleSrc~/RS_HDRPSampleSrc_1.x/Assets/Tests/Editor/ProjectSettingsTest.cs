@@ -9,15 +9,14 @@ namespace Tests.Editor
 public class ProjectSettingsTest {
     [Test]
     public void VerifyGraphicsSettings()  {
-        Assert.True(null != GraphicsSettings.renderPipelineAsset);
-        Assert.True(ColorSpace.Linear == PlayerSettings.colorSpace );
+        Assert.AreNotEqual(null, GraphicsSettings.renderPipelineAsset);
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 
     [Test]
     public void VerifyPlayerSettings()  {
-        Assert.True(ColorSpace.Linear == PlayerSettings.colorSpace );
+        Assert.AreEqual(ColorSpace.Linear, PlayerSettings.colorSpace);
     }
 }
 
