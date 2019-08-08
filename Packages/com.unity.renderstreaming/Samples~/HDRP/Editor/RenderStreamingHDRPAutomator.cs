@@ -5,7 +5,7 @@ using System.IO;                            //Path
 using UnityEngine;                          //ScriptableObject
 using System.Diagnostics;                   //StackTrace
 
-public class RenderStreamingHDRPAutomator : ScriptableObject 
+public class RenderStreamingHDRPAutomator 
 {
     [UnityEditor.InitializeOnLoadMethod]
     static public void OnLoad() {
@@ -17,12 +17,12 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
         //3. One additional requirement that the asset must be in the same path as this C# file
 
         Init();
-        UnityEditor.AssetDatabase.ImportAsset(m_automatorAssetPath);
+        RenderStreamingSettings settings = LoadSettings();
 
-        if (!string.IsNullOrEmpty(m_automatorAsset.m_version)) {
+        if (null!=settings && !string.IsNullOrEmpty(settings.Version)) {
             return;
         }
-        
+
         RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.1f );
     }
@@ -40,20 +40,20 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
             ImportHDRPSample();
         }
 
-        //update ScriptableObject asset
-        PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
-        if (null != renderStreamingPackageInfo) {
-            m_automatorAsset.m_version = renderStreamingPackageInfo.version;
+
+        //update json
+        RenderStreamingSettings settings = LoadSettings();
+        if (null!=settings) {
+            PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
+            if (null != renderStreamingPackageInfo) {
+                settings.Version = renderStreamingPackageInfo.version;
+                SaveSettings(settings);
+            }
         }
 
-        //Force saving the ScriptableObject
-        string[] assetPaths = { m_automatorAssetPath };
-        UnityEditor.AssetDatabase.ForceReserializeAssets(assetPaths, UnityEditor.ForceReserializeAssetsOptions.ReserializeAssets);
-
         //Change the C# file to trigger recompilation next time "Import in project" is pushed again
-        string cScript = Path.ChangeExtension(m_automatorAssetPath, ".cs");
-        File.AppendAllText(cScript, System.Environment.NewLine + "//Automatically Modified to trigger recompilation");
-        UnityEditor.AssetDatabase.ImportAsset(cScript);
+        File.AppendAllText(m_codePath, System.Environment.NewLine + "//Automatically Modified to trigger recompilation");
+        UnityEditor.AssetDatabase.ImportAsset(m_codePath);
     }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -66,10 +66,7 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
 
     static void ImportHDRPSample() {
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.8f );
-
-        string path = UnityEditor.AssetDatabase.GetAssetPath(m_automatorAsset.m_samplePackage);
-        UnityEditor.AssetDatabase.ImportPackage(path, true);
-
+        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, true);
         UnityEditor.EditorUtility.ClearProgressBar();
     }
 
@@ -80,26 +77,44 @@ public class RenderStreamingHDRPAutomator : ScriptableObject
         StackTrace st = new StackTrace(new StackFrame(true));
         StackFrame sf = st.GetFrame(0);
 
-        string path = Path.ChangeExtension(sf.GetFileName(),".asset").Replace(@"\", "/" );
+        string path = sf.GetFileName().Replace(@"\", "/" );
 
         //Change absolute path to relative path
         if (path.StartsWith(Application.dataPath)) {
             path=  "Assets" + path.Substring(Application.dataPath.Length);
         }
-        m_automatorAssetPath = path;
-        m_automatorAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<RenderStreamingHDRPAutomator>(m_automatorAssetPath);
+
+        m_codePath = path;
+
+        string dir = Path.GetDirectoryName(path).Replace(@"\", "/" );
+        m_settingsPath = dir + "/RenderStreamingHDRPSettings.json";
+        m_unityPackageSamplePath =  dir + "/RenderStreamingHDRPSimple.unitypackage";
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-    [SerializeField] private string m_version = null;
-    [SerializeField] Object m_samplePackage = null;
+    static RenderStreamingSettings LoadSettings() {
+        if (!File.Exists(m_settingsPath))
+            return null;
+        
+        return JsonUtility.FromJson<RenderStreamingSettings>(File.ReadAllText(m_settingsPath));
+    }
 
-    static string m_automatorAssetPath;
-    static RenderStreamingHDRPAutomator m_automatorAsset;
+
+//---------------------------------------------------------------------------------------------------------------------
+
+    static void SaveSettings(RenderStreamingSettings settings) {
+        File.WriteAllText(m_settingsPath,JsonUtility.ToJson(settings));
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+
+    static string m_settingsPath;
+    static string m_unityPackageSamplePath;
+    static string m_codePath;
 
     readonly static string PROGRESS_BAR_TITLE = "RenderStreaming";
     readonly static string PROGRESS_BAR_INFO  = "Installing HDRP Sample";
 
 }
-
