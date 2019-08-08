@@ -40,12 +40,15 @@ public class RenderStreamingHDRPAutomator
             ImportHDRPSample();
         }
 
+
         //update json
         RenderStreamingSettings settings = LoadSettings();
-        PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
-        if (null != renderStreamingPackageInfo) {
-            settings.Version = renderStreamingPackageInfo.version;
-            SaveSettings(settings);
+        if (null!=settings) {
+            PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
+            if (null != renderStreamingPackageInfo) {
+                settings.Version = renderStreamingPackageInfo.version;
+                SaveSettings(settings);
+            }
         }
 
         //Change the C# file to trigger recompilation next time "Import in project" is pushed again
