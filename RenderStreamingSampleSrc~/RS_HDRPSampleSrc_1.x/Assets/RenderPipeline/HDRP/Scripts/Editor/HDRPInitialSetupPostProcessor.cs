@@ -18,7 +18,9 @@ public class HDRPPostProcessor : AssetPostprocessor
 
             if (curAssetPath == "Assets/RenderPipeline/HDRP/HDRenderPipelineAsset.asset") {
                 HDRenderPipelineAsset pipelineAsset = AssetDatabase.LoadAssetAtPath<HDRenderPipelineAsset>(curAssetPath);
-                GraphicsSettings.renderPipelineAsset = pipelineAsset;                    
+                GraphicsSettings.renderPipelineAsset = pipelineAsset;
+
+                PlayerSettings.colorSpace = ColorSpace.Linear;
             }
         }
     }
