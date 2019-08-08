@@ -347,6 +347,9 @@ MigrationBackup/
 # Exclude webrtc source 
 Plugin/webrtc
 
+# Exclude imported samples
+Assets/Samples.meta
+Assets/Samples/
 
 
 
