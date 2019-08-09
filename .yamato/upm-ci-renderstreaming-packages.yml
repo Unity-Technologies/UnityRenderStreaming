@@ -1,4 +1,4 @@
-# .yamato/upm-ci-packages.yml
+# .yamato/upm-ci-renderstreaming-packages.yml
 editors:
   - version: 2019.1
   - version: 2019.2  
@@ -53,7 +53,7 @@ pack_{{ package.name }}:
         - "{{ package.packagename }}/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
     {% endfor %}
 
 {% for editor in editors %}
@@ -72,13 +72,14 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       only:
       - "/.*/"
       except:
-      - "master"
+      - "master"    
+  
   artifacts:
     logs.zip:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% endfor %}
 {% endfor %}
 
@@ -100,10 +101,10 @@ publish_{{ package.name }}:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
 {% endfor %}
