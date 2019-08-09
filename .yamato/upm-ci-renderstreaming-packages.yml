@@ -32,7 +32,7 @@ pack_{{ package.name }}:
     - {{ package.prepack_command}}
     - upm-ci package pack --package-path Packages/{{ package.packagename }}
   artifacts:
-    renderstreaming_packages:
+    {{ package.name }}_package:
       paths:
         - "upm-ci~/packages/**/*"
 
@@ -55,7 +55,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       - "master"    
   
   artifacts:
-    logs.zip:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -77,7 +77,7 @@ publish_{{ package.name }}:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   artifacts:
-    artifacts.zip:
+    {{ package.name }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
