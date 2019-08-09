@@ -2,7 +2,7 @@ platforms:
   - name: win
     type: Unity::VM
     image: renderstreaming/win10:v0.1.2-276056
-    flavor: m1.xlarge
+    flavor: b1.xlarge
     build_command: build_libwebrtc.cmd
 projects:
   - name: libwebrtc    

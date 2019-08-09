@@ -10,7 +10,7 @@ publish_github_release:
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.webrtc-%GIT_TAG%.tgz"
