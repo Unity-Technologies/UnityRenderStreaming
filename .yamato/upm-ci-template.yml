@@ -6,7 +6,7 @@ platforms:
   - name: win
     type: Unity::VM
     image: renderstreaming/win10:latest
-    flavor: m1.large
+    flavor: b1.large
 projects:
   - name: renderstreaming
     packagename: com.unity.template.renderstreaming
@@ -17,7 +17,7 @@ pack:
   agent:
     type: Unity::VM
     image: renderstreaming/win10:latest
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template pack
@@ -28,7 +28,7 @@ pack:
         - "upm-ci~/templates/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#prepack_webrtc_{{ platform.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_webrtc_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
 
@@ -49,7 +49,7 @@ test_{{ platform.name }}_{{ editor.version }}:
         - "upm-ci~/test-results/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#prepack_webrtc_{{ platform.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_webrtc_{{ platform.name }}
     {% endfor %}
     - .yamato/upm-ci-template.yml#pack
 {% endfor %}
@@ -60,7 +60,7 @@ publish:
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template publish

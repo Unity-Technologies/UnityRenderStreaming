@@ -1,4 +1,4 @@
-# .yamato/upm-ci-packages.yml
+# .yamato/upm-ci-renderstreaming-packages.yml
 editors:
   - version: 2019.1
   - version: 2019.2  
@@ -9,8 +9,8 @@ platforms:
     # currently the projects depends MSBuild. we should replace CMake
     # image: package-ci/win10:stable
     image: renderstreaming/win10:latest
-    flavor: m1.large
-projects:
+    flavor: b1.large
+packages:
   - name: webrtc
     packagename: com.unity.webrtc
     prepack_command: build_plugin.cmd
@@ -19,78 +19,79 @@ projects:
     prepack_command: 
     
 ---
-{% for project in projects %}
+{% for package in packages %}
 {% for platform in platforms %}
-prepack_{{ project.name }}_{{ platform.name }}:
-  name: Prepack {{ project.packagename }} {{ platform.name }}
+prepack_{{ package.name }}_{{ platform.name }}:
+  name: Prepack {{ package.packagename }} {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - {{ project.prepack_command}}
+    - {{ package.prepack_command}}
   artifacts:
     build:
       paths:
-        - "Packages/{{ project.packagename }}/**/*"
+        - "Packages/{{ package.packagename }}/**/*"
 {% endfor %}
 
-pack_{{ project.name }}:
-  name: Pack {{ project.packagename }}
+pack_{{ package.name }}:
+  name: Pack {{ package.packagename }}
   agent:
     type: Unity::VM
     image: renderstreaming/win10:latest
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package pack --package-path Packages/{{ project.packagename }}
+    - upm-ci package pack --package-path Packages/{{ package.packagename }}
   artifacts:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
     build:
       paths:
-        - "{{ project.packagename }}/**/*"
+        - "{{ package.packagename }}/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#prepack_{{ project.name }}_{{ platform.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
     {% endfor %}
 
 {% for editor in editors %}
 {% for platform in platforms %}
-test_{{ project.name }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package test -u {{ editor.version }} --package-path Packages/{{ project.packagename }}
+    - upm-ci package test -u {{ editor.version }} --package-path Packages/{{ package.packagename }}
   triggers:
     branches:
       only:
       - "/.*/"
       except:
-      - "master"
+      - "master"    
+  
   artifacts:
     logs.zip:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-packages.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% endfor %}
 {% endfor %}
 
-publish_{{ project.name }}:
-  name: Publish {{ project.packagename }}
+publish_{{ package.name }}:
+  name: Publish {{ package.packagename }}
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package publish --package-path Packages/{{ project.packagename }}
+    - upm-ci package publish --package-path Packages/{{ package.packagename }}
   triggers:
     tags:
       only:
@@ -100,10 +101,10 @@ publish_{{ project.name }}:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-packages.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-packages.yml#test_{{ project.name }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
 {% endfor %}

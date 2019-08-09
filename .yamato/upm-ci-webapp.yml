@@ -2,7 +2,7 @@ platforms:
   - name: win
     type: Unity::VM
     image: package-ci/win10:stable
-    flavor: m1.xlarge
+    flavor: b1.xlarge
     pack_command: pack_webapp.cmd
     test_command: test_webapp.cmd
   - name: mac

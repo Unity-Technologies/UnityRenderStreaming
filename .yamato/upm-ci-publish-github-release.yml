@@ -1,7 +1,7 @@
 platforms:
   - name: win
   - name: mac
-projects:
+packages:
   - name: webrtc
   - name: renderstreaming
 ---
@@ -10,7 +10,7 @@ publish_github_release:
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
-    flavor: m1.large
+    flavor: b1.large
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.webrtc-%GIT_TAG%.tgz"
@@ -24,8 +24,8 @@ publish_github_release:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
-    {% for project in projects %}
-    - .yamato/upm-ci-packages.yml#pack_{{ project.name }}
+    {% for package in packages%}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     {% endfor %}
     - .yamato/upm-ci-template.yml#pack
     {% for platform in platforms %}
