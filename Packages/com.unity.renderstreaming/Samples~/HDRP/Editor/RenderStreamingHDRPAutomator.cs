@@ -1,14 +1,24 @@
-﻿using UnityEditor.PackageManager.Requests;  //Request
-using UnityEditor.PackageManager;           //PackageCollection
-using Unity.RenderStreaming.Editor;         //RequestJobManager
+﻿using System.Diagnostics;                   //StackTrace
 using System.IO;                            //Path
+using Unity.RenderStreaming.Editor;         //RequestJobManager
+using UnityEditor.PackageManager;           //PackageCollection
+using UnityEditor.PackageManager.Requests;  //Request
 using UnityEngine;                          //ScriptableObject
-using System.Diagnostics;                   //StackTrace
 
 public class RenderStreamingHDRPAutomator 
 {
-    [UnityEditor.InitializeOnLoadMethod]
-    static public void OnLoad() {
+   
+//---------------------------------------------------------------------------------------------------------------------
+    public static bool IsSampleImported() {
+        return m_sampleImported;
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+    public static void TryAddHDRPPackageAndImportSample() {
+
+        m_sampleImported = false;
+
         //Some steps are necessary to "hack" so that Unity will execute this file everytime we click "Import in project"
         //In the package manager UI.
         //1. Import the ScriptableObject to make sure that we are dealing with the new copied asset, and not the asset
@@ -20,11 +30,21 @@ public class RenderStreamingHDRPAutomator
         RenderStreamingSettings settings = LoadSettings();
 
         if (null!=settings && !string.IsNullOrEmpty(settings.Version)) {
+            m_sampleImported = true;
             return;
         }
 
         RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.1f );
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+    [UnityEditor.InitializeOnLoadMethod]
+    static void OnLoad() {
+        if (Application.isBatchMode)
+            return;
+        TryAddHDRPPackageAndImportSample();
     }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -40,10 +60,9 @@ public class RenderStreamingHDRPAutomator
             ImportHDRPSample();
         }
 
-
         //update json
         RenderStreamingSettings settings = LoadSettings();
-        if (null!=settings) {
+            if (null!=settings) {
             PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
             if (null != renderStreamingPackageInfo) {
                 settings.Version = renderStreamingPackageInfo.version;
@@ -60,15 +79,17 @@ public class RenderStreamingHDRPAutomator
 
     static void OnHDRPPackageAdded(Request<PackageInfo> req) {
         ImportHDRPSample();
+        m_sampleImported = true;
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 
     static void ImportHDRPSample() {
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.8f );
-        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, true);
+        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, !Application.isBatchMode);
         UnityEditor.EditorUtility.ClearProgressBar();
     }
+
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -114,7 +135,10 @@ public class RenderStreamingHDRPAutomator
     static string m_unityPackageSamplePath;
     static string m_codePath;
 
+    static bool m_sampleImported = false;
+
     readonly static string PROGRESS_BAR_TITLE = "RenderStreaming";
     readonly static string PROGRESS_BAR_INFO  = "Installing HDRP Sample";
 
 }
+
