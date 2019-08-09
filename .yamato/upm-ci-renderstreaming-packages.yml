@@ -20,6 +20,20 @@ packages:
     
 ---
 {% for package in packages %}
+{% for platform in platforms %}
+prepack_{{ package.name }}_{{ platform.name }}:
+  name: Prepack {{ package.packagename }} {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ package.prepack_command}}
+  artifacts:
+    {{ package.name }}_{{ platform.name }}_prepace: 
+      paths:
+        - "Packages/{{ package.packagename }}/**/*"
+{% endfor %}
 
 pack_{{ package.name }}:
   name: Pack {{ package.packagename }}
@@ -29,12 +43,15 @@ pack_{{ package.name }}:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - {{ package.prepack_command}}
     - upm-ci package pack --package-path Packages/{{ package.packagename }}
   artifacts:
-    {{ package.name }}_package:
+    {{ package.name }}_package:  
       paths:
         - "upm-ci~/packages/**/*"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
+    {% endfor %}
 
 {% for editor in editors %}
 {% for platform in platforms %}
@@ -55,7 +72,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       - "master"    
   
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -76,7 +93,7 @@ publish_{{ package.name }}:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:
+  artifacts:  
     {{ package.name }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
