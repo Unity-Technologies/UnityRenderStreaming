@@ -16,13 +16,11 @@ public class RenderStreamingHDRPAutomator
 //---------------------------------------------------------------------------------------------------------------------
 
     public static void TryAddHDRPPackageAndImportSample() {
-
         m_sampleImported = false;
 
         //Some steps are necessary to "hack" so that Unity will execute this file everytime we click "Import in project"
         //In the package manager UI.
-        //1. Import the ScriptableObject to make sure that we are dealing with the new copied asset, and not the asset
-        //   modified later in this module
+        //1. Import the json to make sure that we are dealing with the new settings
         //2. Change the C# code (this file) a bit to trigger C# compilation, even though the file content is the same
         //3. One additional requirement that the asset must be in the same path as this C# file
 
@@ -44,6 +42,7 @@ public class RenderStreamingHDRPAutomator
     static void OnLoad() {
         if (Application.isBatchMode)
             return;
+
         TryAddHDRPPackageAndImportSample();
     }
 
@@ -55,14 +54,15 @@ public class RenderStreamingHDRPAutomator
         const string HDRP_PACKAGE_NAME = "com.unity.render-pipelines.high-definition";
         PackageInfo packageInfo = req.FindPackage(HDRP_PACKAGE_NAME);
         if (null == packageInfo) {
-            RequestJobManager.CreateAddRequest(HDRP_PACKAGE_NAME, OnHDRPPackageAdded, null);
+            UnityEditor.EditorApplication.LockReloadAssemblies();
+            RequestJobManager.CreateAddRequest(HDRP_PACKAGE_NAME, OnHDRPPackageAdded, OnHDRPPackageAddFailed);
         } else {
             ImportHDRPSample();
         }
 
         //update json
         RenderStreamingSettings settings = LoadSettings();
-            if (null!=settings) {
+        if (null!=settings) {
             PackageInfo renderStreamingPackageInfo = req.FindPackage("com.unity.renderstreaming");
             if (null != renderStreamingPackageInfo) {
                 settings.Version = renderStreamingPackageInfo.version;
@@ -80,6 +80,12 @@ public class RenderStreamingHDRPAutomator
     static void OnHDRPPackageAdded(Request<PackageInfo> req) {
         ImportHDRPSample();
         m_sampleImported = true;
+        UnityEditor.EditorApplication.UnlockReloadAssemblies();
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+    static void OnHDRPPackageAddFailed(Request<PackageInfo> req) {
+        UnityEditor.EditorApplication.UnlockReloadAssemblies();
     }
 
 //---------------------------------------------------------------------------------------------------------------------
