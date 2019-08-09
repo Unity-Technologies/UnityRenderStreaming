@@ -30,7 +30,7 @@ prepack_{{ package.name }}_{{ platform.name }}:
   commands:
     - {{ package.prepack_command}}
   artifacts:
-    {{ package.name }}_{{ platform.name }}_prepace: 
+    {{ package.name }}_{{ platform.name }}_prepack: 
       paths:
         - "Packages/{{ package.packagename }}/**/*"
 {% endfor %}
