@@ -45,6 +45,9 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
     test_renderstreaming_sample_{{ sample.name }}_logs:
       paths:
         - "Logs/**"
+    all:
+      paths:
+        - "**/**"        
 {% endfor %}
 {% endfor %}
 {% endfor %}
