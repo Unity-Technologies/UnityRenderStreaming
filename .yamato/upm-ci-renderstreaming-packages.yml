@@ -30,7 +30,7 @@ prepack_{{ package.name }}_{{ platform.name }}:
   commands:
     - {{ package.prepack_command}}
   artifacts:
-    build:
+    {{ package.name }}_{{ platform.name }}_prepack: 
       paths:
         - "Packages/{{ package.packagename }}/**/*"
 {% endfor %}
@@ -45,12 +45,9 @@ pack_{{ package.name }}:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package pack --package-path Packages/{{ package.packagename }}
   artifacts:
-    packages:
+    {{ package.name }}_package:  
       paths:
         - "upm-ci~/packages/**/*"
-    build:
-      paths:
-        - "{{ package.packagename }}/**/*"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
@@ -75,7 +72,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       - "master"    
   
   artifacts:
-    logs.zip:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -96,8 +93,8 @@ publish_{{ package.name }}:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:
-    artifacts.zip:
+  artifacts:  
+    {{ package.name }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
