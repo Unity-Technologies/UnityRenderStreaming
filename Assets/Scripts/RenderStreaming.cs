@@ -37,6 +37,9 @@ namespace Unity.RenderStreaming
 
         [SerializeField]
         private ButtonClickElement[] arrayButtonClickEvent;
+
+        [SerializeField]
+        private bool isUseMinimalTextures = true;
 #pragma warning restore 0649
 
         private Signaling signaling;
@@ -65,30 +68,44 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            int count = 0;
-            foreach (var camera in Camera.allCameras)
-            {
-                count++;
-                if (count == 1)
-                {
-                    //continue;
-                }
 
-                CameraMediaStream cameraMediaStream = new CameraMediaStream();
-                cameraMediaStreamDict.Add(camera, cameraMediaStream);
-                camera.CreateRenderStreamTexture(1280, 720, cameraMediaStream.mediaStreams.Length);
-                int texCount = camera.GetStreamTextureCount();
-                for (int i = 0; i < texCount; ++i)
+            if (isUseMinimalTextures)
+            {
+                foreach (var camera in Camera.allCameras)
                 {
-                    int index = i;
-                    cameraMediaStream.mediaStreams[i] = new MediaStream();
-                    RenderTexture rt = camera.GetStreamTexture(index);
-                    VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt);
-                    cameraMediaStream.mediaStreams[i].AddTrack(videoTrack);
-                    cameraMediaStream.mediaStreams[i].AddTrack(new AudioStreamTrack("audioTrack"));
+                    CameraMediaStream cameraMediaStream = new CameraMediaStream();
+                    cameraMediaStreamDict.Add(camera, cameraMediaStream);
+                    camera.CreateRenderStreamTexture(1280, 720);
+                    int mediaCount = cameraMediaStream.mediaStreams.Length;
+                    for (int i = 0; i < mediaCount; ++i)
+                    {
+                        cameraMediaStream.mediaStreams[i] = new MediaStream();
+                        RenderTexture rt = camera.GetStreamTexture(0);
+                        int temp = i==0 ? 1 : (int)Mathf.Pow(i + 1, 10);
+                        VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt, 1000000/temp);
+                        cameraMediaStream.mediaStreams[i].AddTrack(videoTrack);
+                        cameraMediaStream.mediaStreams[i].AddTrack(new AudioStreamTrack("audioTrack"));
+                    }
+                }
+            }else{
+                foreach (var camera in Camera.allCameras)
+                {
+                    CameraMediaStream cameraMediaStream = new CameraMediaStream();
+                    cameraMediaStreamDict.Add(camera, cameraMediaStream);
+                    camera.CreateRenderStreamTexture(1280, 720, cameraMediaStream.mediaStreams.Length);
+                    int texCount = camera.GetStreamTextureCount();
+                    for (int i = 0; i < texCount; ++i)
+                    {
+                        int index = i;
+                        cameraMediaStream.mediaStreams[i] = new MediaStream();
+                        RenderTexture rt = camera.GetStreamTexture(index);
+                        VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt);
+                        cameraMediaStream.mediaStreams[i].AddTrack(videoTrack);
+                        cameraMediaStream.mediaStreams[i].AddTrack(new AudioStreamTrack("audioTrack"));
+                    }
                 }
             }
-            
+
             Audio.Start();
 
             signaling = new Signaling(urlSignaling);
