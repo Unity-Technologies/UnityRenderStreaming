@@ -74,63 +74,68 @@ namespace Unity.WebRTC
             Cleaner.AddCleanerCallback(obj, callback);
         }
     }
+
+    internal class CameraCapturerTextures
+    {
+        internal RenderTexture camRenderTexture;
+        internal List<RenderTexture> webRTCTextures = new List<RenderTexture>();
+    }
+
     public static class CameraExtension
     {
-        internal static RenderTexture camRenderTexture;
-        internal static List<RenderTexture> webRTCTextures = new List<RenderTexture>();
-        internal static List<RenderTexture[]> camCopyRts = new List<RenderTexture[]>();
-        internal static bool started = false;
+        internal static Dictionary<Camera, CameraCapturerTextures> camCapturerTexturesDict = new Dictionary<Camera, CameraCapturerTextures>();
 
         public static int GetStreamTextureCount(this Camera cam)
         {
-            return webRTCTextures.Count;
+            CameraCapturerTextures textures;
+            if (camCapturerTexturesDict.TryGetValue(cam, out textures))
+            {
+                return textures.webRTCTextures.Count;
+            }
+            return 0;
         }
 
         public static RenderTexture GetStreamTexture(this Camera cam, int index) {
-            return webRTCTextures[index];
+            CameraCapturerTextures textures;
+            if (camCapturerTexturesDict.TryGetValue(cam, out textures))
+            {
+                if (index >= 0 && index < textures.webRTCTextures.Count)
+                {
+                    return textures.webRTCTextures[index];
+                }
+            }
+            return null;
         }
 
         public static void CreateRenderStreamTexture(this Camera cam, int width, int height, int count = 1)
         {
-            if (camCopyRts.Count > 0)
-            {
-                throw new NotImplementedException("Currently not allowed multiple MediaStream");
-            }
+            CameraCapturerTextures cameraCapturerTextures = new CameraCapturerTextures();
+            camCapturerTexturesDict.Add(cam, cameraCapturerTextures);
 
-            camRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
-            camRenderTexture.Create();
+            cameraCapturerTextures.camRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.BGRA32);
+            cameraCapturerTextures.camRenderTexture.Create();
 
             int mipCount = count;
             for (int i = 1, mipLevel = 1; i <= mipCount; ++i, mipLevel *= 4)
             {
                 RenderTexture webRtcTex = new RenderTexture(width / mipLevel, height / mipLevel, 0, RenderTextureFormat.BGRA32);
                 webRtcTex.Create();
-                webRTCTextures.Add(webRtcTex);
+                cameraCapturerTextures.webRTCTextures.Add(webRtcTex);
             }
 
-            cam.targetTexture = camRenderTexture;
+            cam.targetTexture = cameraCapturerTextures.camRenderTexture;
             cam.gameObject.AddCleanerCallback(() =>
             {
-                camRenderTexture.Release();
-                UnityEngine.Object.Destroy(camRenderTexture);
+                cameraCapturerTextures.camRenderTexture.Release();
+                UnityEngine.Object.Destroy(cameraCapturerTextures.camRenderTexture);
 
-                foreach (var v in webRTCTextures)
+                foreach (var v in cameraCapturerTextures.webRTCTextures)
                 {
                     v.Release();
                     UnityEngine.Object.Destroy(v);
                 }
-                webRTCTextures.Clear();
+                cameraCapturerTextures.webRTCTextures.Clear();
             });
-            started = true;
-        }
-
-        public static void RemoveRt(RenderTexture[] rts)
-        {
-            camCopyRts.Remove(rts);
-            if (camCopyRts.Count == 0)
-            {
-                started = false;
-            }
         }
 
     }

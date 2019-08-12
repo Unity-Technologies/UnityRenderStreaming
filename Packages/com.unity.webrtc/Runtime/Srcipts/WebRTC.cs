@@ -227,15 +227,17 @@ namespace Unity.WebRTC
             {
                 // Wait until all frame rendering is done
                 yield return new WaitForEndOfFrame();
-                if (CameraExtension.started)
+                //Blit is for DirectX Rendering API Only
+
+                foreach (var k in CameraExtension.camCapturerTexturesDict.Keys)
                 {
-                    //Blit is for DirectX Rendering API Only
-                    foreach(var rt in CameraExtension.webRTCTextures)
+                    foreach (var rt in CameraExtension.camCapturerTexturesDict[k].webRTCTextures)
                     {
-                        Graphics.Blit(CameraExtension.camRenderTexture, rt, flipMat);
-                    }
-                    GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
+                        Graphics.Blit(CameraExtension.camCapturerTexturesDict[k].camRenderTexture, rt, flipMat);
+                    }    
                 }
+
+                GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
                 Audio.Update();
             }
         }

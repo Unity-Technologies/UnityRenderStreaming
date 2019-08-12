@@ -40,7 +40,6 @@ namespace WebRTC
 
     void UnityVideoCapturer::InitializeEncoder()
     {
-        //koseyile todo: one nvEncoder can connect multiple capturers.
-        nvEncoder->CaptureFrame.connect(this, &UnityVideoCapturer::CaptureFrame);
+        nvEncoder->captureFrame.connect(this, &UnityVideoCapturer::CaptureFrame);
     }
 }

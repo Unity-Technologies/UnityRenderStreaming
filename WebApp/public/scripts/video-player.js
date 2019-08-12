@@ -52,9 +52,11 @@ export class VideoPlayer {
 
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
+
     this.pc.addTransceiver("video");
     this.pc.addTransceiver("audio");
     this.pc.addTransceiver("video");
+    this.pc.addTransceiver("audio");
 
     this.pc.onsignalingstatechange = function (e) {
       console.log('signalingState changed:', e);

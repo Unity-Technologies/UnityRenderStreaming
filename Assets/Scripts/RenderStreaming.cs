@@ -17,6 +17,12 @@ namespace Unity.RenderStreaming
         public ButtonClickEvent click;
     }
 
+    public class CameraMediaStream
+    {
+        public Camera camera;
+        public MediaStream[] mediaStreams = new MediaStream[2];
+    }
+
     public class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -29,9 +35,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
-        [SerializeField, Tooltip("Camera to capture video stream")]
-        private Camera captureCamera;
-
         [SerializeField]
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
@@ -41,7 +44,7 @@ namespace Unity.RenderStreaming
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
         private string sessionId;
-        private MediaStream[] mediaStreams = new MediaStream[2];
+        private Dictionary<Camera, CameraMediaStream> cameraMediaStreamDict = new Dictionary<Camera, CameraMediaStream>();
 
         public void Awake()
         {
@@ -62,19 +65,30 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            captureCamera.CreateRenderStreamTexture(1280, 720, mediaStreams.Length);
-            
-            int texCount = captureCamera.GetStreamTextureCount();
-            for (int i = 0; i < texCount; ++i)
+            int count = 0;
+            foreach (var camera in Camera.allCameras)
             {
-                int index = i;
-                mediaStreams[i] = new MediaStream();
-                RenderTexture rt = captureCamera.GetStreamTexture(index);
-                VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt);
-                mediaStreams[i].AddTrack(videoTrack);
-            }
+                count++;
+                if (count == 1)
+                {
+                    //continue;
+                }
 
-            mediaStreams[0].AddTrack(new AudioStreamTrack("audioTrack"));
+                CameraMediaStream cameraMediaStream = new CameraMediaStream();
+                cameraMediaStreamDict.Add(camera, cameraMediaStream);
+                camera.CreateRenderStreamTexture(1280, 720, cameraMediaStream.mediaStreams.Length);
+                int texCount = camera.GetStreamTextureCount();
+                for (int i = 0; i < texCount; ++i)
+                {
+                    int index = i;
+                    cameraMediaStream.mediaStreams[i] = new MediaStream();
+                    RenderTexture rt = camera.GetStreamTexture(index);
+                    VideoStreamTrack videoTrack = new VideoStreamTrack("videoTrack" + i, rt);
+                    cameraMediaStream.mediaStreams[i].AddTrack(videoTrack);
+                    cameraMediaStream.mediaStreams[i].AddTrack(new AudioStreamTrack("audioTrack"));
+                }
+            }
+            
             Audio.Start();
 
             signaling = new Signaling(urlSignaling);
@@ -169,11 +183,14 @@ namespace Unity.RenderStreaming
 
                 pc.SetRemoteDescription(ref _desc);
 
-                foreach (var mediaStream in mediaStreams)
+                foreach (var k in cameraMediaStreamDict.Keys)
                 {
-                    foreach (var track in mediaStream.GetTracks())
+                    foreach (var mediaStream in cameraMediaStreamDict[k].mediaStreams)
                     {
-                        pc.AddTrack(track, mediaStream.Id);
+                        foreach (var track in mediaStream.GetTracks())
+                        {
+                            pc.AddTrack(track, mediaStream.Id);
+                        }
                     }
                 }
 

@@ -82,6 +82,7 @@ namespace WebRTC
             delete *it;
         }
         unityEncoders.clear();
+        NvEncoder::DestroyEncoderTexture();
     }
 
     std::vector<webrtc::SdpVideoFormat> DummyVideoEncoderFactory::GetSupportedFormats() const
@@ -133,6 +134,18 @@ namespace WebRTC
         pEncoder->InitEncoder(width, height, bitRate);
         unityEncoders.push_back(pEncoder);
         return pEncoder;
+    }
+
+    UnityEncoder* DummyVideoEncoderFactory::GetPlatformEncoder(EncoderPlatform platform, int width, int height, int bitRate)
+    {
+        for (std::list<UnityEncoder*>::iterator it = unityEncoders.begin(); it != unityEncoders.end(); ++it)
+        {
+            if ((*it)->getEncodeWidth() == width && (*it)->getEncodeHeight() == height && (*it)->getBitRate() == bitRate) {
+                return (*it);
+            }
+        }
+
+        return CreatePlatformEncoder(platform, width, height, bitRate);
     }
 
 }

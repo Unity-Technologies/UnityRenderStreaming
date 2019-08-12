@@ -6,7 +6,7 @@
 
 namespace WebRTC
 {
-
+    std::list<NvEncoder::EncoderInputTexture*> NvEncoder::nvEncoderInputTextureList;
     NvEncoder::NvEncoder()
     {
         if (pEncoderInterface==nullptr)
@@ -137,11 +137,13 @@ namespace WebRTC
             lastBitRate = bitRate;
         }
     }
+
     //entry for encoding a frame
     void NvEncoder::EncodeFrame(int width, int height)
     {
         UpdateSettings(width, height);
         uint32 bufferIndexToWrite = frameCount % bufferedFrameNum;
+
         Frame& frame = bufferedFrames[bufferIndexToWrite];
 #pragma region set frame params
         //no free buffer, skip this frame
@@ -168,13 +170,15 @@ namespace WebRTC
             picParams.encodePicFlags |= NV_ENC_PIC_FLAG_FORCEIDR;
         }
         isIdrFrame = false;
+
         bool result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncEncodePicture(pEncoderInterface, &picParams)));
         checkf(result, StringFormat("Failed to encode frame, error is %d", errorCode).c_str());
+
 #pragma endregion
         ProcessEncodedFrame(frame);
         frameCount++;
     }
-
+    
     //get encoded frame
     void NvEncoder::ProcessEncodedFrame(Frame& frame)
     {
@@ -183,12 +187,15 @@ namespace WebRTC
         {
             return;
         }
+
         frame.isEncoding = false;
+
 #pragma region retrieve encoded frame from output buffer
         NV_ENC_LOCK_BITSTREAM lockBitStream = { 0 };
         lockBitStream.version = NV_ENC_LOCK_BITSTREAM_VER;
         lockBitStream.outputBitstream = frame.outputFrame;
         lockBitStream.doNotWait = nvEncInitializeParams.enableEncodeAsync;
+
         bool result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncLockBitstream(pEncoderInterface, &lockBitStream)));
         checkf(result, StringFormat("Failed to lock bit stream, error is %d", errorCode).c_str());
         if (lockBitStream.bitstreamSizeInBytes)
@@ -196,12 +203,11 @@ namespace WebRTC
             frame.encodedFrame.resize(lockBitStream.bitstreamSizeInBytes);
             std::memcpy(frame.encodedFrame.data(), lockBitStream.bitstreamBufferPtr, lockBitStream.bitstreamSizeInBytes);
         }
-
         result = NV_RESULT((errorCode = ContextManager::GetInstance()->pNvEncodeAPI->nvEncUnlockBitstream(pEncoderInterface, frame.outputFrame)));
         checkf(result, StringFormat("Failed to unlock bit stream, error is %d", errorCode).c_str());
         frame.isIdrFrame = lockBitStream.pictureType == NV_ENC_PIC_TYPE_IDR;
 #pragma endregion
-        CaptureFrame(frame.encodedFrame);
+        captureFrame(frame.encodedFrame);
     }
 
     ID3D11Texture2D* NvEncoder::AllocateInputBuffers()
@@ -254,15 +260,42 @@ namespace WebRTC
             StringFormat("nvEncCreateBitstreamBuffer error is %d", errorCode).c_str());
         return createBitstreamBuffer.bitstreamBuffer;
     }
+
+    void NvEncoder::DestroyEncoderTexture()
+    {
+        for (std::list<EncoderInputTexture*>::iterator it = nvEncoderInputTextureList.begin(); it != nvEncoderInputTextureList.end(); ++it)
+        {
+            delete (*it);
+        }
+        nvEncoderInputTextureList.clear();
+    }
+
+    UnityFrameBuffer* NvEncoder::getEncoderTexture(int width, int height)
+    {
+        for (std::list<EncoderInputTexture*>::iterator it = nvEncoderInputTextureList.begin(); it!= nvEncoderInputTextureList.end(); ++it)
+        {
+            if ( (*it)->width==width && (*it)->height==height )
+            {
+                return (*it)->texture;
+            }
+        }
+
+        EncoderInputTexture* pEncoderInputTexture = new EncoderInputTexture(width, height);
+        nvEncoderInputTextureList.push_back(pEncoderInputTexture);
+        return pEncoderInputTexture->texture;
+    }
+
     void NvEncoder::InitEncoderResources()
     {
-        nvRenderTexture = AllocateInputBuffers();
-        Frame& frame = bufferedFrames[0];
-        frame.inputFrame.registeredResource = RegisterResource(nvRenderTexture);
-        frame.inputFrame.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
-        MapResources(frame.inputFrame);
-        frame.outputFrame = InitializeBitstreamBuffer();
-
+        nvEncoderTexture = getEncoderTexture(encodeWidth, encodeHeight);
+        for (int i = 0; i < bufferedFrameNum; i++)
+        {
+            Frame& frame = bufferedFrames[i];
+            frame.inputFrame.registeredResource = RegisterResource(nvEncoderTexture);
+            frame.inputFrame.bufferFormat = NV_ENC_BUFFER_FORMAT_ARGB;
+            MapResources(frame.inputFrame);
+            frame.outputFrame = InitializeBitstreamBuffer();
+        }
     }
     void NvEncoder::ReleaseFrameInputBuffer(Frame& frame)
     {
@@ -278,14 +311,14 @@ namespace WebRTC
     {
         for (Frame& frame : bufferedFrames)
         {
-            ReleaseFrameInputBuffer(frame);
-            bool result = NV_RESULT(ContextManager::GetInstance()->pNvEncodeAPI->nvEncDestroyBitstreamBuffer(pEncoderInterface, frame.outputFrame));
-            checkf(result, "Failed to destroy output buffer bit stream");
-            frame.outputFrame = nullptr;
+            if (frame.outputFrame!=nullptr)
+            {
+                ReleaseFrameInputBuffer(frame);
+                bool result = NV_RESULT(ContextManager::GetInstance()->pNvEncodeAPI->nvEncDestroyBitstreamBuffer(pEncoderInterface, frame.outputFrame));
+                checkf(result, "Failed to destroy output buffer bit stream");
+                frame.outputFrame = nullptr;
+            }
         }
-
-        nvRenderTexture->Release();
-        nvRenderTexture = nullptr;
     }
 }
 
