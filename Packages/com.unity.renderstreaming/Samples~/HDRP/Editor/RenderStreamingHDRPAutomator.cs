@@ -20,7 +20,7 @@ public class RenderStreamingHDRPAutomator
         m_sampleImported = false;
         Init();
         UnityEditor.EditorApplication.LockReloadAssemblies();
-        ImportHDRPSampleInternal(false);
+        ImportHDRPSampleInternal(true);
         UnityEditor.EditorApplication.UnlockReloadAssemblies();
     }
 
