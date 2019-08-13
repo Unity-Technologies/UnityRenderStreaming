@@ -15,6 +15,15 @@ public class RenderStreamingHDRPAutomator
     }
 
 //---------------------------------------------------------------------------------------------------------------------
+    public static void ForceImportSample() {
+        //Assumes that HDRP package has been added previously
+        m_sampleImported = false;
+        Init();
+        ImportHDRPSampleInternal(false);
+    }
+
+
+//---------------------------------------------------------------------------------------------------------------------
 
     public static void TryAddHDRPPackageAndImportSample() {
         m_sampleImported = false;
@@ -58,7 +67,7 @@ public class RenderStreamingHDRPAutomator
             UnityEditor.EditorApplication.LockReloadAssemblies();
             RequestJobManager.CreateAddRequest(HDRP_PACKAGE_NAME, OnHDRPPackageAdded, OnHDRPPackageAddFailed);
         } else {
-            ImportHDRPSample();
+            ImportHDRPSampleInternal(true);
         }
 
         //update json
@@ -86,7 +95,7 @@ public class RenderStreamingHDRPAutomator
 
 //---------------------------------------------------------------------------------------------------------------------
     static void OnBeforeAssemblyReload() {
-        ImportHDRPSample();
+        ImportHDRPSampleInternal(true);
         m_sampleImported = true;
     }
    
@@ -98,9 +107,9 @@ public class RenderStreamingHDRPAutomator
 
 //---------------------------------------------------------------------------------------------------------------------
 
-    static void ImportHDRPSample() {
+    static void ImportHDRPSampleInternal(bool interactive) {
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.8f );
-        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, !Application.isBatchMode);
+        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, interactive);
         UnityEditor.EditorUtility.ClearProgressBar();
     }
 
