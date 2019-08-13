@@ -19,7 +19,9 @@ public class RenderStreamingHDRPAutomator
         //Assumes that HDRP package has been added previously
         m_sampleImported = false;
         Init();
+        UnityEditor.EditorApplication.LockReloadAssemblies();
         ImportHDRPSampleInternal(false);
+        UnityEditor.EditorApplication.UnlockReloadAssemblies();
     }
 
 
