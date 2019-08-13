@@ -19,8 +19,7 @@ public class RenderStreamingHDRPAutomator
         //Assumes that HDRP package has been added previously
         m_sampleImported = false;
         Init();
-        ImportHDRPSampleInternal(false);
-        UnityEditor.AssetDatabase.ImportAsset("Assets/RenderPipeline");
+        ImportPackageImmediately(m_unityPackageSamplePath);
     }
 
 
@@ -114,6 +113,13 @@ public class RenderStreamingHDRPAutomator
         UnityEditor.EditorUtility.ClearProgressBar();
     }
 
+//---------------------------------------------------------------------------------------------------------------------
+    static void ImportPackageImmediately(string path) {
+        System.Type type = typeof(UnityEditor.AssetDatabase);
+        var binding = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+        System.Reflection.MethodInfo assetDatabaseMethodInfo = type.GetMethod("ImportPackageImmediately", binding);
+        assetDatabaseMethodInfo.Invoke(type, new object[] {path});
+    }
 
 //---------------------------------------------------------------------------------------------------------------------
 
