@@ -80,12 +80,7 @@ public class RenderStreamingHDRPAutomator
 //---------------------------------------------------------------------------------------------------------------------
 
     static void OnHDRPPackageAdded(Request<PackageInfo> req) {
-        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
         UnityEditor.EditorApplication.UnlockReloadAssemblies();      
-    }
-
-//---------------------------------------------------------------------------------------------------------------------
-    static void OnBeforeAssemblyReload() {
         ImportHDRPSample();
         m_sampleImported = true;
     }
