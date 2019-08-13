@@ -13,6 +13,7 @@ namespace Unity.RenderStreaming
     [Serializable]
     public class ButtonClickElement
     {
+        [Tooltip("Specifies the ID on the HTML")]
         public int elementId;
         public ButtonClickEvent click;
     }
@@ -23,7 +24,7 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Address for signaling server")]
         private string urlSignaling = "http://localhost";
 
-        [SerializeField, Tooltip("Address for stun server")]
+        [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
         {
             new RTCIceServer()
@@ -38,7 +39,7 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera captureCamera;
 
-        [SerializeField]
+        [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
 

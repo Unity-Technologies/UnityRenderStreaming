@@ -160,9 +160,13 @@ namespace Unity.WebRTC
     [Serializable]
     public struct RTCIceServer
     {
+        [Tooltip("Optional: specifies the password to use when authenticating with the ICE server")]
         public string credential;
+        [Tooltip("What type of credential the `password` value")]
         public RTCIceCredentialType credentialType;
+        [Tooltip("Array to set URLs of your STUN/TURN servers")]
         public string[] urls;
+        [Tooltip("Optional: specifies the username to use when authenticating with the ICE server")]
         public string username;
     }
 
