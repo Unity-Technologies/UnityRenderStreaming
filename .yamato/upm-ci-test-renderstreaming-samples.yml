@@ -45,9 +45,9 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
     test_renderstreaming_sample_{{ sample.name }}_logs:
       paths:
         - "Logs/**"
-    all:
+    test_project:
       paths:
-        - "**/**"        
+        - "EmptyProjectForTest~/**"        
 {% endfor %}
 {% endfor %}
 {% endfor %}
