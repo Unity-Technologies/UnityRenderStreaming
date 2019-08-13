@@ -1,0 +1,5 @@
+{
+  "displayName":"Example",
+  "description": "WebRTC sample",
+  "createSeparatePackage": false
+}

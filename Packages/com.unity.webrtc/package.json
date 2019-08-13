@@ -7,5 +7,12 @@
   "keywords": [
     "webrtc",
     "web"
-  ]
+  ],
+ "samples": [
+   {
+     "displayName": "Example",
+     "description": "WebRTC sample",
+     "path": "Samples~"
+   }
+ ]  
 }
