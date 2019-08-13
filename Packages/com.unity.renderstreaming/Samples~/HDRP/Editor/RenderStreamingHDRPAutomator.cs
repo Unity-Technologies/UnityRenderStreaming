@@ -23,6 +23,8 @@ public class RenderStreamingHDRPAutomator
         ImportHDRPSampleInternal(false);
         UnityEditor.EditorApplication.UnlockReloadAssemblies();
         UnityEditor.AssetDatabase.Refresh();
+
+        UnityEditor.AssetDatabase.ImportAsset("Assets/RenderPipeline");
     }
 
 
