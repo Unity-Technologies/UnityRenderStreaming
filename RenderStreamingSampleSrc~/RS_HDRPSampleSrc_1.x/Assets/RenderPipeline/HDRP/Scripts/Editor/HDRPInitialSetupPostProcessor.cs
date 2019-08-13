@@ -21,6 +21,7 @@ public class HDRPPostProcessor : AssetPostprocessor
                 GraphicsSettings.renderPipelineAsset = pipelineAsset;
 
                 PlayerSettings.colorSpace = ColorSpace.Linear;
+                AssetDatabase.SaveAssets();
             }
         }
     }
