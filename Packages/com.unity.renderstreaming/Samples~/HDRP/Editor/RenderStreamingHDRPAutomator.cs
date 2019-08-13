@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;                   //StackTrace
+﻿using System;                               //AssemblyLoadEventArgs 
+using System.Diagnostics;                   //StackTrace
 using System.IO;                            //Path
 using Unity.RenderStreaming.Editor;         //RequestJobManager
 using UnityEditor.PackageManager;           //PackageCollection
@@ -75,18 +76,25 @@ public class RenderStreamingHDRPAutomator
         UnityEditor.AssetDatabase.ImportAsset(m_codePath);
     }
 
+
 //---------------------------------------------------------------------------------------------------------------------
 
     static void OnHDRPPackageAdded(Request<PackageInfo> req) {
-        ImportHDRPSample();
-        m_sampleImported = true;
-        UnityEditor.EditorApplication.UnlockReloadAssemblies();
+        UnityEditor.EditorApplication.UnlockReloadAssemblies();      
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
     }
 
+//---------------------------------------------------------------------------------------------------------------------
+    static void OnBeforeAssemblyReload() {
+        ImportHDRPSample();
+        m_sampleImported = true;
+    }
+   
 //---------------------------------------------------------------------------------------------------------------------
     static void OnHDRPPackageAddFailed(Request<PackageInfo> req) {
         UnityEditor.EditorApplication.UnlockReloadAssemblies();
     }
+
 
 //---------------------------------------------------------------------------------------------------------------------
 
