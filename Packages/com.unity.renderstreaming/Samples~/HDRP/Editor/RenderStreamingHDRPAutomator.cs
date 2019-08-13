@@ -20,7 +20,8 @@ public class RenderStreamingHDRPAutomator
         m_sampleImported = false;
         Init();
         ImportPackageImmediately(m_unityPackageSamplePath);
-    }
+        UnityEditor.AssetDatabase.ImportAsset("Assets/RenderPipeline");
+     }
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -89,13 +90,8 @@ public class RenderStreamingHDRPAutomator
 //---------------------------------------------------------------------------------------------------------------------
 
     static void OnHDRPPackageAdded(Request<PackageInfo> req) {
-        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+        ImportHDRPSampleInternal(!Application.isBatchMode);
         UnityEditor.EditorApplication.UnlockReloadAssemblies();      
-    }
-
-//---------------------------------------------------------------------------------------------------------------------
-    static void OnBeforeAssemblyReload() {
-        ImportHDRPSampleInternal(true);
         m_sampleImported = true;
     }
    
