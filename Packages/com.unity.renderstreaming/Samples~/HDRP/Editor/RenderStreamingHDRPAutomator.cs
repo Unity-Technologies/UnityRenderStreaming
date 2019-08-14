@@ -17,7 +17,6 @@ public class RenderStreamingHDRPAutomator
 //---------------------------------------------------------------------------------------------------------------------
 
     public static void TryAddHDRPPackageAndImportSample() {
-        UnityEngine.Debug.Log("TryAddHDRPPackageAndImportSample");
         m_sampleImported = false;
 
         //Some steps are necessary to "hack" so that Unity will execute this file everytime we click "Import in project"
@@ -30,12 +29,10 @@ public class RenderStreamingHDRPAutomator
         RenderStreamingSettings settings = LoadSettings();
 
         if (null!=settings && !string.IsNullOrEmpty(settings.Version)) {
-            UnityEngine.Debug.Log(" Early exit");
             m_sampleImported = true;
             return;
         }
 
-        UnityEngine.Debug.Log("Create List Request");
         RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);
         UnityEditor.EditorUtility.DisplayProgressBar(PROGRESS_BAR_TITLE, PROGRESS_BAR_INFO, 0.1f );
     }
@@ -59,7 +56,6 @@ public class RenderStreamingHDRPAutomator
         PackageInfo packageInfo = req.FindPackage(HDRP_PACKAGE_NAME);
         if (null == packageInfo) {
             UnityEditor.EditorApplication.LockReloadAssemblies();
-            UnityEngine.Debug.Log("Create Add Request");
             RequestJobManager.CreateAddRequest(HDRP_PACKAGE_NAME, OnHDRPPackageAdded, OnHDRPPackageAddFailed);
         } else {
             ImportHDRPSample();
