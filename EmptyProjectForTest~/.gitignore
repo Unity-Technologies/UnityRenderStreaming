@@ -1,0 +1,4 @@
+#Project should be empty, so we ignore imported samples
+Assets/Samples**
+Packages**
+
