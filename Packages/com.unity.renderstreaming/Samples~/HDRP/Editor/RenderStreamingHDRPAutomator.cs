@@ -22,7 +22,7 @@ public class RenderStreamingHDRPAutomator
         Init();
         
         UnityEditor.AssetDatabase.importPackageCompleted += ForceImportCompleted;
-        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, true);
+        UnityEditor.AssetDatabase.ImportPackage(m_unityPackageSamplePath, false);
         
         while (!m_sampleImported) {
             System.Threading.Thread.Sleep(1000);            
