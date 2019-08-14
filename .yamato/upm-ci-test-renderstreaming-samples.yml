@@ -1,4 +1,4 @@
-# .yamato/upm-ci-packages.yml
+# .yamato/upm-ci-test-renderstreaming-samples.yml
 editors:
   - version: 2019.1
   - version: 2019.2  
@@ -6,10 +6,12 @@ editors:
 platforms:
   - name: win
     type: Unity::VM::GPU
-    # currently the projects depends MSBuild. we should replace CMake
-    # image: package-ci/win10:stable
-    image: renderstreaming/win10:latest
+    image: renderstreaming/win10:stable
     flavor: b1.large
+  - name: mac
+    type: Unity::VM::osx
+    image: buildfarm/mac:stable
+    flavor: m1.mac    
     
 project_path: EmptyProjectForTest~
     
@@ -43,12 +45,9 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
       except:
       - "master"
   artifacts:
-    test_renderstreaming_sample_{{ sample.name }}_logs:
+    test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}_logs:  
       paths:
         - "Logs/**"
-    test_project:
-      paths:
-        - "EmptyProjectForTest~/**"        
 {% endfor %}
 {% endfor %}
 {% endfor %}
