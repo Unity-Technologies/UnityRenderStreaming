@@ -21,25 +21,22 @@ public class RenderStreamingEditor : Editor
     static void ShowIceServerList(SerializedProperty list)
     {
         EditorGUILayout.PropertyField(list.FindPropertyRelative("Array.size"), new GUIContent(list.displayName));
-        if (list.isExpanded)
+        EditorGUI.indentLevel += 1;
+        for (int i = 0; i < list.arraySize; i++)
         {
-            EditorGUI.indentLevel += 1;
-            for (int i = 0; i < list.arraySize; i++)
+            var element = list.GetArrayElementAtIndex(i);
+            var label = "Ice server [" + i + "]";
+            EditorGUILayout.PropertyField(element, new GUIContent(label));
+            if (element.isExpanded)
             {
-                var element = list.GetArrayElementAtIndex(i);
-                var label = "Ice server [" + i + "]";
-                EditorGUILayout.PropertyField(element, new GUIContent(label));
-                if (element.isExpanded)
-                {
-                    EditorGUI.indentLevel += 1;
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("urls"), true);
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("username"));
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("credential"));
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("credentialType"));
-                    EditorGUI.indentLevel -= 1;
-                }
+                EditorGUI.indentLevel += 1;
+                EditorGUILayout.PropertyField(element.FindPropertyRelative("urls"), true);
+                EditorGUILayout.PropertyField(element.FindPropertyRelative("username"));
+                EditorGUILayout.PropertyField(element.FindPropertyRelative("credential"));
+                EditorGUILayout.PropertyField(element.FindPropertyRelative("credentialType"));
+                EditorGUI.indentLevel -= 1;
             }
-            EditorGUI.indentLevel -= 1;
         }
+        EditorGUI.indentLevel -= 1;
     }
 }
