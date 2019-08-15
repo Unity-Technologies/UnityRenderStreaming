@@ -1,0 +1,50 @@
+# .yamato/upm-ci-test-renderstreaming-samples.yml
+editors:
+  - version: 2019.1
+  - version: 2019.2  
+#  - version: trunk
+platforms:
+  - name: win
+    type: Unity::VM::GPU
+    image: renderstreaming/win10:latest
+    flavor: b1.large
+    
+project_path: EmptyProjectForTest~
+    
+samples:
+  - name: HDRP    
+    
+---
+
+{% for editor in editors %}
+{% for platform in platforms %}
+{% for sample in samples %}
+
+test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test Renderstreaming sample {{ sample.name}} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - copy_sample.cmd com.unity.renderstreaming {{ sample.name }}
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published     
+    - (run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }} %cd%\Logs\Editor01_AddHDRP.log %cd%\Logs\TestResults01_AddHDRP.xml) ^& exit 0
+    - import_unity_package.cmd ".Editor\Unity.exe" {{ project_path }} "Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage" %cd%\Logs\Editor02_ImportSample.log
+    - run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }}  %cd%\Logs\Editor03.log %cd%\Logs\TestResults03.xml   
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
+  artifacts:
+    test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}_logs:  
+      paths:
+        - "Logs/**"
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
