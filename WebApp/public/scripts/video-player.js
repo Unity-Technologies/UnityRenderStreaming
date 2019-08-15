@@ -9,6 +9,7 @@ export class VideoPlayer {
     this.channel = null;
     this.UnityStreams = [];
     this.UnityStreamIndex = 0;
+    this.UnityStreamCount = 2;
     this.offerOptions = {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
@@ -21,6 +22,7 @@ export class VideoPlayer {
     this.interval = 3000;
     this.signaling = new Signaling();
     this.ondisconnect = function(){};
+    this.onaddtrackfinish = function (mediaStreams) {};
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
 
@@ -74,11 +76,30 @@ export class VideoPlayer {
     this.pc.ontrack = function (e) {
       console.log('New track added: ', e.streams);
       _this.video.srcObject = e.streams[0];
+
+
       if (_this.UnityStreams.indexOf(e.streams[0])==-1)
       {
+        let videoTracks = e.streams[0].getVideoTracks();
+        for(let i=0; i<videoTracks.length; ++i)
+        {
+          console.log(videoTracks[i].id);
+        }
         _this.UnityStreams.push(e.streams[0]);
+
+        if ( _this.UnityStreamCount==_this.UnityStreams.length )
+        {
+          _this.onaddtrackfinish(_this.UnityStreams);
+        }
       }
     };
+
+    _this.video.onresize = function () {
+
+      //console.log("video width:=" + _this.video.videoWidth);
+      //console.log("video height:=" + _this.video.videoHeight);
+    }
+
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
         _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
@@ -139,6 +160,7 @@ export class VideoPlayer {
       if(answers.length > 0) {
         const answer = answers[0];
         await this.setAnswer(sessionId, answer.sdp);
+
       }
       await this.sleep(interval);
     }
@@ -184,6 +206,15 @@ export class VideoPlayer {
     {
       this.UnityStreamIndex = 0;
     }
+  };
+
+  selectMediaStream(streamId){
+    this.UnityStreams.forEach(stream=>{
+      if (stream.id==streamId)
+      {
+        this.video.srcObject = stream;
+      }
+    })
   };
 
   sendMsg(msg) {
