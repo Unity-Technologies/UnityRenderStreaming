@@ -49,6 +49,7 @@ namespace Unity.RenderStreaming
         private RTCConfiguration conf;
         private string sessionId;
         private MediaStream videoStream;
+        private MediaStream audioStream;
 
         public void Awake()
         {
@@ -68,7 +69,8 @@ namespace Unity.RenderStreaming
             {
                 yield break;
             }
-            videoStream = captureCamera.CaptureStream(1280, 720);
+            videoStream = captureCamera.CaptureStream(this.width, this.height);
+            audioStream = Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;
@@ -148,6 +150,10 @@ namespace Unity.RenderStreaming
                 _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
                 pc.SetRemoteDescription(ref _desc);
                 foreach (var track in videoStream.GetTracks())
+                {
+                    pc.AddTrack(track);
+                }
+                foreach(var track in audioStream.GetTracks())
                 {
                     pc.AddTrack(track);
                 }

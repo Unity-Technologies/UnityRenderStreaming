@@ -57,6 +57,15 @@ function onClickPlayButton() {
     sendClickEvent(videoPlayer, 2);
   });
 
+  // add orange button
+  const elementOrangeButton = document.createElement('button');
+  elementOrangeButton.id = "orangeButton";
+  elementOrangeButton.innerHTML = "Play audio";
+  playerDiv.appendChild(elementOrangeButton);
+  elementOrangeButton.addEventListener ("click", function() {
+    sendClickEvent(videoPlayer, 3);
+  });
+
   // add fullscreen button
   const elementFullscreenButton = document.createElement('img');
   elementFullscreenButton.id = 'fullscreenButton';
