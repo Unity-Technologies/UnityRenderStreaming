@@ -12,6 +12,7 @@ public class RenderStreamingEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"));
             ShowIceServerList(serializedObject.FindProperty("iceServers"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("streamingSize"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("captureCamera"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("arrayButtonClickEvent"), true);
             serializedObject.ApplyModifiedProperties();

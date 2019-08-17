@@ -33,6 +33,9 @@ namespace Unity.RenderStreaming
             }
         };
 
+        [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
+        private Vector2Int streamingSize = new Vector2Int(1280, 720);
+
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
@@ -69,7 +72,7 @@ namespace Unity.RenderStreaming
             {
                 yield break;
             }
-            videoStream = captureCamera.CaptureStream(this.width, this.height);
+            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
             audioStream = Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
