@@ -1858,6 +1858,7 @@ MonoBehaviour:
     urls:
     - stun:stun.l.google.com:19302
     username: 
+  streamingSize: {x: 1280, y: 720}
   interval: 5
   captureCamera: {fileID: 1299133684}
   arrayButtonClickEvent:
