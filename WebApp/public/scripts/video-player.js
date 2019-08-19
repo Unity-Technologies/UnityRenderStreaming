@@ -2,23 +2,25 @@ import Signaling from "./signaling.js"
 
 export class VideoPlayer {
 
-  constructor(element, config) {
+  constructor(elements, config) {
     const _this = this;
     this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
     this.channel = null;
     this.UnityStreams = [];
-    this.UnityStreamIndex = 0;
     this.UnityStreamCount = 2;
     this.offerOptions = {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
-    this.video = element;
-    this.video.playsInline = true;
-    this.video.addEventListener('loadedmetadata', function () {
-      _this.video.play();
-    }, true);
+    this.videos = elements;
+    this.videos.forEach(v=>{
+      v.playsInline = true;
+      v.addEventListener('loadedmetadata', function () {
+        v.play();
+      }, true);
+    })
+
     this.interval = 3000;
     this.signaling = new Signaling();
     this.ondisconnect = function(){};
@@ -60,6 +62,7 @@ export class VideoPlayer {
     this.pc.addTransceiver("video");
     this.pc.addTransceiver("audio");
 
+
     this.pc.onsignalingstatechange = function (e) {
       console.log('signalingState changed:', e);
     };
@@ -73,20 +76,15 @@ export class VideoPlayer {
     this.pc.onicegatheringstatechange = function (e) {
       console.log('iceGatheringState changed:', e);
     };
+    let tempCount = 0;
     this.pc.ontrack = function (e) {
-      console.log('New track added: ', e.streams);
-      _this.video.srcObject = e.streams[0];
 
+      console.log('New track added: ', e.streams);
+      console.log(e.track);
 
       if (_this.UnityStreams.indexOf(e.streams[0])==-1)
       {
-        let videoTracks = e.streams[0].getVideoTracks();
-        for(let i=0; i<videoTracks.length; ++i)
-        {
-          console.log(videoTracks[i].id);
-        }
         _this.UnityStreams.push(e.streams[0]);
-
         if ( _this.UnityStreamCount==_this.UnityStreams.length )
         {
           _this.onaddtrackfinish(_this.UnityStreams);
@@ -94,10 +92,14 @@ export class VideoPlayer {
       }
     };
 
-    _this.video.onresize = function () {
+    _this.videos[0].onresize = function () {
+      console.log("video 0 width:=" + _this.videos[0].videoWidth);
+      console.log("video 0 height:=" + _this.videos[0].videoHeight);
+    }
 
-      //console.log("video width:=" + _this.video.videoWidth);
-      //console.log("video height:=" + _this.video.videoHeight);
+    _this.videos[1].onresize = function () {
+      console.log("video 1 width:=" + _this.videos[1].videoWidth);
+      console.log("video 1 height:=" + _this.videos[1].videoHeight);
     }
 
     this.pc.onicecandidate = function (e) {
@@ -199,22 +201,16 @@ export class VideoPlayer {
     }
   };
 
-  switchStream(){
-    this.video.srcObject = this.UnityStreams[this.UnityStreamIndex];
-    this.UnityStreamIndex++;
-    if (this.UnityStreamIndex>=this.UnityStreams.length)
-    {
-      this.UnityStreamIndex = 0;
-    }
-  };
-
   selectMediaStream(streamId){
-    this.UnityStreams.forEach(stream=>{
-      if (stream.id==streamId)
+
+    for (let i=0; i<this.UnityStreams.length; ++i)
+    {
+      if (streamId==this.UnityStreams[i].id)
       {
-        this.video.srcObject = stream;
+        this.videos[i].srcObject = this.UnityStreams[i];
       }
-    })
+    }
+
   };
 
   sendMsg(msg) {

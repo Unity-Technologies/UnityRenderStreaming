@@ -24,11 +24,20 @@ function onClickPlayButton() {
   const playerDiv = document.getElementById('player');
 
   // add video player
-  const elementVideo = document.createElement('video');
-  elementVideo.id = 'Video';
-  elementVideo.style.touchAction = 'none';
-  playerDiv.appendChild(elementVideo);
-  setupVideoPlayer(elementVideo).then(value => videoPlayer = value);
+  let elementVideos = [];
+  for (let i=0; i<2; i++)
+  {
+    const elementVideo = document.createElement('video');
+    elementVideo.id = "Video"+i;
+    elementVideo.style.touchAction = 'none';
+    playerDiv.appendChild(elementVideo);
+
+    elementVideos.push(elementVideo);
+  }
+
+
+  setupVideoPlayer(elementVideos).then(value => videoPlayer = value);
+
 
   // add green button
   const elementBlueButton = document.createElement('button');
@@ -174,14 +183,17 @@ function setupMediaSelector(options)
   document.addEventListener("click", closeAllSelect);
 }
 
-async function setupVideoPlayer(element, config) {
-  const videoPlayer = new VideoPlayer(element, config);
+async function setupVideoPlayer(elements, config) {
+  const videoPlayer = new VideoPlayer(elements, config);
   await videoPlayer.setupConnection();
 
   videoPlayer.ondisconnect = onDisconnect;
   videoPlayer.onaddtrackfinish = onAddTrackFinish;
   registerKeyboardEvents(videoPlayer);
-  registerMouseEvents(videoPlayer, element);
+
+  elements.forEach(element=>{
+    registerMouseEvents(videoPlayer, element);
+  });
 
   return videoPlayer;
 }
