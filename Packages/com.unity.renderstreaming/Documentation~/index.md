@@ -1,6 +1,6 @@
 # com.unity.renderstreaming
 
-- [Japanese](../../com.unity.renderstreaming/Documentation~/jp/index.md)
+- [Japanese](./jp/index.md)
 
 This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming/Documentation~/index.md).
 
