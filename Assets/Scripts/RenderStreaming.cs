@@ -73,7 +73,7 @@ namespace Unity.RenderStreaming
                 yield break;
             }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
-            audioStream = Audio.CaptureStream();
+            audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
             yield return opCreate;
