@@ -24,23 +24,19 @@ public class HDRPRenderTextureBlitter : MonoBehaviour
         m_cam.clearFlags = CameraClearFlags.Nothing;
         m_cam.cullingMask = 0; 
         m_hdData.fullscreenPassthrough = true;
-
-
-        UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
+        m_hdData.customRender += BlitRenderStreamingRT;
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 
     private void OnDisable() {
-        UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
+        m_hdData.customRender -= BlitRenderStreamingRT;
     }
 
 //---------------------------------------------------------------------------------------------------------------------
-
-    void OnBeginCameraRendering(UnityEngine.Rendering.ScriptableRenderContext context, Camera cam) {
-        if (cam == m_cam && null != m_rtCamera.targetTexture ) {
-            Graphics.Blit(m_rtCamera.targetTexture, (RenderTexture) null);
-        }
+    public void BlitRenderStreamingRT(UnityEngine.Rendering.ScriptableRenderContext context, HDCamera cam) {
+        Graphics.Blit(m_rtCamera.targetTexture, (RenderTexture) null);
     }
+
 
 }
