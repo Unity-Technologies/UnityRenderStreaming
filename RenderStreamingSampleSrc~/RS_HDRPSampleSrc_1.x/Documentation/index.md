@@ -13,7 +13,7 @@ and on Windows, prior setup is necessary to enable symbolic links, as described 
 
 1. Open **Local Security Policy** by typing `secpol.msc` on Windows Command Prompt
 
-<img src="./images/local_security_policy.jpg" width=480 align=center>>
+<img src="./images/en/local_security_policy.jpg" width=480 align=center>>
 
    
 2. Under **User Rights Assignment**, find a policy called **Create symbolic links** and open it.
@@ -21,11 +21,11 @@ and on Windows, prior setup is necessary to enable symbolic links, as described 
    - Click **Object Types**
    - Make sure **Groups** is checked and click **OK**.
    
-<img src="./images/create_symbolic_link_properties.jpg" width=480 align=center>
+<img src="./images/en/create_symbolic_link_properties.jpg" width=480 align=center>
 
 3. Type **USERS** inside the textbox and click on **Check Names** to verify it, then click **OK**.
 
-<img src="./images/select_users.jpg" width=320 align=center>
+<img src="./images/en/select_users.jpg" width=320 align=center>
 
 4. Open git terminal on the local repository folder and type the following
 

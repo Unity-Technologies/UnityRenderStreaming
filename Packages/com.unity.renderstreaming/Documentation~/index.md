@@ -7,6 +7,6 @@ This package contains public APIs and project samples that are built on top of o
 Currently, there is one sample:
 
 - HDRP. 
-  > Importing this sample will automatically install and setup our HDR sample assets along with the HDRP *(com.unity.render-pipelines.high-definition)* package.
+  > Importing this sample will automatically install and setup our HDRP sample assets along with the HDRP *(com.unity.render-pipelines.high-definition)* package.
 
   
