@@ -4,6 +4,12 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2019-08-22
+
+- Added: Added audio sample
+- Added: Added streaming size parameter to RenderStreaming inspector
+- Fixed: Ice server list items on renderstreaming inspector not displayed
+
 ## [0.2.0] - 2019-07-30
 
 - Added: Add new package com.unity.renderstreaming

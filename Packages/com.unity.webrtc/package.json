@@ -1,7 +1,7 @@
 {
   "name": "com.unity.webrtc",
   "displayName": "WebRTC",
-  "version": "0.2.0-preview",
+  "version": "1.0.0-preview",
   "unity": "2019.1",
   "description": "The WebRTC package provides browsers and mobile applications with Real-Time Communications (RTC) capabilities.",
   "keywords": [
