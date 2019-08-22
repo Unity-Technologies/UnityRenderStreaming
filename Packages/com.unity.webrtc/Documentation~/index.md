@@ -11,7 +11,7 @@ WebRTC for Unity is a package that allows [WebRTC](https://webrtc.org) to be use
 ## Installation
 To install the package, download WebRTC for Unity from the package manager. See the [documentation](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html) for details on how to use the package manager. 
 
-<img src="../images/webrtc_package_manager.png" width=600 align=center>
+<img src="./images/webrtc_package_manager.png" width=600 align=center>
 
 ## Samples
 The package contains the following 3 samples. 
