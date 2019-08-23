@@ -42,9 +42,9 @@ namespace Unity.RenderStreaming
                 pointer.rectTransform.anchoredPosition = position;
                 pointer.color = Color.red;
             }
-            else if (Touchscreen.current.activeTouches.Count > 0)
+            else if (Touchscreen.current.touches.Count > 0)
             {
-                var position = Touchscreen.current.activeTouches[0].position.ReadValue();
+                var position = Touchscreen.current.touches[0].position.ReadValue();
                 pointer.rectTransform.anchoredPosition = position;
                 pointer.color = Color.red;
             }

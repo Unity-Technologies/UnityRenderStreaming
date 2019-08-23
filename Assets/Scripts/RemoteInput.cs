@@ -88,7 +88,7 @@ namespace Unity.RenderStreaming
                     {
                         var identifier = BitConverter.ToInt32(bytes, index);
                         index += 4;
-                        var phase = (PointerPhase)bytes[index];
+                        var phase = (UnityEngine.InputSystem.TouchPhase)bytes[index];
                         index += 1;
                         var pageX = BitConverter.ToInt16(bytes, index);
                         index += 2;
@@ -106,7 +106,7 @@ namespace Unity.RenderStreaming
                     }
                     ProcessTouchMoveEvent(touches);
                     InputSystem.Update();
-                    if (Touchscreen.current.activeTouches.Count > length)
+                    if (Touchscreen.current.touches.Count > length)
                     {
                         ChangeEndStateUnusedTouches(touches);
                         InputSystem.Update();
@@ -171,15 +171,15 @@ namespace Unity.RenderStreaming
         }
         static void ChangeEndStateUnusedTouches(TouchState[] touches)
         {
-            for (var i = 0; i < Touchscreen.current.activeTouches.Count; i++)
+            for (var i = 0; i < Touchscreen.current.touches.Count; i++)
             {
-                var touchId = Touchscreen.current.activeTouches[i].touchId.ReadValue();
+                var touchId = Touchscreen.current.touches[i].touchId.ReadValue();
                 if (!Array.Exists(touches, v => v.touchId == touchId))
                 {
                     InputSystem.QueueStateEvent(Touch, new TouchState
                     {
                         touchId = touchId,
-                        phase = PointerPhase.Ended
+                        phase = UnityEngine.InputSystem.TouchPhase.Ended
                     });
                 }
             }

@@ -139,9 +139,9 @@ namespace UnityTemplateProjects
             }
 
             //Translation
-            if (Touchscreen.current.activeTouches.Count == 2)
+            if (Touchscreen.current.touches.Count == 2)
             {
-                direction = GetTranslationFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
+                direction = GetTranslationFromInput(Touchscreen.current.touches[0].delta.ReadValue());
             } else if (IsMouseDragged(Mouse.current,true)) {
                 direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
             } else if (IsMouseDragged(RemoteInput.RemoteMouse,true)) {
@@ -159,8 +159,8 @@ namespace UnityTemplateProjects
                 UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
             } else if (IsMouseDragged(RemoteInput.RemoteMouse,false)) {
                 UpdateTargetCameraStateFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
-            } else if (Touchscreen.current.activeTouches.Count == 1) {
-                UpdateTargetCameraStateFromInput(Touchscreen.current.activeTouches[0].delta.ReadValue());
+            } else if (Touchscreen.current.touches.Count == 1) {
+                UpdateTargetCameraStateFromInput(Touchscreen.current.touches[0].delta.ReadValue());
             }
 
             // Translation
