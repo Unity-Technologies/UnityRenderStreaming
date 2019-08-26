@@ -26,6 +26,7 @@ namespace Unity.RenderStreaming
         public static Touchscreen RemoteTouch { get; private set; }
         public static Action<int> ActionButtonClick;
 
+        static UnityEngine.Vector2Int m_prevMousePos;
         static bool m_isInitialized = false;
 
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
@@ -66,20 +67,17 @@ namespace Unity.RenderStreaming
                     var key = bytes[3];
                     var character = (char)bytes[4];
                     ProcessKeyEvent(type, repeat, key, character);
-                    InputSystem.Update();
                     break;
                 case EventType.Mouse:
                     var deltaX = BitConverter.ToInt16(bytes, 1);
                     var deltaY = BitConverter.ToInt16(bytes, 3);
                     var button = bytes[5];
                     ProcessMouseMoveEvent(deltaX, deltaY, button);
-                    InputSystem.Update();
                     break;
                 case EventType.MouseWheel:
                     var scrollX = BitConverter.ToSingle(bytes, 1);
                     var scrollY = BitConverter.ToSingle(bytes, 5);
                     ProcessMouseWheelEvent(scrollX, scrollY);
-                    InputSystem.Update();
                     break;
                 case EventType.Touch:
                     var length = bytes[1];
@@ -106,11 +104,9 @@ namespace Unity.RenderStreaming
                         };
                     }
                     ProcessTouchMoveEvent(touches);
-                    InputSystem.Update();
                     if (Touch.activeTouches.Count > length)
                     {
                         ChangeEndStateUnusedTouches(touches);
-                        InputSystem.Update();
                     }
                     break;
                 case EventType.ButtonClick:
@@ -154,8 +150,9 @@ namespace Unity.RenderStreaming
         static void ProcessMouseMoveEvent(short x, short y, byte button)
         {
             var position = new UnityEngine.Vector2Int(x, y);
-            var delta = position - Mouse.current.position.ReadValue();
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { position = position, delta = delta, buttons = button });
+            var delta = position - m_prevMousePos;
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { delta = delta, buttons = button });
+            m_prevMousePos = position;
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
