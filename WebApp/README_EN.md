@@ -39,4 +39,4 @@ Render Streaming uses a simple web API for signaling. [Postman](https://www.getp
 
 View a summary of the API by importing `WebApp/test/renderstreaming.postman_collection.json` in Postman. Operation tests can also be run on the API while the web server is active. 
 
-<img src="/Users/kazuki/UnityRenderStreaming/Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
+<img src="../Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>

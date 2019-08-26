@@ -39,4 +39,4 @@ Render Streaming のシグナリングはシンプルな Web API で実現して
 
 Postman で `WebApp/test/renderstreaming.postman_collection.json` をインポートすると、API の一覧を確認することができます。また、Web サーバを起動した状態であれば API の動作テストを行うことができます。
 
-<img src="/Users/kazuki/UnityRenderStreaming/Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
+<img src="../Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
