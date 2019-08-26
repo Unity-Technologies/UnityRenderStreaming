@@ -1,7 +1,7 @@
 ﻿using System;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Unity.RenderStreaming
 {
@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming
     {
         public static Keyboard Keyboard { get; private set; }
         public static Mouse RemoteMouse { get; private set; }
-        public static Touchscreen Touch { get; private set; }
+        public static Touchscreen RemoteTouch { get; private set; }
         public static Action<int> ActionButtonClick;
 
         static bool m_isInitialized = false;
@@ -42,7 +42,8 @@ namespace Unity.RenderStreaming
         {
             Keyboard = GetOrAddDevice<Keyboard>();
             RemoteMouse = InputSystem.AddDevice<Mouse>();
-            Touch = GetOrAddDevice<Touchscreen>();
+            EnhancedTouchSupport.Enable();
+            RemoteTouch = GetOrAddDevice<Touchscreen>();
             m_isInitialized = true;
         }
 
@@ -100,13 +101,13 @@ namespace Unity.RenderStreaming
                         {
                             touchId = identifier,
                             phase = phase,
-                            position = new Vector2Int(pageX, pageY),
+                            position = new UnityEngine.Vector2Int(pageX, pageY),
                             pressure = force
                         };
                     }
                     ProcessTouchMoveEvent(touches);
                     InputSystem.Update();
-                    if (Touchscreen.current.touches.Count > length)
+                    if (Touch.activeTouches.Count > length)
                     {
                         ChangeEndStateUnusedTouches(touches);
                         InputSystem.Update();
@@ -126,7 +127,7 @@ namespace Unity.RenderStreaming
 
             InputSystem.QueueStateEvent(RemoteMouse, new MouseState());
             InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
-            InputSystem.QueueStateEvent(Touch, new TouchState());
+            InputSystem.QueueStateEvent(RemoteTouch, new TouchState());
             InputSystem.Update();
         }
 
@@ -152,31 +153,32 @@ namespace Unity.RenderStreaming
 
         static void ProcessMouseMoveEvent(short x, short y, byte button)
         {
-            var position = new Vector2Int(x, y);
+            var position = new UnityEngine.Vector2Int(x, y);
             var delta = position - Mouse.current.position.ReadValue();
             InputSystem.QueueStateEvent(RemoteMouse, new MouseState { position = position, delta = delta, buttons = button });
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
         }
 
         static void ProcessTouchMoveEvent(TouchState[] touches)
         {
             for (var i = 0; i < touches.Length; i++)
             {
-                InputSystem.QueueStateEvent(Touch, touches[i]);
+                InputSystem.QueueStateEvent(RemoteTouch, touches[i]);
             }
         }
         static void ChangeEndStateUnusedTouches(TouchState[] touches)
         {
-            for (var i = 0; i < Touchscreen.current.touches.Count; i++)
+            int touchCount = Touch.activeTouches.Count;
+            for (var i = 0; i < touchCount; i++)
             {
-                var touchId = Touchscreen.current.touches[i].touchId.ReadValue();
+                int touchId = Touch.activeTouches[i].touchId;
                 if (!Array.Exists(touches, v => v.touchId == touchId))
                 {
-                    InputSystem.QueueStateEvent(Touch, new TouchState
+                    InputSystem.QueueStateEvent(RemoteTouch, new TouchState
                     {
                         touchId = touchId,
                         phase = UnityEngine.InputSystem.TouchPhase.Ended
