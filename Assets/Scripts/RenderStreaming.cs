@@ -65,6 +65,7 @@ namespace Unity.RenderStreaming
         {
             WebRTC.WebRTC.Finalize();
             RemoteInput.Destroy();
+            Unity.WebRTC.Audio.Stop();
         }
         public IEnumerator Start()
         {
