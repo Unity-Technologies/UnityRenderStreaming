@@ -85,7 +85,8 @@ namespace Unity.RenderStreaming
                     var touches = new TouchState[length];
                     for (int i = 0; i < length; i++)
                     {
-                        var identifier = BitConverter.ToInt32(bytes, index);
+                        const int INPUTSYSTEM_ZERO_ID_GUARD = 128; //ID 0 is reserved by inputsystem
+                        int identifier = BitConverter.ToInt32(bytes, index) + INPUTSYSTEM_ZERO_ID_GUARD;
                         index += 4;
                         var phase = (UnityEngine.InputSystem.TouchPhase)bytes[index];
                         index += 1;
