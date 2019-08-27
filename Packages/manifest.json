@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.unity.code-analysis": "0.0.1-preview.3",
-    "com.unity.inputsystem": "0.2.10-preview",
+    "com.unity.inputsystem": "0.9.4-preview",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.render-pipelines.high-definition": "5.7.2-preview",
     "com.unity.textmeshpro": "2.0.1",
