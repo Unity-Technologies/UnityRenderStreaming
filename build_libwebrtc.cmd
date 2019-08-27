@@ -1,9 +1,8 @@
+@echo off
+
 if not exist depot_tools (
 git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 )
-
-REM workaround
-set PATH=%PATH:C:\ProgramData\chocolatey\bin;=%
 
 set PATH=%cd%\depot_tools;%PATH%
 set WEBRTC_VERSION=72
@@ -12,16 +11,17 @@ set CPPFLAGS=/WX-
 set GYP_GENERATORS=ninja,msvs-ninja
 set GYP_MSVS_VERSION=2017
 set OUTPUT_DIR=out
-set ARTIFACTS_DIR=%cd%
+set ARTIFACTS_DIR=%cd%\artifacts
 
 cmd /k fetch.bat webrtc
 
 cd src
+cmd /k git.bat config --system core.longpaths true
 cmd /k git.bat branch -r
 cmd /k git.bat checkout -b my_branch refs/remotes/branch-heads/%WEBRTC_VERSION%
 cd ..
 
-cmd /k gclient.bat sync
+cmd /k gclient.bat sync -f
 
 REM change jsoncpp static library
 powershell -File .\ReplaceText.ps1 "src\third_party\jsoncpp\BUILD.gn" "source_set" "static_library"
@@ -53,3 +53,7 @@ for %%G in (webrtc.lib audio_decoder_opus.lib webrtc_opus.lib jsoncpp.lib) do fo
 
 REM copy license
 copy %OUTPUT_DIR%\LICENSE.md %ARTIFACTS_DIR%
+
+REM create zip
+cd %ARTIFACTS_DIR%
+7z a -tzip webrtc-win.zip *

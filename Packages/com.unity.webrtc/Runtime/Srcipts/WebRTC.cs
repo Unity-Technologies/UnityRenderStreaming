@@ -7,27 +7,6 @@ using System.Collections;
 
 namespace Unity.WebRTC
 {
-    /// <summary>
-    ///
-    /// </summary>
-    public class MediaStreamConstraints
-    {
-        /// <summary>
-        ///
-        /// </summary>
-        public bool audio;
-
-        /// <summary>
-        ///
-        /// </summary>
-        public bool video;
-    }
-
-    public struct MediaStreamEvent
-    {
-        public RTCIceCandidate​ candidate;
-    }
-
     public struct RTCIceCandidate​
     {
         [MarshalAs(UnmanagedType.LPStr)]
@@ -120,6 +99,21 @@ namespace Unity.WebRTC
         Max
     }
 
+    public enum RTCErrorType
+    {
+        None,
+        UnsupportedOperation,
+        UnsupportedParameter,
+        InvalidParameter,
+        InvalidRange,
+        SyntaxError,
+        InvalidState,
+        InvalidModification,
+        NetworkError,
+        ResourceExhausted,
+        InternalError
+    }
+
     public enum RTCPeerConnectionEventType
     {
         ConnectionStateChange,
@@ -166,9 +160,13 @@ namespace Unity.WebRTC
     [Serializable]
     public struct RTCIceServer
     {
+        [Tooltip("Optional: specifies the password to use when authenticating with the ICE server")]
         public string credential;
+        [Tooltip("What type of credential the `password` value")]
         public RTCIceCredentialType credentialType;
+        [Tooltip("Array to set URLs of your STUN/TURN servers")]
         public string[] urls;
+        [Tooltip("Optional: specifies the username to use when authenticating with the ICE server")]
         public string username;
     }
 
@@ -193,6 +191,26 @@ namespace Unity.WebRTC
         public RTCBundlePolicy bundle_policy;
     }
 
+    public enum CodecInitializationResult
+    {
+        NotInitialized,
+        Success,
+        DriverNotInstalled,
+        DriverVersionDoesNotSupportAPI,
+        APINotFound,
+        EncoderInitializationFailed
+    }
+
+    public class CodecInitializationException : Exception
+    {
+        public CodecInitializationResult result { get; private set; }
+
+        internal CodecInitializationException(CodecInitializationResult result)
+        {
+            this.result = result;
+        }
+    }
+
     public static class WebRTC
     {
 #if UNITY_EDITOR_OSX
@@ -206,6 +224,7 @@ namespace Unity.WebRTC
 #endif
 
         private static Context s_context;
+        private static IntPtr s_renderCallback;
         private static SynchronizationContext s_syncContext;
         private static Material flipMat;
 
@@ -213,9 +232,30 @@ namespace Unity.WebRTC
         {
             NativeMethods.RegisterDebugLog(DebugLog);
             s_context = Context.Create();
+            var result = Context.GetCodecInitializationResult();
+            if (result != CodecInitializationResult.Success)
+            {
+                switch(result)
+                {
+                    case CodecInitializationResult.DriverNotInstalled:
+                        Debug.LogError("[WebRTC] The hardware codec driver not installed");
+                        break;
+                    case CodecInitializationResult.DriverVersionDoesNotSupportAPI:
+                        Debug.LogError("[WebRTC] The version of the hardware codec driver does not support API");
+                        break;
+                    case CodecInitializationResult.EncoderInitializationFailed:
+                        Debug.LogError("[WebRTC] Hardware encoder initialization failed");
+                        break;
+                    case CodecInitializationResult.APINotFound:
+                        Debug.LogError("[WebRTC] Hardware encoder API not found");
+                        break;
+                }
+            }
+
+            s_renderCallback = s_context.GetRenderEventFunc();
             NativeMethods.SetCurrentContext(s_context.self);
             s_syncContext = SynchronizationContext.Current;
-            Shader flipShader = Resources.Load<Shader>("Flip");
+            var flipShader = Resources.Load<Shader>("Flip");
             if(flipShader != null)
             {
                 flipMat = new Material(flipShader); 
@@ -236,8 +276,7 @@ namespace Unity.WebRTC
                         Graphics.Blit(CameraExtension.camCapturerTexturesDict[k].camRenderTexture, rt, flipMat);
                     }    
                 }
-
-                GL.IssuePluginEvent(NativeMethods.GetRenderEventFunc(), 0);
+                GL.IssuePluginEvent(s_renderCallback, 0);
                 Audio.Update();
             }
         }
@@ -256,7 +295,18 @@ namespace Unity.WebRTC
         internal static Context Context { get { return s_context; } }
         internal static SynchronizationContext SyncContext { get { return s_syncContext; } }
 
-        public static bool HWEncoderSupport { get => NativeMethods.GetNvEncSupported(); private set { } }
+        public static bool HWEncoderSupport
+        {
+            get
+            {
+                if(s_context.IsNull)
+                {
+                    throw new CodecInitializationException(CodecInitializationResult.NotInitialized);
+                }
+                var result = Context.GetCodecInitializationResult();
+                return result == CodecInitializationResult.Success;
+            }
+        }
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -296,9 +346,9 @@ namespace Unity.WebRTC
     internal static class NativeMethods
     {
         [DllImport(WebRTC.Lib)]
-        public static extern void StopMediaStreamTrack(IntPtr track);
+        public static extern void StopMediaStreamTrack(IntPtr context, IntPtr track);
         [DllImport(WebRTC.Lib)]
-        public static extern bool GetNvEncSupported();
+        public static extern CodecInitializationResult GetCodecInitializationResult();
         [DllImport(WebRTC.Lib)]
         public static extern void RegisterDebugLog(DelegateDebugLog func);
         [DllImport(WebRTC.Lib)]
@@ -310,9 +360,11 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreatePeerConnectionWithConfig(IntPtr ptr, int id, string conf);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionClose(IntPtr ptr, int id);
+        public static extern void ContextDeletePeerConnection(IntPtr ptr, int id);
         [DllImport(WebRTC.Lib)]
-        public static extern void PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
+        public static extern void PeerConnectionClose(IntPtr ptr);
+        [DllImport(WebRTC.Lib)]
+        public static extern RTCErrorType PeerConnectionSetConfiguration(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string conf);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr PeerConnectionCreateDataChannel(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, ref RTCDataChannelInit options);
         [DllImport(WebRTC.Lib)]
@@ -370,8 +422,6 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void DataChannelRegisterOnClose(IntPtr ptr, DelegateOnClose callback);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr CaptureVideoStream(IntPtr context, IntPtr rt, int width, int height);
-        [DllImport(WebRTC.Lib)]
         public static extern IntPtr CreateMediaStream(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr CreateVideoTrack(IntPtr context, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr rt, int width, int height, int bitRate);
@@ -400,7 +450,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void SetCurrentContext(IntPtr context);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr GetRenderEventFunc();
+        public static extern IntPtr GetRenderEventFunc(IntPtr context);
         [DllImport(WebRTC.Lib)]
         public static extern void ProcessAudio(float[] data, int size);
     }
@@ -412,10 +462,13 @@ namespace Unity.WebRTC
         public static implicit operator bool(Context v) { return v.self != IntPtr.Zero; }
         public static bool ToBool(Context v) { return v; }
         public static Context Create(int uid = 0) { return NativeMethods.ContextCreate(uid); }
+        public static CodecInitializationResult GetCodecInitializationResult() { return NativeMethods.GetCodecInitializationResult(); }
         public void Destroy(int uid = 0) { NativeMethods.ContextDestroy(uid); self = IntPtr.Zero; }
         public IntPtr CreateMediaStream(string label) { return NativeMethods.CreateMediaStream(self, label); }
         public IntPtr CreateVideoTrack(string label, IntPtr rt, int width, int height, int bitRate) { return NativeMethods.CreateVideoTrack(self, label, rt, width, height, bitRate); }
         public IntPtr CreateAudioTrack(string label) {return NativeMethods.CreateAudioTrack(self, label);}
+        public IntPtr GetRenderEventFunc() { return NativeMethods.GetRenderEventFunc(self); }
+        public void StopMediaStreamTrack(IntPtr track) { NativeMethods.StopMediaStreamTrack(self, track); }
     }
 }
 

@@ -22,9 +22,11 @@ namespace Unity.RenderStreaming
     public static class RemoteInput
     {
         public static Keyboard Keyboard { get; private set; }
-        public static Mouse Mouse { get; private set; }
+        public static Mouse RemoteMouse { get; private set; }
         public static Touchscreen Touch { get; private set; }
         public static Action<int> ActionButtonClick;
+
+        static bool m_isInitialized = false;
 
         static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
         {
@@ -39,9 +41,19 @@ namespace Unity.RenderStreaming
         public static void Initialize()
         {
             Keyboard = GetOrAddDevice<Keyboard>();
-            Mouse = GetOrAddDevice<Mouse>();
+            RemoteMouse = InputSystem.AddDevice<Mouse>();
             Touch = GetOrAddDevice<Touchscreen>();
+            m_isInitialized = true;
         }
+
+//---------------------------------------------------------------------------------------------------------------------
+        public static void Destroy()
+        {
+            InputSystem.RemoveDevice(RemoteMouse);
+            RemoteMouse = null;
+            m_isInitialized = false;
+        }
+//---------------------------------------------------------------------------------------------------------------------
 
         public static void ProcessInput(byte[] bytes)
         {
@@ -69,19 +81,36 @@ namespace Unity.RenderStreaming
                     InputSystem.Update();
                     break;
                 case EventType.Touch:
-                    var phase = (PointerPhase)bytes[1];
-                    var length = bytes[2];
-                    var index = 3;
+                    var length = bytes[1];
+                    var index = 2;
+                    var touches = new TouchState[length];
                     for (int i = 0; i < length; i++)
                     {
                         var identifier = BitConverter.ToInt32(bytes, index);
-                        var pageX = BitConverter.ToInt16(bytes, index+4);
-                        var pageY = BitConverter.ToInt16(bytes, index+6);
-                        var force = BitConverter.ToSingle(bytes, index+8);
-                        ProcessTouchMoveEvent(identifier, phase, pageX, pageY, force);
-                        index += 12;
+                        index += 4;
+                        var phase = (PointerPhase)bytes[index];
+                        index += 1;
+                        var pageX = BitConverter.ToInt16(bytes, index);
+                        index += 2;
+                        var pageY = BitConverter.ToInt16(bytes, index);
+                        index += 2;
+                        var force = BitConverter.ToSingle(bytes, index);
+                        index += 4;
+                        touches[i] = new TouchState
+                        {
+                            touchId = identifier,
+                            phase = phase,
+                            position = new Vector2Int(pageX, pageY),
+                            pressure = force
+                        };
                     }
+                    ProcessTouchMoveEvent(touches);
                     InputSystem.Update();
+                    if (Touchscreen.current.activeTouches.Count > length)
+                    {
+                        ChangeEndStateUnusedTouches(touches);
+                        InputSystem.Update();
+                    }
                     break;
                 case EventType.ButtonClick:
                     var elementId = BitConverter.ToInt16(bytes, 1);
@@ -92,7 +121,10 @@ namespace Unity.RenderStreaming
 
         public static void Reset()
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState());
+            if (!m_isInitialized)
+                return;
+
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState());
             InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
             InputSystem.QueueStateEvent(Touch, new TouchState());
             InputSystem.Update();
@@ -118,26 +150,39 @@ namespace Unity.RenderStreaming
             }
         }
 
-        static void ProcessMouseMoveEvent(short deltaX, short deltaY, byte button)
+        static void ProcessMouseMoveEvent(short x, short y, byte button)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { delta = new Vector2Int(deltaX, deltaY), buttons = button });
+            var position = new Vector2Int(x, y);
+            var delta = position - Mouse.current.position.ReadValue();
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { position = position, delta = delta, buttons = button });
         }
 
         static void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new Vector2(scrollX, scrollY) });
         }
 
-        static void ProcessTouchMoveEvent(int identifier, PointerPhase phase, short pageX, short pageY, float force)
+        static void ProcessTouchMoveEvent(TouchState[] touches)
         {
-            InputSystem.QueueStateEvent(Touch,
-                new TouchState
+            for (var i = 0; i < touches.Length; i++)
+            {
+                InputSystem.QueueStateEvent(Touch, touches[i]);
+            }
+        }
+        static void ChangeEndStateUnusedTouches(TouchState[] touches)
+        {
+            for (var i = 0; i < Touchscreen.current.activeTouches.Count; i++)
+            {
+                var touchId = Touchscreen.current.activeTouches[i].touchId.ReadValue();
+                if (!Array.Exists(touches, v => v.touchId == touchId))
                 {
-                    touchId = identifier,
-                    phase = phase,
-                    position = new Vector2Int(pageX, pageY),
-                    pressure = force
-                });
+                    InputSystem.QueueStateEvent(Touch, new TouchState
+                    {
+                        touchId = touchId,
+                        phase = PointerPhase.Ended
+                    });
+                }
+            }
         }
 
         static void ProcessButtonClickEvent(int elementId)

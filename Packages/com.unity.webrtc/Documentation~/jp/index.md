@@ -1,12 +1,14 @@
 # WebRTC
 
-- [English](../index.md)
+- [English](../en/index_EN.md)
 
 WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
 
 ## ガイド
 
 * [チュートリアル](tutorial.md)
+* [データチャネル](datachennel.md)
+* [メディアストリーム](mediastream.md)
 
 ## インストール方法
 パッケージをインストールするためには、パッケージマネージャから WebRTC for Unity を検索しインストールします。パッケージマネージャの利用方法は[ドキュメント](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html)を参照してください。

@@ -33,66 +33,66 @@ class MediaStreamTest
                 urls = new string[] { "stun:stun.l.google.com:19302" }
             }
         };
-        if(WebRTC.HWEncoderSupport)
+        if(!WebRTC.HWEncoderSupport)
         {
-            var pc1Senders = new List<RTCRtpSender>();
-            var pc2Senders = new List<RTCRtpSender>();
-            var peer1 = new RTCPeerConnection(ref config);
-            var peer2 = new RTCPeerConnection(ref config);
-
-            peer1.OnIceCandidate = new DelegateOnIceCandidate(candidate => { peer2.AddIceCandidate(ref candidate); });
-            peer2.OnIceCandidate = new DelegateOnIceCandidate(candidate => { peer1.AddIceCandidate(ref candidate); });
-            peer2.OnTrack = new DelegateOnTrack(e =>
-            {
-                pc2Senders.Add(peer2.AddTrack(e.Track));
-            });
-
-
-            cam.CreateRenderStreamTexture(1280, 720, 2);
-            MediaStream mediaStream = new MediaStream();
-            int texCount = cam.GetStreamTextureCount();
-            for (int i = 0; i < texCount; ++i)
-            {
-                RenderTexture rt = cam.GetStreamTexture(i);
-                VideoStreamTrack videoStreamTrack = new VideoStreamTrack("videoTrack"+i, rt);
-                mediaStream.AddTrack(videoStreamTrack);
-                pc1Senders.Add(peer1.AddTrack(videoStreamTrack));
-            }
-
-            var conf = new RTCDataChannelInit(true);
-
-            RTCOfferOptions options1 = default;
-            RTCAnswerOptions options2 = default;
-            var op1 = peer1.CreateOffer(ref options1);
-            yield return op1;
-            var op2 = peer1.SetLocalDescription(ref op1.desc);
-            yield return op2;
-            var op3 = peer2.SetRemoteDescription(ref op1.desc);
-            yield return op3;
-            var op4 = peer2.CreateAnswer(ref options2);
-            yield return op4;
-            var op5 = peer2.SetLocalDescription(ref op4.desc);
-            yield return op5;
-            var op6 = peer1.SetRemoteDescription(ref op4.desc);
-            yield return op6;
-
-            yield return new WaitUntil(() => peer1.IceConnectionState == RTCIceConnectionState.Connected || peer1.IceConnectionState == RTCIceConnectionState.Completed);
-            yield return new WaitUntil(() => peer2.IceConnectionState == RTCIceConnectionState.Connected || peer2.IceConnectionState == RTCIceConnectionState.Completed);
-            yield return new WaitUntil(() => pc2Senders.Count > 0);
-
-            foreach (var sender in pc1Senders)
-            {
-                peer1.RemoveTrack(sender);
-            }
-            foreach (var sender in pc2Senders)
-            {
-                peer2.RemoveTrack(sender);
-            }
-            pc1Senders.Clear();
-            GameObject.DestroyImmediate(camObj);
-
-            peer1.Close();
-            peer2.Close();
+            Assert.Pass("Test environment does not support HW encoding");
         }
+
+        var pc1Senders = new List<RTCRtpSender>();
+        var pc2Senders = new List<RTCRtpSender>();
+        var peer1 = new RTCPeerConnection(ref config);
+        var peer2 = new RTCPeerConnection(ref config);
+
+        peer1.OnIceCandidate = new DelegateOnIceCandidate(candidate => { peer2.AddIceCandidate(ref candidate); });
+        peer2.OnIceCandidate = new DelegateOnIceCandidate(candidate => { peer1.AddIceCandidate(ref candidate); });
+        peer2.OnTrack = new DelegateOnTrack(e =>
+        {
+            pc2Senders.Add(peer2.AddTrack(e.Track));
+        });
+
+        cam.CreateRenderStreamTexture(1280, 720, 2);
+        var mediaStream = new MediaStream();
+        int texCount = cam.GetStreamTextureCount();
+        for (int i = 0; i < texCount; ++i)
+        {
+            var rt = cam.GetStreamTexture(i);
+            var videoStreamTrack = new VideoStreamTrack("videoTrack"+i, rt);
+            mediaStream.AddTrack(videoStreamTrack);
+            pc1Senders.Add(peer1.AddTrack(videoStreamTrack));
+        }
+        var conf = new RTCDataChannelInit(true);
+
+        RTCOfferOptions options1 = default;
+        RTCAnswerOptions options2 = default;
+        var op1 = peer1.CreateOffer(ref options1);
+        yield return op1;
+        var op2 = peer1.SetLocalDescription(ref op1.desc);
+        yield return op2;
+        var op3 = peer2.SetRemoteDescription(ref op1.desc);
+        yield return op3;
+        var op4 = peer2.CreateAnswer(ref options2);
+        yield return op4;
+        var op5 = peer2.SetLocalDescription(ref op4.desc);
+        yield return op5;
+        var op6 = peer1.SetRemoteDescription(ref op4.desc);
+        yield return op6;
+
+        yield return new WaitUntil(() => peer1.IceConnectionState == RTCIceConnectionState.Connected || peer1.IceConnectionState == RTCIceConnectionState.Completed);
+        yield return new WaitUntil(() => peer2.IceConnectionState == RTCIceConnectionState.Connected || peer2.IceConnectionState == RTCIceConnectionState.Completed);
+        yield return new WaitUntil(() => pc2Senders.Count > 0);
+
+        foreach (var sender in pc1Senders)
+        {
+            peer1.RemoveTrack(sender);
+        }
+        foreach (var sender in pc2Senders)
+        {
+            peer2.RemoveTrack(sender);
+        }
+        pc1Senders.Clear();
+        GameObject.DestroyImmediate(camObj);
+
+        peer1.Close();
+        peer2.Close();
     }
 }

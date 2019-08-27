@@ -29,6 +29,11 @@ namespace WebRTC
 
 extern "C"
 {
+    UNITY_INTERFACE_EXPORT CodecInitializationResult GetCodecInitializationResult()
+    {
+        return ContextManager::GetInstance()->GetCodecInitializationResult();
+    }
+
     UNITY_INTERFACE_EXPORT webrtc::MediaStreamInterface* CreateMediaStream(Context* context, const char* label)
     {
         return context->CreateMediaStream(label);
@@ -45,14 +50,9 @@ extern "C"
     }
     
     //TODO: Multi-track support
-    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
+    UNITY_INTERFACE_EXPORT void StopMediaStreamTrack(Context* context, webrtc::MediaStreamTrackInterface* track)
     {
-        ContextManager::GetInstance()->curContext->StopCapturer();
-    }
-
-    UNITY_INTERFACE_EXPORT bool GetNvEncSupported()
-    {
-        return ContextManager::GetNvEncSupported();
+        context->StopCapturer();
     }
 
     UNITY_INTERFACE_EXPORT void MediaStreamAddTrack(webrtc::MediaStreamInterface* stream, webrtc::MediaStreamTrackInterface* track)
@@ -168,12 +168,12 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid)
     {
-        return ContextManager::GetContext(uid);
+        return ContextManager::GetInstance()->GetContext(uid);
     }
 
     UNITY_INTERFACE_EXPORT void ContextDestroy(int uid)
     {
-        ContextManager::DestroyContext(uid);
+        ContextManager::GetInstance()->DestroyContext(uid);
     }
 
     UNITY_INTERFACE_EXPORT PeerConnectionObject* ContextCreatePeerConnection(Context* ctx, int id)
@@ -185,10 +185,13 @@ extern "C"
     {
         return ctx->CreatePeerConnection(id, conf);
     }
-    UNITY_INTERFACE_EXPORT void PeerConnectionClose(PeerConnectionObject* obj, int id)
+    UNITY_INTERFACE_EXPORT void ContextDeletePeerConnection(Context* ctx, int id)
+    {
+        ctx->DeletePeerConnection(id);
+    }
+    UNITY_INTERFACE_EXPORT void PeerConnectionClose(PeerConnectionObject* obj)
     {
         obj->Close();
-        ContextManager::GetInstance()->curContext->DeleteClient(id);
     }
     UNITY_INTERFACE_EXPORT webrtc::RtpSenderInterface* PeerConnectionAddTrack(PeerConnectionObject* obj, webrtc::MediaStreamTrackInterface* track, const char* mediaStreamId)
     {
@@ -200,9 +203,9 @@ extern "C"
         obj->connection->RemoveTrack(sender);
     }
 
-    UNITY_INTERFACE_EXPORT void PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
+    UNITY_INTERFACE_EXPORT webrtc::RTCErrorType PeerConnectionSetConfiguration(PeerConnectionObject* obj, const char* conf)
     {
-        obj->SetConfiguration(std::string(conf)); 
+        return obj->SetConfiguration(std::string(conf)); 
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionGetConfiguration(PeerConnectionObject* obj, char** conf, int* len)
@@ -244,7 +247,7 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT DataChannelObject* PeerConnectionCreateDataChannel(PeerConnectionObject* obj, const char* label, const RTCDataChannelInit* options)
     {
-        return obj->createDataChannel(label, *options);
+        return obj->CreateDataChannel(label, *options);
     }
 
     UNITY_INTERFACE_EXPORT void PeerConnectionRegisterIceConnectionChange(PeerConnectionObject* obj, DelegateOnIceConnectionChange callback)

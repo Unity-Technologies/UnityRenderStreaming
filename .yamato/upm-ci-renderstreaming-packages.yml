@@ -1,0 +1,107 @@
+# .yamato/upm-ci-renderstreaming-packages.yml
+editors:
+  - version: 2019.1
+  - version: 2019.2  
+#  - version: trunk
+platforms:
+  - name: win
+    type: Unity::VM::GPU
+    # currently the projects depends MSBuild. we should replace CMake
+    # image: package-ci/win10:stable
+    image: renderstreaming/win10:latest
+    flavor: b1.large
+packages:
+  - name: webrtc
+    packagename: com.unity.webrtc
+    prepack_command: build_plugin.cmd
+  - name: renderstreaming
+    packagename: com.unity.renderstreaming
+    prepack_command: 
+    
+---
+{% for package in packages %}
+{% for platform in platforms %}
+prepack_{{ package.name }}_{{ platform.name }}:
+  name: Prepack {{ package.packagename }} {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ package.prepack_command}}
+  artifacts:
+    {{ package.name }}_{{ platform.name }}_prepack: 
+      paths:
+        - "Packages/{{ package.packagename }}/**/*"
+{% endfor %}
+
+pack_{{ package.name }}:
+  name: Pack {{ package.packagename }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/win10:latest
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package pack --package-path Packages/{{ package.packagename }}
+  artifacts:
+    {{ package.name }}_package:  
+      paths:
+        - "upm-ci~/packages/**/*"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
+    {% endfor %}
+
+{% for editor in editors %}
+{% for platform in platforms %}
+test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package test -u {{ editor.version }} --package-path Packages/{{ package.packagename }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"    
+  
+  artifacts:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+{% endfor %}
+{% endfor %}
+
+publish_{{ package.name }}:
+  name: Publish {{ package.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package publish --package-path Packages/{{ package.packagename }}
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:  
+    {{ package.name }}_artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+{% endfor %}

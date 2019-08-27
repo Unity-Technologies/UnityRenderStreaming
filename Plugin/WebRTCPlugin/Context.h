@@ -13,15 +13,12 @@ namespace WebRTC
     class ContextManager
     {
     public:
-        static Context* GetContext(int uid);
-        static void DestroyContext(int uid);
         static ContextManager* GetInstance() { return &s_instance; }
-        static bool GetNvEncSupported();
      
+        Context* GetContext(int uid);
+        void DestroyContext(int uid);
         void SetCurContext(Context*);
-        bool LoadNvEncApi();
-        void TryNvEnc();
-        void InitializeAndTryNvEnc();
+        CodecInitializationResult GetCodecInitializationResult() const;
 
     public:
         using ContextPtr = std::unique_ptr<Context>;
@@ -29,12 +26,12 @@ namespace WebRTC
         std::unique_ptr<NV_ENCODE_API_FUNCTION_LIST> pNvEncodeAPI;
         void* hModule = nullptr;
     private:
-        bool nvEncSupported = true;
-        bool nvEncTryInitialized = false;
-
-    private:
         ~ContextManager();
+        CodecInitializationResult InitializeAndTryNvEnc();
+        CodecInitializationResult LoadNvEncApi();
+        CodecInitializationResult TryNvEnc();
 
+        CodecInitializationResult codecInitializationResult;
         std::map<int, ContextPtr> m_contexts;
         static ContextManager s_instance;
     };
@@ -50,10 +47,11 @@ namespace WebRTC
 
         PeerConnectionObject* CreatePeerConnection(int id);
         PeerConnectionObject* CreatePeerConnection(int id, const std::string& conf);
+
         void EncodeFrame();
         void StopCapturer();
+        void DeletePeerConnection(int id) { clients.erase(id); }
         void ProcessAudioData(const float* data, int32 size) { audioDevice->ProcessAudioData(data, size); }
-        void DeleteClient(int id) { clients.erase(id); }
     private:
         int m_uid;
         std::unique_ptr<rtc::Thread> workerThread;

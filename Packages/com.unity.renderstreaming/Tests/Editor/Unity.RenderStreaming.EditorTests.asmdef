@@ -1,0 +1,19 @@
+{
+    "name": "Unity.RenderStreaming.EditorTests",
+    "references": [
+        "GUID:7e479a0c97f111c48b6a279fad867f28"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

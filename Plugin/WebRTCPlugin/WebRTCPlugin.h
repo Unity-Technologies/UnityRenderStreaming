@@ -19,6 +19,16 @@ namespace WebRTC
     void SetResolution(int32* width, int32* length);
     extern DelegateDebugLog delegateDebugLog;
 
+    enum class CodecInitializationResult
+    {
+        NotInitialized,
+        Success,
+        DriverNotInstalled,
+        DriverVersionDoesNotSupportAPI,
+        APINotFound,
+        EncoderInitializationFailed
+    };
+
     enum class RTCPeerConnectionState
     {
         New,

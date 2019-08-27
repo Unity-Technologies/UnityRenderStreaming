@@ -4,7 +4,7 @@
 
 ## Documentation
 
-- [English](./Documentation~/en/index.md)
+- [English](./Documentation~/index.md)
 - [Japanese]( ./Documentation~/jp/index.md)
 
 ## Package Structure
@@ -16,3 +16,12 @@
     ├── images
     └── jp
 ```
+
+## License
+
+- [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+
+## Change log
+
+- [CHANGELOG.md](CHANGELOG.md)
+

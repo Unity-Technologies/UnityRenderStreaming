@@ -28,12 +28,12 @@ namespace WebRTC
         void SetLocalDescription(const RTCSessionDescription& desc);
         void GetLocalDescription(RTCSessionDescription& desc) const;
         void SetRemoteDescription(const RTCSessionDescription& desc);
-        void SetConfiguration(const std::string& config);
+        webrtc::RTCErrorType SetConfiguration(const std::string& config);
         void GetConfiguration(std::string& config) const;
         void CreateOffer(const RTCOfferOptions& options);
         void CreateAnswer(const RTCAnswerOptions& options);
         void AddIceCandidate(const RTCIceCandidate& candidate);
-        DataChannelObject* createDataChannel(const char* label, const RTCDataChannelInit& options);
+        DataChannelObject* CreateDataChannel(const char* label, const RTCDataChannelInit& options);
 
         void RegisterCallbackSetSD(DelegateSetSDSuccess onSuccess, DelegateSetSDFailure onFailure)
         {

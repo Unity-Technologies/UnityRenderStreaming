@@ -6,6 +6,15 @@ let videoPlayer;
 
 showPlayButton();
 
+window.document.oncontextmenu = function () {
+  return false;     // cancel default menu
+}
+
+window.addEventListener('resize', function() {
+  videoPlayer.resizeVideo();
+}, true);
+
+
 function showPlayButton() {
   if (!document.getElementById('playButton')) {
     let elementPlayButton = document.createElement('img');
@@ -55,6 +64,15 @@ function onClickPlayButton() {
   playerDiv.appendChild(elementGreenButton);
   elementGreenButton.addEventListener ("click", function() {
     sendClickEvent(videoPlayer, 2);
+  });
+
+  // add orange button
+  const elementOrangeButton = document.createElement('button');
+  elementOrangeButton.id = "orangeButton";
+  elementOrangeButton.innerHTML = "Play audio";
+  playerDiv.appendChild(elementOrangeButton);
+  elementOrangeButton.addEventListener ("click", function() {
+    sendClickEvent(videoPlayer, 3);
   });
 
   // add fullscreen button

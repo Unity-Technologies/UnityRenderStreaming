@@ -107,6 +107,8 @@
       <AdditionalLibraryDirectories>$(ProjectDir)..\webrtc\lib</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <OutputFile>..\..\Packages\com.unity.webrtc\Runtime\Plugins\x86_64\$(TargetName)$(TargetExt)</OutputFile>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -144,6 +146,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)..\webrtc\lib</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <OutputFile>..\..\Packages\com.unity.webrtc\Runtime\Plugins\x86_64\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
