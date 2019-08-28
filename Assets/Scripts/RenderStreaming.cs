@@ -69,7 +69,7 @@ namespace Unity.RenderStreaming
 
         public void OnDestroy()
         {
-            Audio.Stop();
+            Unity.WebRTC.Audio.Stop();
             WebRTC.WebRTC.Finalize();
             RemoteInput.Destroy();
         }
@@ -95,7 +95,7 @@ namespace Unity.RenderStreaming
                     cameraMediaStream.mediaStreams[i].AddTrack(new AudioStreamTrack("audioTrack"));
                 }
             }
-            Audio.Start();
+            Unity.WebRTC.Audio.Start();
 
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
