@@ -43,6 +43,7 @@ namespace Unity.RenderStreaming.Editor
                     System.IO.File.Delete(dstPath);
                 }
                 System.IO.File.Move(tmpFilePath, dstPath);
+                EditorUtility.RevealInFinder(dstPath);
             };
             client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
             {
