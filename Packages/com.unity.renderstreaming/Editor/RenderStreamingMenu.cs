@@ -1,4 +1,6 @@
 ﻿using UnityEditor;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using System.Net;
 
@@ -6,7 +8,6 @@ namespace Unity.RenderStreaming.Editor
 {
     public static class RenderStreamingMenu
     {
-        const string PackageVersion = "1.0.0-preview";
         const string BranchName = "release/1.0.0";
         const string URLRoot = "https://github.com/Unity-Technologies/UnityRenderStreaming";
         const string PathWebAppForMac = "releases/download/{0}/webserver";
@@ -17,10 +18,22 @@ namespace Unity.RenderStreaming.Editor
         [MenuItem("Edit/Render Streaming/Download web app")]
         static void DownloadWepApp()
         {
+            // request package list to get package version
+            RequestJobManager.CreateListRequest(false, true, OnPackageListRequestSuccess, null);
+        }
+
+        static void OnPackageListRequestSuccess(Request<PackageCollection> req)
+        {
+            var packageInfo = req.FindPackage("com.unity.renderstreaming");
+            if (null == packageInfo)
+            {
+                Debug.LogError("Not found package \"com.unity.renderstreaming\"");
+                return;
+            }
 #if UNITY_EDITOR_WIN
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForWin, PackageVersion));
+            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForWin, packageInfo.version));
 #elif UNITY_EDITOR_OSX
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForMac, PackageVersion));
+            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForMac, packageInfo.version));
 #endif
             var client = new WebClient();
             var filename = System.IO.Path.GetFileName(url);
@@ -37,8 +50,12 @@ namespace Unity.RenderStreaming.Editor
                 }
 
                 var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
+                if(string.IsNullOrEmpty(dstPath))
+                {
+                    return;
+                }
                 dstPath = System.IO.Path.Combine(dstPath, filename);
-                if(System.IO.File.Exists(dstPath))
+                if (System.IO.File.Exists(dstPath))
                 {
                     System.IO.File.Delete(dstPath);
                 }
