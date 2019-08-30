@@ -6,7 +6,7 @@
   "description": "This is HDRP sample scene project integrated with Unity Render Streaming technology.\n\nAlong with its signaling web server, you could play around the scene in any webrtc supported web browser.",
   "dependencies": {
     "com.unity.webrtc": "1.0.0-preview",
-    "com.unity.inputsystem": "0.2.10-preview"
+    "com.unity.inputsystem": "0.9.4-preview"
   }, 
   
  "samples": [
