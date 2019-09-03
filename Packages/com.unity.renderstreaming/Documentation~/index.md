@@ -9,7 +9,7 @@ Currently, there is one sample:
 - HDRP. 
   > Importing this sample will automatically install and setup our HDRP sample assets along with the HDRP *(com.unity.render-pipelines.high-definition)* package.
 
-### Tutorial
+## Simple Tutorial on Windows
 
 1.  Open an existing or create a new project
 2.  Click on the `Window` Menu and open `Package Manager`. Then, click on `Advanced` and make sure `Show preview packages` is checked
@@ -39,7 +39,33 @@ Currently, there is one sample:
 
 <img src="./images/simplescene.jpg" width=240 align=center>
 
-9. The project setup is done. The next steps would be to launch a webserver as described on
-[github](https://github.com/Unity-Technologies/UnityRenderStreaming/blob/release/1.1.0/Packages/com.unity.template.renderstreaming/Documentation~/en/tutorial.md)
+9. Click on `Edit/Render Streaming/Download web app` menu item to download our web server
+
+<img src="./images/download_webapp.jpg" width=300 align=center>
+
+10. Click `Select Folder` to download the file to the default folder
+
+<img src="./images/select_download_folder.jpg" width=240 align=center>
+
+
+11. After the download is finished and a new explorer window is opened, click on `webserver.exe`
+
+<img src="./images/webserver.jpg" width=240 align=center>
+
+12. Enter play mode in Unity
+
+<img src="./images/play_mode.jpg" width=240 align=center>
+
+13. Open your browser and type `localhost` on the URL bar. Then click on the shown play button. 
+The view in Unity should then appear on your browser
+
+<img src="./images/browser.jpg" width=240 align=center>
+
+
+
+
+
+
+
 
 
