@@ -54,10 +54,10 @@ namespace Unity.RenderStreaming.Editor
                 client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
                 {
                     var progress = e.ProgressPercentage / 100f;
-                    var progressing = EditorUtility.DisplayCancelableProgressBar("Downloading", url, progress);
-                    if (progressing)
-                        return;
-                    client.CancelAsync();
+                    if(EditorUtility.DisplayCancelableProgressBar("Downloading", url, progress))
+                    {
+                        client.CancelAsync();
+                    }
                 };
                 client.DownloadFileAsync(new System.Uri(url), tmpFilePath);
             });
