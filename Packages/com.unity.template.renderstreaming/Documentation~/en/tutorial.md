@@ -9,8 +9,8 @@ There are 2 ways to get started with Render Streaming.
 
 If you decide to download the package, please download these 2 packages. 
 
-- com.unity.webrtc.tgz
-- com.unity.template.renderstreaming.tgz
+- `com.unity.renderstreaming-1.0.0-preview.tgz`
+- `com.unity.template.renderstreaming-1.0.0-preview.tgz`
 
 Put the packages in a dedicated folder in order to use them as a project template.
 
