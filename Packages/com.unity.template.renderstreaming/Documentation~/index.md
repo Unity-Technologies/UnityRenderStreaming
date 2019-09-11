@@ -27,6 +27,8 @@ This version of Render Streaming is compatible with the following versions of th
 
 Currently the software only supports `windows64`.
 
+Graphics API version is only supports `Direct3D11`.
+
 ### Browsers
 
 - Desktop Chrome

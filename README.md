@@ -7,11 +7,10 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 <img src="Packages/com.unity.template.renderstreaming/Documentation~/images/multitouch.gif" width=500 align=center>
 
-This repository manages 3 packages. Details can be found in the README.md for each package.
+This repository manages 2 packages. Details can be found in the `README.md` for each package.
 
 - [com.unity.template.renderstreaming](Packages/com.unity.template.renderstreaming/Documentation~/index.md)
 - [com.unity.renderstreaming](Packages/com.unity.renderstreaming/Documentation~/index.md)
-- [com.unity.webrtc](Packages/com.unity.webrtc/Documentation~/index.md)
 
 ## Operating Environment
 
@@ -23,19 +22,20 @@ Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technolog
 Browser support depends on the status of each browser's WebRTC support.
 
 - Desktop Chrome
+
 - Desktop Firefox
+
 - Desktop Safari
+
 - Android Chrome
+
 - iOS Safari
 
 ### License
 
-`com.unity.template.renderstreaming` license
-- [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+- `com.unity.renderstreaming` -  [LICENSE.md](Packages/com.unity.renderstreaming/LICENSE.md)
 
-`com.unity.webrtc` license
-- [LICENSE.md](Packages/com.unity.webrtc/LICENSE.md)
-- [Third Party Notices.md](Packages/com.unity.webrtc/Third%20Party%20Notices.md)
+- `com.unity.template.renderstreaming` -  [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
 
 ### Graphics Cards
 
@@ -50,10 +50,10 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 │   ├── Scenes
 │   ├── Scripts
 │   └── Tests
+├── EmptyProjectForTest~
 ├── Packages
 │   ├── com.unity.renderstreaming
-│   ├── com.unity.template.renderstreaming
-│   └── com.unity.webrtc
+│   └── com.unity.template.renderstreaming
 ├── ProjectSettings
 ├── Plugin
 │   ├── WebRTCPlugin
@@ -71,8 +71,8 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 |Version|libwebrtc version|Focus|
 |-------|-----|-----|
 |`1.0`|[M72](https://groups.google.com/forum/#!msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)|- First release |
-|`2.0`||- Multi camera <br>- Simulcast |
-|`2.1`||- Linux support <br>- Add HW encoder<br>- <br>- |
+|`2.0`||- Multi camera <br>- DirectX12 (DXR) Support <br>- Simulcast |
+|`2.1`||- Linux support <br>- Add HW encoder |
 
 ## FAQ
 

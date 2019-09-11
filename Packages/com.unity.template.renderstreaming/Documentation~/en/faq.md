@@ -14,6 +14,8 @@ Check the web server's [startup options](webserver.md). In **Safari** and **iOS 
 
 Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
 
+And currently, this package supports only `Direct3D11`. If you select other API, the initialization process will fail. 
+
 ### Web server fails to run 
 
 Make sure the port isn't being used by another service. 
@@ -54,4 +56,6 @@ Currently, version 1.0 cannot.
 
 Video quality depends on the quality of the network. 
 
+### Is Realtime-Raytracing supported? 
 
+Currently, version 1.0 cannot.
