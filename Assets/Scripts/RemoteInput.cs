@@ -29,22 +29,12 @@ namespace Unity.RenderStreaming
         static UnityEngine.Vector2Int m_prevMousePos;
         static bool m_isInitialized = false;
 
-        static TDevice GetOrAddDevice<TDevice>() where TDevice : InputDevice
-        {
-            var device = InputSystem.GetDevice<TDevice>();
-            if(device != null)
-            {
-                return device;
-            }
-            return InputSystem.AddDevice<TDevice>();
-        }
-
         public static void Initialize()
         {
-            Keyboard = GetOrAddDevice<Keyboard>();
+            Keyboard = InputSystem.AddDevice<Keyboard>();
             RemoteMouse = InputSystem.AddDevice<Mouse>();
             EnhancedTouchSupport.Enable();
-            RemoteTouch = GetOrAddDevice<Touchscreen>();
+            RemoteTouch = InputSystem.AddDevice<Touchscreen>();
             m_isInitialized = true;
         }
 
@@ -52,7 +42,12 @@ namespace Unity.RenderStreaming
         public static void Destroy()
         {
             InputSystem.RemoveDevice(RemoteMouse);
+            InputSystem.RemoveDevice(Keyboard);
+            EnhancedTouchSupport.Disable();
+            InputSystem.RemoveDevice(RemoteTouch);
             RemoteMouse = null;
+            Keyboard = null;
+            RemoteTouch = null;
             m_isInitialized = false;
         }
 //---------------------------------------------------------------------------------------------------------------------
