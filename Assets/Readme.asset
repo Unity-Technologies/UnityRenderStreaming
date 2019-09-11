@@ -13,24 +13,44 @@ MonoBehaviour:
   m_Name: Readme
   m_EditorClassIdentifier: 
   icon: {fileID: 2800000, guid: 9b84c330de497af4793fd7b376afed13, type: 3}
-  title: HDRP with RenderStreaming(Preview)
+  title: HDRP with Unity Render Streaming (Preview)
   sections:
-  - heading: Unity RenderStreaming
-    text: RenderSteraming is a technology to connect browser with server operated Unity instance through webRTC technology. 
+  - heading: Unity Render Streaming
+    text: Unity Render Streaming is a technology to connect browser with server operated
+      Unity instance through WebRTC technology.
+    linkText: 
+    url: 
   - heading: 
-    text: This template is a good starting point for people who want to stream unity rendering result to web browser and control it on browser in realtime. This template utilizes Unity RenderSteraming technology, which enables connecting browser with server operated Unity instance through WebRTC technology.
+    text: This template is a good starting point for people who want to stream unity
+      rendering result to web browser and control it on browser in realtime. This
+      template utilizes Unity Render Streaming technology, which enables connecting
+      browser with server operated Unity instance through WebRTC technology.
+    linkText: 
+    url: 
   - heading: 
-    text: To read more about Unity RenderStreaming please refer to the manual page
-    linkText: Unity RenderStreaming
-    url: https://docs.google.com/document/d/12YT832dh6zcmTTlw_PsATOpfNqHtTpdykInqEiU1dOg/edit?usp=sharing
+    text: To read more about Unity RenderStreaming please refer to the manual page.
+    linkText: Unity Render Streaming (English)
+    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/release/1.1.0/Packages/com.unity.template.renderstreaming/Documentation~/index.md
   - heading: 
-    text: The Unity WebRTC package implements RenderStreaming technology and provides C# WebRTC API for you to build WebRTC applications inside Unity. To read more about it please refer to the manual page
-    linkText: WebRTC Package
-    url: https://docs.google.com/document/d/16RfWmwnScZwY31BVTX9aOr5_Z_iE-6vAVnbZ5_xotA0/edit?usp=sharing
+    text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
+    linkText: Unity Render Streaming (Japanese)
+    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/release/1.1.0/Packages/com.unity.template.renderstreaming/Documentation~/jp/index.md
+  - heading: WebRTC Package
+    text: The Unity WebRTC package implements Unity Render Streaming technology and provides
+      C# WebRTC API for you to build WebRTC applications inside Unity. To read more
+      about it please refer to the manual page
+    linkText: WebRTC Package (English)
+    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/release/1.1.0/Documentation~/index.md
   - heading: 
-    text: This project uses the new Package Manager to bring you the latest features
+    text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
+    linkText: WebRTC Package (Japanese)
+    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/release/1.1.0/Documentation~/jp/index.md
+  - heading: 
+    text: This project uses the Package Manager to bring you the latest features
       Unity has to offer. Open the Package Manager from Windows > Package Manager
-      and make sure you're using the most recent version of WebRTC package. To update packages, select your desired package from the list on the left, and click the Update to button in the bottom right corner.
+      and make sure you're using the most recent version of WebRTC package. To update
+      packages, select your desired package from the list on the left, and click the
+      Update to button in the bottom right corner.
     linkText: 
     url: 
   loadedLayout: 1
