@@ -143,10 +143,6 @@ namespace UnityTemplateProjects
             {
                 direction += Vector3.up;
             }
-            if (Keyboard.current.uKey.isPressed)
-            {
-                ResetCamera();
-            }
 
             //Translation
             var activeTouches = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches;
@@ -164,6 +160,12 @@ namespace UnityTemplateProjects
 
         void FixedUpdate()
         {
+            if (Keyboard.current.uKey.isPressed)
+            {
+                ResetCamera();
+                return;
+            }
+
             // Rotation 
             if (IsMouseDragged(Mouse.current,false)) {
                 UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
@@ -198,6 +200,9 @@ namespace UnityTemplateProjects
         void ResetCamera()
         {
             m_InitialCameraState.UpdateTransform(transform);
+            m_TargetCameraState.SetFromTransform(transform);
+            m_InterpolatingCameraState.SetFromTransform(transform);
+
         }
 
 //---------------------------------------------------------------------------------------------------------------------
