@@ -54,6 +54,7 @@ namespace UnityTemplateProjects
 
         CameraState m_TargetCameraState = new CameraState();
         CameraState m_InterpolatingCameraState = new CameraState();
+        CameraState m_InitialCameraState = new CameraState();
 
         [Header("Movement Settings")]
         [Tooltip("Movement Sensitivity Factor."), Range(0.001f, 1f)]
@@ -75,6 +76,11 @@ namespace UnityTemplateProjects
 
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
         public bool invertY = false;
+
+        void Start()
+        {
+            m_InitialCameraState.SetFromTransform(transform);
+        }
 
         void OnEnable()
         {
@@ -137,6 +143,10 @@ namespace UnityTemplateProjects
             {
                 direction += Vector3.up;
             }
+            if (Keyboard.current.uKey.isPressed)
+            {
+                ResetCamera();
+            }
 
             //Translation
             var activeTouches = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches;
@@ -184,6 +194,12 @@ namespace UnityTemplateProjects
 
             m_InterpolatingCameraState.UpdateTransform(transform);
         }
+
+        void ResetCamera()
+        {
+            m_InitialCameraState.UpdateTransform(transform);
+        }
+
 //---------------------------------------------------------------------------------------------------------------------
         static bool IsMouseDragged(Mouse m, bool useLeftButton) {
             if (null == m)
