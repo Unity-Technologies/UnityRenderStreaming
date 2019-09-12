@@ -19,10 +19,16 @@
 
 ## 動作環境
 
-Unity 2019.1 で動作を確認しています。現在は Windows 64bit 環境でのみ動作を確認しています。
+- Unity 2019.1 で動作を確認しています。現在は Windows 64bit 環境でのみ動作を確認しています。
 
 > [!NOTE]
 > <`Unity 2018.3` はサポートされていません。>
+
+- Graphics API は `DirectX11` のみサポートしています。
+
+- Scripting Backend の `IL2CPP` は現在のところサポートされていません。
+
+### グラフィックスカード
 
 バージョン1.0.0 現在、 NVIDIA が提供するグラフィックボードに最適化されています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを参照してください。
 
