@@ -18,14 +18,21 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 ## Requirements
 
-This version of Render Streaming is compatible with the following versions of the Unity Editor:
-
-- 2019.1 and later (recommended)
+- This version of Render Streaming is compatible with the following versions of the Unity Editor:
+  - 2019.1 and later (recommended)
 
 > [!NOTE]
 > <`Unity 2018.3` is not supported.>
 
-Currently the software only supports `windows64`.
+- Currently the software only supports `windows64`.
+
+- Graphics API version only supports `Direct3D11`.
+
+- `IL2CPP` is not supported in Scripting Backend by this package.
+
+### Graphics card
+
+This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
 Graphics API version is only supports `Direct3D11`.
 
