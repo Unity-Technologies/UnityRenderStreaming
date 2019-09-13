@@ -28,7 +28,6 @@ pack:
         - "upm-ci~/templates/**/*"
   dependencies:
     {% for platform in platforms %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_webrtc_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
 
@@ -48,9 +47,6 @@ test_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    {% for platform in platforms %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_webrtc_{{ platform.name }}
-    {% endfor %}
     - .yamato/upm-ci-template.yml#pack
 {% endfor %}
 {% endfor %}

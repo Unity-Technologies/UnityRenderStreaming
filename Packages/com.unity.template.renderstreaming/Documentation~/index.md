@@ -19,10 +19,13 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 ## Requirements
 
 - This version of Render Streaming is compatible with the following versions of the Unity Editor:
-  - 2019.1 and later (recommended)
+  - 2019.1
 
 > [!NOTE]
 > <`Unity 2018.3` is not supported.>
+
+> [!NOTE]
+> <`Unity 2019.2` is not work correctly because it doesn't support HDRP 5.x>
 
 - Currently the software only supports `windows64`.
 

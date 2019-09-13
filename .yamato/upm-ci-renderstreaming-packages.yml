@@ -11,9 +11,6 @@ platforms:
     image: renderstreaming/win10:latest
     flavor: b1.large
 packages:
-  - name: webrtc
-    packagename: com.unity.webrtc
-    prepack_command: build_plugin.cmd
   - name: renderstreaming
     packagename: com.unity.renderstreaming
     prepack_command: 
