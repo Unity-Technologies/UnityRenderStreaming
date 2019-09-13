@@ -44,8 +44,13 @@ namespace Unity.RenderStreaming
             }
             else if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
             {
-                var position = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[0].screenPosition;
-                pointer.rectTransform.anchoredPosition = position;
+                var position = Vector2.zero;
+                var count = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    position += UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[i].screenPosition;
+                }
+                pointer.rectTransform.anchoredPosition = position / (float)count;
                 pointer.color = Color.red;
             }
             else

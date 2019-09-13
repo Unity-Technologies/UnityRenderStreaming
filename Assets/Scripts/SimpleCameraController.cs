@@ -148,7 +148,7 @@ namespace UnityTemplateProjects
             var activeTouches = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches;
             if (activeTouches.Count == 2)
             {
-                direction = GetTranslationFromInput(activeTouches[0].delta);
+                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
             } else if (IsMouseDragged(Mouse.current,true)) {
                 direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
             } else if (IsMouseDragged(RemoteInput.RemoteMouse,true)) {

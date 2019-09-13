@@ -171,10 +171,15 @@ namespace Unity.RenderStreaming
                 int touchId = Touch.activeTouches[i].touchId;
                 if (!Array.Exists(touches, v => v.touchId == touchId))
                 {
+                    if (Touch.activeTouches[i].phase == TouchPhase.Ended)
+                    {
+                        continue;
+                    }
                     InputSystem.QueueStateEvent(RemoteTouch, new TouchState
                     {
                         touchId = touchId,
-                        phase = UnityEngine.InputSystem.TouchPhase.Ended
+                        phase = TouchPhase.Ended,
+                        position = Touch.activeTouches[i].screenPosition
                     });
                 }
             }
