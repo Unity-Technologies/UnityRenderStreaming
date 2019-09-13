@@ -24,6 +24,9 @@
 > [!NOTE]
 > <`Unity 2018.3` はサポートされていません。>
 
+> [!NOTE]
+> <`Unity 2019.2` は HDRP 5.x がサポートされないため、描画が正しく動作しません。>
+
 - Graphics API は `DirectX11` のみサポートしています。
 
 - Scripting Backend の `IL2CPP` は現在のところサポートされていません。

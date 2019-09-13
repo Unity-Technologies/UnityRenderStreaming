@@ -59,3 +59,13 @@ Windows10 x64で利用可能です。他の OS にも順次対応予定です。
 ### リアルタイムレイトレーシングには対応している？
 
 バージョン1.0 現在未対応です。
+
+## サポートに関する質問
+
+### Unity から技術的なサポートは受けられますか？
+Unity フォーラムに専用の[カテゴリ](https://forum.unity.com/forums/unity-render-streaming.413/)がありますので、質問することが可能です。
+また、バグや機能要望については [Github Issues](https://github.com/Unity-Technologies/UnityRenderStreaming/issues) にご報告ください。
+
+### Unity を GCP などにホスティングしてレンダリングサーバとして利用できますか？
+
+Unity はレンダリングサーバとしての用途のサポートは行っていません。

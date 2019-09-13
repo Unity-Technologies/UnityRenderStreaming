@@ -4,6 +4,14 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2019-09-13
+
+- Added: Adding menu to download web app
+- Changed: Upgrading input system to 0.9.4-preview
+- Changed: Upgrading HDRP to 5.16.1-preview
+- Changed: Adding keyboard event to reset camera position
+- Fixed: Fixed Readme of the template project
+
 ## [1.0.0] - 2019-08-22
 
 - Added: Added audio sample

@@ -1,11 +1,11 @@
 {
   "name": "com.unity.renderstreaming",
   "displayName": "Unity Render Streaming",
-  "version": "1.0.0-preview",
+  "version": "1.1.0-preview",
   "unity": "2019.1",
   "description": "This is HDRP sample scene project integrated with Unity Render Streaming technology.\n\nAlong with its signaling web server, you could play around the scene in any webrtc supported web browser.",
   "dependencies": {
-    "com.unity.webrtc": "1.0.0-preview",
+    "com.unity.webrtc": "1.0.1-preview",
     "com.unity.inputsystem": "0.9.6-preview"
   }, 
   
