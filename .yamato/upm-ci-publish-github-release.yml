@@ -2,7 +2,6 @@ platforms:
   - name: win
   - name: mac
 packages:
-  - name: webrtc
   - name: renderstreaming
 ---
 publish_github_release:
@@ -29,4 +28,3 @@ publish_github_release:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
-    - .yamato/upm-ci-libwebrtc.yml#build_win
