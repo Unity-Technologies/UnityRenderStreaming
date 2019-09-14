@@ -9,12 +9,12 @@ Render Streaming の利用を開始するためには、[Github Release](https:/
 
 [Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) から2つのパッケージをダウンロードします。
 
-- `com.unity.renderstreaming-1.1.0-preview.tgz`
-- `com.unity.template.renderstreaming-1.1.0-preview.tgz`
+- `com.unity.renderstreaming-x.x.x-preview.tgz`
+- `com.unity.template.renderstreaming-x.x.x-preview.tgz`
 
 もう1つのパッケージは `com.unity.webrtc` リポジトリの [Github Release](https://github.com/Unity-Technologies/com.unity.webrtc/releases) からダウンロードします。 
 
-- `com.unity.webrtc-1.0.1-preview.tgz`
+- `com.unity.webrtc-x.x.x-preview.tgz`
 
 > [!NOTE]
 > < これらの作業は暫定的なものです。将来的にはこれらのパッケージは PackageManager に登録される予定です。PackageManager から直接ダウンロード可能になれば、手動でのパッケージインストールは不要になります。 >
@@ -27,7 +27,7 @@ Render Streaming の利用を開始するためには、[Github Release](https:/
 
 テンプレートパッケージを利用する際は、 tgz ファイルをそれぞれ以下のフォルダに配置します。
 
-`com.unity.template.renderstreaming-1.1.0-preview.tgz` を以下のフォルダに移動
+`com.unity.template.renderstreaming-x.x.x-preview.tgz` を以下のフォルダに移動
 
 ```
  <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates
@@ -35,7 +35,7 @@ Render Streaming の利用を開始するためには、[Github Release](https:/
 
 <img src="../images/install_renderstreaming_package.png" width=600 align=center>
 
-`com.unity.webrtc-1.0.1-preview.tgz` と`com.unity.renderstreaming-1.1.0-preview.tgz`を以下のフォルダに移動
+`com.unity.webrtc-x.x.x-preview.tgz` と`com.unity.renderstreaming-x.x.x-preview.tgz`を以下のフォルダに移動
 
 ```&lt;Unity Editor Root&gt;/Data/Resources/PackageManager/Editor
 <Unity Editor Root>/Data/Resources/PackageManager/Editor
