@@ -4,6 +4,10 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2019-09-14
+
+- Fixed: Fix image links for documentation on Unity website
+
 ## [1.1.0] - 2019-09-13
 
 - Added: Adding menu to download web app

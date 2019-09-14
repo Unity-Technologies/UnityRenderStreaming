@@ -9,8 +9,15 @@ There are 2 ways to get started with Render Streaming.
 
 If you decide to download the package, please download these 2 packages. 
 
-- `com.unity.renderstreaming-1.1.0-preview.tgz`
-- `com.unity.template.renderstreaming-1.1.0-preview.tgz`
+- `com.unity.renderstreaming-x.x.x-preview.tgz`
+- `com.unity.template.renderstreaming-x.x.x-preview.tgz`
+
+Additionally, you download a package from the [Github Release](https://github.com/Unity-Technologies/com.unity.webrtc/releases) page of the `com.unity.webrtc` repository.
+
+- `com.unity.webrtc-x.x.x-preview.tgz`
+
+> [!NOTE]
+> < This process made for temporary use. It is not needed if these packages are registered to PackageManager in the future. >
 
 Put the packages in a dedicated folder in order to use them as a project template.
 
@@ -22,7 +29,7 @@ The project template can be selected as a template when creating a new Unity pro
 
 When using the template package, put the 2 tgz files in the following folders. 
 
-Move `com.unity.template.renderstreaming.tgz` to this folder
+Move `com.unity.template.renderstreaming-x.x.x-preview.tgz` to this folder
 
 ```
  <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates
@@ -30,7 +37,7 @@ Move `com.unity.template.renderstreaming.tgz` to this folder
 
 <img src="../images/install_renderstreaming_package.png" width=600 align=center>
 
-Move `com.unity.webrtc.tgz` to this folder
+Move `com.unity.webrtc-x.x.x-preview.tgz` and `com.unity.renderstreaming-x.x.x-preview.tgz` to this folder
 
 ```&lt;Unity Editor Root&gt;/Data/Resources/PackageManager/Editor
 <Unity Editor Root>/Data/Resources/PackageManager/Editor
