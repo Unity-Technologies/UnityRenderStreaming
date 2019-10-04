@@ -1,22 +1,20 @@
 # WebRTC
 
-- [English](../en/index_EN.md)
+- [English](../index.md)
 
 WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能にするためのパッケージです。
 
 ## ガイド
 
 * [チュートリアル](tutorial.md)
-* [データチャネル](datachennel.md)
-* [メディアストリーム](mediastream.md)
 
 ## インストール方法
-パッケージをインストールするためには、パッケージマネージャから WebRTC for Unity を検索しインストールします。パッケージマネージャの利用方法は[ドキュメント](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html)を参照してください。
+パッケージをインストールするためには、パッケージマネージャーから WebRTC for Unity を検索しインストールします。パッケージマネージャーの利用方法は[ドキュメント](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html)を参照してください。
 
 <img src="../images/webrtc_package_manager.png" width=600 align=center>
 
 ## サンプル
-パッケージでは以下の3つのサンプルを用意しています。
+パッケージでは以下の 3 つのサンプルを用意しています。
 
 | シーン名       | 説明                                 |
 | -------------- | ------------------------------------ |
@@ -26,7 +24,7 @@ WebRTC for Unity は、 [WebRTC](https://webrtc.org) を Unity で利用可能�
 
 ## 制限事項
 
-ビデオエンコーディングにGPUハードウェアアクセラレーションを使用しているため、NVCodec 対応のグラフィックボードにのみ動作します。
+ビデオエンコーディングに GPU ハードウェアアクセラレーションを使用しているため、NVCodec 対応のグラフィックボード上でのみ動作します。
 
 ## 更新履歴
 

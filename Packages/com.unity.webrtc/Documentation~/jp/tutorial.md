@@ -51,7 +51,7 @@ public class MyPlayerScript : MonoBehaviour
 
 ### 通信経路候補の登録
 
-ピアの接続を行うために、ICE (Interactive Connectivity Establishment) の交換が必要になります。各ピアで通信経路候補が発見されたら、 `OnIceCandidate` が呼び出されます。各ピアのにコールバックで `AddIceCandidate` を呼び出して経路候補の登録を行います。
+ピアの接続を行うために、ICE (Interactive Connectivity Establishment) の交換が必要になります。各ピアで通信経路候補が発見されたら、 `OnIceCandidate` が呼び出されます。各ピアのコールバックで `AddIceCandidate` を呼び出して経路候補の登録を行います。
 
 
 ```CSharp
@@ -63,11 +63,11 @@ remoteConnection.OnIceCandidate = e => { !string.IsNullOrEmpty(e.candidate)
 
 ```
 
-### シグナリング処理
+### シグナリング処理の流れ
 
-ピア間で SDP の交換を行います。最初に `CreateOffer` でオファーSDP を作成します。オファーSDP を取得後、ローカルピアとリモートピアの双方に SDP を設定します。このとき `SetLocalDescription` と `SetRemoteDescription` を取り違えないよう気をつけてください。
+ピア間で SDP の交換を行います。最初に `CreateOffer` でオファー SDP を作成します。オファー SDP を取得後、ローカルピアとリモートピアの双方に SDP を設定します。このとき `SetLocalDescription` と `SetRemoteDescription` を取り違えないよう気をつけてください。
 
-オファー SDP の設定が完了したら、 `CreateAnswer` を呼び出してアンサー SDP を作成します。オファーSDP と同様に、アンサー SDP もローカルピアとリモートピアの双方に設定します。
+オファー SDP の設定が完了したら、 `CreateAnswer` を呼び出してアンサー SDP を作成します。オファー SDP と同様に、アンサー SDP もローカルピアとリモートピアの双方に設定します。
 
 ```csharp
 var op1 = localConnection.CreateOffer();
@@ -153,3 +153,6 @@ private void OnDestroy()
 }
 ```
 
+### ビデオストリーミング
+
+`MediaStream` を使ってビデオストリームをキャプチャするために、`Camera` の `CaptureStream()` を呼び出します。
