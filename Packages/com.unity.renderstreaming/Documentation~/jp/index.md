@@ -2,7 +2,7 @@
 
 - [English](../index.md)
 
-このパッケージには Unity の [**Unity Render Streaming**](../../../com.unity.template.renderstreaming/Documentation~/index.md) を基に作られた公開 API とサンプルプロジェクトが含まれます。
+このパッケージには Unity の [**Unity Render Streaming**](../../com.unity.template.renderstreaming/Documentation~/jp/index.md) を基に作られた公開 API とサンプルプロジェクトが含まれます。
 
 現在、1 つのサンプルがあります。
 
@@ -60,12 +60,5 @@
 クリックすると、Unity のビューがブラウザーに表示されます。
 
 <img src="../images/browser.png" width="240">
-
-
-
-
-
-
-
 
 
