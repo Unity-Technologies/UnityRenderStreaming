@@ -90,7 +90,7 @@
     Organization Name (eg, company) [Internet Widgits Pty Ltd]:Unity
     ```
 
-* Enter the name of your business unity within the organization:
+* Enter the name of your business unit within the organization:
 
     ```terminal
     Organizational Unit Name (eg, section) []:Verticals
@@ -150,7 +150,7 @@
 
     ![Add/Remove Snap-in...](../images/https_step3_10.png)
 
-11. Select `Place all certificates in the following store` and ensure that `Trusted Root Certification Authorities` is the vale in the `Certificate store:` field, and then select `Next`.
+11. Select `Place all certificates in the following store` and ensure that `Trusted Root Certification Authorities` is the value in the `Certificate store:` field, and then select `Next`.
 
     ![Add/Remove Snap-in...](../images/https_step3_11.png)
 
@@ -192,12 +192,12 @@
 
 ## **Step 5: Create a Private Key (client-1.local.key) and Certificate Request (client-1.local.csr) for the New Domain**
 
-* Execute this command ensuring the following fields are the same as the ones you ised in [Step 1: Create a Private Key](#Step-1:-Create-a-Private-Key):
+* Execute this command ensuring the following fields are the same as the ones you used in [Step 1: Create a Private Key](#Step-1:-Create-a-Private-Key):
   * C=CA (Country)
   * ST=Quebec (State)
   * L=montreal (Locale)
   * O=Unity (Organization)
-  * OU=Verticals (Business Unity)
+  * OU=Verticals (Business Unit)
   * CN=Tony (Name)
   * email<span>Address=anthonyma@unity3d.</span>com (E-Mail)
 
