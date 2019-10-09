@@ -4,6 +4,7 @@ import { Server } from 'http';
 import * as fs from 'fs';
 import * as os from 'os';
 import { createServer } from './server';
+import { AddressInfo } from 'net';
 
 export interface Options {
   secure?: boolean;
@@ -13,7 +14,7 @@ export interface Options {
 }
 
 export class RenderStreaming {
-  public static run(argv: string[]) {
+  public static run(argv: string[]): RenderStreaming {
     const program = require('commander');
     const readOptions = (): Options => {
       if (Array.isArray(argv)) {
@@ -37,7 +38,9 @@ export class RenderStreaming {
   }
 
   public app: express.Application;
+
   public server?: Server;
+
   public options: Options;
 
   constructor(options: Options) {
@@ -47,8 +50,8 @@ export class RenderStreaming {
       this.server = https.createServer({
         key: fs.readFileSync(options.keyfile),
         cert: fs.readFileSync(options.certfile),
-      },                               this.app).listen(this.options.port, () => {
-        const port = this.server.address()['port'];
+      }, this.app).listen(this.options.port, () => {
+        const { port } = this.server.address() as AddressInfo;
         const addresses = this.getIPAddress();
         for (const address of addresses) {
           console.log(`https://${address}:${port}`);
@@ -56,7 +59,7 @@ export class RenderStreaming {
       });
     } else {
       this.server = this.app.listen(this.options.port, () => {
-        const port = this.server.address()['port'];
+        const { port } = this.server.address() as AddressInfo;
         const addresses = this.getIPAddress();
         for (const address of addresses) {
           console.log(`http://${address}:${port}`);
