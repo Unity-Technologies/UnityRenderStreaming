@@ -9,7 +9,7 @@
     "newman": "newman run test/renderstreaming.postman_collection.json",
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
-    "lint": "tslint --project tsconfig.json --fix 'src/*.ts'",
+    "lint": "eslint --fix 'src/*.ts'",
     "pack": "pkg ."
   },
   "dependencies": {
@@ -20,13 +20,14 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.12",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3",
+    "eslint": "^6.5.1",
     "jest": "^24.8.0",
     "newman": "^4.4.1",
     "pkg": "^4.4.0",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
-    "tslint": "^5.14.0",
-    "tslint-config-airbnb": "^5.11.1",
     "typescript": "^3.3.4000"
   },
   "bin": "build/index.js",

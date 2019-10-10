@@ -6,7 +6,7 @@ import signaling from './signaling';
 
 import { log, LogLevel } from './log';
 
-export const createServer = () => {
+export const createServer = (): express.Application => {
   const app: express.Application = express();
   // const signal = require('./signaling');
   app.use(bodyParser.urlencoded({ extended: true }));

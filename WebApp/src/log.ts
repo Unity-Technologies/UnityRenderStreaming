@@ -1,4 +1,4 @@
-const isDebug: boolean = true;
+const isDebug = true;
 
 export enum LogLevel {
   info,
