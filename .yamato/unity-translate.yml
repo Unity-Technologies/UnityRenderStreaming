@@ -1,0 +1,9 @@
+unity-translate:  
+  name: Upload source files to Unity Translate
+  agent:
+    type: Unity::VM
+    image: unity-translate/ci:latest
+    flavor: b1.large
+  commands:
+    - unity-translate package upload "Packages/com.unity.renderstreaming"
+    - unity-translate package upload "Packages/com.unity.template.renderstreaming"
