@@ -145,8 +145,8 @@ public class RequestJobManager
             var enumerator = m_pendingSearchRequests.GetEnumerator();
             while (enumerator.MoveNext()) {
                 SearchRequestInfo info = enumerator.Current;
-                SearchRequest removeReq = Client.Search(info.PackageName, info.OfflineMode);
-                m_requestJobs.Add(new RequestJob<PackageInfo[]>(removeReq,info.OnSuccessAction,info.OnFailAction));
+                SearchRequest searchReq = Client.Search(info.PackageName, info.OfflineMode);
+                m_requestJobs.Add(new RequestJob<PackageInfo[]>(searchReq,info.OnSuccessAction,info.OnFailAction));
             }
             m_pendingSearchRequests.Clear();
         }
@@ -155,8 +155,8 @@ public class RequestJobManager
             var enumerator = m_pendingSearchAllRequests.GetEnumerator();
             while (enumerator.MoveNext()) {
                 SearchAllRequestInfo info = enumerator.Current;
-                SearchRequest removeReq = Client.SearchAll(info.OfflineMode);
-                m_requestJobs.Add(new RequestJob<PackageInfo[]>(removeReq,info.OnSuccessAction,info.OnFailAction));
+                SearchRequest searchReq = Client.SearchAll(info.OfflineMode);
+                m_requestJobs.Add(new RequestJob<PackageInfo[]>(searchReq,info.OnSuccessAction,info.OnFailAction));
             }
             m_pendingSearchAllRequests.Clear();
         }
