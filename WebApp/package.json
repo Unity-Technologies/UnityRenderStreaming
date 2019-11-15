@@ -24,7 +24,7 @@
     "@typescript-eslint/parser": "^2.3.3",
     "eslint": "^6.5.1",
     "jest": "^24.8.0",
-    "newman": "^4.4.1",
+    "newman": "^4.5.5",
     "pkg": "^4.4.0",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
