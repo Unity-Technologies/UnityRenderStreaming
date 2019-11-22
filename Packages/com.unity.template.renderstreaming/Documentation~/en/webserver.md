@@ -49,6 +49,8 @@ This command will run the server as https. Port 443 will be used. A certificate 
 ```shell
 .\webserver -s -p 443
 ```
+> When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming
+> component in Unity to https as well.
 
 Use this command to display the help guide. 
 
