@@ -6,8 +6,6 @@ using UnityEngine.Experimental.Rendering.HDPipeline;
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
-//Blits the render texture of a camera into the screen.
-//Uses RenderPipelineManager.beginCameraRendering instead of OnPostRender() since OnPostRender() is being reworked on HDRP
 [RequireComponent(typeof(Camera)), RequireComponent(typeof(HDAdditionalCameraData))]
 public class HDRPRenderTextureBlitter : MonoBehaviour
 {
