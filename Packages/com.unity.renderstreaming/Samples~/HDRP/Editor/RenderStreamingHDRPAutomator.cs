@@ -106,7 +106,7 @@ public class RenderStreamingHDRPAutomator
         StackTrace st = new StackTrace(new StackFrame(true));
         StackFrame sf = st.GetFrame(0);
 
-        String fileName = sf.GetFileName();
+        string fileName = sf.GetFileName();
         if (String.IsNullOrEmpty(fileName))
             return;
 
