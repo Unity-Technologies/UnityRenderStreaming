@@ -73,7 +73,7 @@ Set the address of the web server you just activated under the `URL Signaling` p
 
 ### Accessing the Web Page
 
-Open one of the [supported browsers]() from the list. 
+Launch one of the [supported browsers](../index.md) from the list. 
 Access the Web server's address. The following web page will be displayed. 
 
 <img src="../images/browser_hdrpscene.png" width=600 align=center>
