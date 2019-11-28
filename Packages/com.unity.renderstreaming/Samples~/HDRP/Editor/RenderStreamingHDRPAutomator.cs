@@ -19,8 +19,8 @@ public class RenderStreamingHDRPAutomator
     public static void TryAddHDRPPackageAndImportSample() {
         m_sampleImported = false;
 
-        //Some steps are necessary to "hack" so that Unity will execute this file everytime we click "Import in project"
-        //In the package manager UI.
+        //Some steps are necessary to "hack" so that Unity will execute this file every time we click
+        //"Import in project" in the package manager UI.
         //1. Import the json to make sure that we are dealing with the new settings
         //2. Change the C# code (this file) a bit to trigger C# compilation, even though the file content is the same
         //3. One additional requirement that the asset must be in the same path as this C# file
@@ -106,7 +106,12 @@ public class RenderStreamingHDRPAutomator
         StackTrace st = new StackTrace(new StackFrame(true));
         StackFrame sf = st.GetFrame(0);
 
-        string path = sf.GetFileName().Replace(@"\", "/" );
+        string fileName = sf.GetFileName();
+        if (String.IsNullOrEmpty(fileName))
+            return;
+
+        string path = fileName.Replace(@"\", "/" );
+
 
         //Change absolute path to relative path
         if (path.StartsWith(Application.dataPath)) {
@@ -133,6 +138,11 @@ public class RenderStreamingHDRPAutomator
 //---------------------------------------------------------------------------------------------------------------------
 
     static void SaveSettings(RenderStreamingSettings settings) {
+        //Make sure the settings is not set as ReadOnly (might happen when importing sample in older versions of Unity)
+        FileAttributes attributes = File.GetAttributes(m_settingsPath);
+        if (attributes.HasFlag(FileAttributes.ReadOnly))
+            File.SetAttributes(m_settingsPath, attributes & ~FileAttributes.ReadOnly);
+
         File.WriteAllText(m_settingsPath,JsonUtility.ToJson(settings));
     }
 
@@ -145,8 +155,8 @@ public class RenderStreamingHDRPAutomator
 
     static bool m_sampleImported = false;
 
-    readonly static string PROGRESS_BAR_TITLE = "RenderStreaming";
-    readonly static string PROGRESS_BAR_INFO  = "Installing HDRP Sample";
+    const string PROGRESS_BAR_TITLE = "RenderStreaming";
+    const string PROGRESS_BAR_INFO  = "Installing HDRP Sample";
 
 }
 
