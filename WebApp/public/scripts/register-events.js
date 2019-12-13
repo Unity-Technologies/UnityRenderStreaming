@@ -271,7 +271,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     // const y = (e.clientY - originY) / scale;
     const y = _videoPlayer.videoHeight - (e.clientY - originY) / scale;
 
-    console.log("x: " + x + ", y: " + y + ", scale: " + scale + ", originX: " + originX + ", originY: " + originY + " mouse button:" + e.buttons);
+    //console.log("x: " + x + ", y: " + y + ", scale: " + scale + ", originX: " + originX + ", originY: " + originY + " mouse button:" + e.buttons);
     let data = new DataView(new ArrayBuffer(6));
     data.setUint8(0, InputEvent.Mouse);
     data.setInt16(1, x, true);

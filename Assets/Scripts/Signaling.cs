@@ -125,16 +125,16 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
+    class AnswerContainerResDataList
+    {
+        public AnswerResData[] answers;
+    }
+
+    [Serializable]
     class AnswerResData
     {
         public string connectionId;
         public string sdp;
-    }
-
-    [Serializable]
-    class AnswerContainerResData
-    {
-        public AnswerResData[] answers;
     }
 
     [Serializable]
@@ -252,7 +252,7 @@ namespace Unity.RenderStreaming
         {
             var req = new UnityWebRequest($"{Url}/signaling/answer?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<AnswerResData>();
+            var op = req.SendWebRequest<AnswerContainerResDataList>();
             return op;
         }
 

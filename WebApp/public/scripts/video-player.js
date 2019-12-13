@@ -51,6 +51,8 @@ export class VideoPlayer {
       stream.getTracks().forEach(t => t.stop());
     }
 
+	console.log("Create new RTCPeerConnection")
+
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
     this.pc.onsignalingstatechange = function (e) {
@@ -75,6 +77,9 @@ export class VideoPlayer {
         _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
+	
+	console.log("Create data channel");
+	
     // Create data channel with proxy server and set up handlers
     this.channel = this.pc.createDataChannel('data');
     this.channel.onopen = function () {
@@ -86,19 +91,32 @@ export class VideoPlayer {
     this.channel.onclose = function () {
       console.log('Datachannel disconnected.');
     };
+	
+	console.log("Create signaling");
 
     const createResponse = await this.signaling.create();
     const data = await createResponse.json();
-    this.sessionId = data.sessionId;
+    this.sessionId = data.sessionId;	
+	
+	console.log("SessionID: " + this.sessionId);
+	console.log("Create Offer");
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
+	console.log("Create a connection");
     await this.createConnection();
+	
+	console.log("ConnectionID: " + this.connectionId);
+	
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
     const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
-    await this.pc.setLocalDescription(desc);
+	
+	console.log("Set Local Description");
+    await this.pc.setLocalDescription(desc);	
+	
+	console.log("Send Offer");
     await this.sendOffer(offer);
   };
 
@@ -111,6 +129,7 @@ export class VideoPlayer {
 
   async sendOffer(offer) {
     // signaling
+	console.log("sending an offer from " + this.connectionId + " for sessionId: " + this.sessionId);
     await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
     this.loopGetAnswer(this.sessionId, this.interval);
     this.loopGetCandidate(this.sessionId, this.interval);
@@ -128,6 +147,7 @@ export class VideoPlayer {
 
       if(answers.length > 0) {
         const answer = answers[0];
+		  console.log("Answer:" + answer.sdp);
         await this.setAnswer(sessionId, answer.sdp);
       }
       await this.sleep(interval);
@@ -145,7 +165,9 @@ export class VideoPlayer {
       const data = await res.json();
       const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
       if(candidates.length > 0) {
+		  console.log("processing candidates");
         for(let candidate of candidates[0].candidates) {
+		  console.log("add ice candidate: " + candidate.candidate);
           const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
           await this.pc.addIceCandidate(iceCandidate);
         }
@@ -156,6 +178,7 @@ export class VideoPlayer {
 
   async setAnswer(sessionId, sdp) {
     const desc = new RTCSessionDescription({sdp:sdp, type:"answer"});
+	console.log("setAnswer - setRemoteDescription");
     await this.pc.setRemoteDescription(desc);
   }
 
