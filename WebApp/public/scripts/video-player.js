@@ -143,7 +143,7 @@ export class VideoPlayer {
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
       const data = await res.json();
-      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
+      const candidates = data.candidates.filter(v => v.connectionId == this.connectionId);
       if(candidates.length > 0) {
         for(let candidate of candidates[0].candidates) {
           const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});

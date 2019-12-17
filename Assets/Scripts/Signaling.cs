@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.RenderStreaming.WebSocket;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -147,13 +150,229 @@ namespace Unity.RenderStreaming
     }
 #pragma warning restore 0649
 
-    public class Signaling
+
+    [Serializable]
+    public class SignalingMessage
+    {
+        public string connectionId;
+        public string sdp;
+    }
+
+    public class Signaling : IEnqueuer, IDelayCaller
     {
         public string Url { get; }
+
+        readonly BackOff _backOff;
 
         public Signaling(string url)
         {
             Url = url;
+
+            _backOff = new BackOff(this);
+        }
+
+        readonly Queue<Action> _executionQueue = new Queue<Action>();
+
+        void IEnqueuer.Enqueue(Action action) {
+            lock (this._executionQueue) {
+                this._executionQueue.Enqueue(action);
+            }
+        }
+
+        private void _drainExecutionQueue()
+        {
+            lock (this._executionQueue)
+            {
+                if (this._executionQueue.Count == 0)
+                {
+                    return;
+                }
+
+                var queue = this._executionQueue.ToArray();
+                this._executionQueue.Clear();
+
+                foreach (var action in queue)
+                {
+                    action();
+                }
+            }
+        }
+
+        private void _clearExecutionQueue()
+        {
+            lock (this._executionQueue)
+            {
+                this._executionQueue.Clear();
+            }
+        }
+
+        private class DelayCall {
+            public Action callback;
+            public float remainInterval;
+            public int id;
+        }
+
+        readonly List<DelayCall> _delayCalls = new List<DelayCall>();
+        int _delayCallId = 0;
+
+        void IDelayCaller.CancelDelayCall(int callId) {
+            var callIndex = -1;
+            for (var i = 0; i < this._delayCalls.Count; i++) {
+                if (this._delayCalls[i].id != callId) {
+                    continue;
+                }
+
+                if (i != this._delayCalls.Count - 1) {
+                    this._delayCalls[i + 1].remainInterval += this._delayCalls[i].remainInterval;
+                }
+
+                callIndex = i;
+                break;
+            }
+
+            if (callIndex != -1) {
+                this._delayCalls.RemoveAt(callIndex);
+            }
+        }
+
+        int IDelayCaller.DelayCall(float duration, Action callback) {
+            var preInterval = 0.0f;
+            for (var i = 0; i < this._delayCalls.Count; i++) {
+                if (this._delayCalls[i].remainInterval > duration) {
+                    this._delayCalls.Insert(i, new DelayCall {
+                        id = this._delayCallId++,
+                        callback = callback,
+                        remainInterval = duration - preInterval
+                    });
+                    return this._delayCallId - 1;
+                }
+
+                preInterval = this._delayCalls[i].remainInterval;
+            }
+
+            this._delayCalls.Add(new DelayCall {
+                id = this._delayCallId++,
+                callback = callback,
+                remainInterval = duration - preInterval
+            });
+
+            return this._delayCallId - 1;
+        }
+
+        private void _drainDelayCalls()
+        {
+            var delta = Time.deltaTime;
+            while (this._delayCalls.Count > 0)
+            {
+                var call = this._delayCalls[0];
+                var delay = call.remainInterval;
+                if (delay > delta)
+                {
+                    call.remainInterval -= delta;
+                    break;
+                }
+
+                delta -= call.remainInterval;
+                var callback = call.callback;
+                this._delayCalls.RemoveAt(0);
+                callback?.Invoke();
+            }
+        }
+
+        private void _clearDelayCalls()
+        {
+            this._delayCalls.Clear();
+            this._delayCallId = 0;
+        }
+
+        private WebSocket.WebSocket _webSocket;
+
+        private void _connectIfNecessary()
+        {
+            if (_webSocket == null)
+            {
+                _webSocket = new WebSocket.WebSocket(this);
+
+                var webSocket = _webSocket;
+                webSocket.Connect(Url,
+                    OnError: msg => { this._OnClose(webSocket, -1); },
+                    OnClose: code => { this._OnClose(webSocket, code); },
+                    OnConnected: () =>
+                    {
+                        this.SendMessage(null);
+                    },
+                    OnMessage: bytes =>
+                    {
+//                        NetworkStatusManager.isConnected = true;
+//                        string type = "";
+//                        var data = this._OnMessage(bytes, ref type);
+//                        if (data != null)
+//                        {
+//                            this.m_OnMessage?.Invoke(type, data);
+//                        }
+                    }
+                );
+            }
+        }
+
+        void _OnClose(WebSocket.WebSocket webSocket, int code = 0)
+        {
+            if (_webSocket != webSocket)
+            {
+                return;
+            }
+
+            this._backOff.Cancel();
+            int delay = _backOff.OnFail(this.Stop);
+            DebugUtils.DebugAssert(false,
+                $"Websocket connection failed, cooldown in {delay / 1000f} seconds");
+        }
+
+        public void Stop()
+        {
+            if (_webSocket != null)
+            {
+                var webSocket = _webSocket;
+                _webSocket = null;
+
+                webSocket.Close();
+            }
+
+            this._backOff.Cancel();
+
+            _clearExecutionQueue();
+            _clearDelayCalls();
+        }
+
+        private readonly List<SignalingMessage> _messages = new List<SignalingMessage>();
+
+        public IEnumerator PollMessages()
+        {
+            while (true)
+            {
+                _drainExecutionQueue();
+                _drainDelayCalls();
+
+                _connectIfNecessary();
+                yield return null;
+            }
+        }
+
+        public SignalingMessage[] GetMessages()
+        {
+            if (this._messages.Count == 0)
+            {
+                return null;
+            }
+
+            var messages = this._messages.ToArray();
+            this._messages.Clear();
+            return messages;
+        }
+
+        public void SendMessage(SignalingMessage message)
+        {
+            this._webSocket?.Send("helllo");
         }
 
         [Serializable]

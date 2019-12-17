@@ -1,7 +1,7 @@
 ﻿﻿using UnityEngine;                                      //Debug
 using UnityEditor;                                      //AssetPostProcessor
 using UnityEngine.Rendering;                            //GraphicsSettings
-using UnityEngine.Experimental.Rendering.HDPipeline;    //HDRenderPipelineAsset
+using UnityEngine.Rendering.HighDefinition;    //HDRenderPipelineAsset
 
 public class HDRPPostProcessor : AssetPostprocessor
 {
@@ -11,7 +11,7 @@ public class HDRPPostProcessor : AssetPostprocessor
         if (null != GraphicsSettings.renderPipelineAsset) {
             return;
         }
-        
+
         int numImportedAssets = importedAssets.Length;
         for (int i=0;i< numImportedAssets; ++i) {
             string curAssetPath = importedAssets[i];

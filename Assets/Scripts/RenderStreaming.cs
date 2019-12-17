@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming
     {
 #pragma warning disable 0649
         [SerializeField, Tooltip("Address for signaling server")]
-        private string urlSignaling = "http://localhost";
+        private string urlSignaling = "ws://localhost";
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
@@ -56,7 +56,7 @@ namespace Unity.RenderStreaming
 
         public void Awake()
         {
-            WebRTC.WebRTC.Initialize(); 
+            WebRTC.WebRTC.Initialize();
             RemoteInput.Initialize();
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
@@ -76,15 +76,6 @@ namespace Unity.RenderStreaming
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
-            var opCreate = signaling.Create();
-            yield return opCreate;
-            if (opCreate.webRequest.isNetworkError)
-            {
-                Debug.LogError($"Network Error: {opCreate.webRequest.error}");
-                yield break;
-            }
-            var newResData = opCreate.webRequest.DownloadHandlerJson<NewResData>().GetObject();
-            sessionId = newResData.sessionId;
 
             conf = default;
             conf.iceServers = iceServers;
@@ -103,9 +94,11 @@ namespace Unity.RenderStreaming
 
             while (true)
             {
-                yield return StartCoroutine(GetOffer());
-                yield return StartCoroutine(GetCandidate());
-                yield return new WaitForSeconds(interval);
+                yield return this.signaling.PollMessages();
+                var messages = this.signaling.GetMessages();
+
+                //yield return StartCoroutine(GetCandidate());
+                //yield return new WaitForSeconds(interval);
             }
         }
 
@@ -146,7 +139,7 @@ namespace Unity.RenderStreaming
                 {
                     if(state == RTCIceConnectionState.Disconnected)
                     {
-                        pc.Close();  
+                        pc.Close();
                     }
                 });
                 //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -183,7 +176,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp); 
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {
