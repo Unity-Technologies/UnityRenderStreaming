@@ -69,10 +69,6 @@ namespace Unity.RenderStreaming
         }
         public IEnumerator Start()
         {
-            if (!WebRTC.WebRTC.HWEncoderSupport)
-            {
-                yield break;
-            }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
