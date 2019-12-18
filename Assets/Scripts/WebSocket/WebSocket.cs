@@ -29,8 +29,6 @@ namespace Unity.RenderStreaming.WebSocket
 
     public class WebSocket
     {
-        const bool EnableWebSocketSharpLog = true;
-
         const SslProtocols sslProtocolHack =
             (SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
 
@@ -39,7 +37,6 @@ namespace Unity.RenderStreaming.WebSocket
 
         WebSocketSharp.WebSocket m_Socket;
         WebSocketState m_State;
-
 
         public WebSocketState currentState
         {
@@ -61,21 +58,14 @@ namespace Unity.RenderStreaming.WebSocket
         public void Connect(string url, Action OnConnected, Action<byte[]> OnMessage,
             Action<string> OnError, Action<int> OnClose)
         {
-
             DebugUtils.DebugAssert(this.m_State == WebSocketState.NotConnected,
-                $"fatal error: Cannot connect to {url} because the socket is already set up.");
+                $"Cannot connect to {url} because the socket is already set up.");
             this.m_State = WebSocketState.Connecting;
 
             this.m_Socket = new WebSocketSharp.WebSocket(url);
             if (this.m_useSslHandShakeHack)
             {
                 this.m_Socket.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
-            }
-
-            if (EnableWebSocketSharpLog)
-            {
-                this.m_Socket.Log.Level = LogLevel.Debug;
-                this.m_Socket.Log.File = @"websocket_log.txt";
             }
 
             this.m_Socket.OnOpen += (sender, e) =>
@@ -110,6 +100,7 @@ namespace Unity.RenderStreaming.WebSocket
                 });
             };
 
+            DebugUtils.DebugLog("Connecting.");
             this.m_Socket.ConnectAsync();
         }
 
@@ -121,17 +112,17 @@ namespace Unity.RenderStreaming.WebSocket
         public void Send(string content)
         {
             DebugUtils.DebugAssert(this.m_State == WebSocketState.Connected,
-                "fatal error: Cannot send data before connect!");
+                "Cannot send data before connect!");
             DebugUtils.DebugAssert(this.m_Socket != null,
-                "fatal error: Cannot send data because the websocket is null.");
+                "Cannot send data because the websocket is null.");
 
             if (!this.connected)
             {
                 return;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(content);
-            this.m_Socket.Send(bytes);
+            //var bytes = Encoding.UTF8.GetBytes(content);
+            this.m_Socket.Send(content);
         }
 
         public void Close()
@@ -139,6 +130,7 @@ namespace Unity.RenderStreaming.WebSocket
             if (this.m_State == WebSocketState.Connected ||
                 this.m_State == WebSocketState.Connecting)
             {
+                DebugUtils.DebugLog("Closing.");
                 this.m_Socket.CloseAsync();
                 this.m_Socket = null;
             }

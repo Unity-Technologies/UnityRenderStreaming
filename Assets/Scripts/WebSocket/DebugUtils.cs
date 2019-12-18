@@ -8,8 +8,13 @@ namespace Unity.RenderStreaming.WebSocket
         {
             if (!condition)
             {
-                Debug.Log(message: logMsg);
+                Debug.Log(message: "WebSocket: " + logMsg);
             }
+        }
+
+        public static void DebugLog(string logMsg)
+        {
+            Debug.Log(message: "WebSocket: " + logMsg);
         }
     }
 }
