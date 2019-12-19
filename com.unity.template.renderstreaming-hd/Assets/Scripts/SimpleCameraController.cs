@@ -124,15 +124,15 @@ namespace UnityTemplateProjects
             {
                 direction += Vector3.forward;
             }
-            if (Keyboard.current.sKey.isPressed || lastGamepad != null ? lastGamepad.dpad.down.isPressed : false)
+            if (Keyboard.current.sKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.down.isPressed : false))
             {
                 direction += Vector3.back;
             }
-            if (Keyboard.current.aKey.isPressed || lastGamepad != null ? lastGamepad.dpad.left.isPressed : false)
+            if (Keyboard.current.aKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.left.isPressed : false))
             {
                 direction += Vector3.left;
             }
-            if (Keyboard.current.dKey.isPressed || lastGamepad != null ? lastGamepad.dpad.right.isPressed : false)
+            if (Keyboard.current.dKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.right.isPressed : false))
             {
                 direction += Vector3.right;
             }
