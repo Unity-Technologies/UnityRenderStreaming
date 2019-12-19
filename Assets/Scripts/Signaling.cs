@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Unity.RenderStreaming.WebSocket;
 using UnityEngine;
@@ -265,8 +266,20 @@ namespace Unity.RenderStreaming
             return messages;
         }
 
+        readonly List<SignalingMessage> pendingMessages = new List<SignalingMessage>();
+        readonly Dictionary<string, bool> hasSentAnswer = new Dictionary<string, bool>();
+
         public void SendMessage(SignalingMessage message)
         {
+            if (!String.IsNullOrEmpty(message.candidate)) // if candidate.
+            {
+                if (!hasSentAnswer.ContainsKey(message.connectionId)) // if answer has not sent.
+                {
+                    pendingMessages.Add(message);
+                    return;
+                }
+            }
+
             var str = JsonUtility.ToJson(message);
             if (this._webSocket == null || !this._webSocket.connected)
             {
@@ -276,6 +289,19 @@ namespace Unity.RenderStreaming
 
             Debug.Log("Signaling: Sending message: " + str);
             this._webSocket.Send(str);
+
+            if (message.type == "answer")
+            {
+                if (!hasSentAnswer.ContainsKey(message.connectionId))
+                {
+                    hasSentAnswer[message.connectionId] = true;
+                    var pendingCandidates = pendingMessages.Where(
+                        msg => msg.connectionId == message.connectionId).ToList();
+
+                    pendingMessages.RemoveAll(msg => msg.connectionId != message.connectionId);
+                    pendingCandidates.ForEach(SendMessage);
+                }
+            }
         }
 
         [Serializable]
