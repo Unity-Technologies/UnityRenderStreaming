@@ -156,54 +156,57 @@ export function registerGamepadEvents(videoPlayer) {
   document.addEventListener("gamepadButtonDown", sendGamepadButtonDown, false);
   document.addEventListener("gamepadButtonUp", sendGamepadButtonUp, false);
   document.addEventListener("gamepadButtonPressed", sendGamepadButtonPressed, false);
-  document.addEventListener("gamepadAxis", gamepadAxisChange, false)
+  document.addEventListener("gamepadAxis", gamepadAxisChange, false);
 
   function sendGamepadButtonDown(e)
   {
-    console.log("gamepad id: " + e.id + " button index: " + e.index + " down" );
-    let data = new DataView(new ArrayBuffer(4));
+    console.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " down" );
+    let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
-    data.setUint8(1, e.id);
-    data.setUint8(2, GamepadEventType.ButtonDown);
-    data.setUint8(3, e.index);
+    data.setFloat64(1, e.id, true);
+    data.setUint8(9, GamepadEventType.ButtonDown);
+    data.setUint8(10, e.index);
+    data.setFloat64(11, e.value, true);
 
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
   function sendGamepadButtonUp(e)
   {
-    console.log("gamepad id: " + e.id + " button index: " + e.index + " up" );
-    let data = new DataView(new ArrayBuffer(4));
+    console.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " up" );
+    let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
-    data.setUint8(1, e.id);
-    data.setUint8(2, GamepadEventType.ButtonUp);
-    data.setUint8(3, e.index);
+    data.setFloat64(1, e.id, true);
+    data.setUint8(9, GamepadEventType.ButtonUp);
+    data.setUint8(10, e.index);
+    data.setFloat64(11, e.value, true);
 
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
   function sendGamepadButtonPressed(e)
   {
-    console.log("gamepad id: " + e.id + " button index: " + e.index + " pressed" );
-    let data = new DataView(new ArrayBuffer(4));
+    console.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " pressed" );
+    let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
-    data.setUint8(1, e.id);
-    data.setUint8(2, GamepadEventType.ButtonPressed);
-    data.setUint8(3, e.index);
+    data.setFloat64(1, e.id, true);
+    data.setUint8(9, GamepadEventType.ButtonPressed);
+    data.setUint8(10, e.index);
+    data.setFloat64(11, e.value, true);
     
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
   function gamepadAxisChange(e)
   {
-    console.log("gamepad id: " + e.id + " axis: " + e.index + " x:" + e.x + " y:" + e.y );
-    let data = new DataView(new ArrayBuffer(20));
+    console.log("gamepad id: " + e.id + " axis: " + e.index + " value " + e.value + " x:" + e.x + " y:" + e.y );
+    let data = new DataView(new ArrayBuffer(27));
     data.setUint8(0, InputEvent.Gamepad);  
-    data.setUint8(1, e.id);
-    data.setUint8(2, GamepadEventType.Axis);  
-    data.setUint8(3, e.index);
-    data.setFloat64(4, e.x, true);
-    data.setFloat64(12, e.y, true);
+    data.setFloat64(1, e.id, true);
+    data.setUint8(9, GamepadEventType.Axis);  
+    data.setUint8(10, e.index);
+    data.setFloat64(11, e.x, true);
+    data.setFloat64(19, e.y, true);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 }
