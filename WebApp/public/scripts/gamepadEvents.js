@@ -3,6 +3,7 @@ const _gameloopInterval = 16.67; //in milliseconds, 60 times a second
 var gameloop = null;
 var gamepadsPreviousButtonsStates = {}
 var gamepadsPreviousAxesStates = {}
+var gamepadsConnectedTimeStamp = {}
 const _axisOffset = 100;
 const _axisMultiplier = 1;
 const _axisYInverted = -1;
@@ -35,6 +36,7 @@ class GamepadButtonEvent extends Event
         super(...arguments);
         this.index = arguments[1].index;
         this.id = arguments[1].id;
+        this.value = arguments[1].value;
     }
 }
 
@@ -73,7 +75,7 @@ function checkAxes(gamepad, previousGamePad)
             ( absY > _e))
         {
           
-          event = new GamepadAxisEvent('gamepadAxis', {id: gamepad.index, index: i/2 + _axisOffset, x: gamepad.axes[i] * _axisMultiplier, y: gamepad.axes[i+1] * _axisMultiplier * _axisYInverted })
+          event = new GamepadAxisEvent('gamepadAxis', {id: gamepadsConnectedTimeStamp[gamepad.index], index: i/2 + _axisOffset, x: gamepad.axes[i] * _axisMultiplier, y: gamepad.axes[i+1] * _axisMultiplier * _axisYInverted })
           document.dispatchEvent(event);
         }
         else{
@@ -84,7 +86,7 @@ function checkAxes(gamepad, previousGamePad)
           if ((previousAbsX > _e) || 
             (previousAbsY > _e))
             {
-              event = new GamepadAxisEvent('gamepadAxis', {id: gamepad.index, index: i/2 + _axisOffset, x: 0.0, y: 0.0})
+              event = new GamepadAxisEvent('gamepadAxis', {id:  gamepadsConnectedTimeStamp[gamepad.index], index: i/2 + _axisOffset, x: 0.0, y: 0.0})
               document.dispatchEvent(event);
             }
         }
@@ -92,58 +94,91 @@ function checkAxes(gamepad, previousGamePad)
 }
 
 function gameLoop() { 
-
-    Object.keys(gamepadsPreviousAxesStates).forEach(function(gamepadIndex) {
-        var gamepad = navigator.webkitGetGamepads ? navigator.webkitGetGamepads()[gamepadIndex] : navigator.getGamepads()[gamepadIndex];
-        var previousButtons = gamepadsPreviousButtonsStates[gamepadIndex];
-        gamepad.buttons.forEach(function(button, index)
+  Object.keys(gamepadsPreviousAxesStates).forEach(function(gamepadIndex) {
+      var gamepad = navigator.webkitGetGamepads ? navigator.webkitGetGamepads()[gamepadIndex] : navigator.getGamepads()[gamepadIndex];
+      var previousButtons = gamepadsPreviousButtonsStates[gamepadIndex];
+      gamepad.buttons.forEach(function(button, index)
+      {
+        var buttonStatus = navigator.webkitGetGamepads ? button == 1 : (button.value > 0 || button.pressed == true);
+        var previousButtonStatus =  navigator.webkitGetGamepads ? previousButtons[index].value == 1 : ( previousButtons[index].value > 0 ||  previousButtons[index].pressed == true)
+        if( buttonStatus != previousButtonStatus)
         {
-          var buttonStatus = navigator.webkitGetGamepads ? button == 1 : (button.value > 0 || button.pressed == true);
-          var previousButtonStatus =  navigator.webkitGetGamepads ? previousButtons[index].value == 1 : ( previousButtons[index].value > 0 ||  previousButtons[index].pressed == true)
-          if( buttonStatus != previousButtonStatus)
-          {
-              var event;
-              if(buttonStatus)
-                  event = new GamepadButtonEvent('gamepadButtonDown', {id: gamepad.index, index: index})
-              else
-                  event = new GamepadButtonEvent('gamepadButtonUp', {id: gamepad.index, index: index})
+            var event;
+            if(buttonStatus)
+                event = new GamepadButtonEvent('gamepadButtonDown', {id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: button.value})
+            else
+                event = new GamepadButtonEvent('gamepadButtonUp', {id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: 0})
 
-              document.dispatchEvent(event);
-          }
-          else if(buttonStatus)
-          {
-              var event = new GamepadButtonEvent('gamepadButtonPressed',  {id: gamepad.index, index: index})
-              document.dispatchEvent(event);
-          }
-        })
-        checkAxes(gamepad, gamepadsPreviousAxesStates[gamepadIndex]);
-        storePreviousState(gamepad);        
-    })
-  };
+            document.dispatchEvent(event);
+        }
+        else if(buttonStatus)
+        {
+            var event = new GamepadButtonEvent('gamepadButtonPressed',  {id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: button.value})
+            document.dispatchEvent(event);
+        }
+      })
+      checkAxes(gamepad, gamepadsPreviousAxesStates[gamepadIndex]);
+      storePreviousState(gamepad);        
+  })
+};
 
-  function gamepadHandler(event, connecting) {
-    var gamepad = event.gamepad;
-  
-    if (connecting) {
-      storePreviousState(gamepad); 
-      if(Object.keys(gamepadsPreviousAxesStates).length == 1)
-      {
-        gameloop = setInterval(gameLoop, _gameloopInterval);
-      }
-      console.log("connected: " + gamepad.id)
-   
-    } else {
-      //delete gamepadsPreviousStates[gamepad.index];
-      if(Object.keys(gamepadsPreviousAxesStates).length == 0)
-      {
-        clearInterval(gameloop);
-        gameloop = null;
-      }
-      console.log("disconnected: " + gamepad.id)
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
     }
   }
+  return "";
+}
+
+function gamepadHandler(event, connecting) {
+  var gamepad = event.gamepad;
+
+  var key = gamepad.id.replace(/\s/g,'');
+  var cookieTimeStamp =  getCookie(key);
+
+  if (connecting) {
+    storePreviousState(gamepad); 
+    if(Object.keys(gamepadsPreviousAxesStates).length == 1)
+    {
+      gameloop = setInterval(gameLoop, _gameloopInterval);
+    }
+
+    //try to find the timestamp
+    //need to strip the : from the id
+
+    if(cookieTimeStamp == "")
+    {
+        document.cookie = key + "=" + gamepad.timestamp;
+        gamepadsConnectedTimeStamp[gamepad.index] = gamepad.timestamp;
+    }
+    else
+    {
+      gamepadsConnectedTimeStamp[gamepad.index] = cookieTimeStamp;
+    }
+
+    console.log("connected: " + gamepadsConnectedTimeStamp[gamepad.index])
   
-  export function startGamepadDetection() {
-    window.addEventListener("gamepadconnected", function(e) { gamepadHandler(e, true); }, false);
-    window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(e, false); }, false);
+  } else {
+    delete gamepadsPreviousAxesStates[gamepad.index];
+    delete gamepadsPreviousButtonsStates[gamepad.index];
+    if(Object.keys(gamepadsPreviousAxesStates).length == 0)
+    {
+      clearInterval(gameloop);
+      gameloop = null;
+    }
+    console.log("disconnected: " + gamepad.id)
   }
+}
+
+export function startGamepadDetection() {
+  window.addEventListener("gamepadconnected", function(e) { gamepadHandler(e, true); }, false);
+  window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(e, false); }, false);
+}
