@@ -175,10 +175,10 @@ namespace Unity.RenderStreaming
             {
                 pc.AddTrack(track);
             }
-            /*foreach(var track in audioStream.GetTracks())
+            foreach(var track in audioStream.GetTracks())
             {
                 pc.AddTrack(track);
-            }*/
+            }
             StartCoroutine(Answer(connectionId));
         }
 

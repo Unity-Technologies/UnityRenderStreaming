@@ -161,19 +161,22 @@ namespace Unity.RenderStreaming
         public string candidate;
         public string sdpMid;
         public int sdpMLineIndex;
+        public string task;
+        public string appType;
+        public string appName;
     }
 
     public partial class Signaling
     {
         private readonly string _url;
-        private readonly string identifier;
+        private readonly string _identifier;
 
         readonly BackOff _backOff;
 
         public Signaling(string url, string identifier)
         {
             _url = url;
-            identifier = identifier;
+            _identifier = identifier;
             _backOff = new BackOff(this);
         }
 
@@ -193,10 +196,14 @@ namespace Unity.RenderStreaming
                     {
                         Debug.Log($"Signaling: WebSocket gets connected.");
 
-                        /*this.SendMessage(new SignalingMessage
+                        this.SendMessage(new SignalingMessage
                         {
-                            some message to identify this app.
-                        });*/
+                            type = "furioos",
+                            task = "ACTIVATE_WEBRTC_ROUTING",
+                            appType = "RenderStreaming",
+                            appName = "Unity Test App",
+                            //connectionId = _identifier,
+                        });
                     },
                     OnMessage: bytes =>
                     {
