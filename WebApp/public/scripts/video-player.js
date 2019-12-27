@@ -17,7 +17,6 @@ export class VideoPlayer {
       _this.resizeVideo();
     }, true);
     this.interval = 3000;
-    this.signaling = new Signaling();
     this.ondisconnect = function(){};
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
@@ -72,7 +71,7 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if(e.candidate != null) {
-        _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        Signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -87,77 +86,24 @@ export class VideoPlayer {
       console.log('Datachannel disconnected.');
     };
 
-    const createResponse = await this.signaling.create();
-    const data = await createResponse.json();
-    this.sessionId = data.sessionId;
-
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
-    await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
     const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
     await this.pc.setLocalDescription(desc);
-    await this.sendOffer(offer);
+
+    Signaling.onAnswer(answer => {
+      const desc = new RTCSessionDescription({sdp:answer.sdp, type:"answer"});
+      this.pc.setRemoteDescription(desc);  
+    });
+    Signaling.onCandidate(candidate => {
+      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
+      this.pc.addIceCandidate(iceCandidate);
+    });
+    Signaling.sendOffer(offer);
   };
-
-  async createConnection() {
-    // signaling
-    const res = await this.signaling.createConnection(this.sessionId);
-    const data = await res.json();
-    this.connectionId = data.connectionId;
-  }
-
-  async sendOffer(offer) {
-    // signaling
-    await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
-    this.loopGetAnswer(this.sessionId, this.interval);
-    this.loopGetCandidate(this.sessionId, this.interval);
-  }
-
-  async loopGetAnswer(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getAnswer(sessionId, lastTimeRequest);
-      const data = await res.json();
-      const answers = data.answers;
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      if(answers.length > 0) {
-        const answer = answers[0];
-        await this.setAnswer(sessionId, answer.sdp);
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async loopGetCandidate(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getCandidate(sessionId, lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
-      if(candidates.length > 0) {
-        for(let candidate of candidates[0].candidates) {
-          const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
-          await this.pc.addIceCandidate(iceCandidate);
-        }
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async setAnswer(sessionId, sdp) {
-    const desc = new RTCSessionDescription({sdp:sdp, type:"answer"});
-    await this.pc.setRemoteDescription(desc);
-  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
