@@ -42,6 +42,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera captureCamera;
 
+        [SerializeField, Tooltip("Enable or disable hardware encoder")]
+        private bool hardwareEncoderSupport = true;
+
         [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
@@ -56,7 +59,8 @@ namespace Unity.RenderStreaming
 
         public void Awake()
         {
-            WebRTC.WebRTC.Initialize(); 
+            var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
+            WebRTC.WebRTC.Initialize(encoderType);
             RemoteInput.Initialize();
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
@@ -124,7 +128,7 @@ namespace Unity.RenderStreaming
             }
             foreach (var offer in obj.offers)
             {
-                RTCSessionDescription _desc = default;
+                RTCSessionDescription _desc;
                 _desc.type = RTCSdpType.Offer;
                 _desc.sdp = offer.sdp;
                 var connectionId = offer.connectionId;
@@ -142,7 +146,7 @@ namespace Unity.RenderStreaming
                 {
                     if(state == RTCIceConnectionState.Disconnected)
                     {
-                        pc.Close();  
+                        pc.Close();
                     }
                 });
                 //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -179,7 +183,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp); 
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {

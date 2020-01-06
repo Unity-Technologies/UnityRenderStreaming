@@ -1861,6 +1861,7 @@ MonoBehaviour:
   streamingSize: {x: 1280, y: 720}
   interval: 5
   captureCamera: {fileID: 1299133684}
+  hardwareEncoderSupport: 1
   arrayButtonClickEvent:
   - elementId: 1
     click:
