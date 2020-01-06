@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Text;
-using Unity.RenderStreaming.WebSocket;
+using System.Security.Authentication;
 using UnityEngine;
 using UnityEngine.Networking;
+using Unity.WebRTC;
+using WebSocketSharp;
 
 namespace Unity.RenderStreaming
 {
@@ -13,12 +13,10 @@ namespace Unity.RenderStreaming
     {
         private T m_obj;
 
-        public DownloadHandlerJson() : base()
-        {
+        public DownloadHandlerJson() : base() {
         }
 
-        public DownloadHandlerJson(byte[] buffer) : base(buffer)
-        {
+        public DownloadHandlerJson(byte[] buffer) : base(buffer) {
         }
 
         protected override byte[] GetData() { return null; }
@@ -48,46 +46,39 @@ namespace Unity.RenderStreaming
         }
     }
 
-    static class DownloadHandlerExtension
-    {
-        public static T FromJson<T>(this DownloadHandler handler)
-        {
+    static class DownloadHandlerExtension {
+
+        public static T FromJson<T>(this DownloadHandler handler) {
             return JsonUtility.FromJson<T>(handler.text);
         }
+
     }
 
-    static class UnityWebRequestExtension
-    {
-        public static UnityWebRequestAsyncOperation SendWebRequest<T>(this UnityWebRequest own)
-        {
-            if (typeof(T) != typeof(None))
-            {
+    static class UnityWebRequestExtension {
+
+        public static UnityWebRequestAsyncOperation SendWebRequest<T>(this UnityWebRequest own) {
+            if (typeof(T) != typeof(None)) {
                 own.downloadHandler = new DownloadHandlerJson<T>();
             }
 
-            if (own.uri.Scheme == "https")
-            {
+            if (own.uri.Scheme == "https") {
                 own = own.ToHttps();
             }
             var req = own.SendWebRequest();
             return req;
         }
 
-        public static DownloadHandlerJson<T> DownloadHandlerJson<T>(this UnityWebRequest own)
-        {
+        public static DownloadHandlerJson<T> DownloadHandlerJson<T>(this UnityWebRequest own) {
             return own.downloadHandler as DownloadHandlerJson<T>;
         }
 
-        public static UnityWebRequest ToHttps(this UnityWebRequest own)
-        {
+        public static UnityWebRequest ToHttps(this UnityWebRequest own) {
             own.certificateHandler = new AcceptAllCertificateHandler();
             return own;
         }
 
-        class AcceptAllCertificateHandler : CertificateHandler
-        {
-            protected override bool ValidateCertificate(byte[] certificateData)
-            {
+        class AcceptAllCertificateHandler : CertificateHandler {
+            protected override bool ValidateCertificate(byte[] certificateData) {
                 // Workaround for Non-Secure web page
                 // You should implement the validation when you release your service publicly.
                 return true;
@@ -98,59 +89,48 @@ namespace Unity.RenderStreaming
     class None {}
 
 #pragma warning disable 0649
+
     [Serializable]
-    class NewResData
-    {
+    class NewResData {
         public string sessionId;
     }
 
     [Serializable]
-    class CreateConnectionResData
-    {
+    class CreateConnectionResData {
         public string connectionId;
     }
 
     [Serializable]
-    class OfferResDataList
-    {
-        public OfferResData[] offers;
-    }
-
-    [Serializable]
-    class CandidateContainerResDataList
-    {
-        public CandidateContainerResData[] candidates;
-    }
-
-    [Serializable]
-    class OfferResData
-    {
+    public class DescData {
         public string connectionId;
         public string sdp;
+        public string type;
     }
 
     [Serializable]
-    class AnswerResData
-    {
+    class DescDataList {
+        public DescData[] descs;
+    }
+
+
+    [Serializable]
+    public class CandidateData {
         public string connectionId;
-        public string sdp;
-    }
-
-    [Serializable]
-    class CandidateContainerResData
-    {
-        public string connectionId;
-        public CandidateResData[] candidates;
-    }
-
-    [Serializable]
-    class CandidateResData
-    {
         public string candidate;
         public string sdpMid;
         public int sdpMLineIndex;
     }
-#pragma warning restore 0649
+
+    [Serializable]
+    class CandidateDataList {
+        public CandidateData[] candidates;
+    }
+
+    [Serializable]
+    class CandidatesData {
+        public string connectionId;
+        public RTCIceCandidate[] candidates;
+    }
 
     [Serializable]
     public class SignalingMessage
@@ -161,206 +141,243 @@ namespace Unity.RenderStreaming
         public string candidate;
         public string sdpMid;
         public int sdpMLineIndex;
-        public string task;
-        public string appType;
-        public string appName;
     }
 
-    public partial class Signaling
+    [Flags]
+    enum SslProtocolsHack
     {
-        private readonly string _url;
-        private readonly string _identifier;
+        Tls = 192,
+        Tls11 = 768,
+        Tls12 = 3072
+    }
 
-        readonly BackOff _backOff;
+#pragma warning restore 0649
 
-        public Signaling(string url, string identifier)
-        {
-            _url = url;
-            _identifier = identifier;
-            _backOff = new BackOff(this);
+
+    public partial class Signaling {
+
+        private Uri _uri;
+        private float _timeout;
+        private string sessionId;
+        private WebSocketSharp.WebSocket _webSocket;
+        private Thread httpThread;
+
+        public delegate void OnOfferHandler(Signaling sender, DescData e);
+        public delegate void OnIceCandidateHandler(Signaling sender, CandidateData e);
+
+        public event OnOfferHandler OnOffer;
+        public event OnIceCandidateHandler OnIceCandidate;
+
+        public Signaling(string url, float timeout) {
+            _uri = new Uri(url);
+            _timeout = timeout;
         }
 
-        private WebSocket.WebSocket _webSocket;
+        //Global stuff
 
-        private void _connectIfNecessary()
-        {
-            if (_webSocket == null)
-            {
-                _webSocket = new WebSocket.WebSocket(this);
+        public void Start() {
 
-                var webSocket = _webSocket;
-                webSocket.Connect(_url,
-                    OnError: msg => { this._OnClose(webSocket, -1); },
-                    OnClose: code => { this._OnClose(webSocket, code); },
-                    OnConnected: () =>
-                    {
-                        Debug.Log($"Signaling: WebSocket gets connected.");
+            Debug.Log("Signaling: Uri scheme : " + _uri.Scheme);
 
-                        this.SendMessage(new SignalingMessage
-                        {
-                            type = "furioos",
-                            task = "ACTIVATE_WEBRTC_ROUTING",
-                            appType = "RenderStreaming",
-                            appName = "Unity Test App",
-                            //connectionId = _identifier,
-                        });
-                    },
-                    OnMessage: bytes =>
-                    {
-                        _backOff.OnSucceed();
+            if (_uri.Scheme == "http" || _uri.Scheme == "https"){
+                httpThread = new Thread(HttpPollingLoop);
+            } else {
+                StartWebSocket();
+            }
 
-                        var content = Encoding.UTF8.GetString(bytes);
+        }
 
-                        Debug.Log("Signaling: Receiving message: " + content);
-                        try
-                        {
-                            var msg = JsonUtility.FromJson<SignalingMessage>(content);
-                            _messages.Add(msg);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError("Signaling: Failed to parse message: " + ex);
-                        }
+        public void Stop() {
+
+            if (_webSocket != null) {
+                _webSocket.Close();
+            }
+
+        }
+
+        public void SendCandidate(string connectionId, RTCIceCandidate candidate) {
+
+            CandidateData data = new CandidateData();
+            data.connectionId = connectionId;
+            data.candidate = candidate.candidate;
+            data.sdpMLineIndex = candidate.sdpMLineIndex;
+            data.sdpMid = candidate.sdpMid;
+
+            Send(data);
+
+        }
+
+        public void SendAnswer(string connectionId, RTCSessionDescription answer) {
+
+            DescData data = new DescData();
+            data.connectionId = connectionId;
+            data.sdp = answer.sdp;
+            data.type = "answer";
+
+            Send(data);
+
+        }
+
+
+        public void Send(object message) {
+
+            if (message is string) {
+                Debug.Log("Signaling: Sending message: " + (string)message);
+                this._webSocket.Send((string)message);
+            } else {
+                string str = JsonUtility.ToJson(message);
+                Debug.Log("Signaling: Sending message: " + str);
+                this._webSocket.Send(str);
+            }
+        }
+
+        //------------------------------------------------------------------------------------------
+        //WebSocket Version
+        //------------------------------------------------------------------------------------------
+
+
+        private void StartWebSocket() {
+
+            const SslProtocols sslProtocolHack = (SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
+
+            _webSocket = new WebSocketSharp.WebSocket(_uri.ToString());
+            if (_uri.Scheme == "wss"){
+                _webSocket.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
+            }
+
+            _webSocket.OnOpen += WSConnected;
+            _webSocket.OnMessage += ProcessWSMessage;
+            _webSocket.OnError += WSError;
+            _webSocket.OnClose += WSClosed;
+
+            Debug.Log($"Signaling: Connecting WS: {_uri.ToString()}");
+            _webSocket.ConnectAsync();
+
+            
+        }
+
+        private void ProcessWSMessage(object sender, MessageEventArgs e){
+
+            //_backOff.OnSucceed();
+
+            var content = Encoding.UTF8.GetString(e.RawData);
+            Debug.Log($"Signaling: Receiving message: {content}");
+
+            try {
+
+                var msg = JsonUtility.FromJson<SignalingMessage>(content);
+
+                if (!string.IsNullOrEmpty(msg.connectionId)) {
+
+                    if (msg.type == "offer") {
+
+                        DescData offer = new DescData();
+                        offer.connectionId = msg.connectionId;
+                        offer.sdp = msg.sdp;
+
+                        OnOffer?.Invoke(this, offer);
+
+                    } else if (!string.IsNullOrEmpty(msg.candidate)) {
+
+                        CandidateData candidate = new CandidateData();
+                        candidate.connectionId = msg.connectionId;
+                        candidate.candidate = msg.candidate;
+                        candidate.sdpMLineIndex = msg.sdpMLineIndex;
+                        candidate.sdpMid = msg.sdpMid;
+
+                        OnIceCandidate?.Invoke(this, candidate);
                     }
-                );
+
+                } else {
+
+                    Debug.LogError("Signaling: Received message without connectionId");
+                }
+
+            } catch (Exception ex) {
+
+                Debug.LogError("Signaling: Failed to parse message: " + ex);
             }
         }
 
-        void _OnClose(WebSocket.WebSocket webSocket, int code = 0)
-        {
-            if (_webSocket != webSocket)
-            {
+        private void WSConnected(object sender, EventArgs e) {
+
+            Debug.Log("Signaling: WebSocket gets connected.");
+            this.SendWS("{type = \"furioos\",task = \"ACTIVATE_WEBRTC_ROUTING\",appType = \"RenderStreaming\",appName = \"Unity Test App\"");
+
+        }
+
+        private void WSError(object sender, ErrorEventArgs e) {
+
+            //TODO switch to HTTP here ?
+            //this._backOff.Cancel();
+            //int delay = _backOff.OnFail(this.Stop);
+            Debug.Log($"Signaling: Websocket connection error: {e.Message}");
+        }
+
+        private void WSClosed(object sender, CloseEventArgs e) {
+            //this._backOff.Cancel();
+            //int delay = _backOff.OnFail(this.Stop);
+            Debug.Log($"Signaling: Websocket connection closed, code: {e.Code}");
+        }
+
+        public void SendWS(object message) {
+            
+            if (this._webSocket == null || !this._webSocket.IsConnected) {
+                Debug.Log("Signaling: webSocket is not connected. Unable to send message");
                 return;
             }
 
-            this._backOff.Cancel();
-            int delay = _backOff.OnFail(this.Stop);
-            Debug.Log($"Signaling: Websocket connection failed, cooldown in {delay / 1000f} seconds. code: {code}");
-        }
-
-        public void Stop()
-        {
-            if (_webSocket != null)
-            {
-                var webSocket = _webSocket;
-                _webSocket = null;
-
-                webSocket.Close();
-            }
-
-            this._backOff.Cancel();
-
-            _clearExecutionQueue();
-            _clearDelayCalls();
-        }
-
-        private readonly List<SignalingMessage> _messages = new List<SignalingMessage>();
-
-        public SignalingMessage[] GetMessages()
-        {
-            _drainExecutionQueue();
-            _drainDelayCalls();
-
-            _connectIfNecessary();
-
-            if (this._messages.Count == 0)
-            {
-                return null;
-            }
-
-            var messages = this._messages.ToArray();
-            this._messages.Clear();
-            return messages;
-        }
-
-        readonly List<SignalingMessage> pendingMessages = new List<SignalingMessage>();
-        readonly Dictionary<string, bool> hasSentAnswer = new Dictionary<string, bool>();
-
-        public void SendMessage(SignalingMessage message)
-        {
-            if (!String.IsNullOrEmpty(message.candidate)) // if candidate.
-            {
-                if (!hasSentAnswer.ContainsKey(message.connectionId)) // if answer has not sent.
-                {
-                    pendingMessages.Add(message);
-                    return;
-                }
-            }
-
-            var str = JsonUtility.ToJson(message);
-            if (this._webSocket == null || !this._webSocket.connected)
-            {
-                Debug.Log("Signaling: webSocket is not connected. Unable to send message: " + str);
-                return;
-            }
-
-            Debug.Log("Signaling: Sending message: " + str);
-            this._webSocket.Send(str);
-
-            if (message.type == "answer")
-            {
-                if (!hasSentAnswer.ContainsKey(message.connectionId))
-                {
-                    hasSentAnswer[message.connectionId] = true;
-                    var pendingCandidates = pendingMessages.Where(
-                        msg => msg.connectionId == message.connectionId).ToList();
-
-                    pendingMessages.RemoveAll(msg => msg.connectionId != message.connectionId);
-                    pendingCandidates.ForEach(SendMessage);
-                }
+            if(message is string) {
+                Debug.Log("Signaling: Sending message: " + (string)message);
+                this._webSocket.Send((string)message);
+            } else {
+                string str = JsonUtility.ToJson(message);
+                Debug.Log("Signaling: Sending message: " + str);
+                this._webSocket.Send(str);
             }
         }
 
-        [Serializable]
-        class OfferReqData
-        {
-            public string connectionId;
-            public string sdp;
+        //------------------------------------------------------------------------------------------
+        //HTTP Version
+        //------------------------------------------------------------------------------------------
+
+        private void HttpPollingLoop() {
+
+            // ignore messages arrived before 30 secs ago
+            int lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
+            int lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
+
+            while (true) {
+                GetOffer(sessionId, lastTimeGetOfferRequest);
+                GetCandidate(sessionId, lastTimeGetCandidateRequest);
+                Thread.Sleep((int)(_timeout*1000));
+            }
         }
 
-        [Serializable]
-        class AnswerReqData
-        {
-            public string connectionId;
-            public string sdp;
-        }
 
-        [Serializable]
-        class CandidateReqData
-        {
-            public string connectionId;
-            public string candidate;
-            public string sdpMid;
-            public int sdpMLineIndex;
-        }
-
-        public UnityWebRequestAsyncOperation Create()
-        {
-            var req = new UnityWebRequest($"{_url}/signaling", "PUT");
+        public UnityWebRequestAsyncOperation Create() {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling", "PUT");
             var op = req.SendWebRequest<NewResData>();
             return op;
         }
 
-        public UnityWebRequestAsyncOperation Delete()
-        {
-            var req = new UnityWebRequest($"{_url}/signaling", "DELETE");
+        public UnityWebRequestAsyncOperation Delete() {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling", "DELETE");
             var op = req.SendWebRequest<None>();
             return op;
         }
 
-        public UnityWebRequestAsyncOperation CreateConnection(string sessionId)
-        {
-            var req = new UnityWebRequest($"{_url}/signaling/connection", "PUT");
+        public UnityWebRequestAsyncOperation CreateConnection(string sessionId) {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/connection", "PUT");
             req.SetRequestHeader("Session-Id", sessionId);
             var op = req.SendWebRequest<CreateConnectionResData>();
             return op;
         }
 
-        public UnityWebRequestAsyncOperation DeleteConnection(string sessionId, string connectionId)
-        {
-            var obj = new AnswerReqData { connectionId = connectionId };
+        public UnityWebRequestAsyncOperation DeleteConnection(string sessionId, string connectionId) {
+            var obj = new DescData { connectionId = connectionId };
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_url}/signaling/connection", "DELETE");
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/connection", "DELETE");
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
@@ -368,59 +385,57 @@ namespace Unity.RenderStreaming
             return op;
         }
 
-        public UnityWebRequestAsyncOperation PostOffer(string sessionId, string connectionId, string sdp)
-        {
-            var obj = new OfferReqData { connectionId = connectionId, sdp = sdp };
+        public UnityWebRequestAsyncOperation PostOffer(string sessionId, string connectionId, string sdp) {
+            var obj = new DescData { connectionId = connectionId, sdp = sdp };
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_url}/signaling/offer", "POST");
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/offer", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest<None>();
-            return op;
-        }
-        public UnityWebRequestAsyncOperation GetOffer(string sessionId, long fromTime=0)
-        {
-            var req = new UnityWebRequest($"{_url}/signaling/offer?fromtime={fromTime}", "GET");
-            req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<OfferResDataList>();
-            return op;
-        }
-        public UnityWebRequestAsyncOperation PostAnswer(string sessionId, string connectionId, string sdp)
-        {
-            var obj = new AnswerReqData { connectionId = connectionId, sdp = sdp };
-            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_url}/signaling/answer", "POST");
-            req.SetRequestHeader("Session-Id", sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest<None>();
-            return op;
-        }
-        public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId, long fromTime = 0)
-        {
-            var req = new UnityWebRequest($"{_url}/signaling/answer?fromtime={fromTime}", "GET");
-            req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<AnswerResData>();
             return op;
         }
 
-        public UnityWebRequestAsyncOperation PostCandidate(string sessionId, string connectionId, string candidate, string sdpMid, int sdpMlineIndex)
-        {
-            var obj = new CandidateReqData { connectionId = connectionId, candidate = candidate, sdpMid = sdpMid, sdpMLineIndex = sdpMlineIndex };
+        public UnityWebRequestAsyncOperation GetOffer(string sessionId, long fromTime=0) {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/offer?fromtime={fromTime}", "GET");
+            req.SetRequestHeader("Session-Id", sessionId);
+            var op = req.SendWebRequest<DescDataList>();
+            return op;
+        }
+
+        public UnityWebRequestAsyncOperation PostAnswer(string sessionId, string connectionId, string sdp) {
+            var obj = new DescData { connectionId = connectionId, sdp = sdp };
             var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_url}/signaling/candidate", "POST");
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/answer", "POST");
             req.SetRequestHeader("Session-Id", sessionId);
             req.SetRequestHeader("Content-Type", "application/json");
             req.uploadHandler = new UploadHandlerRaw(data);
             var op = req.SendWebRequest<None>();
             return op;
         }
-        public UnityWebRequestAsyncOperation GetCandidate(string sessionId, long fromTime = 0)
-        {
-            var req = new UnityWebRequest($"{_url}/signaling/candidate?fromtime={fromTime}", "GET");
+
+        public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId, long fromTime = 0) {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/answer?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<CandidateContainerResDataList>();
+            var op = req.SendWebRequest<DescData>();
+            return op;
+        }
+
+        public UnityWebRequestAsyncOperation PostCandidate(string sessionId, string connectionId, string candidate, string sdpMid, int sdpMlineIndex) {
+            var obj = new CandidateData { connectionId = connectionId, candidate = candidate, sdpMid = sdpMid, sdpMLineIndex = sdpMlineIndex };
+            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/candidate", "POST");
+            req.SetRequestHeader("Session-Id", sessionId);
+            req.SetRequestHeader("Content-Type", "application/json");
+            req.uploadHandler = new UploadHandlerRaw(data);
+            var op = req.SendWebRequest<None>();
+            return op;
+        }
+
+        public UnityWebRequestAsyncOperation GetCandidate(string sessionId, long fromTime = 0) {
+            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/candidate?fromtime={fromTime}", "GET");
+            req.SetRequestHeader("Session-Id", sessionId);
+            var op = req.SendWebRequest<CandidateDataList>();
             return op;
         }
     }

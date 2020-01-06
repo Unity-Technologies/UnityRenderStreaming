@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using System.Threading.Tasks;
 
 namespace Unity.RenderStreaming
 {
@@ -12,18 +13,19 @@ namespace Unity.RenderStreaming
     public class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
 
     [Serializable]
-    public class ButtonClickElement
-    {
+    public class ButtonClickElement {
+
         [Tooltip("Specifies the ID on the HTML")]
         public int elementId;
         public ButtonClickEvent click;
+
     }
 
-    public class RenderStreaming : MonoBehaviour
-    {
+    public class RenderStreaming : MonoBehaviour {
+
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Address for signaling server")]
-        private string urlSignaling = "ws://localhost";
+        [SerializeField, Tooltip("Signaling server url")]
+        private string urlSignaling = "127.0.0.1";
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
@@ -51,29 +53,28 @@ namespace Unity.RenderStreaming
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
-
-        private string sessionId = Guid.NewGuid().ToString();
-
         private MediaStream videoStream;
         private MediaStream audioStream;
 
-        public void Awake()
-        {
+        private Coroutine _loopPollingCoroutine;
+
+        public void Awake(){
+
             WebRTC.WebRTC.Initialize();
             RemoteInput.Initialize();
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
 
-        public void OnDestroy()
-        {
+        public void OnDestroy(){
+
             WebRTC.WebRTC.Finalize();
             RemoteInput.Destroy();
             Unity.WebRTC.Audio.Stop();
         }
-        public IEnumerator Start()
-        {
-            if (!WebRTC.WebRTC.HWEncoderSupport)
-            {
+
+        public IEnumerator Start(){
+
+            if (!WebRTC.WebRTC.HWEncoderSupport){
                 yield break;
             }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
@@ -84,126 +85,111 @@ namespace Unity.RenderStreaming
             StartCoroutine(WebRTC.WebRTC.Update());
         }
 
-        private Coroutine _loopPollingCoroutine;
+        void OnEnable() {
 
-        void OnEnable()
-        {
-            if (this.signaling == null)
-            {
-                this.signaling = new Signaling(urlSignaling, sessionId);
+            if (this.signaling == null) {
+                this.signaling = new Signaling(urlSignaling,interval);
+                this.signaling.OnOffer += OnOffer;
+                this.signaling.OnIceCandidate += OnIceCandidate;
             }
 
-            if (_loopPollingCoroutine == null)
-            {
-                _loopPollingCoroutine = StartCoroutine(LoopPolling());
-            }
+            this.signaling.Start();
         }
 
-        void OnDisable()
-        {
-            if (_loopPollingCoroutine != null)
-            {
+        void OnDisable() {
+
+            if (_loopPollingCoroutine != null) {
                 StopCoroutine(_loopPollingCoroutine);
                 _loopPollingCoroutine = null;
             }
 
-            if (this.signaling != null)
-            {
+            if (this.signaling != null) {
                 this.signaling.Stop();
                 this.signaling = null;
             }
         }
 
-        long lastTimeGetOfferRequest = 0;
-        long lastTimeGetCandidateRequest = 0;
+        void OnOffer(Signaling signaling, DescData data) {
 
-        IEnumerator LoopPolling()
-        {
-            while (true)
-            {
-                yield return null;
+            if (!pcs.TryGetValue(data.connectionId, out var pc)){
 
-                var messages = this.signaling.GetMessages();
-                if (messages != null)
-                {
-                    foreach (var message in messages)
-                    {
-                        if (message.type == "offer")
-                        {
-                            HandleOfferMessage(message);
-                        }
-
-                        if (!string.IsNullOrEmpty(message.candidate))
-                        {
-                            HandleCandidateMessage(message);
-                        }
-                    }
-                }
-            }
-        }
-
-        void HandleOfferMessage(SignalingMessage offer)
-        {
-            RTCSessionDescription _desc = default;
-            _desc.type = RTCSdpType.Offer;
-            _desc.sdp = offer.sdp;
-            var connectionId = offer.connectionId;
-
-            if (!pcs.TryGetValue(connectionId, out var pc))
-            {
                 pc = new RTCPeerConnection();
-                pcs.Add(offer.connectionId, pc);
+                pcs.Add(data.connectionId, pc);
 
-                pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
                 pc.SetConfiguration(ref conf);
-                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { OnIceCandidate(offer.connectionId, candidate); });
-                pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
-                {
-                    if(state == RTCIceConnectionState.Disconnected)
-                    {
+
+                pc.OnDataChannel = new DelegateOnDataChannel(channel => {
+                    OnDataChannel(pc, channel);
+                });
+                
+                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => {
+                    signaling.SendCandidate(data.connectionId, candidate);
+                });
+
+                pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state => {
+                    if(state == RTCIceConnectionState.Disconnected){
                         pc.Close();
-                        pcs.Remove(connectionId);
+                        pcs.Remove(data.connectionId);
                     }
                 });
             }
 
             //make video bit rate starts at 16000kbits, and 160000kbits at max.
             string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
-            _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
-            pc.SetRemoteDescription(ref _desc);
-            foreach (var track in videoStream.GetTracks())
-            {
+            data.sdp = Regex.Replace(data.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
+
+            RTCSessionDescription desc = default;
+            desc.type = RTCSdpType.Offer;
+            desc.sdp = data.sdp;
+
+            pc.SetRemoteDescription(ref desc);
+            foreach (var track in videoStream.GetTracks()){
                 pc.AddTrack(track);
             }
-            foreach(var track in audioStream.GetTracks())
-            {
+            foreach(var track in audioStream.GetTracks()){
                 pc.AddTrack(track);
             }
-            StartCoroutine(Answer(connectionId));
+
+            Task.Run(() => {
+                RTCAnswerOptions options = default;
+                var op = pc.CreateAnswer(ref options);
+                while(op.MoveNext());
+                if (op.isError) {
+                    Debug.LogError($"Network Error: {op.error}");
+                    return;
+                }
+                var opLocalDesc = pc.SetLocalDescription(ref op.desc);
+                while (opLocalDesc.MoveNext()) ;
+                if (opLocalDesc.isError) {
+                    Debug.LogError($"Network Error: {opLocalDesc.error}");
+                    return;
+                }
+
+                signaling.SendAnswer(data.connectionId, op.desc);
+            });
+
+            
         }
 
-        void HandleCandidateMessage(SignalingMessage candidate)
-        {
+        void OnIceCandidate(Signaling signaling, CandidateData data) {
+
             RTCPeerConnection pc;
-            if (!pcs.TryGetValue(candidate.connectionId, out pc))
-            {
-                return;
+            if (pcs.TryGetValue(data.connectionId, out pc)){
+
+                RTCIceCandidate candidate = default;
+                candidate.candidate = data.candidate;
+                candidate.sdpMLineIndex = data.sdpMLineIndex;
+                candidate.sdpMid = data.sdpMid;
+                pc.AddIceCandidate(ref candidate);
             }
 
-            RTCIceCandidate _candidate = default;
-            _candidate.candidate = candidate.candidate;
-            _candidate.sdpMLineIndex = candidate.sdpMLineIndex;
-            _candidate.sdpMid = candidate.sdpMid;
-
-            pc.AddIceCandidate(ref _candidate);
         }
 
-        IEnumerator GetOffer()
-        {
+       /* IEnumerator GetOffer(){
+
             var op = signaling.GetOffer(sessionId, lastTimeGetOfferRequest);
             yield return op;
-            if (op.webRequest.isNetworkError)
-            {
+            if (op.webRequest.isNetworkError){
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
@@ -211,50 +197,48 @@ namespace Unity.RenderStreaming
             lastTimeGetOfferRequest = date.ToJsMilliseconds();
 
             var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
-            if (obj == null)
-            {
+            if (obj == null){
                 yield break;
             }
-            foreach (var offer in obj.offers)
-            {
+
+            foreach (var offer in obj.offers){
 
             }
-        }
+        }*/
 
-        IEnumerator Answer(string connectionId)
-        {
+        IEnumerator Answer(string connectionId){
+
             RTCAnswerOptions options = default;
             var pc = pcs[connectionId];
             var op = pc.CreateAnswer(ref options);
             yield return op;
-            if (op.isError)
-            {
+            if (op.isError){
                 Debug.LogError($"Network Error: {op.error}");
                 yield break;
             }
             var opLocalDesc = pc.SetLocalDescription(ref op.desc);
             yield return opLocalDesc;
-            if (opLocalDesc.isError)
-            {
+            if (opLocalDesc.isError){
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
 
-            signaling.SendMessage(new SignalingMessage
-            {
+            signaling.SendAnswer(connectionId, op.desc);
+
+           /* signaling.SendMessage(new SignalingMessage {
                 connectionId = connectionId,
                 sdp = op.desc.sdp,
                 type = "answer",
-            });
+            });*/
         }
 
-        IEnumerator GetCandidate()
-        {
+
+        /*
+        IEnumerator GetCandidate() {
             var op = signaling.GetCandidate(sessionId, lastTimeGetCandidateRequest);
             yield return op;
 
-            if (op.webRequest.isNetworkError)
-            {
+            if (op.webRequest.isNetworkError) {
                 Debug.LogError($"Network Error: {op.webRequest.error}");
                 yield break;
             }
@@ -262,52 +246,34 @@ namespace Unity.RenderStreaming
             lastTimeGetCandidateRequest = date.ToJsMilliseconds();
 
             var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
-            if (obj == null)
-            {
+            if (obj == null) {
                 yield break;
             }
-            foreach (var candidateContainer in obj.candidates)
-            {
+
+            foreach (var candidateContainer in obj.candidates) {
 
             }
-        }
+        }*/
 
-        void OnIceCandidate(string connectionId, RTCIceCandidate candidate)
-        {
-            signaling.SendMessage(
-                new SignalingMessage
-                {
-                    connectionId = connectionId,
-                    type = "candidate",
-                    candidate = candidate.candidate,
-                    sdpMid = candidate.sdpMid,
-                    sdpMLineIndex = candidate.sdpMLineIndex,
-                });
-        }
 
-        void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
-        {
+
+        void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel){
             Dictionary<int, RTCDataChannel> channels;
-            if (!mapChannels.TryGetValue(pc, out channels))
-            {
+            if (!mapChannels.TryGetValue(pc, out channels)){
                 channels = new Dictionary<int, RTCDataChannel>();
                 mapChannels.Add(pc, channels);
             }
             channels.Add(channel.Id, channel);
 
-            if(channel.Label == "data")
-            {
+            if(channel.Label == "data"){
                 channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
                 channel.OnClose = new DelegateOnClose(() => { RemoteInput.Reset(); });
             }
         }
 
-        void OnButtonClick(int elementId)
-        {
-            foreach (var element in arrayButtonClickEvent)
-            {
-                if (element.elementId == elementId)
-                {
+        void OnButtonClick(int elementId){
+            foreach (var element in arrayButtonClickEvent){
+                if (element.elementId == elementId){
                     element.click.Invoke(elementId);
                 }
             }
