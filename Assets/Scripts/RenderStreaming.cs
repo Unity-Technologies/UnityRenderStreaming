@@ -82,6 +82,8 @@ namespace Unity.RenderStreaming
 
             conf = default;
             conf.iceServers = iceServers;
+
+
             StartCoroutine(WebRTC.WebRTC.Update());
         }
 
@@ -93,7 +95,7 @@ namespace Unity.RenderStreaming
                 this.signaling.OnIceCandidate += OnIceCandidate;
             }
 
-            this.signaling.Start();
+            StartCoroutine(this.signaling.Update());
         }
 
         void OnDisable() {
@@ -132,6 +134,14 @@ namespace Unity.RenderStreaming
                         pcs.Remove(data.connectionId);
                     }
                 });
+
+                foreach (var track in videoStream.GetTracks()) {
+                    pc.AddTrack(track);
+                }
+
+                foreach (var track in audioStream.GetTracks()) {
+                    pc.AddTrack(track);
+                }
             }
 
             //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -142,32 +152,8 @@ namespace Unity.RenderStreaming
             desc.type = RTCSdpType.Offer;
             desc.sdp = data.sdp;
 
-            pc.SetRemoteDescription(ref desc);
-            foreach (var track in videoStream.GetTracks()){
-                pc.AddTrack(track);
-            }
-            foreach(var track in audioStream.GetTracks()){
-                pc.AddTrack(track);
-            }
 
-            Task.Run(() => {
-                RTCAnswerOptions options = default;
-                var op = pc.CreateAnswer(ref options);
-                while(op.MoveNext());
-                if (op.isError) {
-                    Debug.LogError($"Network Error: {op.error}");
-                    return;
-                }
-                var opLocalDesc = pc.SetLocalDescription(ref op.desc);
-                while (opLocalDesc.MoveNext()) ;
-                if (opLocalDesc.isError) {
-                    Debug.LogError($"Network Error: {opLocalDesc.error}");
-                    return;
-                }
-
-                signaling.SendAnswer(data.connectionId, op.desc);
-            });
-
+            StartCoroutine(SetRemoteDescriptionAndAnswer(data.connectionId, desc));
             
         }
 
@@ -185,53 +171,59 @@ namespace Unity.RenderStreaming
 
         }
 
-       /* IEnumerator GetOffer(){
+        /* IEnumerator GetOffer(){
 
-            var op = signaling.GetOffer(sessionId, lastTimeGetOfferRequest);
-            yield return op;
-            if (op.webRequest.isNetworkError){
-                Debug.LogError($"Network Error: {op.webRequest.error}");
+             var op = signaling.GetOffer(sessionId, lastTimeGetOfferRequest);
+             yield return op;
+             if (op.webRequest.isNetworkError){
+                 Debug.LogError($"Network Error: {op.webRequest.error}");
+                 yield break;
+             }
+             var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
+             lastTimeGetOfferRequest = date.ToJsMilliseconds();
+
+             var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
+             if (obj == null){
+                 yield break;
+             }
+
+             foreach (var offer in obj.offers){
+
+             }
+         }*/
+
+        
+       IEnumerator SetRemoteDescriptionAndAnswer(string connectionId, RTCSessionDescription desc){
+
+           RTCAnswerOptions options = default;
+           var pc = pcs[connectionId];
+
+           var opSetRemoteDescription = pc.SetRemoteDescription(ref desc);
+           yield return opSetRemoteDescription;
+           if (opSetRemoteDescription.isError)
+           {
+                Debug.LogError($"SetRemoteDescription Error: {opSetRemoteDescription.error}");
                 yield break;
-            }
-            var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
-            lastTimeGetOfferRequest = date.ToJsMilliseconds();
+           }
 
-            var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
-            if (obj == null){
-                yield break;
-            }
+           var opCreateAnswer = pc.CreateAnswer(ref options);
+           yield return opCreateAnswer;
+           if (opCreateAnswer.isError){
+               Debug.LogError($"CreateAnswer Error: {opCreateAnswer.error}");
+               yield break;
+           }
 
-            foreach (var offer in obj.offers){
+           var opSetLocalDescription = pc.SetLocalDescription(ref opCreateAnswer.desc);
+           yield return opSetLocalDescription;
+           if (opSetLocalDescription.isError){
+               Debug.LogError($"SetLocalDescription Error: {opSetLocalDescription.error}");
+               yield break;
+           }
 
-            }
-        }*/
+           signaling.SendAnswer(connectionId, opCreateAnswer.desc);
 
-        IEnumerator Answer(string connectionId){
-
-            RTCAnswerOptions options = default;
-            var pc = pcs[connectionId];
-            var op = pc.CreateAnswer(ref options);
-            yield return op;
-            if (op.isError){
-                Debug.LogError($"Network Error: {op.error}");
-                yield break;
-            }
-            var opLocalDesc = pc.SetLocalDescription(ref op.desc);
-            yield return opLocalDesc;
-            if (opLocalDesc.isError){
-                Debug.LogError($"Network Error: {opLocalDesc.error}");
-                yield break;
-            }
-
-            signaling.SendAnswer(connectionId, op.desc);
-
-           /* signaling.SendMessage(new SignalingMessage {
-                connectionId = connectionId,
-                sdp = op.desc.sdp,
-                type = "answer",
-            });*/
-        }
-
+       }
+        
 
         /*
         IEnumerator GetCandidate() {
