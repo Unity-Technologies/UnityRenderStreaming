@@ -181,6 +181,7 @@ namespace Unity.RenderStreaming
 
             if (_uri.Scheme == "http" || _uri.Scheme == "https"){
                 httpThread = new Thread(HttpPollingLoop);
+                httpThread.Start();
             } else {
                 StartWebSocket();
             }
@@ -245,6 +246,8 @@ namespace Unity.RenderStreaming
                 _webSocket.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
             }
 
+            
+
             _webSocket.OnOpen += WSConnected;
             _webSocket.OnMessage += ProcessWSMessage;
             _webSocket.OnError += WSError;
@@ -253,7 +256,6 @@ namespace Unity.RenderStreaming
             Debug.Log($"Signaling: Connecting WS: {_uri.ToString()}");
             _webSocket.ConnectAsync();
 
-            
         }
 
         private void ProcessWSMessage(object sender, MessageEventArgs e){
@@ -343,11 +345,14 @@ namespace Unity.RenderStreaming
 
         private void HttpPollingLoop() {
 
-            // ignore messages arrived before 30 secs ago
-            int lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
-            int lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
+            
 
             while (true) {
+
+                // ignore messages arrived before 30 secs ago
+                int lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
+                int lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
+
                 GetOffer(sessionId, lastTimeGetOfferRequest);
                 GetCandidate(sessionId, lastTimeGetCandidateRequest);
                 Thread.Sleep((int)(_timeout*1000));
@@ -397,6 +402,7 @@ namespace Unity.RenderStreaming
         }
 
         public UnityWebRequestAsyncOperation GetOffer(string sessionId, long fromTime=0) {
+            Debug.Log("Get Offer");
             var req = new UnityWebRequest($"{_uri.ToString()}/signaling/offer?fromtime={fromTime}", "GET");
             req.SetRequestHeader("Session-Id", sessionId);
             var op = req.SendWebRequest<DescDataList>();

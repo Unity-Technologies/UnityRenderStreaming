@@ -1,89 +1,54 @@
-
-import GatewaySocket from './GatewaySocket.js';
-
-var socket = new GatewaySocket("ws://10.81.32.188/ws");
-//var socket = new GatewaySocket("ws://10.86.34.255/ws");
-var peerName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-socket.addListener('connect', () => {
-  socket.signIn(peerName);
-});
-
-socket.addListener('disconnect', () => {
-  socket.isReady = false;
-});
-
-socket.addListener('reconnecting', () => {
-});
-
-socket.addListener('dispatch', (data) => {
-  if (data.task == 'SIGN_IN' && data.status == 'SUCCESS') {
-    socket.send({"type":"furioos","task":"SET_STREAM_PARAMS","protocol":"WebRTC","codec":"MP4_H264","fps":25,"quality":480,"ratio":3.449748743718593});
-  }
-  if (data.task == 'SET_STREAM_PARAMS' && data.status == 'SUCCESS') {
-    socket.send({"type":"furioos","task":"START_STREAM"});
-  }
-  if (data.task == 'START_STREAM' && data.status == 'SUCCESS') {
-    socket.isReady = true;
-
-    if (_currentOffer != null) {
-      socket.sendOffer(_currentOffer);
-
-      _currentCandidates.forEach(candidate => {
-        socket.sendCandidate(candidate);
-      });
-    }
-  }
-
-  if (data.type == "answer") {
-    if (_answerCallback) {
-      _answerCallback(data);
-    }
-  }
-
-  if (data.candidate) {
-    if (_candidateCallback) {
-      _candidateCallback(data);
-    }
-  }
-});
-
-socket.connect();
-
-var _currentOffer;
-var _currentCandidates = [];
-var _answerCallback;
-var _candidateCallback;
-
 export default class Signaling {
-  static sendOffer(offer) {
-    _currentOffer = offer;
-    _currentCandidates = [];
-    
-    if (socket.isReady) {
-        socket.sendOffer(offer);
+  headers(sessionId) {
+    if(sessionId != undefined)
+    {
+      return {'Content-Type': 'application/json', 'Session-Id': sessionId};
+    }
+    else {
+      return {'Content-Type': 'application/json'};
     }
   };
 
-  static sendCandidate(candidate, sdpMid, sdpMLineIndex) {
+  url(method) {
+    return location.protocol + '//' + location.host + location.pathname + 'signaling/' + method;
+  };
+  async createConnection(sessionId) {
+    return await fetch(this.url('connection'), {method: 'PUT', headers: this.headers(sessionId)});
+  };
+  async deleteConnection(sessionId, connectionId) {
+    const data = {'connectionId' : connectionId };
+    return await fetch(this.url('connection'), {method: 'DELETE', headers: this.headers(sessionId), body: JSON.stringify(data)});
+  };
+  async sendOffer(sessionId, connectionId, sdp) {
+    const data = {'sdp' : sdp, 'connectionId' : connectionId };
+    return await fetch(this.url('offer'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
+  };
+  async sendAnswer(sessionId, connectionId, sdp) {
+    const data = {'sdp' : sdp, 'connectionId' : connectionId };
+    return await fetch(this.url('answer'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
+  };
+  async sendCandidate(sessionId, connectionId, candidate, sdpMid, sdpMLineIndex) {
     const data = {
       'candidate' : candidate,
       'sdpMLineIndex': sdpMLineIndex,
       'sdpMid': sdpMid,
+      'connectionId' : connectionId
     };
-
-    _currentCandidates.push(data);
-
-    if (socket.isReady) {
-      socket.sendCandidate(data);
-    }
+    return await fetch(this.url('candidate'), {method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data)});
   };
-
-  static onAnswer(answerCallback) {
-    _answerCallback = answerCallback;
-  }
-
-  static onCandidate(candidateCallback) {
-    _candidateCallback = candidateCallback;
-  }
+  async create() {
+    return await fetch(this.url(''), {method: 'PUT', headers: this.headers()});
+  };
+  async delete(sessionId) {
+    return await fetch(this.url(''), {method: 'DELETE', headers: this.headers(sessionId)});
+  };
+  async getOffer(sessionId, fromTime = 0) {
+    return await fetch(this.url(`offer?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
+  };
+  async getAnswer(sessionId, fromTime = 0) {
+    return await fetch(this.url(`answer?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
+  };
+  async getCandidate(sessionId, fromTime = 0) {
+    return await fetch(this.url(`candidate?fromtime=${fromTime}`), {method: 'GET', headers: this.headers(sessionId)});
+  };
 }
