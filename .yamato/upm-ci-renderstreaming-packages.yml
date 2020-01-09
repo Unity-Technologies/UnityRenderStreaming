@@ -11,9 +11,9 @@ platforms:
 packages:
   - name: renderstreaming
     packagename: com.unity.renderstreaming
-    prepack_command: 
     
 ---
+{% for package in packages %}
 pack_{{ package.name }}:
   name: Pack {{ package.packagename }}
   agent:
@@ -78,3 +78,4 @@ publish_{{ package.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
+  {% endfor %}
