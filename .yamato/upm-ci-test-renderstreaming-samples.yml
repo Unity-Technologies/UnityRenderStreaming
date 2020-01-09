@@ -1,11 +1,16 @@
 # .yamato/upm-ci-test-renderstreaming-samples.yml
-{% metadata_file .yamato/environments.yml %}
+editors:
+  - version: 2019.3
+platforms: # TODO add platform mac and linux
+  - name: win 
+    type: Unity::VM::GPU
+    image: renderstreaming/win10:latest
+    flavor: b1.large
     
 project_path: EmptyProjectForTest~
     
 samples:
-  - name: HDRP    
-    
+  - name: HDRP 
 ---
 
 {% for editor in editors %}
