@@ -1,7 +1,11 @@
 ﻿﻿using UnityEngine;                                      //Debug
 using UnityEditor;                                      //AssetPostProcessor
 using UnityEngine.Rendering;                            //GraphicsSettings
-using UnityEngine.Rendering.HighDefinition;    //HDRenderPipelineAsset
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.Rendering.HighDefinition;             //HDRenderPipelineAsset
+#else
+using UnityEngine.Experimental.Rendering.HDPipeline;    //HDRenderPipelineAsset
+#endif
 
 public class HDRPPostProcessor : AssetPostprocessor
 {
@@ -11,7 +15,7 @@ public class HDRPPostProcessor : AssetPostprocessor
         if (null != GraphicsSettings.renderPipelineAsset) {
             return;
         }
-
+        
         int numImportedAssets = importedAssets.Length;
         for (int i=0;i< numImportedAssets; ++i) {
             string curAssetPath = importedAssets[i];
