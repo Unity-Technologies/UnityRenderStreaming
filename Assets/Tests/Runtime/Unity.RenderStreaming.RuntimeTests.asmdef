@@ -1,7 +1,6 @@
 {
     "name": "Unity.RenderStreaming.RuntimeTests",
     "references": [
-        "Unity.WebRTC",
         "Unity.RenderStreaming"
     ],
     "optionalUnityReferences": [
