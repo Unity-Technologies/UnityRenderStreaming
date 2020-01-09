@@ -1,7 +1,11 @@
 ﻿﻿using UnityEngine;                                      //Debug
 using UnityEditor;                                      //AssetPostProcessor
 using UnityEngine.Rendering;                            //GraphicsSettings
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.Rendering.HighDefinition;             //HDRenderPipelineAsset
+#else
 using UnityEngine.Experimental.Rendering.HDPipeline;    //HDRenderPipelineAsset
+#endif
 
 public class HDRPPostProcessor : AssetPostprocessor
 {
