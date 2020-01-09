@@ -1,7 +1,6 @@
 # .yamato/upm-ci.yml
 editors:
-  - version: 2019.1
-  - version: trunk
+  - version: 2019.3
 platforms:
   - name: win
     type: Unity::VM
