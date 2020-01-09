@@ -11,6 +11,12 @@ platforms:
     flavor: m1.mac
     pack_command: ./pack_webapp.sh
     test_command: ./test_webapp.sh
+  - name: linux
+    type: Unity::VM
+    image: cds-ops/ubuntu-18.04-base:stable
+    flavor: b1.xlarge
+    pack_command: ./pack_webapp.sh
+    test_command: ./test_webapp.sh    
 projects:
   - packagename: com.unity.webapp.renderstreaming
 ---
