@@ -1,11 +1,6 @@
 # .yamato/upm-ci.yml
-editors:
-  - version: 2019.3
-platforms:
-  - name: win
-    type: Unity::VM
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+{% metadata_file .yamato/environments.yml %}
+
 projects:
   - name: renderstreaming
     packagename: com.unity.template.renderstreaming
