@@ -56,7 +56,7 @@ namespace Unity.RenderStreaming
 
         public void Awake()
         {
-            WebRTC.WebRTC.Initialize(); 
+            WebRTC.WebRTC.Initialize();
             RemoteInput.Initialize();
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
@@ -69,6 +69,10 @@ namespace Unity.RenderStreaming
         }
         public IEnumerator Start()
         {
+            if (captureCamera == null)
+            {
+                captureCamera = Camera.main;
+            }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
@@ -142,7 +146,7 @@ namespace Unity.RenderStreaming
                 {
                     if(state == RTCIceConnectionState.Disconnected)
                     {
-                        pc.Close();  
+                        pc.Close();
                     }
                 });
                 //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -179,7 +183,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opLocalDesc.error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp); 
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {
