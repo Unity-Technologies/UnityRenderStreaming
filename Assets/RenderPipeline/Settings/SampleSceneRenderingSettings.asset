@@ -1,106 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6556920165806200933
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59b6606ef2548734bb6d11b9d160bc7e, type: 3}
-  m_Name: HDRISky
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  rotation:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-    max: 360
-  skyIntensityMode:
-    m_OverrideState: 0
-    m_Value: 0
-  exposure:
-    m_OverrideState: 0
-    m_Value: 0
-  multiplier:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-  upperHemisphereLuxValue:
-    m_OverrideState: 0
-    m_Value: 42.463287
-    min: 0
-  upperHemisphereLuxColor:
-    m_OverrideState: 0
-    m_Value: {x: 0.32034606, y: 0.36262375, z: 0.5}
-  desiredLuxValue:
-    m_OverrideState: 0
-    m_Value: 20000
-  updateMode:
-    m_OverrideState: 0
-    m_Value: 0
-  updatePeriod:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-  includeSunInBaking:
-    m_OverrideState: 0
-    m_Value: 0
-  hdriSky:
-    m_OverrideState: 1
-    m_Value: {fileID: 0}
-  enableBackplate:
-    m_OverrideState: 0
-    m_Value: 0
-  backplateType:
-    m_OverrideState: 0
-    m_Value: 0
-  groundLevel:
-    m_OverrideState: 0
-    m_Value: 0
-  scale:
-    m_OverrideState: 0
-    m_Value: {x: 32, y: 32}
-  projectionDistance:
-    m_OverrideState: 0
-    m_Value: 16
-    min: 0.0000001
-  plateRotation:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-    max: 360
-  plateTexRotation:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-    max: 360
-  plateTexOffset:
-    m_OverrideState: 0
-    m_Value: {x: 0, y: 0}
-  blendAmount:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-    max: 100
-  shadowTint:
-    m_OverrideState: 0
-    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  pointLightShadow:
-    m_OverrideState: 0
-    m_Value: 0
-  dirLightShadow:
-    m_OverrideState: 0
-    m_Value: 0
-  rectLightShadow:
-    m_OverrideState: 0
-    m_Value: 0
 --- !u!114 &-6286156873003259159
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -115,84 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   m_AdvancedMode: 0
-  quality:
-    m_OverrideState: 0
-    m_Value: 1
-  rayTracing:
-    m_OverrideState: 0
-    m_Value: 0
   intensity:
     m_OverrideState: 1
     m_Value: 0.5
     min: 0
     max: 4
+  thicknessModifier:
+    m_OverrideState: 0
+    m_Value: 1
+    min: 1
+    max: 10
   directLightingStrength:
     m_OverrideState: 0
     m_Value: 0
     min: 0
     max: 1
-  radius:
-    m_OverrideState: 0
-    m_Value: 2
-    min: 0.25
-    max: 5
-  temporalAccumulation:
-    m_OverrideState: 0
-    m_Value: 1
-  ghostingReduction:
-    m_OverrideState: 0
-    m_Value: 0.5
-    min: 0
-    max: 1
-  blurSharpness:
-    m_OverrideState: 0
-    m_Value: 0.1
-    min: 0
-    max: 1
-  layerMask:
-    m_OverrideState: 0
-    m_Value:
-      serializedVersion: 2
-      m_Bits: 4294967295
-  rayLength:
-    m_OverrideState: 0
-    m_Value: 0.5
-    min: 0
-    max: 50
-  sampleCount:
-    m_OverrideState: 0
-    m_Value: 4
-    min: 1
-    max: 64
-  denoise:
+  noiseFilterTolerance:
     m_OverrideState: 0
     m_Value: 0
-  denoiserRadius:
+    min: -8
+    max: 0
+  blurTolerance:
     m_OverrideState: 0
-    m_Value: 0.5
-    min: 0.001
+    m_Value: -4.6
+    min: -8
     max: 1
-  m_StepCount:
+  upsampleTolerance:
     m_OverrideState: 0
-    m_Value: 6
-    min: 2
-    max: 32
-  m_FullResolution:
-    m_OverrideState: 0
-    m_Value: 0
-  m_MaximumRadiusInPixels:
-    m_OverrideState: 0
-    m_Value: 40
-    min: 16
-    max: 256
-  m_BilateralUpsample:
-    m_OverrideState: 0
-    m_Value: 1
-  m_DirectionCount:
-    m_OverrideState: 0
-    m_Value: 2
-    min: 1
-    max: 6
+    m_Value: -12
+    min: -12
+    max: -1
 --- !u!114 &-3352347674914365972
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -251,7 +102,7 @@ MonoBehaviour:
   baseHeight:
     m_OverrideState: 0
     m_Value: 0
-  maximumHeight:
+  meanHeight:
     m_OverrideState: 0
     m_Value: 10
   anisotropy:
@@ -282,9 +133,9 @@ MonoBehaviour:
   components:
   - {fileID: 114527594671542966}
   - {fileID: 114339849572665496}
+  - {fileID: 5758136461106579282}
   - {fileID: -6286156873003259159}
   - {fileID: -3352347674914365972}
-  - {fileID: -6556920165806200933}
 --- !u!114 &114339849572665496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,7 +152,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   skyType:
     m_OverrideState: 1
-    m_Value: 4
+    m_Value: 2
   skyAmbientMode:
     m_OverrideState: 0
     m_Value: 0
@@ -326,11 +177,6 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 150
     min: 0
-  directionalTransmissionMultiplier:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-    max: 1
   cascadeShadowSplitCount:
     m_OverrideState: 1
     m_Value: 4
@@ -390,9 +236,6 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
     min: 0
-  upperHemisphereLuxColor:
-    m_OverrideState: 0
-    m_Value: {x: 0, y: 0, z: 0}
   desiredLuxValue:
     m_OverrideState: 0
     m_Value: 20000
