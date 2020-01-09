@@ -10,6 +10,6 @@ platforms:
     image: buildfarm/mac:stable
     flavor: m1.mac  
   - name: linux
-    type: Unity::VM
-    image: cds-ops/ubuntu-18.04-base:stable
-    flavor: b1.xlarge
+    type: Unity::VM::GPU
+    image: renderstreaming/ubuntu-18.04:latest
+    flavor: b1.large
