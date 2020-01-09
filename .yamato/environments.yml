@@ -1,6 +1,5 @@
 editors:
   - version: 2019.3
-
 platforms:
   - name: win
     type: Unity::VM::GPU
