@@ -2,96 +2,18 @@
 using System.Text;
 using System.Security.Authentication;
 using UnityEngine;
-using UnityEngine.Networking;
 using Unity.WebRTC;
 using WebSocketSharp;
-using System.Collections;
+using System.Threading;
+using System.Net;
+using System.IO;
 
-namespace Unity.RenderStreaming
-{
-    public class DownloadHandlerJson<T> : DownloadHandlerScript
-    {
-        private T m_obj;
+namespace Unity.RenderStreaming {
 
-        public DownloadHandlerJson() : base() {
-        }
-
-        public DownloadHandlerJson(byte[] buffer) : base(buffer) {
-        }
-
-        protected override byte[] GetData() { return null; }
-
-        protected override bool ReceiveData(byte[] data, int dataLength)
-        {
-            if (data == null || data.Length < 1)
-            {
-                return false;
-            }
-            var text = System.Text.Encoding.UTF8.GetString(data);
-            try
-            {
-                m_obj = JsonUtility.FromJson<T>(text);
-            }
-            catch(Exception e)
-            {
-                Debug.LogError(text);
-                throw e;
-            }
-            return true;
-        }
-
-        public T GetObject()
-        {
-            return m_obj;
-        }
-    }
-
-    static class DownloadHandlerExtension {
-
-        public static T FromJson<T>(this DownloadHandler handler) {
-            return JsonUtility.FromJson<T>(handler.text);
-        }
-
-    }
-
-    static class UnityWebRequestExtension {
-
-        public static UnityWebRequestAsyncOperation SendWebRequest<T>(this UnityWebRequest own) {
-            if (typeof(T) != typeof(None)) {
-                own.downloadHandler = new DownloadHandlerJson<T>();
-            }
-
-            if (own.uri.Scheme == "https") {
-                own = own.ToHttps();
-            }
-            var req = own.SendWebRequest();
-            return req;
-        }
-
-        public static DownloadHandlerJson<T> DownloadHandlerJson<T>(this UnityWebRequest own) {
-            return own.downloadHandler as DownloadHandlerJson<T>;
-        }
-
-        public static UnityWebRequest ToHttps(this UnityWebRequest own) {
-            own.certificateHandler = new AcceptAllCertificateHandler();
-            return own;
-        }
-
-        class AcceptAllCertificateHandler : CertificateHandler {
-            protected override bool ValidateCertificate(byte[] certificateData) {
-                // Workaround for Non-Secure web page
-                // You should implement the validation when you release your service publicly.
-                return true;
-            }
-        }
-    }
-
-    class None {}
-
-#pragma warning disable 0649
+    #pragma warning disable 0649
 
     [Serializable]
-    class NewResData {
+    class OpenSessionData {
         public string sessionId;
     }
 
@@ -128,8 +50,8 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
-    public class SignalingMessage
-    {
+    public class SignalingMessage {
+
         public string connectionId;
         public string sdp;
         public string type;
@@ -139,14 +61,13 @@ namespace Unity.RenderStreaming
     }
 
     [Flags]
-    enum SslProtocolsHack
-    {
+    enum SslProtocolsHack {
         Tls = 192,
         Tls11 = 768,
         Tls12 = 3072
     }
 
-#pragma warning restore 0649
+    #pragma warning restore 0649
 
 
     public partial class Signaling {
@@ -157,6 +78,9 @@ namespace Unity.RenderStreaming
         private WebSocket _webSocket;
         private long _lastTimeGetOfferRequest;
         private long _lastTimeGetCandidateRequest;
+        private AutoResetEvent _wsCloseEvent;
+        private Thread _signalingThread;
+        private bool _running;
 
         public delegate void OnOfferHandler(Signaling sender, DescData e);
         public delegate void OnIceCandidateHandler(Signaling sender, CandidateData e);
@@ -167,64 +91,32 @@ namespace Unity.RenderStreaming
         public Signaling(string url, float timeout) {
             _uri = new Uri(url);
             _timeout = timeout;
+            _wsCloseEvent = new AutoResetEvent(false);
         }
 
+        //------------------------------------------------------------------------------------------
         //Global stuff
+        //------------------------------------------------------------------------------------------
+
 
         public void Start() {
 
-            
-
-        }
-
-        public IEnumerator Update()
-        {
-
-            Debug.Log("Signaling: Uri scheme : " + _uri.Scheme);
-
-            if (_uri.Scheme == "http" || _uri.Scheme == "https")
-            {
-
-                var opCreate = HTTPCreate();
-                yield return opCreate;
-                if (opCreate.webRequest.isNetworkError)
-                {
-                    Debug.LogError($"Network Error: {opCreate.webRequest.error}");
-                    yield break;
-                }
-                _sessionId = opCreate.webRequest.DownloadHandlerJson<NewResData>().GetObject().sessionId;
-
-                Debug.Log("Signaling: HTTP sessionId : " + _sessionId);
-
-                // ignore messages arrived before 30 secs ago
-                _lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
-                _lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
-
-                while (true){
-                    yield return HTTPGetOffers();
-                    yield return HTTPGetCandidates();
-                    yield return new WaitForSeconds(_timeout);
-                }
-            }
-            else
-            {
-                WSStart();
-
-                while (true)
-                {
-                    yield return new WaitForSeconds(_timeout);
-                }
-            }
-
-        }
-
-
-        public void Stop()
-        {
-
+            _running = true;
             if (_uri.Scheme == "http" || _uri.Scheme == "https") {
-
+                _signalingThread = new Thread(HTTPPooling);
+                _signalingThread.Start();
             } else {
+                _signalingThread = new Thread(WSManage);
+                _signalingThread.Start();
+            }
+        }
+
+
+        public void Stop() {
+
+            _running = false;
+
+            if (_uri.Scheme == "ws" || _uri.Scheme == "wss") {
                 if (_webSocket != null) {
                     _webSocket.Close();
                 }
@@ -262,7 +154,23 @@ namespace Unity.RenderStreaming
         //------------------------------------------------------------------------------------------
 
 
-        private void WSStart() {
+        public void WSManage() {
+
+            while (_running) {
+                WSCreate();
+
+                _wsCloseEvent.WaitOne();
+
+
+
+                Thread.Sleep((int)(_timeout * 1000));
+            }
+
+            Debug.Log("Signaling: WS managing thread ended");
+        }
+
+        private void WSCreate() {
+
 
             const SslProtocols sslProtocolHack = (SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
 
@@ -276,14 +184,14 @@ namespace Unity.RenderStreaming
             _webSocket.OnError += WSError;
             _webSocket.OnClose += WSClosed;
 
-            Debug.Log($"Signaling: Connecting WS: {_uri.ToString()}");
+            Monitor.Enter(_webSocket);
+
+            Debug.Log($"Signaling: Connecting WS {_uri.ToString()}");
             _webSocket.ConnectAsync();
 
         }
 
         private void WSProcessMessage(object sender, MessageEventArgs e){
-
-            //_backOff.OnSucceed();
 
             var content = Encoding.UTF8.GetString(e.RawData);
             Debug.Log($"Signaling: Receiving message: {content}");
@@ -326,29 +234,29 @@ namespace Unity.RenderStreaming
 
         private void WSConnected(object sender, EventArgs e) {
 
-            Debug.Log("Signaling: WebSocket gets connected.");
-            this.WSSend("{type = \"furioos\",task = \"ACTIVATE_WEBRTC_ROUTING\",appType = \"RenderStreaming\",appName = \"Unity Test App\"");
+            Debug.Log("Signaling: WS connected.");
+            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"ACTIVATE_WEBRTC_ROUTING\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
 
         }
 
-        private void WSError(object sender, ErrorEventArgs e) {
+        private void WSError(object sender, WebSocketSharp.ErrorEventArgs e) {
 
             //TODO switch to HTTP here ?
-            //this._backOff.Cancel();
-            //int delay = _backOff.OnFail(this.Stop);
-            Debug.Log($"Signaling: Websocket connection error: {e.Message}");
+            Debug.Log($"Signaling: WS connection error: {e.Message}");
         }
 
-        private void WSClosed(object sender, CloseEventArgs e) {
-            //this._backOff.Cancel();
-            //int delay = _backOff.OnFail(this.Stop);
-            Debug.Log($"Signaling: Websocket connection closed, code: {e.Code}");
+        private void WSClosed(object sender, WebSocketSharp.CloseEventArgs e) {
+
+            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
+
+            _wsCloseEvent.Set();
+            _webSocket = null;
         }
 
         private void WSSend(object data) {
             
-            if (this._webSocket == null || !this._webSocket.IsConnected) {
-                Debug.Log("Signaling: webSocket is not connected. Unable to send message");
+            if (this._webSocket == null || this._webSocket.ReadyState != WebSocketState.Open) {
+                Debug.Log("Signaling: WS is not connected. Unable to send message");
                 return;
             }
 
@@ -366,145 +274,194 @@ namespace Unity.RenderStreaming
         //HTTP Version
         //------------------------------------------------------------------------------------------
 
-       
+
+        public void HTTPPooling() {
+
+            // ignore messages arrived before 30 secs ago
+            _lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
+            _lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
 
 
-        private UnityWebRequestAsyncOperation HTTPCreate() {
-            var req = new UnityWebRequest($"{_uri.ToString()}signaling", "PUT");
-            var op = req.SendWebRequest<NewResData>();
-            return op;
+            while (_running && string.IsNullOrEmpty(_sessionId)) {
+                HTTPCreate();
+                Thread.Sleep((int)(_timeout * 1000));
+            }
+
+            while (_running) {
+
+                try {
+                    HTTPGetOffers();
+                    HTTPGetCandidates();
+                } catch (Exception e) {
+                    Debug.LogError("Signaling: HTTP polling error : " + e.ToString());
+                }
+
+                Thread.Sleep((int)(_timeout * 1000));
+            }
+
+            HTTPDelete();
+
+            Debug.Log("Signaling: HTTP polling thread ended");
         }
 
-        private UnityWebRequestAsyncOperation HTTPDelete() {
-            var req = new UnityWebRequest($"{_uri.ToString()}signaling", "DELETE");
-            var op = req.SendWebRequest<None>();
-            return op;
+        private static HttpWebResponse HTTPGetResponse(HttpWebRequest request) {
+
+            try {
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                if (response.StatusCode == HttpStatusCode.OK) {
+
+                    return response;
+
+                } else {
+                    Debug.LogError("Signaling: " + response.ResponseUri.ToString() + " HTTP request failed (" + response.StatusCode.ToString() + ")");
+                    response.Close();
+                }
+            } catch (Exception e)  {
+                Debug.LogError("Signaling: HTTP request error " + e.ToString());
+            }
+            return null;
+            
         }
 
-        /*
-        public UnityWebRequestAsyncOperation CreateConnection(string sessionId) {
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/connection", "PUT");
-            req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<CreateConnectionResData>();
-            return op;
+
+        private static T HTTPParseJsonResponse<T>(HttpWebResponse response) where T : class {
+
+            if (response == null) return null;
+
+            T obj = null;
+
+            using (Stream dataStream = response.GetResponseStream()) {
+
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                obj = JsonUtility.FromJson<T>(responseFromServer);
+            }
+
+            response.Close();
+
+            return obj;
+
         }
 
-        public UnityWebRequestAsyncOperation DeleteConnection(string sessionId, string connectionId) {
-            var obj = new DescData { connectionId = connectionId };
-            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/connection", "DELETE");
-            req.SetRequestHeader("Session-Id", sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest<None>();
-            return op;
-        }
-        */
+        private static string HTTPParseTextResponse(HttpWebResponse response) {
 
-        private UnityWebRequestAsyncOperation HTTPPost(string path, object data) {
+            if (response == null) return null;
+
+            string str = null;
+
+            using (Stream dataStream = response.GetResponseStream()) {
+                StreamReader reader = new StreamReader(dataStream);
+                str = reader.ReadToEnd();
+            }
+
+            response.Close();
+
+            return str;
+
+        }
+
+
+        private bool HTTPCreate() {
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{_uri.ToString()}signaling");
+            request.Method = "PUT";
+            request.ContentType = "application/json";
+            request.KeepAlive = false;
+
+            Debug.Log($"Signaling: Connecting HTTP {_uri.ToString()}");
+
+            OpenSessionData resp = HTTPParseJsonResponse<OpenSessionData>(HTTPGetResponse(request));
+
+            if (resp != null){
+                _sessionId = resp.sessionId;
+                Debug.Log("Signaling: HTTP connected, sessionId : " + _sessionId);
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+
+        private bool HTTPDelete() {
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{_uri.ToString()}signaling");
+            request.Method = "DELETE";
+            request.ContentType = "application/json";
+            request.KeepAlive = false;
+
+            Debug.Log($"Signaling: Removing HTTP connection from {_uri.ToString()}");
+
+            return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
+        }
+
+        private bool HTTPPost(string path, object data) {
+
             string str = JsonUtility.ToJson(data);
             byte[] bytes = new System.Text.UTF8Encoding().GetBytes(str);
 
             Debug.Log("Signaling: Posting HTTP data: " + str);
-            var req = new UnityWebRequest(_uri.ToString() + path, "POST");
-            req.SetRequestHeader("Session-Id", _sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(bytes);
-            var op = req.SendWebRequest<None>();
-            return op;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_uri.ToString() + path);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", _sessionId);
+            request.KeepAlive = false;
+
+            using (Stream dataStream = request.GetRequestStream()){
+                dataStream.Write(bytes, 0, bytes.Length);
+                dataStream.Close();
+            }
+
+            return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
-        private IEnumerator HTTPGetOffers() {
+        private bool HTTPGetOffers() {
 
-            var req = new UnityWebRequest($"{_uri.ToString()}signaling/offer?fromtime={_lastTimeGetOfferRequest}", "GET");
-            req.SetRequestHeader("Session-Id", _sessionId);
-            var op = req.SendWebRequest<OfferList>();
-            yield return op;
-            if (op.webRequest.isNetworkError) {
-                Debug.LogError($"Network Error: {op.webRequest.error}");
-                yield break;
-            }
-            _lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date")).ToJsMilliseconds();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{_uri.ToString()}signaling/offer?fromtime={_lastTimeGetOfferRequest}");
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", _sessionId);
+            request.KeepAlive = false;
 
-            var obj = op.webRequest.DownloadHandlerJson<OfferList>().GetObject();
-            if (obj == null)yield break;
+            HttpWebResponse response = HTTPGetResponse(request);
+            OfferList list = HTTPParseJsonResponse<OfferList>(response);
 
-            foreach (var offer in obj.offers) {
+            if (list == null) return false;
+
+            _lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date]).ToJsMilliseconds();
+
+            foreach (var offer in list.offers){
                 OnOffer?.Invoke(this, offer);
             }
+            return true;
+
         }
 
 
+        private bool HTTPGetCandidates() {
 
-        private IEnumerator HTTPGetCandidates() {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{_uri.ToString()}signaling/candidate?fromtime={_lastTimeGetCandidateRequest}");
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", _sessionId);
+            request.KeepAlive = false;
 
-            var req = new UnityWebRequest($"{_uri.ToString()}signaling/candidate?fromtime={_lastTimeGetCandidateRequest}", "GET");
-            req.SetRequestHeader("Session-Id", _sessionId);
-            var op = req.SendWebRequest<CandidatesContainerList>();
-            yield return op;
+            HttpWebResponse response = HTTPGetResponse(request);
+            CandidatesContainerList containers = HTTPParseJsonResponse<CandidatesContainerList>(response);
 
-            if (op.webRequest.isNetworkError) {
-                Debug.LogError($"Network Error: {op.webRequest.error}");
-                yield break;
-            }
-            _lastTimeGetCandidateRequest = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date")).ToJsMilliseconds();
+            if (containers == null) return false;
+            _lastTimeGetCandidateRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date]).ToJsMilliseconds();
 
-            var obj = op.webRequest.DownloadHandlerJson<CandidatesContainerList>().GetObject();
-            if (obj == null) yield break;
-  
-            foreach (var candidateContainer in obj.candidates) {
+            foreach (var candidateContainer in containers.candidates) {
                 foreach (var candidate in candidateContainer.candidates) {
-
                     candidate.connectionId = candidateContainer.connectionId;
                     OnIceCandidate?.Invoke(this, candidate);
-
                 }
             }
+
+            return true;
+
         }
-
-        /*
-        public UnityWebRequestAsyncOperation PostOffer(string sessionId, string connectionId, string sdp) {
-            var obj = new DescData { connectionId = connectionId, sdp = sdp };
-            var data = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/offer", "POST");
-            req.SetRequestHeader("Session-Id", sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(data);
-            var op = req.SendWebRequest<None>();
-            return op;
-        }*/
-
-        /*
-        public UnityWebRequestAsyncOperation PostHTTPAnswer(DescData data) {
-            var str = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(obj));
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/answer", "POST");
-            req.SetRequestHeader("Session-Id", sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(str);
-            var op = req.SendWebRequest<None>();
-            return op;
-        }*/
-
-        /*
-        public UnityWebRequestAsyncOperation PostHTTPCandidate(CandidateData data) {
-            var str = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(data));
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/candidate", "POST");
-            req.SetRequestHeader("Session-Id", sessionId);
-            req.SetRequestHeader("Content-Type", "application/json");
-            req.uploadHandler = new UploadHandlerRaw(str);
-            var op = req.SendWebRequest<None>();
-            return op;
-        }*/
-
-
-
-        /*
-        public UnityWebRequestAsyncOperation GetAnswer(string sessionId, string connectionId, long fromTime = 0) {
-            var req = new UnityWebRequest($"{_uri.ToString()}/signaling/answer?fromtime={fromTime}", "GET");
-            req.SetRequestHeader("Session-Id", sessionId);
-            var op = req.SendWebRequest<DescData>();
-            return op;
-        }
-        */
     }
 }
