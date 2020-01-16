@@ -1,10 +1,11 @@
 # .yamato/upm-ci-export-renderstreaming-unitypackage.yml
 editor_version: 2019.3
-platforms:
-  - name: win
-    type: Unity::VM
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+
+platform:
+  name: win
+  type: Unity::VM
+  image: renderstreaming/win10:latest
+  flavor: b1.large
 
 samples:
   - name: HDRP
@@ -15,7 +16,6 @@ samples:
     unitypackage_path: Assets/Samples/LWRP/Editor/RenderStreamingLWRPSimple.unitypackage
     
 ---
-{% for platform in platforms %}
 {% for sample in samples %}
 pack_renderstreaming_export_unitypackage_{{ sample.name }}:
   name : Export Renderstreaming UnityPackage {{ sample.name }}
@@ -32,7 +32,6 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
     {{ sample.name }}:
       paths:
         - "{{ sample.unitypackage_path }}"      
-{% endfor %}
 {% endfor %}
 
 push_renderstreaming_exported_unitypackage:
