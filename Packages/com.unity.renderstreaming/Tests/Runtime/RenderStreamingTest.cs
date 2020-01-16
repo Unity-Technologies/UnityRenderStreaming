@@ -26,7 +26,9 @@ namespace Unity.RenderStreaming
         public IEnumerator InstantiateAndDestroy()
         {
             var obj = new GameObject();
-            obj.AddComponent<RenderStreaming>();
+
+            // TODO:: launch signaling server
+            // obj.AddComponent<RenderStreaming>();
             yield return new WaitForSeconds(3);
             Object.DestroyImmediate(obj);
         }
