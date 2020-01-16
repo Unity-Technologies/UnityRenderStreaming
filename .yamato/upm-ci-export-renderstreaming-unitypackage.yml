@@ -1,6 +1,5 @@
 # .yamato/upm-ci-export-renderstreaming-unitypackage.yml
-editors:
-  - version: 2019.3
+editor_version: 2019.3
 platforms:
   - name: win
     type: Unity::VM
@@ -27,7 +26,7 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
-    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published
+    - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published
     - export_unity_package.cmd ".Editor\Unity.exe" {{ sample.project_path }} {{ unitypackage_name }} %cd%\Logs\Editor02_ImportSample.log
 {% endfor %}
 {% endfor %}
