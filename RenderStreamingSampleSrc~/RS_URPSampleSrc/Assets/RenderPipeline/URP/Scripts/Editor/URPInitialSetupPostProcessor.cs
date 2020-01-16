@@ -16,7 +16,7 @@ public class LWRPInitialSetupPostProcessor : AssetPostprocessor
         for (int i=0;i< numImportedAssets; ++i) {
             string curAssetPath = importedAssets[i];
 
-            if (curAssetPath == "Assets/RenderPipeline/LWRP/LightweightRenderPipelineAsset.asset") {
+            if (curAssetPath == "Assets/RenderPipeline/URP/UniversalRenderPipelineAsset.asset") {
                 UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =
                     AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>(curAssetPath);
                 GraphicsSettings.renderPipelineAsset = pipelineAsset;
