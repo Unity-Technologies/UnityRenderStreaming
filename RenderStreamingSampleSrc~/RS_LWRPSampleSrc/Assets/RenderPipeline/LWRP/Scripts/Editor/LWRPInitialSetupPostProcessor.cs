@@ -17,8 +17,8 @@ public class HDRPInitialSetupPostProcessor : AssetPostprocessor
             string curAssetPath = importedAssets[i];
 
             if (curAssetPath == "Assets/RenderPipeline/LWRP/LightweightRenderPipelineAsset.asset") {
-                LightweightRenderPipelineAsset pipelineAsset =
-                    AssetDatabase.LoadAssetAtPath<LightweightRenderPipelineAsset>(curAssetPath);
+                UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =
+                    AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>(curAssetPath);
                 GraphicsSettings.renderPipelineAsset = pipelineAsset;
                 PlayerSettings.colorSpace = ColorSpace.Linear;
             }
