@@ -3,7 +3,7 @@ using UnityEditor;                                      //AssetPostProcessor
 using UnityEngine.Rendering;                            //GraphicsSettings
 using UnityEngine.Rendering.LWRP;
 
-public class HDRPInitialSetupPostProcessor : AssetPostprocessor
+public class LWRPInitialSetupPostProcessor : AssetPostprocessor
 {
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
         string[] movedAssets, string[] movedFromAssetPaths)
