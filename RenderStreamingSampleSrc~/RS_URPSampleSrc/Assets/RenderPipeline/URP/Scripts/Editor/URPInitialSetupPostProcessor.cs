@@ -1,9 +1,8 @@
 ﻿﻿using UnityEngine;                                      //Debug
 using UnityEditor;                                      //AssetPostProcessor
 using UnityEngine.Rendering;                            //GraphicsSettings
-using UnityEngine.Rendering.LWRP;
 
-public class LWRPInitialSetupPostProcessor : AssetPostprocessor
+public class URPInitialSetupPostProcessor : AssetPostprocessor
 {
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
         string[] movedAssets, string[] movedFromAssetPaths)
