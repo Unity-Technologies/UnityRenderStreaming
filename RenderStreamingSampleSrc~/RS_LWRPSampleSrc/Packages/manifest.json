@@ -17,7 +17,7 @@
     "com.unity.webrtc": "1.1.0-preview.1",
     "com.unity.timeline": "1.2.9",
     "com.unity.ugui": "1.0.0",
-    "com.unity.webrtc": "1.0.1-preview",
+    "com.unity.webrtc": "https://github.com/Unity-Technologies/com.unity.webrtc.git#release/1.1.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -49,5 +49,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.unity.webrtc": {
+      "revision": "release/1.1.0",
+      "hash": "0f45d9be2546030d6e7c9f71788670ddc2b88554"
+    }
   }
 }
