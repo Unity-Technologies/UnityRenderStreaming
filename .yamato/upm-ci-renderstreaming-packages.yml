@@ -1,21 +1,12 @@
 # .yamato/upm-ci-renderstreaming-packages.yml
-editors:
-  - version: 2019.3
-#  - version: trunk
-platforms:
-  - name: win
-    type: Unity::VM::GPU
-    # currently the projects depends MSBuild. we should replace CMake
-    # image: package-ci/win10:stable
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+{% metadata_file .yamato/environments.yml %}
+
 packages:
   - name: renderstreaming
     packagename: com.unity.renderstreaming
     
 ---
 {% for package in packages %}
-
 pack_{{ package.name }}:
   name: Pack {{ package.packagename }}
   agent:
@@ -46,8 +37,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       only:
       - "/.*/"
       except:
-      - "master"    
-  
+      - "master"  
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:

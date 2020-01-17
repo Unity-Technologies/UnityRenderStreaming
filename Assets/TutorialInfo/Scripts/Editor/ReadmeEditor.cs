@@ -124,11 +124,13 @@ public class ReadmeEditor : Editor {
 		m_BodyStyle = new GUIStyle(EditorStyles.label);
 		m_BodyStyle.wordWrap = true;
 		m_BodyStyle.fontSize = 14;
+        m_BodyStyle.richText = true;
 		
 		m_TitleStyle = new GUIStyle(m_BodyStyle);
 		m_TitleStyle.fontSize = 26;
 		
 		m_HeadingStyle = new GUIStyle(m_BodyStyle);
+        m_HeadingStyle.fontStyle = FontStyle.Bold;
 		m_HeadingStyle.fontSize = 18 ;
 		
 		m_LinkStyle = new GUIStyle(m_BodyStyle);

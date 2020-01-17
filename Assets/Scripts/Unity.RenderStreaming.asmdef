@@ -1,14 +1,14 @@
 {
-    "name": "Unity.RenderStreaming.RuntimeTests",
+    "name": "Unity.RenderStreaming",
     "references": [
-        "Unity.WebRTC"
+        "Unity.InputSystem",
+        "Unity.WebRTC",
+        "Unity.TextMeshPro"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

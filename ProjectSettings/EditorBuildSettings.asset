@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/HDRPScene.unity
+    path: Assets/Scenes/samplescene.unity
     guid: cbfe36cfddfde964d9dfce63a355d5dd
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: c8f185587df409c4d9ed3185c351c3be,

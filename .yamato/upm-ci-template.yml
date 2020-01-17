@@ -1,12 +1,6 @@
-# .yamato/upm-ci.yml
-editors:
-  - version: 2019.1
-  - version: trunk
-platforms:
-  - name: win
-    type: Unity::VM
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+# .yamato/upm-ci-template.yml
+{% metadata_file .yamato/environments.yml %}
+
 projects:
   - name: renderstreaming
     packagename: com.unity.template.renderstreaming
@@ -42,6 +36,13 @@ test_{{ platform.name }}_{{ editor.version }}:
   commands:
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template test -u {{ editor.version }}
+#  TODO:: `upm-ci template test` is failed using the package on the internal registry.
+#  triggers:
+#    branches:
+#      only:
+#      - "/.*/"
+#      except:
+#      - "master"
   artifacts:
     logs:
       paths:
