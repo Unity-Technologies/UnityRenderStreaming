@@ -2,7 +2,7 @@
 using UnityEngine.Rendering.LWRP;
 
 [RequireComponent(typeof(Camera))]
-public class LWRPRenderTextureBlitter : MonoBehaviour
+public class URPRenderTextureBlitter : MonoBehaviour
 {
     [SerializeField] Camera m_rtCamera = null;
 
