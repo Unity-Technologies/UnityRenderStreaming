@@ -1,4 +1,4 @@
-# .yamato/upm-ci.yml
+# .yamato/upm-ci-template.yml
 {% metadata_file .yamato/environments.yml %}
 
 projects:
