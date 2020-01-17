@@ -5,9 +5,9 @@ samples:
   - name: HDRP
     project_path: RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x
     unitypackage_path: Packages/com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
-  - name: LWRP
-    project_path: RenderStreamingSampleSrc~/RS_LWRPSampleSrc
-    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/LWRP/Editor/RenderStreamingLWRPSimple.unitypackage
+  - name: URP
+    project_path: RenderStreamingSampleSrc~/RS_URPSampleSrc
+    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
 
 project_path: EmptyProjectForTest~
 
