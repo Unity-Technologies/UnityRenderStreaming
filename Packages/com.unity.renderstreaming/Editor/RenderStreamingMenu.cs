@@ -9,8 +9,13 @@ namespace Unity.RenderStreaming.Editor
     public static class RenderStreamingMenu
     {
         const string URLRoot = "https://github.com/Unity-Technologies/UnityRenderStreaming";
+
+        // TODO::fix release process of webserver runtime.
         const string PathWebAppForMac = "releases/download/{0}/webserver";
+        const string PathWebAppForLinux = "releases/download/{0}/webserver";
         const string PathWebAppForWin = "releases/download/{0}/webserver.exe";
+        //
+
         const string PathWebAppSourceCode = "tree/release/{0}/WebApp";
         const string PathWebAppDocumentation = "blob/release/{0}/Packages/com.unity.template.renderstreaming/Documentation~/en/webserver.md";
 
@@ -22,7 +27,9 @@ namespace Unity.RenderStreaming.Editor
 #if UNITY_EDITOR_WIN
                 var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForWin, version));
 #elif UNITY_EDITOR_OSX
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForMac, version));
+                var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForMac, version));
+#elif UNITY_EDITOR_LINUX
+                var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForLinux, version));
 #endif
                 var client = new WebClient();
                 var filename = System.IO.Path.GetFileName(url);
