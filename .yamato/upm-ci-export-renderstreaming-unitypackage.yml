@@ -32,7 +32,6 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
     - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published     
     - (run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }} %cd%\Logs\Editor01_AddHDRP.log %cd%\Logs\TestResults01_AddHDRP.xml) ^& exit 0
     - import_unity_package.cmd ".Editor\Unity.exe" {{ project_path }} "Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage" %cd%\Logs\Editor02_ImportSample.log
-    - run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }}  %cd%\Logs\Editor03.log %cd%\Logs\TestResults03.xml   
   artifact:
 #    unitypackage:
 #      paths:
