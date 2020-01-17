@@ -29,9 +29,12 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
     - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published
     - export_unity_package.cmd ".Editor\Unity.exe" {{ sample.project_path }} {{ sample.unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
   artifact:
-    {{ sample.name }}:
+    unitypackage:
       paths:
-        - "{{ sample.unitypackage_path }}"      
+        - "{{ sample.unitypackage_path }}"
+    logs:  
+      paths:
+        - "Logs/**"
 {% endfor %}
 
 push_renderstreaming_exported_unitypackage:

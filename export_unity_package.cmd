@@ -5,5 +5,5 @@ set projectPath=%2
 set packagePath=%3
 set editorLogPath=%4
 
-echo Importing Package: %packagePath%
+echo Exporting Package: %packagePath%
 %unityPath% -batchmode -nographics -quit -projectPath %projectPath% -exportPackage "Assets" %packagePath% -logFile %editorLogPath%
