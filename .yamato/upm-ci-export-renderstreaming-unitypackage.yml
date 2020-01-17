@@ -14,7 +14,9 @@ samples:
   - name: LWRP
     project_path: RenderStreamingSampleSrc~\RS_LWRPSampleSrc
     unitypackage_path: Assets/Samples/LWRP/Editor/RenderStreamingLWRPSimple.unitypackage
-    
+
+project_path: EmptyProjectForTest~
+
 ---
 {% for sample in samples %}
 pack_renderstreaming_export_unitypackage_{{ sample.name }}:
@@ -24,14 +26,17 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
+    - copy_sample.cmd com.unity.renderstreaming {{ sample.name }}
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
-    - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published
-#    - export_unity_package.cmd ".Editor\Unity.exe" {{ sample.project_path }} {{ sample.unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
+    - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published     
+    - (run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }} %cd%\Logs\Editor01_AddHDRP.log %cd%\Logs\TestResults01_AddHDRP.xml) ^& exit 0
+    - import_unity_package.cmd ".Editor\Unity.exe" {{ project_path }} "Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage" %cd%\Logs\Editor02_ImportSample.log
+    - run_editor_tests.cmd ".Editor\Unity.exe" {{ project_path }}  %cd%\Logs\Editor03.log %cd%\Logs\TestResults03.xml   
   artifact:
-    unitypackage:
-      paths:
-        - "{{ sample.unitypackage_path }}"
+#    unitypackage:
+#      paths:
+#        - "{{ sample.unitypackage_path }}"
     logs:  
       paths:
         - "Logs/**"
