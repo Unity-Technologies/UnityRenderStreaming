@@ -6,11 +6,11 @@ editor_version: 2019.3
 samples:
   - name: HDRP
     project_path: RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x
-    unitypackage_path: ../../Packages/com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
+    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
   - name: URP
     project_path: RenderStreamingSampleSrc~/RS_URPSampleSrc
-    unitypackage_path: ../../Packages/com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
+    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/URP/Editor/RenderStreamingURPSimple.unitypackage
 
 project_path: EmptyProjectForTest~
@@ -24,9 +24,9 @@ pack_renderstreaming_export_unitypackage_{{ sample.name }}:
     image: renderstreaming/win10:latest
     flavor: b1.large
   commands:
-    - pip install unity-downloader-cli --user --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
     - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published
-    - export_unity_package.cmd ".Editor\Unity.exe" {{ sample.project_path }} {{ sample.unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
+    - export_unity_package.cmd ".Editor\Unity.exe" {{ sample.project_path }} ../../{{ sample.unitypackage_path }} ../../Logs/Editor02_ImportSample.log
   artifacts:
     unitypackage:
       paths:
@@ -48,11 +48,15 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
   commands:
     - {{ platform.copy_sample_command }} com.unity.renderstreaming {{ sample.name }}
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    {% if platform.name == "win" -%}
+    - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    {% else -%}
     - pip install unity-downloader-cli --user --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    {% endif -%}
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published
-    - {{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }} %cd%\Logs\Editor01.log %cd%\Logs\TestResults01.xml
-    - {{ platform.import_unity_package_command }} ".Editor\Unity.exe" {{ project_path }} {{ sample.imported_unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
-    - {{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }}  %cd%\Logs\Editor03.log %cd%\Logs\TestResults03.xml
+    - {{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }} ../Logs/Editor01.log ../../Logs/TestResults01.xml
+    - {{ platform.import_unity_package_command }} ".Editor\Unity.exe" {{ project_path }} {{ sample.imported_unitypackage_path }} ../../Logs/Editor02_ImportSample.log
+    - {{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }}  ../Logs/Editor03.log ../../Logs/TestResults03.xml
   triggers:
     branches:
       only:
