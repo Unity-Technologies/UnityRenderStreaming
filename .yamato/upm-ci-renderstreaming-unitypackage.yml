@@ -51,7 +51,7 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
     - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published
     - ({{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }} %cd%\Logs\Editor01.log %cd%\Logs\TestResults01.xml) ^& exit 0
-    - {{ platform.import_unity_package_command }} ".Editor\Unity.exe" {{ project_path }} {{ samples.imported_unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
+    - {{ platform.import_unity_package_command }} ".Editor\Unity.exe" {{ project_path }} {{ sample.imported_unitypackage_path }} %cd%\Logs\Editor02_ImportSample.log
     - {{ platform.run_editor_tests_command }} ".Editor\Unity.exe" {{ project_path }}  %cd%\Logs\Editor03.log %cd%\Logs\TestResults03.xml
   triggers:
     branches:
