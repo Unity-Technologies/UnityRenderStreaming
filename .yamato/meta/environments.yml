@@ -8,7 +8,7 @@ platforms:
     copy_sample_command: copy_sample.cmd
     run_editor_tests_command:  run_editor_tests.cmd
     import_unity_package_command: import_unity_package.cmd
-    unity_path: ./Editor/Unity.exe
+    unity_path: .\Editor\Unity.exe
   - name: mac
     type: Unity::VM::osx
     image: buildfarm/mac:stable
@@ -16,7 +16,7 @@ platforms:
     copy_sample_command: ./copy_sample.sh
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh    
-    unity_path: ./Editor/Unity.app/Contents/MacOS/Unity
+    unity_path: .Editor/Unity.app/Contents/MacOS/Unity
   - name: linux
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu-18.04:latest
@@ -24,4 +24,4 @@ platforms:
     copy_sample_command: ./copy_sample.sh
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh
-    unity_path: ./Editor/Unity
+    unity_path: .Editor/Unity
