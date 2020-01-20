@@ -90,9 +90,9 @@ push_renderstreaming_exported_unitypackage:
   dependencies:
     {% for sample in samples %}
     - .yamato/upm-ci-renderstreaming-unitypackage.yml#pack_renderstreaming_export_unitypackage_{{ sample.name }}
-#    {% for editor in editors %}
-#    {% for platform in platforms %}
-#    - .yamato/upm-ci-renderstreaming-unitypackage.yml#test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}
-#    {% endfor %}
-#    {% endfor %}
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-unitypackage.yml#test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
     {% endfor %}
