@@ -80,8 +80,8 @@ push_renderstreaming_exported_unitypackage:
     image: renderstreaming/ubuntu-18.04:latest
     flavor: b1.large
   commands:
-    git config --global user.email "kazuki@unity3d.com"
-    git config --global user.name "Kazuki Matsumoto"
+    - git config --global user.email "kazuki@unity3d.com"
+    - git config --global user.name "Kazuki Matsumoto"
     {% for sample in samples %}
     - git add {{ sample.unitypackage_path }}
     {% endfor %}
