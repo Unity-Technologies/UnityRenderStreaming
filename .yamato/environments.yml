@@ -1,0 +1,15 @@
+editors:
+  - version: 2019.3
+platforms:
+  - name: win
+    type: Unity::VM::GPU
+    image: renderstreaming/win10:latest
+    flavor: b1.large
+  - name: mac
+    type: Unity::VM::osx
+    image: buildfarm/mac:stable
+    flavor: m1.mac  
+  - name: linux
+    type: Unity::VM::GPU
+    image: renderstreaming/ubuntu-18.04:latest
+    flavor: b1.large
