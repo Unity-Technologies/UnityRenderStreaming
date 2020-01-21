@@ -92,6 +92,8 @@ namespace Unity.RenderStreaming
             StartCoroutine(LoopPolling());
         }
 
+        public Vector2Int GetStreamingSize() { return streamingSize; }
+
         long lastTimeGetOfferRequest = 0;
         long lastTimeGetCandidateRequest = 0;
 
