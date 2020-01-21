@@ -39,7 +39,7 @@ Currently, there is one sample:
 
 	<img src="./images/simplescene.png" width="240" >
 
-9. Click on `Edit/Render Streaming/Download web app` menu item to download our web server
+9. Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 
 	<img src="./images/download_webapp.png" width="300" >
 
