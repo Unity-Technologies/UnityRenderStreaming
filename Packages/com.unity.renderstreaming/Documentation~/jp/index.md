@@ -39,7 +39,7 @@
 
 <img src="../images/simplescene.png" width="240">
 
-9. `Edit/Render Streaming/Download web app` メニューアイテムをクリックして、あらかじめ用意されているウェブサーバーをダウンロードします。
+9. `Edit/Render Streaming/Download web app` メニューアイテムをクリックして、あらかじめ用意されている[ウェブサーバー](https://github.com/Unity-Technologies/UnityRenderStreaming/releases)をダウンロードします。
 
 <img src="../images/download_webapp.png" width="300">
 
