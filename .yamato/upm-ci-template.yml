@@ -1,5 +1,5 @@
 # .yamato/upm-ci-template.yml
-{% metadata_file .yamato/environments.yml %}
+{% metadata_file .yamato/meta/environments.yml %}
 
 projects:
   - name: renderstreaming
