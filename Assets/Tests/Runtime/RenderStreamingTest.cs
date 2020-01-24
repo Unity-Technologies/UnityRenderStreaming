@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    //[UnityPlatform(exclude = new[]{RuntimePlatform.OSXEditor})]
+    [UnityPlatform(exclude = new[]{RuntimePlatform.OSXEditor})]
     public class RenderStreamingTest : IPrebuildSetup
     {
         private GameObject _camera;
