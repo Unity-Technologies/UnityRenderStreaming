@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming
             }
             Unity.RenderStreaming.Editor.WebAppDownloader.DownloadCurrentVersionWebApp(PathWebapp);
             int time = 0;
-            int timeout = 60000;
+            int timeout = 180000;
             while (true)
             {
                 Thread.Sleep(1);

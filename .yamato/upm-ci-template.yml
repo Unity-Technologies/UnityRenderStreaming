@@ -35,6 +35,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
+    - cp -r WebApp upm-ci~/templates/ProjectData~/
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template test -u {{ editor.version }}
   triggers:
