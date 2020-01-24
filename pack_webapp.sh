@@ -4,5 +4,5 @@ npm run build
 npm run pack
 chmod a+x webserver
 cd ..
-mkdir Assets/bin~
-mv WebApp/webserver Assets/bin~
+mkdir WebApp/bin~
+mv WebApp/webserver WebApp/bin~

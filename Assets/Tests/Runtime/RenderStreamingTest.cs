@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
     {
         private GameObject _camera;
         private System.Diagnostics.Process _process;
-        private const string PathWebapp = "Assets/bin~";
+        private const string PathWebapp = "WebApp/bin~";
 
         public void Setup()
         {
