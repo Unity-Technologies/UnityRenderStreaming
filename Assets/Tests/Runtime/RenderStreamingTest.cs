@@ -1,9 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine.TestTools;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
@@ -14,9 +17,9 @@ namespace Unity.RenderStreaming
         private System.Diagnostics.Process _process;
         private const string PathWebapp = "WebApp/bin~";
 
-        public void Setup()
-        {
 #if UNITY_EDITOR
+        static void SetUpWebApp()
+        {
             if (Directory.Exists(PathWebapp))
             {
                 return;
@@ -38,10 +41,34 @@ namespace Unity.RenderStreaming
                 }
                 time++;
             }
+        }
+
+        private static readonly Dictionary<BuildTarget, GraphicsDeviceType[]> GraphicsDeviceTypeDictionary =
+            new Dictionary<BuildTarget, GraphicsDeviceType[]>()
+            {
+                { BuildTarget.StandaloneWindows64, new[] { GraphicsDeviceType.Direct3D11 } },
+                { BuildTarget.StandaloneLinux64, new[] { GraphicsDeviceType.Vulkan } },
+                { BuildTarget.StandaloneOSX, new[] { GraphicsDeviceType.Metal } }
+            };
+
+        static void ChangeGraphicsApi()
+        {
+
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            PlayerSettings.SetGraphicsAPIs(target, GraphicsDeviceTypeDictionary[target]);
+        }
+#endif
+
+        public void Setup()
+        {
+#if UNITY_EDITOR
+            SetUpWebApp();
+
+            ChangeGraphicsApi();
 #endif
         }
 
-        GameObject CreateMainCamera()
+        static GameObject CreateMainCamera()
         {
             var obj = new GameObject("Camera");
             var camera = obj.AddComponent<Camera>();
@@ -53,7 +80,11 @@ namespace Unity.RenderStreaming
         public IEnumerator OneTimeSetUp()
         {
             _process = new System.Diagnostics.Process();
-            _process.StartInfo.FileName = PathWebapp + "/webserver";
+#if UNITY_EDITOR_WIN
+            _process.StartInfo.FileName = System.IO.Path.Combine(PathWebapp, "webserver.exe");
+#else
+            _process.StartInfo.FileName = System.IO.Path.Combine(PathWebapp, "webserver");
+#endif
             _process.ErrorDataReceived += (sender, ev) =>
             {
                 Debug.Log(ev.Data);
