@@ -22,7 +22,9 @@
 
 ## Web サーバー
 
-`Assets/bin~/` フォルダーに実行ファイルを配置しています。コマンドライン上で起動してください。
+`Edit/Render Streaming/Download web app` メニューアイテムをクリックして、
+あらかじめ用意されている[ウェブサーバー](https://github.com/Unity-Technologies/UnityRenderStreaming/releases)をダウンロードします。
+ダウンロードが終了したら、コマンドライン上で起動してください。
 
 <img src="../images/launch_webserver_explorer.png" width=500 align=center>
 

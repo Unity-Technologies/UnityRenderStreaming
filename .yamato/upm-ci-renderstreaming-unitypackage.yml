@@ -1,0 +1,98 @@
+# .yamato/upm-ci-renderstreaming-unitypackage.yml
+{% metadata_file .yamato/meta/environments.yml %}
+
+editor_version: 2019.3
+
+samples:
+  - name: HDRP
+    project_path: RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x
+    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
+    imported_unitypackage_path: Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
+  - name: URP
+    project_path: RenderStreamingSampleSrc~/RS_URPSampleSrc
+    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
+    imported_unitypackage_path: Assets/Samples/URP/Editor/RenderStreamingURPSimple.unitypackage
+
+project_path: EmptyProjectForTest~
+
+---
+{% for sample in samples %}
+pack_renderstreaming_export_unitypackage_{{ sample.name }}:
+  name : Export Renderstreaming UnityPackage {{ sample.name }}
+  agent:
+    type: Unity::VM
+    image: renderstreaming/ubuntu-18.04:latest
+    flavor: b1.large
+  commands:
+    - sudo pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    - unity-downloader-cli -u {{ editor_version }} -c editor --wait --published
+    - ./export_unity_package.sh ".Editor/Unity" {{ sample.project_path }} ../../{{ sample.unitypackage_path }} "./Logs/Editor02_ExportSample.log"
+  artifacts:
+    unitypackage:
+      paths:
+        - "{{ sample.unitypackage_path }}"
+    logs:  
+      paths:
+        - "Logs/**"
+{% endfor %}
+
+{% for editor in editors %}
+{% for platform in platforms %}
+{% for sample in samples %}
+test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test Renderstreaming sample {{ sample.name }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - {{ platform.copy_sample_command }} com.unity.renderstreaming {{ sample.name }}
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    {% if platform.name == "win" %}
+    - pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    {% else %}
+    - sudo pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple --upgrade
+    {% endif %}
+    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published
+    - {{ platform.run_editor_tests_command }} "{{ platform.unity_path }}" {{ project_path }} "./Logs/Editor01.log" "./Logs/TestResults01.xml"
+    - {{ platform.import_unity_package_command }} "{{ platform.unity_path }}" {{ project_path }} {{ sample.imported_unitypackage_path }} "./Logs/Editor02_ImportSample.log"
+    - {{ platform.run_editor_tests_command }} "{{ platform.unity_path }}" {{ project_path }} "./Logs/Editor03.log" "./Logs/TestResults03.xml"
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
+  artifacts:
+    logs:  
+      paths:
+        - "Logs/**"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-unitypackage.yml#pack_renderstreaming_export_unitypackage_{{ sample.name }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+push_renderstreaming_exported_unitypackage:
+  name : Push Renderstreaming UnityPackage
+  agent:
+    type: Unity::VM
+    image: renderstreaming/ubuntu-18.04:latest
+    flavor: b1.large
+  commands:
+    - git config --global user.email "kazuki@unity3d.com"
+    - git config --global user.name "Kazuki Matsumoto"
+    {% for sample in samples %}
+    - git add {{ sample.unitypackage_path }}
+    {% endfor %}
+    - git commit -m "Update unitypacakge"
+    - git push origin HEAD:$GIT_BRANCH
+  dependencies:
+    {% for sample in samples %}
+    - .yamato/upm-ci-renderstreaming-unitypackage.yml#pack_renderstreaming_export_unitypackage_{{ sample.name }}
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-unitypackage.yml#test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}

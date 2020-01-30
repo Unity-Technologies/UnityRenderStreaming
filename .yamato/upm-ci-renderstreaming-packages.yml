@@ -1,37 +1,12 @@
 # .yamato/upm-ci-renderstreaming-packages.yml
-editors:
-  - version: 2019.1
-  - version: 2019.2  
-#  - version: trunk
-platforms:
-  - name: win
-    type: Unity::VM::GPU
-    # currently the projects depends MSBuild. we should replace CMake
-    # image: package-ci/win10:stable
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+{% metadata_file .yamato/meta/environments.yml %}
+
 packages:
   - name: renderstreaming
     packagename: com.unity.renderstreaming
-    prepack_command: 
     
 ---
 {% for package in packages %}
-{% for platform in platforms %}
-prepack_{{ package.name }}_{{ platform.name }}:
-  name: Prepack {{ package.packagename }} {{ platform.name }}
-  agent:
-    type: {{ platform.type }}
-    image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
-  commands:
-    - {{ package.prepack_command}}
-  artifacts:
-    {{ package.name }}_{{ platform.name }}_prepack: 
-      paths:
-        - "Packages/{{ package.packagename }}/**/*"
-{% endfor %}
-
 pack_{{ package.name }}:
   name: Pack {{ package.packagename }}
   agent:
@@ -45,10 +20,6 @@ pack_{{ package.name }}:
     {{ package.name }}_package:  
       paths:
         - "upm-ci~/packages/**/*"
-  dependencies:
-    {% for platform in platforms %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#prepack_{{ package.name }}_{{ platform.name }}
-    {% endfor %}
 
 {% for editor in editors %}
 {% for platform in platforms %}
@@ -66,8 +37,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       only:
       - "/.*/"
       except:
-      - "master"    
-  
+      - "master"  
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:

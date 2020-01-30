@@ -73,6 +73,10 @@ namespace Unity.RenderStreaming
         }
         public IEnumerator Start()
         {
+            if (captureCamera == null)
+            {
+                captureCamera = Camera.main;
+            }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
@@ -91,6 +95,8 @@ namespace Unity.RenderStreaming
             StartCoroutine(WebRTC.WebRTC.Update());
             StartCoroutine(LoopPolling());
         }
+
+        public Vector2Int GetStreamingSize() { return streamingSize; }
 
         long lastTimeGetOfferRequest = 0;
         long lastTimeGetCandidateRequest = 0;

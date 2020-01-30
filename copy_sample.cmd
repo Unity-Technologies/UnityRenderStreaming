@@ -5,7 +5,6 @@ set sampleName=%2
 
 echo Copying Packages
 robocopy Packages/com.unity.renderstreaming EmptyProjectForTest~/Packages/com.unity.renderstreaming /E
-robocopy Packages/com.unity.webrtc EmptyProjectForTest~/Packages/com.unity.webrtc /E
 
 
 echo Copying %sampleName% Sample from %packageName%
