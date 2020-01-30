@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
-    [UnityPlatform(exclude = new[]{RuntimePlatform.OSXEditor})]
+    [UnityPlatform(exclude = new[]{RuntimePlatform.OSXEditor, RuntimePlatform.WindowsEditor})]
     public class RenderStreamingTest : IPrebuildSetup
     {
         private GameObject _camera;
