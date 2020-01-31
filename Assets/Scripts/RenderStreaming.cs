@@ -77,7 +77,7 @@ namespace Unity.RenderStreaming
             {
                 captureCamera = Camera.main;
             }
-            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
+            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, RenderTextureDepth.DEPTH_24);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
