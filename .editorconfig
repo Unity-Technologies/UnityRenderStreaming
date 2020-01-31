@@ -13,11 +13,10 @@ indent_style = space
 
 # Code files
 [*.{cs,csx,cpp,h,ts}]
-end_of_line = crlf
+end_of_line = lf
 indent_size = 4
-indent_style = space
 insert_final_newline = true
-charset = utf-8-bom
+charset = utf-8
 trim_trailing_whitespace = true
 
 ###############################

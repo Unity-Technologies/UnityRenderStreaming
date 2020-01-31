@@ -1,0 +1,15 @@
+--- manifest.json
++++ manifest.json
+@@ -1,4 +1,11 @@
+-{ 
++{
++  "scopedRegistries": [{
++    "name": "Internal registry",
++    "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
++    "scopes": [
++      "com.unity.webrtc"
++    ]
++  }], 
+   "dependencies": {
+     "com.unity.2d.sprite": "1.0.0",
+     "com.unity.2d.tilemap": "1.0.0",

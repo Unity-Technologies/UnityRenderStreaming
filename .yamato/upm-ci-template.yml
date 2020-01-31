@@ -34,9 +34,16 @@ test_{{ platform.name }}_{{ editor.version }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
+    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
+    {% if platform.name == "win" %}
+    - mkdir upm-ci~\templates\ProjectData~\WebApp
+    - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
+    {% else %}
+    - cp -r WebApp upm-ci~/templates/ProjectData~/
+    {% endif %}
     - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template test -u {{ editor.version }}
-#  TODO:: `upm-ci template test` is failed using the package on the internal registry.
+# TODO:: `upm-ci template test` is failed using the package on the internal registry.
 #  triggers:
 #    branches:
 #      only:
@@ -49,6 +56,8 @@ test_{{ platform.name }}_{{ editor.version }}:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 {% endfor %}
 {% endfor %}
 
