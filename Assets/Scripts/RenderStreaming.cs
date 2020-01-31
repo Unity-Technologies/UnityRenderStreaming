@@ -42,6 +42,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Camera to capture video stream")]
         private Camera captureCamera;
 
+        [SerializeField, Tooltip("Enable or disable hardware encoder")]
+        private bool hardwareEncoderSupport = true;
+
         [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
@@ -56,7 +59,8 @@ namespace Unity.RenderStreaming
 
         public void Awake()
         {
-            WebRTC.WebRTC.Initialize();
+            var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
+            WebRTC.WebRTC.Initialize(encoderType);
             RemoteInput.Initialize();
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
@@ -73,7 +77,7 @@ namespace Unity.RenderStreaming
             {
                 captureCamera = Camera.main;
             }
-            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y);
+            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, RenderTextureDepth.DEPTH_24);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
@@ -130,7 +134,7 @@ namespace Unity.RenderStreaming
             }
             foreach (var offer in obj.offers)
             {
-                RTCSessionDescription _desc = default;
+                RTCSessionDescription _desc;
                 _desc.type = RTCSdpType.Offer;
                 _desc.sdp = offer.sdp;
                 var connectionId = offer.connectionId;
