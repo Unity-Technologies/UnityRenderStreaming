@@ -51,8 +51,11 @@ namespace Unity.RenderStreaming {
 
     [Serializable]
     public class SignalingMessage {
-
+        public string status;
+        public string message;
+        public string sessionId;
         public string connectionId;
+        public string peerId;
         public string sdp;
         public string type;
         public string candidate;
@@ -75,6 +78,7 @@ namespace Unity.RenderStreaming {
         private readonly Uri _uri;
         private readonly float _timeout;
         private string _sessionId;
+        private string _connectionId;
         private WebSocket _webSocket;
         private long _lastTimeGetOfferRequest;
         private long _lastTimeGetCandidateRequest;
@@ -82,9 +86,12 @@ namespace Unity.RenderStreaming {
         private Thread _signalingThread;
         private bool _running;
 
+        public delegate void OnSignedInHandler(Signaling sender);
         public delegate void OnOfferHandler(Signaling sender, DescData e);
         public delegate void OnIceCandidateHandler(Signaling sender, CandidateData e);
 
+
+        public event OnSignedInHandler OnSignedIn;
         public event OnOfferHandler OnOffer;
         public event OnIceCandidateHandler OnIceCandidate;
 
@@ -200,18 +207,55 @@ namespace Unity.RenderStreaming {
 
                 var msg = JsonUtility.FromJson<SignalingMessage>(content);
 
-                if (!string.IsNullOrEmpty(msg.connectionId)) {
+                if (!string.IsNullOrEmpty(msg.type)){
 
+                    if (msg.type == "signin") {
+
+                        if (msg.status == "SUCCESS"){
+
+                            this._connectionId = msg.connectionId;
+                            this._sessionId = msg.peerId;
+                            Debug.Log("Signaling: Slot signed in.");
+
+                            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"ACTIVATE_WEBRTC_ROUTING\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
+
+                            OnSignedIn?.Invoke(this);
+
+                        } else {
+                            Debug.LogError("Signaling: Sign-in error : "+msg.message);
+                        }
+
+
+                    }else if (msg.type == "reconnect") {
+
+                        if (msg.status == "SUCCESS") {
+                            Debug.Log("Signaling: Slot reconnected.");
+
+                        }else {
+                            Debug.LogError("Signaling: Reconnect error : " + msg.message);
+                        }
+
+
+                    }
                     if (msg.type == "offer") {
 
-                        DescData offer = new DescData();
-                        offer.connectionId = msg.connectionId;
-                        offer.sdp = msg.sdp;
+                        if (!string.IsNullOrEmpty(msg.connectionId)){
 
-                        OnOffer?.Invoke(this, offer);
+                            DescData offer = new DescData();
+                            offer.connectionId = msg.connectionId;
+                            offer.sdp = msg.sdp;
 
-                    } else if (!string.IsNullOrEmpty(msg.candidate)) {
+                            OnOffer?.Invoke(this, offer);
 
+                        } else {
+                            Debug.LogError("Signaling: Received message without connectionId");
+                        }
+                       
+                    }
+
+                } else if (!string.IsNullOrEmpty(msg.candidate)) {
+
+                    if (!string.IsNullOrEmpty(msg.connectionId)){
                         CandidateData candidate = new CandidateData();
                         candidate.connectionId = msg.connectionId;
                         candidate.candidate = msg.candidate;
@@ -219,11 +263,10 @@ namespace Unity.RenderStreaming {
                         candidate.sdpMid = msg.sdpMid;
 
                         OnIceCandidate?.Invoke(this, candidate);
+                    } else {
+                        Debug.LogError("Signaling: Received message without connectionId");
                     }
-
-                } else {
-
-                    Debug.LogError("Signaling: Received message without connectionId");
+                   
                 }
 
             } catch (Exception ex) {
@@ -235,9 +278,10 @@ namespace Unity.RenderStreaming {
         private void WSConnected(object sender, EventArgs e) {
 
             Debug.Log("Signaling: WS connected.");
-            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"ACTIVATE_WEBRTC_ROUTING\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
+            this.WSSend("{\"type\" :\"signin\",\"peerName\" :\"Unity Test App\"}");
 
         }
+
 
         private void WSError(object sender, WebSocketSharp.ErrorEventArgs e) {
 
