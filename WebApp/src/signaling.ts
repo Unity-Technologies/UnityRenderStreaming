@@ -7,9 +7,7 @@ const router: Router = express.Router();
 
 class Offer {
   sdp: string;
-
   datetime: number;
-
   constructor(sdp: string, datetime: number) {
     this.sdp = sdp;
     this.datetime = datetime;
@@ -18,9 +16,7 @@ class Offer {
 
 class Answer {
   sdp: string;
-
   datetime: number;
-
   constructor(sdp: string, datetime: number) {
     this.sdp = sdp;
     this.datetime = datetime;
@@ -29,13 +25,9 @@ class Answer {
 
 class Candidate {
   candidate: string;
-
   sdpMLineIndex: number;
-
   sdpMid: string;
-
   datetime: number;
-
   constructor(candidate: string, sdpMLineIndex: number, sdpMid: string, datetime: number) {
     this.candidate = candidate;
     this.sdpMLineIndex = sdpMLineIndex;

@@ -9,7 +9,7 @@ const InputEvent = {
 const KeyboardEventType = {
   Up: 0,
   Down: 1
-}
+};
 
 const PointerPhase = {
   None: 0,
@@ -18,7 +18,7 @@ const PointerPhase = {
   Ended: 3,
   Canceled: 4,
   Stationary: 5
-}
+};
 
 const Keymap = {
   "Space": 1,
@@ -141,9 +141,6 @@ const Keymap = {
   // "IMESelected": 111,
 };
 
-
-let isPlayMode = false;
-
 export function registerKeyboardEvents(videoPlayer) {
   const _videoPlayer = videoPlayer;
   document.addEventListener('keyup', sendKeyUp, false);
@@ -167,8 +164,6 @@ export function registerKeyboardEvents(videoPlayer) {
 
 export function registerMouseEvents(videoPlayer, playerElement) {
   const _videoPlayer = videoPlayer;
-  const _playerElement = playerElement;
-  const _document = document;
 
   // Listen to mouse events
   playerElement.addEventListener('click', sendMouse, false);
@@ -203,7 +198,6 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     }
 
     for (let i = 0; i < touches.length; i++) {
-      touches[i].identifier;
       phrases[i] = changedTouches.find(
         function (e) {
           return e.identifier === touches[i].identifier
