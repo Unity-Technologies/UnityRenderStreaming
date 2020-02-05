@@ -1,6 +1,6 @@
 export default class Signaling {
   headers(sessionId) {
-    if(sessionId != undefined)
+    if(sessionId !== undefined)
     {
       return {'Content-Type': 'application/json', 'Session-Id': sessionId};
     }
