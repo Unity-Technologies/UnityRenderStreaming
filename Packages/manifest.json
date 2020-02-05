@@ -50,7 +50,7 @@
   "lock": {
     "com.unity.webrtc": {
       "revision": "release/1.1.0",
-      "hash": "97a06335330c7f0a92f5e03c658dc89c04a641a6"
+      "hash": "a91572e917c91bfa817e2fc875c00a41316fdd12"
     }
   }
 }
