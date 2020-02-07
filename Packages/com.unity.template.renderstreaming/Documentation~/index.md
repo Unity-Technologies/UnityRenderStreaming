@@ -5,7 +5,7 @@
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/),  and through customization developers can create their own unique solutions.
 
-<img src="./images/multitouch.gif" width=500 align=center>
+![Browser HDRP scene](images/browser_hdrpscene.png)
 
 ## Guide
 
@@ -19,15 +19,13 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 ## Requirements
 
 - This version of Render Streaming is compatible with the following versions of the Unity Editor:
-  - 2019.1
+  - **Unity 2019.3**
 
 > [!NOTE]
-> <`Unity 2018.3` is not supported.>
+> - `Unity 2018.3` is not supported.
+> - `Unity 2019.2` is not work correctly because it doesn't support HDRP 5.x
 
-> [!NOTE]
-> <`Unity 2019.2` is not work correctly because it doesn't support HDRP 5.x>
-
-- Currently the software only supports `windows64`.
+- Currently the software supports `Windows x64`.
 
 - Graphics API version only supports `Direct3D11`.
 

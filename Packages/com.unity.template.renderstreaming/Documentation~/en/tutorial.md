@@ -25,7 +25,7 @@ Put the packages in a dedicated folder in order to use them as a project templat
 
 The project template can be selected as a template when creating a new Unity project. 
 
-<img src="../images/template_in_unityhub.png" width=600 align=center>
+![Template unityhub](../images/template_in_unityhub.png)
 
 When using the template package, put the 2 tgz files in the following folders. 
 
@@ -35,15 +35,15 @@ Move `com.unity.template.renderstreaming-x.x.x-preview.tgz` to this folder
  <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates
 ```
 
-<img src="../images/install_renderstreaming_package.png" width=600 align=center>
+![Install Render Streaming package](../images/install_renderstreaming_package.png)
 
 Move `com.unity.webrtc-x.x.x-preview.tgz` and `com.unity.renderstreaming-x.x.x-preview.tgz` to this folder
 
-```&lt;Unity Editor Root&gt;/Data/Resources/PackageManager/Editor
+```
 <Unity Editor Root>/Data/Resources/PackageManager/Editor
 ```
 
-<img src="../images/install_webrtc_package.png" width=600 align=center>
+![Install WebRTC package](../images/install_webrtc_package.png)
 
 After moving the packages, open the Unity Hub and create a new project. Confirm that `Render Streaming` has been added as a template. 
 
@@ -51,11 +51,11 @@ After moving the packages, open the Unity Hub and create a new project. Confirm 
 
 The web server's .exe file is located under `Assets/~bin/`. Running the file will bring up the command prompt. 
 
-<img src="../images/launch_webserver_explorer.png" width=500 align=center>
+![Launch webserver explorer](../images/launch_webserver_explorer.png)
 
 Confirm that the following log displays in the command prompt. The web server's address should be displayed. Details on web  server command options can be found on the [Web server](webserver_EN.md) page.
 
-<img src="../images/launch_webserver_cmd.png" width=400 align=center>
+![Launch webserver cmd](../images/launch_webserver_cmd.png)
 
 The web server's source code is located in the `WebApp` folder. Additionally, [Node.js](https://nodejs.org) must be installed in order to run the source code. Download the installer from the website.
 
@@ -63,11 +63,11 @@ The web server's source code is located in the `WebApp` folder. Additionally, [N
 
 Open the `Assets/Scenes/samplescene.unity` sample scene.
 
-<img src="../images/hdrpscene.png" width=600 align=center>
+![HDRP scene](../images/hdrpscene.png)
 
 Select `RenderStreaming` in the Hierarchy. Check the `Render Streaming`components in the Inspector. 
 
-<img src="../images/renderstreaming_inspector.png" width=300 align=center>
+![Render Streaming inspector](../images/renderstreaming_inspector.png)
 
 Set the address of the web server you just activated under the `URL Signaling` parameter. For details on the various settings in the Inspector, see the Render Streaming class [reference](class-renderstreaming.md). 
 
@@ -76,6 +76,6 @@ Set the address of the web server you just activated under the `URL Signaling` p
 Launch one of the [supported browsers](../index.md) from the list. 
 Access the Web server's address. The following web page will be displayed. 
 
-<img src="../images/browser_hdrpscene.png" width=600 align=center>
+![Browser HDRP scene](../images/browser_hdrpscene.png)
 
 If this doesn't happen, it's possible that the browser version is too old. Be sure to install the latest version. 

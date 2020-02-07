@@ -1,6 +1,6 @@
 # Tutorial
 
-Currently, there is two samples:
+Currently, there are two samples:
 
 ### HDRP sample
 
