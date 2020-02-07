@@ -63,6 +63,13 @@ namespace Unity.RenderStreaming {
         public int sdpMLineIndex;
     }
 
+    [Serializable]
+    public class RoutedMessage<T> {
+        public string from;
+        public string to;
+        public T message;
+    }
+
     [Flags]
     enum SslProtocolsHack {
         Tls = 192,
@@ -138,8 +145,18 @@ namespace Unity.RenderStreaming {
             data.sdpMLineIndex = candidate.sdpMLineIndex;
             data.sdpMid = candidate.sdpMid;
 
-            if (_uri.Scheme == "http" || _uri.Scheme == "https") HTTPPost("signaling/candidate", data);
-            else WSSend(data);
+            if (_uri.Scheme == "http" || _uri.Scheme == "https") {
+
+                HTTPPost("signaling/candidate", data);
+
+            } else {
+
+                RoutedMessage<CandidateData> routedMessage = new RoutedMessage<CandidateData>();
+                routedMessage.to = connectionId;
+                routedMessage.message = data;
+
+                WSSend(routedMessage);
+            }
 
         }
 
@@ -150,8 +167,16 @@ namespace Unity.RenderStreaming {
             data.sdp = answer.sdp;
             data.type = "answer";
 
-            if (_uri.Scheme == "http" || _uri.Scheme == "https") HTTPPost("signaling/answer", data);
-            else WSSend(data);
+            if (_uri.Scheme == "http" || _uri.Scheme == "https") {
+                HTTPPost("signaling/answer", data);
+            } else {
+
+                RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
+                routedMessage.to = connectionId;
+                routedMessage.message = data;
+
+                WSSend(routedMessage);
+            }
 
         }
 
@@ -205,11 +230,18 @@ namespace Unity.RenderStreaming {
 
             try {
 
-                var msg = JsonUtility.FromJson<SignalingMessage>(content);
+                var routedMessage = JsonUtility.FromJson<RoutedMessage<SignalingMessage>>(content);
+
+                SignalingMessage msg;
+                if (!string.IsNullOrEmpty(routedMessage.from)) {
+                    msg = routedMessage.message;
+                } else {
+                    msg = JsonUtility.FromJson<SignalingMessage>(content);
+                }
 
                 if (!string.IsNullOrEmpty(msg.type)){
 
-                    if (msg.type == "signin") {
+                    if (msg.type == "signIn") {
 
                         if (msg.status == "SUCCESS"){
 
@@ -217,7 +249,7 @@ namespace Unity.RenderStreaming {
                             this._sessionId = msg.peerId;
                             Debug.Log("Signaling: Slot signed in.");
 
-                            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"ACTIVATE_WEBRTC_ROUTING\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
+                            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"activateWebRTCRouting\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
 
                             OnSignedIn?.Invoke(this);
 
@@ -239,32 +271,32 @@ namespace Unity.RenderStreaming {
                     }
                     if (msg.type == "offer") {
 
-                        if (!string.IsNullOrEmpty(msg.connectionId)){
+                        if (!string.IsNullOrEmpty(routedMessage.from)){
 
                             DescData offer = new DescData();
-                            offer.connectionId = msg.connectionId;
+                            offer.connectionId = routedMessage.from;
                             offer.sdp = msg.sdp;
 
                             OnOffer?.Invoke(this, offer);
 
                         } else {
-                            Debug.LogError("Signaling: Received message without connectionId");
+                            Debug.LogError("Signaling: Received message from unknown peer");
                         }
                        
                     }
 
                 } else if (!string.IsNullOrEmpty(msg.candidate)) {
 
-                    if (!string.IsNullOrEmpty(msg.connectionId)){
+                    if (!string.IsNullOrEmpty(routedMessage.from)){
                         CandidateData candidate = new CandidateData();
-                        candidate.connectionId = msg.connectionId;
+                        candidate.connectionId = routedMessage.from;
                         candidate.candidate = msg.candidate;
                         candidate.sdpMLineIndex = msg.sdpMLineIndex;
                         candidate.sdpMid = msg.sdpMid;
 
                         OnIceCandidate?.Invoke(this, candidate);
                     } else {
-                        Debug.LogError("Signaling: Received message without connectionId");
+                        Debug.LogError("Signaling: Received message from unknown peer");
                     }
                    
                 }
@@ -278,7 +310,7 @@ namespace Unity.RenderStreaming {
         private void WSConnected(object sender, EventArgs e) {
 
             Debug.Log("Signaling: WS connected.");
-            this.WSSend("{\"type\" :\"signin\",\"peerName\" :\"Unity Test App\"}");
+            this.WSSend("{\"type\" :\"signIn\",\"peerName\" :\"Unity Test App\"}");
 
         }
 
