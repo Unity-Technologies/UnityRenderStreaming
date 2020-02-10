@@ -28,11 +28,12 @@ Unity 2019.3 で利用可能です。
 
 ### 利用可能な OS は？
 
-Windows10 x64, Linux x64, MacOS で利用可能です。他の OS にも順次対応予定です。
+Windows10 x64, Linux x64, MacOS で利用可能です。
+UWP(Universal Windows Platform), iOS や Android などのモバイル端末には未対応です。 
 
 ### ハードウェアの制約は？
 
-ハードウェアエンコードについては、 NVCodec を利用しているために、 NVIDIA のグラフィックボードが必須になります。NVIDIA の[サイト](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)で、NVCodec が利用可能なグラフィックボードであることを確認してください。
+ハードウェアエンコードについては、 **NVCodec** を利用しているために、 NVIDIA のグラフィックボードが必須になります。NVIDIA の[サイト](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)で、NVCodec が利用可能なグラフィックボードであることを確認してください。
 
 ### 利用可能なブラウザーは？
 
@@ -50,15 +51,15 @@ Windows10 x64, Linux x64, MacOS で利用可能です。他の OS にも順次�
 
 ### 複数のカメラの映像を配信することは可能？
 
-現在未対応です。
+現在未対応です。次回のバージョンで対応する予定です。
 
 ### 画像品質を上げるには？
 
-画像品質はネットワーク品質に依存します。
+画像解像度をインスペクタで指定することは可能です。しかし、ネットワークの状況によって品質が変化することに注意してください。
 
 ### リアルタイムレイトレーシングには対応している？
 
-現在未対応です。
+現在未対応です。次回のバージョンで対応する予定です。
 
 ## サポートに関する質問
 
