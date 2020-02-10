@@ -1,4 +1,4 @@
-# Unity Render Streaming
+# Unity Render Streaming template
 
 - [Japanese](jp/index.md)
 

@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.1-green.svg?style=flat-square" alt="unity 2019.1">
+<img src="https://img.shields.io/badge/unity-2019.3-green.svg?style=flat-square" alt="unity 2019.3">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://github.com/Unity-Technologies/com.unity.webrtc) to create their own unique solutions. 
@@ -14,7 +14,7 @@ This repository manages 2 packages. Details can be found in the `README.md` for 
 
 ## Operating Environment
 
-This solution is compatible with Unity 2019.1. Currently it only runs in a Windows 64-bit environment.
+This solution is compatible with Unity 2019.3.
 Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so it is incompatible with this solution.
 
 ### Supported Browsers
