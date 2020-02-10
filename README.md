@@ -19,12 +19,21 @@ This repository manages 2 packages. Details can be found in the `README.md` for 
 | [release/1.2.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | Stable         |
 | [release/2.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | In development |
 
-
-
 ## Operating Environment
 
 This solution is compatible with `Unity 2019.3`.
 `Unity 2018.3` relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so it is incompatible with this solution.
+
+| Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
+| ----------- | ------------ | ------------------------------------------------- | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
+| Windows x64 | DirectX12    |                                                   |                    | 
+| Windows x64 | OpenGL       |                                                   |                    |
+| Windows x64 | Vulkan       |                                                   |                    | 
+| Linux x64   | OpenGL       | :white_check_mark: (Require NVIDIA Graphics card) |                    |
+| Linux x64   | Vulkan       |                                                   |                    |
+| MacOS       | OpenGL       |                                                   |                    |
+| MacOS       | Metal        |                                                   | :white_check_mark: |
 
 ### Supported Browsers
 
