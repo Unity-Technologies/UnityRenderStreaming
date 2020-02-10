@@ -12,6 +12,15 @@ This repository manages 2 packages. Details can be found in the `README.md` for 
 - [com.unity.template.renderstreaming](Packages/com.unity.template.renderstreaming/README.md)
 - [com.unity.renderstreaming](Packages/com.unity.renderstreaming/README.md)
 
+## Branch
+
+| Branch                                                                                         | Status         |
+| ---------------------------------------------------------------------------------------------- | -------------- |
+| [release/1.2.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | Stable         |
+| [release/2.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | In development |
+
+
+
 ## Operating Environment
 
 This solution is compatible with `Unity 2019.3`.
@@ -61,11 +70,11 @@ Browser support depends on the status of each browser's WebRTC support.
 
 ## Roadmap
 
-|Version|libwebrtc version|Focus|
-|-------|-----|-----|
-|`1.0`|[M72](https://groups.google.com/d/msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)|- First release |
-|`2.0`|[M80](https://groups.google.com/d/msg/discuss-webrtc/Ozvbd0p7Q1Y/M4WN2cRKCwAJ)|- Multi camera <br>- DirectX12 (DXR) Support |
-|`2.1`||- AMD graphics hw encoder <br>- UWP platform Support |
+| Version | libwebrtc version                                                            | Focus                                                |
+| ------- | ---------------------------------------------------------------------------- | ---------------------------------------------------  |
+| `1.0`   |[M72](https://groups.google.com/d/msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)| - First release                                      |
+| `2.0`   |[M80](https://groups.google.com/d/msg/discuss-webrtc/Ozvbd0p7Q1Y/M4WN2cRKCwAJ)| - Multi camera <br>- DirectX12 (DXR) Support         |
+| `2.1`   |                                                                              | - AMD graphics hw encoder <br>- UWP platform Support |
 
 ## FAQ
 
