@@ -18,7 +18,7 @@ Unity Render Streaming テンプレートパッケージの利用を開始する
 ダウンロードしたパッケージを所定のフォルダーに移動することで、**プロジェクトテンプレート**として利用することが可能です。
 プロジェクトテンプレートとは、Unity で新規プロジェクトを作成するときに設定済みの Unity プロジェクトを選択できる機能です。
 
-テンプレートパッケージを利用する際は、次の 2 つの tgz ファイルをそれぞれ以下のフォルダーに配置します。
+テンプレートパッケージを利用する際は、tgz ファイルをそれぞれ以下のフォルダーに配置します。
 
 `com.unity.template.renderstreaming-x.x.x-preview.tgz` を以下のフォルダーに移動
 
@@ -28,29 +28,21 @@ Unity Render Streaming テンプレートパッケージの利用を開始する
 
 ![Install Render Streaming package](../images/install_renderstreaming_package.png)
 
-`com.unity.webrtc-x.x.x-preview.tgz` と`com.unity.renderstreaming-x.x.x-preview.tgz`を以下のフォルダーに移動
-
-```&lt;Unity Editor Root&gt;/Data/Resources/PackageManager/Editor
-<Unity Editor Root>/Data/Resources/PackageManager/Editor
-```
-
-![Install WebRTC package](../images/install_webrtc_package.png)
-
 パッケージを移動後、Unity Hub を起動し新規プロジェクトを作成します。テンプレートに `Render Streaming` が追加されていることを確認してください。
 
 ![Template in Unity Hub](../images/template_in_unityhub.png)
 
-### Web サーバーの起動
+### Web アプリケーションの起動
 
-Web サーバーの実行ファイルは `Assets/~bin` 配下にあります。このファイルを実行するとコマンドプロンプトが表示されます。
+Web アプリケーションは メニューから **Edit / Render Streaming / Download web app** を選択してください。
 
-![Launch Web Server explorer](../images/launch_webserver_explorer.png)
+![Menu download webapp](../images/menu_download_webapp.png)
 
-下記のログがコマンドプロンプトに表示されます。Web サーバーのアドレスもここに表示されています。Web サーバーコマンドのオプションは [Web サーバー](webserver.md)のページにまとめられています。
+このファイルを実行するとコマンドプロンプトが表示されます。下記のログがコマンドプロンプトに表示されます。Web アプリケーションのアドレスもここに表示されています。コマンドオプションは [パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/webserver.html) を確認してください。
 
 ![Launch Web Server command](../images/launch_webserver_cmd.png)
 
-Web サーバーのソースコードは [WebApp](WebApp) に配置しています。なお、ソースコードを実行するためには [Node.js](https://nodejs.org) をインストールする必要があります。公式サイトからインストーラーをダウンロードしてインストールしてください。
+Web アプリケーションのソースコードは [WebApp](WebApp) に配置しています。このソースコードを改変することで、ウェブページを自由にカスタマイズすることができます。
 
 ### Unity 側の設定
 
@@ -58,7 +50,7 @@ Web サーバーのソースコードは [WebApp](WebApp) に配置していま�
 
 ![HDRP scene](../images/hdrpscene.png)
 
-ヒエラルキービューの `RenderStreaming` を選択してください。インスペクタビューの `Render Streaming` コンポーネントを確認してください。
+ヒエラルキービューの `RenderStreaming` を選択し、インスペクタビューの `Render Streaming` コンポーネントを確認してください。
 
 ![Render Streaming inspector](../images/renderstreaming_inspector.png)
 

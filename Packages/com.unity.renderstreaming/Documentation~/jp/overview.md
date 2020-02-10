@@ -1,10 +1,10 @@
 # 概要
 
-Render Streaming のシステムの概観について説明します。
+Unity Render Streaming のシステムの概観について説明します。
 
 ### システム構成
 
-Render Streaming のシステムは以下の 3 つで構成されます。
+Unity Render Streaming のシステムは以下の 3 つで構成されます。
 
 - **Unity** （エディターもしくはアプリケーション）
 - **Web サーバー**
@@ -12,7 +12,8 @@ Render Streaming のシステムは以下の 3 つで構成されます。
 
 ![Render Streaming overview](../images/renderstreaming_overview.png)
 
-Unity Render Streaming では、**Unity** と **Web ブラウザー** が P2P ネットワークを構成し、UDP/IP を利用して通信を行います。**Web サーバー** は Web ブラウザーと Unity の情報のやり取りを仲介します。この情報のやり取りのことをシグナリングと呼びます。
+Unity Render Streaming では、**Unity** と **Web ブラウザー** が P2P ネットワークを構成し、UDP/IP を利用して通信を行います。**Web サーバー** は Web ブラウザーと Unity の情報のやり取りを仲介します。この情報のやり取りのことを **シグナリング(signaling)** と呼びます。
+シグナリングによってピア間の通信経路が確立され、映像や音声、テキストやバイナリデータを相互にやり取りすることができるようになります。
 
 > [!WARNING]
 > 現在、以下の機能に対応していません。
@@ -22,7 +23,7 @@ Unity Render Streaming では、**Unity** と **Web ブラウザー** が P2P �
 
 ### シグナリング処理の流れ
 
-シグナリング処理の流れを説明します。
+Unity Render Streaming におけるシグナリング処理の流れを説明します。
 
 ![Render Streaming sequence](../images/renderstreaming_sequence.png)
 
@@ -35,9 +36,9 @@ Unity Render Streaming では、**Unity** と **Web ブラウザー** が P2P �
 7. Unity から Web サーバーに **ICE Candidate** を送信します。
 8. Web ブラウザーから Web サーバーに問い合わせて、未処理の **ICE Candidate** を取得します。
 
-### パッケージ構成
+### パッケージの構成
 
-Render Steraming パッケージには以下の内容が含まれています。
+Unity Render Steraming パッケージは、以下の3つのコンポーネントで構成されています。
 
 - **WebRTC パッケージ**
 - **サンプルコード / アセット**
@@ -47,9 +48,9 @@ Render Steraming パッケージには以下の内容が含まれています。
 
 ### WebRTC パッケージ
 
-WebRTC の C# API を提供します。
-Unity Render Streaming パッケージとは独立したパッケージとして管理されています。
-詳細については、 [WebRTC パッケージ](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/manual/jp/index.html) のドキュメントを参照してください。
+**WebRTC** の C# API を提供します。
+このパッケージは、Unity Render Streaming パッケージとは独立したパッケージとして管理されています。
+詳細は [WebRTC パッケージ](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/manual/jp/index.html) のドキュメントを確認してください。
 
 ![WebRTC package manager](../images/webrtc_package_manager.png)
 

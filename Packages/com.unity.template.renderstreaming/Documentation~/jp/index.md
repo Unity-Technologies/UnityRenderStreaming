@@ -10,7 +10,7 @@
 
 > [!NOTE]
 > 既存のプロジェクトに対してストリーミング機能を追加する場合は、テンプレートではなく、Package Manager から `Unity Render Streaming` パッケージをインストールしてください。
-> 詳細は[パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest)を確認してください。
+> 詳細は[パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)を確認してください。
 
 ## 動作環境
 
