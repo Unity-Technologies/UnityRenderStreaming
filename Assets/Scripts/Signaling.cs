@@ -249,7 +249,7 @@ namespace Unity.RenderStreaming {
                             this._sessionId = msg.peerId;
                             Debug.Log("Signaling: Slot signed in.");
 
-                            this.WSSend("{\"type\" :\"furioos\",\"task\" : \"activateWebRTCRouting\",\"appType\" : \"RenderStreaming\",\"appName\" :\"Unity Test App\"}");
+                            this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
 
                             OnSignedIn?.Invoke(this);
 
@@ -288,6 +288,7 @@ namespace Unity.RenderStreaming {
                 } else if (!string.IsNullOrEmpty(msg.candidate)) {
 
                     if (!string.IsNullOrEmpty(routedMessage.from)){
+
                         CandidateData candidate = new CandidateData();
                         candidate.connectionId = routedMessage.from;
                         candidate.candidate = msg.candidate;
