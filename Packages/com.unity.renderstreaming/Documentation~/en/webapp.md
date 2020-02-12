@@ -14,6 +14,7 @@ The following browsers are compatible:
 - Chrome
 - Safari
 - Firefox
+- Microsoft edge (chrominium based)
 - iOS Safari
 - Chrome for Android
 
@@ -29,13 +30,13 @@ After downloading, run it from the command line.
 
 ### Command Options
 
-|Option|Details|Default|
-|-------|-----|-------|
-|-h --help|Show the help menu||
-|-p —port \<number\>|Set the port number|80|
-|-s --secure|Use https||
-|-k —keyfile \<path\>|Designate the private key file to use with https|server.key|
-|-c —certfile \<path\>|Designate the certification file to use with https|server.cert|
+| Option                | Details 											 | Default	   |
+| --------------------- | -------------------------------------------------- | ----------- |
+| -h --help             | Show the help menu                                 |             |
+| -p —port \<number\>   | Set the port number                                | 80          |
+| -s --secure           | Use https                                          |             |
+| -k —keyfile \<path\>  | Designate the private key file to use with https   | server.key  |
+| -c —certfile \<path\> | Designate the certification file to use with https | server.cert |
 
 ### Command Examples
 

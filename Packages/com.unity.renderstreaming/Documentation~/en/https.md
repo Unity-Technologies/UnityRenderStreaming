@@ -1,114 +1,100 @@
-# **Configure Self-Signed Credentials for https**
+# Configure Self-Signed Credentials for https
 
-## **Contents**
+## Prerequisites
 
-* [Prerequisites](#Prerequisites)
-  * [Windows](#Windows)
-    * [1. Chocolatey](#1.-Chocolatey)
-    * [2. OpenSSL](#2.-OpenSSL)
-* [Step 1: Create a Private Key](#Step-1:-Create-a-Private-Key)
-* [Step 2: Create a Certificate File](#Step-2:-Create-a-Certificate-File)
-* [Step 3: Get Windows to Trust the Certificate Authority (CA)](#Step-3:-Get-Windows-to-Trust-the-Certificate-Authority-(CA))
-* [Step 4: Create a Local Domain Site](#Step-4:-Create-a-Local-Domain-Site)
-* [Step 5: Create a Private Key (client-1.local.key) and Certificate Request (client-1.local.csr) for the New Domain](#Step-5:-Create-a-Private-Key-(client-1.local.key)-and-Certificate-Request-(client-1.local.csr)-for-the-New-Domain)
-* [Step 6: Issue the New Certificate (client-1.local.crt)](#Step-6:-Issue-the-New-Certificate-(client-1.local.crt))
-* [Step 7: Run the webserver.exe](#Step-7:-Run-the-webserver.exe)
+### Windows
 
-## **Prerequisites**
+### Chocolatey
 
-### **Windows**
+Chocolatey is a package manager for Windows (like apt-get or yum but for Windows).
+Link to install Chocolatey: [https://chocolatey.org/install](https://chocolatey.org/install)
 
-#### ***1. Chocolatey***
+### OpenSSL
 
-* Chocolatey is a package manager for Windows (like apt-get or yum but for Windows).
-* Link to install Chocolatey: [https://chocolatey.org/install](https://chocolatey.org/install)
+OpenSSL is a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols.
+Installation:
 
-#### ***2. OpenSSL***
+```terminal
+choco install openssl.light
+```
 
-* OpenSSL is a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols.
-* Installation:
+## Step 1: Create a Private Key
 
-    ```terminal
-    choco install openssl.light
-    ```
+Run the command:
 
-## **Step 1: Create a Private Key**
+```terminal
+"C:\Program Files\OpenSSL\bin\openssl.exe" genrsa -des3 -out rootSSL.key 2048
+```
 
-* Run the command:
+Enter a Password:
 
-    ```terminal
-    "C:\Program Files\OpenSSL\bin\openssl.exe" genrsa -des3 -out rootSSL.key 2048
-    ```
+```terminal
+Enter pass phrase for rootSSL.key:
+```
 
-* Enter a Password:
+Verify the Password:
 
-    ```terminal
-    Enter pass phrase for rootSSL.key:
-    ```
+```terminal
+Verifying - Enter pass phrase for rootSSL.key:
+```
 
-* Verify the Password:
+## Step 2: Create a Certificate File
 
-    ```terminal
-    Verifying - Enter pass phrase for rootSSL.key:
-    ```
+Run the command:
 
-## **Step 2: Create a Certificate File**
+```terminal
+"C:\Program Files\OpenSSL\bin\openssl.exe" req -x509 -new -nodes -key rootSSL.key -sha256 -days 1024 -out rootSSL.pem
+```
 
-* Run the command:
+Enter the Password:
 
-    ```terminal
-    "C:\Program Files\OpenSSL\bin\openssl.exe" req -x509 -new -nodes -key rootSSL.key -sha256 -days 1024 -out rootSSL.pem
-    ```
+```terminal
+Enter pass phrase for rootSSL.key:
+```
 
-* Enter the Password:
+Enter your Country's 2-Letter Code:
 
-    ```terminal
-    Enter pass phrase for rootSSL.key:
-    ```
+```terminal
+Country Name (2 letter code) [AU]:CA
+```
 
-* Enter your Country's 2-Letter Code:
+Enter the name of your state/province:
 
-    ```terminal
-    Country Name (2 letter code) [AU]:CA
-    ```
+```terminal
+State or Province Name (full name) [Some-State]:Quebec
+```
 
-* Enter the name of your state/province:
+Enter the name of your locality (city):
 
-    ```terminal
-    State or Province Name (full name) [Some-State]:Quebec
-    ```
+```terminal
+Locality Name (eg, city) []:montreal
+```
 
-* Enter the name of your locality (city):
+Enter the name of your organization:
 
-    ```terminal
-    Locality Name (eg, city) []:montreal
-    ```
+```terminal
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Unity
+```
 
-* Enter the name of your organization:
+Enter the name of your business unit within the organization:
 
-    ```terminal
-    Organization Name (eg, company) [Internet Widgits Pty Ltd]:Unity
-    ```
+```terminal
+Organizational Unit Name (eg, section) []:Verticals
+```
 
-* Enter the name of your business unit within the organization:
+Enter your computer's `fully qualified domain name` or your name:
 
-    ```terminal
-    Organizational Unit Name (eg, section) []:Verticals
-    ```
+```terminal
+Common Name (e.g. server FQDN or YOUR name) []:Tony
+```
 
-* Enter your computer's `fully qualified domain name` or your name:
+Enter your e-mail address:
 
-    ```terminal
-    Common Name (e.g. server FQDN or YOUR name) []:Tony
-    ```
+```terminal
+Email Address []:anthonyma@unity3d.com
+```
 
-* Enter your e-mail address:
-
-    ```terminal
-    Email Address []:anthonyma@unity3d.com
-    ```
-
-## **Step 3: Get Windows to Trust the Certificate Authority (CA)**
+## Step 3: Get Windows to Trust the Certificate Authority (CA)
 
 1. Search for and run `Microsoft Management Console (mmc.exe)`
 
@@ -158,7 +144,7 @@
 
     ![Add/Remove Snap-in...](../images/https_step3_12.png)
 
-## **Step 4: Create a Local Domain Site**
+## Step 4: Create a Local Domain Site
 
 1. Add `127.0.0.1 client-1.local` to your `C:\Windows\System32\drivers\etc\hosts` file.
 
@@ -190,9 +176,9 @@
 
     ```
 
-## **Step 5: Create a Private Key (client-1.local.key) and Certificate Request (client-1.local.csr) for the New Domain**
+## Step 5: Create a Private Key (client-1.local.key) and Certificate Request (client-1.local.csr) for the New Domain
 
-* Execute this command ensuring the following fields are the same as the ones you used in [Step 1: Create a Private Key](#Step-1:-Create-a-Private-Key):
+Execute this command ensuring the following fields are the same as the ones you used in **Step 1: Create a Private Key**:
   * C=CA (Country)
   * ST=Quebec (State)
   * L=montreal (Locale)
@@ -201,28 +187,28 @@
   * CN=Tony (Name)
   * email<span>Address=anthonyma@unity3d.</span>com (E-Mail)
 
-    ```terminal
-    "C:\Program Files\OpenSSL\bin\openssl.exe" req -new -sha256 -nodes -out client-1.local.csr -newkey rsa:2048 -keyout client-1.local.key -subj "/C=CA/ST=Quebec/L=montreal/O=Unity/OU=Verticals/CN=Tony/emailAddress=anthonyma@unity3d.com"
-    ```
+```terminal
+"C:\Program Files\OpenSSL\bin\openssl.exe" req -new -sha256 -nodes -out client-1.local.csr -newkey rsa:2048 -keyout client-1.local.key -subj "/C=CA/ST=Quebec/L=montreal/O=Unity/OU=Verticals/CN=Tony/emailAddress=anthonyma@unity3d.com"
+```
 
-## **Step 6: Issue the New Certificate (client-1.local.crt)**
+## Step 6: Issue the New Certificate (`client-1.local.crt`)
 
-* Execute the command:
+Execute the command:
 
-    ```terminal
-    "C:\Program Files\OpenSSL\bin\openssl.exe" x509 -req -in client-1.local.csr -CA rootSSL.pem -CAkey rootSSL.key -CAcreateserial -out client-1.local.crt -days 500 -sha256 -extensions "authorityKeyIdentifier=keyid,issuer\n basicConstraints=CA:FALSE\n keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\n  subjectAltName=DNS:client-1.local"
-    ```
+```terminal
+"C:\Program Files\OpenSSL\bin\openssl.exe" x509 -req -in client-1.local.csr -CA rootSSL.pem -CAkey rootSSL.key -CAcreateserial -out client-1.local.crt -days 500 -sha256 -extensions "authorityKeyIdentifier=keyid,issuer\n basicConstraints=CA:FALSE\n keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\n  subjectAltName=DNS:client-1.local"
+```
 
-* Enter the password:
+Enter the password:
 
-    ```terminal
-    Enter pass phrase for rootSSL.key:
-    ```
+```terminal
+Enter pass phrase for rootSSL.key:
+```
 
-## **Step 7: Run the webserver.exe**
+## Step 7: Run the `webserver.exe`
 
-* Execute the command:
+Execute the command:
 
-    ```terminal
-    .\webserver.exe -s -p 443 -k client-1.local.key  -c client-1.local.crt
-    ```
+```terminal
+.\webserver.exe -s -p 443 -k client-1.local.key  -c client-1.local.crt
+```

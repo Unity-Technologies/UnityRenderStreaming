@@ -14,6 +14,7 @@
 - Chrome
 - Safari
 - Firefox
+- Microsoft edge (chrominium based)
 - iOS Safari
 - Chrome for Android
 

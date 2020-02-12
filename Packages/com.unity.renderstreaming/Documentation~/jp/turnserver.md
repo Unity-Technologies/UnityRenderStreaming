@@ -23,8 +23,7 @@ TURN サーバが利用するポートを公開する必要があるので、フ
 | TCP      | 32355-65535, 3478-3479 |
 | UDP      | 32355-65535, 3478-3479 |
 
-<img src="../images/turn-firewall-rules.png" width=800 align=center>
-
+![TURN firewall rules](../images/turn-firewall-rules.png)
 
 ### coturn のインストール
 
@@ -118,5 +117,4 @@ config.iceServers = [{
 
 `Render Streaming` インスペクタの `Ice Servers` に TURN サーバの設定を追加してください。
 
-<img src="../images/turn-renderstreaming-inspector.png" width=400 align=center>
-
+![TURN Render Streaming inspector](../images/turn-renderstreaming-inspector.png)

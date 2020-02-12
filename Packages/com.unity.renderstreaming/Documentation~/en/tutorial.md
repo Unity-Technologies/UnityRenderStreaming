@@ -4,11 +4,11 @@ Currently, there are two samples:
 
 ### HDRP sample
 
-Importing this sample will automatically install and setup our HDRP sample assets along with the HDRP *(com.unity.render-pipelines.high-definition)* package.
+Importing this sample will automatically install and setup our HDRP sample assets along with the [HDRP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest) *(com.unity.render-pipelines.high-definition)* package.
 
 ### URP sample
 
-Importing this sample will automatically install and setup our URP sample assets along with the URP *(com.unity.render-pipelines.universal)* package.
+Importing this sample will automatically install and setup our URP sample assets along with the [URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) *(com.unity.render-pipelines.universal)* package.
 
 
 ## Simple Tutorial on Windows
