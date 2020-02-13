@@ -2,7 +2,7 @@
 
 **Unity Render Streaming** は、ブラウザー上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレーターや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
 
-このパッケージは、HDRP のシーンに対して Unity Render Streaming の利用に必要な設定を加えたテンプレートパッケージです。
+このパッケージは、HDRP のシーンに対して Unity Render Streaming の利用に必要な設定を加えたテンプレートパッケージです。すぐに試してみたい方は[チュートリアルドキュメント](tutorial.md)をご覧ください。より技術的な詳細は Unity Render Streaming の[パッケージドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)をご覧ください。
 
 ![Browser HDRP scene](../images/browser_hdrpscene.png)
 
@@ -32,12 +32,12 @@
 Unity Render Streaming は **WebRTC テクノロジー** を利用しており、 WebRTC に対応しているブラウザーと組み合わせて利用することができます。
 以下のブラウザーについては動作を確認しています。
 
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Desktop Microsoft Edge (Chromium 版)
-- Android Chrome
-- iOS Safari
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。

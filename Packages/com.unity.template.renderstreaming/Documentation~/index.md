@@ -1,7 +1,10 @@
 # Unity Render Streaming template
 
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
+
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/),  and through customization developers can create their own unique solutions.
+
+Please take a look at [the tutorial document](en/tutorial.md) if you want to try it right away. Also, confirm [the package document](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/index.html) if you want to know about technical detail.
 
 ![Browser HDRP scene](images/browser_hdrpscene.png)
 
@@ -22,12 +25,12 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 
 ### Browsers
 
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Desktop Microsoft Edge (Chromium-based)
-- Android Chrome
-- iOS Safari
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
 
 ## Other languages
 

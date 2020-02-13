@@ -176,7 +176,7 @@ Email Address []:anthonyma@unity3d.com
 
     ```
 
-## Step 5: Create a Private Key (client-1.local.key) and Certificate Request (client-1.local.csr) for the New Domain
+## Step 5: Create a Private Key (`client-1.local.key`) and Certificate Request (`client-1.local.csr`) for the New Domain
 
 Execute this command ensuring the following fields are the same as the ones you used in **Step 1: Create a Private Key**:
   * C=CA (Country)

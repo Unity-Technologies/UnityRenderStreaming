@@ -12,16 +12,16 @@
 > [!NOTE]
 > このテンプレートは `HDRP 7.1` を使用しているため、古い Unity バージョンでは動作しません。
 
-| Platform    | Graphics API | Hardware Encoder                                     | Software Encoder   |
-| ----------- | ------------ | ---------------------------------------------------- | ------------------ |
-| Windows x64 | DirectX11    | :white_check_mark: (NVIDIA のグラフィックスカードが必要) | :white_check_mark: | 
-| Windows x64 | DirectX12    |                                                      |                    | 
-| Windows x64 | OpenGL       |                                                      |                    |
-| Windows x64 | Vulkan       |                                                      |                    | 
-| Linux x64   | OpenGL       | :white_check_mark: (NVIDIA のグラフィックスカードが必要) |                    |
-| Linux x64   | Vulkan       |                                                      |                    |
-| MacOS       | OpenGL       |                                                      |                    |
-| MacOS       | Metal        |                                                      | :white_check_mark: |
+| Platform    | Graphics API | Hardware Encoder                                                                                                             | Software Encoder   |
+| ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) | :white_check_mark: |
+| Windows x64 | DirectX12    |                                                                                                                              |                    |
+| Windows x64 | OpenGL       |                                                                                                                              |                    |
+| Windows x64 | Vulkan       |                                                                                                                              |                    |
+| Linux x64   | OpenGL       | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) |                    |
+| Linux x64   | Vulkan       |                                                                                                                              |                    |
+| MacOS       | OpenGL       |                                                                                                                              |                    |
+| MacOS       | Metal        |                                                                                                                              | :white_check_mark: |
 
 > [!WARNING]
 > Linux 環境と HDRP の組み合わせでの利用は、現在未対応です。Linux では Graphics API に `OpenGL` を選択した上で、レンダリングパイプラインは `Legacy` をご利用ください。
@@ -35,12 +35,12 @@
 Unity Render Streaming は **WebRTC テクノロジー** を利用しており、 WebRTC に対応しているブラウザーと組み合わせて利用することができます。
 以下のブラウザーについては動作を確認しています。
 
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Desktop Microsoft Edge (Chromium 版)
-- Android Chrome
-- iOS Safari
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。

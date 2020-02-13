@@ -11,12 +11,12 @@ The **Render Streaming** web application uses WebRTC technologies, which means t
 
 The following browsers are compatible:
 
-- Chrome
-- Safari
-- Firefox
-- Microsoft edge (chrominium based)
-- iOS Safari
-- Chrome for Android
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
@@ -26,11 +26,11 @@ The following browsers are compatible:
 Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 After downloading, run it from the command line.
 
-<img src="../images/launch_webserver_explorer.png" width=500 align=center>
+![Launch webserver explorer](../images/launch_webserver_explorer.png)
 
 ### Command Options
 
-| Option                | Details 											 | Default	   |
+| Option                | Details                                            | Default     |
 | --------------------- | -------------------------------------------------- | ----------- |
 | -h --help             | Show the help menu                                 |             |
 | -p —port \<number\>   | Set the port number                                | 80          |
@@ -51,9 +51,8 @@ This command will run the server as https. Port 443 will be used. A certificate 
 ```shell
 .\webserver -s -p 443
 ```
-> When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming
-> component in Unity to https as well.
 
+When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming component in Unity to https as well.
 Use this command to display the help guide. 
 
 ```shell

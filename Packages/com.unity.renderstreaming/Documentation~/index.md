@@ -17,16 +17,16 @@ This version of Render Streaming is compatible with the following versions of th
 > [!NOTE]
 > Because this template depends on `HDRP 7.1`, it does not work correctly old Unity version.
 
-| Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
-| ----------- | ------------ | ------------------------------------------------- | ------------------ |
-| Windows x64 | DirectX11    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
-| Windows x64 | DirectX12    |                                                   |                    | 
-| Windows x64 | OpenGL       |                                                   |                    |
-| Windows x64 | Vulkan       |                                                   |                    | 
-| Linux x64   | OpenGL       | :white_check_mark: (Require NVIDIA Graphics card) |                    |
-| Linux x64   | Vulkan       |                                                   |                    |
-| MacOS       | OpenGL       |                                                   |                    |
-| MacOS       | Metal        |                                                   | :white_check_mark: |
+| Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
+| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
+| Windows x64 | DirectX12    |                                                                                                                          |                    | 
+| Windows x64 | OpenGL       |                                                                                                                          |                    |
+| Windows x64 | Vulkan       |                                                                                                                          |                    | 
+| Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
+| Linux x64   | Vulkan       |                                                 	                                                                        |                    |
+| MacOS       | OpenGL       |                                                 	                                                                        |                    |
+| MacOS       | Metal        |                                                 	                                                                        | :white_check_mark: |
 
 > [!WARNING]
 > In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
@@ -37,12 +37,15 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 
 ### Browsers
 
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Desktop Microsoft Edge (Chromium-based)
-- Android Chrome
-- iOS Safari
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+
+> [!NOTE]
+> It may not work properly on some browsers caused by depending on the status of support about WebRTC.
 
 ## Other Languages
 
