@@ -1,33 +1,24 @@
-# 利用を開始するには
+# チュートリアル
+
+Unity Render Streaming テンプレートパッケージの利用を開始する方法について説明します。
 
 ### パッケージのダウンロード
 
-Render Streaming の利用を開始する方法は 2 つあります。
+テンプレートパッケージを [Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) からダウンロードします。以下のパッケージをダウンロードしてください。
 
-- [Github レポジトリ](https://github.com/Unity-Technologies/UnityRenderStreaming)から最新のソースコードをダウンロード
-- [Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) から パッケージをダウンロード
-
-パッケージをダウンロードする場合は、次の 2 つのパッケージをダウンロードしてください。
-
-- `com.unity.renderstreaming-x.x.x-preview.tgz`
 - `com.unity.template.renderstreaming-x.x.x-preview.tgz`
 
-もう 1 つのパッケージは `com.unity.webrtc` リポジトリの [Github Release](https://github.com/Unity-Technologies/com.unity.webrtc/releases) からダウンロードします。
-
-- `com.unity.webrtc-x.x.x-preview.tgz`
+![Download template package](../images/download_template_package.png)
 
 > [!NOTE]
-> < これらの作業は暫定的なものです。将来的にはこれらのパッケージは PackageManager に登録される予定です。PackageManager から直接ダウンロード可能になれば、手動でのパッケージインストールは不要になります。 >
+> これらの作業は暫定的なものです。将来的にはこれらのパッケージは PackageManager に登録される予定です。PackageManager から直接ダウンロード可能になれば、手動でのパッケージインストールは不要になります。
 
-ダウンロードしたパッケージを所定のフォルダーに移動することで、プロジェクトテンプレートとして利用することが可能です。
+### パッケージの配置
 
-### プロジェクトテンプレート (Experimental)
-
+ダウンロードしたパッケージを所定のフォルダーに移動することで、**プロジェクトテンプレート**として利用することが可能です。
 プロジェクトテンプレートとは、Unity で新規プロジェクトを作成するときに設定済みの Unity プロジェクトを選択できる機能です。
 
-<img src="../images/template_in_unityhub.png" width=600 align=center>
-
-テンプレートパッケージを利用する際は、次の 2 つの tgz ファイルをそれぞれ以下のフォルダーに配置します。
+テンプレートパッケージを利用する際は、tgz ファイルをそれぞれ以下のフォルダーに配置します。
 
 `com.unity.template.renderstreaming-x.x.x-preview.tgz` を以下のフォルダーに移動
 
@@ -35,39 +26,33 @@ Render Streaming の利用を開始する方法は 2 つあります。
   <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates
 ```
 
-<img src="../images/install_renderstreaming_package.png" width=600 align=center>
-
-`com.unity.webrtc-x.x.x-preview.tgz` と`com.unity.renderstreaming-x.x.x-preview.tgz`を以下のフォルダーに移動
-
-```&lt;Unity Editor Root&gt;/Data/Resources/PackageManager/Editor
-<Unity Editor Root>/Data/Resources/PackageManager/Editor
-```
-
-<img src="../images/install_webrtc_package.png" width=600 align=center>
+![Install Render Streaming package](../images/install_renderstreaming_package.png)
 
 パッケージを移動後、Unity Hub を起動し新規プロジェクトを作成します。テンプレートに `Render Streaming` が追加されていることを確認してください。
 
-### Web サーバーの起動
+![Template in Unity Hub](../images/template_in_unityhub.png)
 
-Web サーバーの実行ファイルは `Assets/~bin` 配下にあります。このファイルを実行するとコマンドプロンプトが表示されます。
+### Web アプリケーションの起動
 
-<img src="../images/launch_webserver_explorer.png" width=500 align=center>
+Web アプリケーションは メニューから **Edit / Render Streaming / Download web app** を選択してください。
 
-下記のログがコマンドプロンプトに表示されます。Web サーバーのアドレスもここに表示されています。Web サーバーコマンドのオプションは [Web サーバー](webserver.md)のページにまとめられています。
+![Menu download webapp](../images/menu_download_webapp.png)
 
-<img src="../images/launch_webserver_cmd.png" width=400 align=center>
+このファイルを実行するとコマンドプロンプトが表示されます。下記のログがコマンドプロンプトに表示されます。Web アプリケーションのアドレスもここに表示されています。コマンドオプションは [パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/webserver.html) を確認してください。
 
-Web サーバーのソースコードは [WebApp](WebApp) に配置しています。なお、ソースコードを実行するためには [Node.js](https://nodejs.org) をインストールする必要があります。公式サイトからインストーラーをダウンロードしてインストールしてください。
+![Launch Web Server command](../images/launch_webserver_cmd.png)
+
+Web アプリケーションのソースコードは [WebApp](WebApp) に配置しています。このソースコードを改変することで、ウェブページを自由にカスタマイズすることができます。
 
 ### Unity 側の設定
 
 サンプルシーン `Assets/Scenes/samplescene.unity` を開きます。
 
-<img src="../images/hdrpscene.png" width=600 align=center>
+![HDRP scene](../images/hdrpscene.png)
 
-ヒエラルキービューの `RenderStreaming` を選択してください。インスペクタビューの `Render Streaming` コンポーネントを確認してください。
+ヒエラルキービューの `RenderStreaming` を選択し、インスペクタビューの `Render Streaming` コンポーネントを確認してください。
 
-<img src="../images/renderstreaming_inspector.png" width=300 align=center>
+![Render Streaming inspector](../images/renderstreaming_inspector.png)
 
 `URL Signaling` パラメーターには、先ほど起動した Web サーバーのアドレスを指定してください。インスペクターの各設定については Render Streaming クラスの[リファレンス](class-renderstreaming.md)を参照してください。
 
@@ -76,6 +61,6 @@ Web サーバーのソースコードは [WebApp](WebApp) に配置していま�
 [対応ブラウザー](index.md)のリストに含まれているブラウザーを起動します。
 Web サーバーのアドレスにアクセスしてください。以下のように Web ページが表示されます。
 
-<img src="../images/browser_hdrpscene.png" width=600 align=center>
+![Browser HDRP Scene](../images/browser_hdrpscene.png)
 
 上の画像のような結果にならなかった場合は、ブラウザーのバージョンが古い可能性があります。最新バージョンのブラウザーをインストールしてください。

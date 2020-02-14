@@ -1,16 +1,18 @@
 # TURN サーバとの連携
 
-Render Streaming でストリーミングができない場合、はじめに問題の切り分けをする必要があります。まずは [トラブルに関する質問](faq.md) を参照してください。もしファイアウォールの問題であった場合は、ファイアウォールの設定を変更するか、 **TURN サーバ** を利用する必要があります。
+Unity Render Streaming でストリーミングが正しく動作しない場合、まずは [トラブルに関する質問](faq.md) を参照してください。
+もしファイアウォールの問題であった場合は、ファイアウォールの設定を変更するか、 **TURN サーバ** を利用する必要があります。
 
 **TURN（Traversal Using Relay around NAT）**とは、NAT やファイアウォールを超えて通信を行うための通信プロトコルです。TURN を利用するには、NAT の外側に **TURN サーバ** を設置する必要があります。
 
-このドキュメントでは、Render Streaming で TURN サーバと連携する方法について説明します。TURN サーバを実現するソフトウェアとして [coturn](https://github.com/coturn/coturn) を利用します。coturn は TURN サーバのオープンソース実装です。
+このドキュメントでは、Unity Render Streaming を TURN サーバと連携する方法について説明します。
 
 ## インスタンスの設定
 
+TURN サーバを実現するソフトウェアとして [coturn](https://github.com/coturn/coturn) を利用します。coturn は TURN サーバのオープンソース実装です。
 coturn を GCP インスタンス上で実行する方法について説明します。
 
- `apt` コマンドで coturn をインストールするため、インスタンスイメージには**ubuntu-minimal-1604-xenial-v20190628** を利用しています。coturn がサポートしているディストリビューションであれば問題ありません。サポートの詳細は coturn の [README](https://github.com/coturn/coturn) を確認してください。
+ `apt` コマンドで coturn をインストールするため、インスタンスイメージには **ubuntu-minimal-1604-xenial-v20190628** を利用しています。coturn がサポートしているディストリビューションであれば問題ありません。 coturn の詳細については、 [coturn の ドキュメント](https://github.com/coturn/coturn) を確認してください。
 
 ### Firewall rules の設定
 
@@ -21,7 +23,7 @@ TURN サーバが利用するポートを公開する必要があるので、フ
 | TCP      | 32355-65535, 3478-3479 |
 | UDP      | 32355-65535, 3478-3479 |
 
-<img src="../images/turn-firewall-rules.png" width=800 align=center>
+![TURN firewall rules](../images/turn-firewall-rules.png)
 
 ### coturn のインストール
 
@@ -115,5 +117,4 @@ config.iceServers = [{
 
 `Render Streaming` インスペクタの `Ice Servers` に TURN サーバの設定を追加してください。
 
-<img src="../images/turn-renderstreaming-inspector.png" width=400 align=center>
-
+![TURN Render Streaming inspector](../images/turn-renderstreaming-inspector.png)

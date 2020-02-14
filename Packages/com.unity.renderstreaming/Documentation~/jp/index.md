@@ -1,64 +1,50 @@
-# com.unity.renderstreaming
+# Unity Render Streaming
+
+このパッケージには **Unity Render Streaming** の公開 API とサンプルプロジェクトが含まれます。
+
+> [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
+
+## 動作環境
+
+このテンプレートは次のバージョンの Unity エディターに対応しています。
+- Unity 2019.3
+
+> [!NOTE]
+> このテンプレートは `HDRP 7.1` を使用しているため、古い Unity バージョンでは動作しません。
+
+| Platform    | Graphics API | Hardware Encoder                                                                                                             | Software Encoder   |
+| ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) | :white_check_mark: |
+| Windows x64 | DirectX12    |                                                                                                                              |                    |
+| Windows x64 | OpenGL       |                                                                                                                              |                    |
+| Windows x64 | Vulkan       |                                                                                                                              |                    |
+| Linux x64   | OpenGL       | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) |                    |
+| Linux x64   | Vulkan       |                                                                                                                              |                    |
+| MacOS       | OpenGL       |                                                                                                                              |                    |
+| MacOS       | Metal        |                                                                                                                              | :white_check_mark: |
+
+> [!WARNING]
+> Linux 環境と HDRP の組み合わせでの利用は、現在未対応です。Linux では Graphics API に `OpenGL` を選択した上で、レンダリングパイプラインは `Legacy` をご利用ください。
+
+### ハードウェアエンコーダー
+
+このパッケージでは、ハードウェアエンコーダーに **NVIDIA のグラフィックボード** を利用しています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては、 NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを確認してください。
+
+### 対応ブラウザー
+
+Unity Render Streaming は **WebRTC テクノロジー** を利用しており、 WebRTC に対応しているブラウザーと組み合わせて利用することができます。
+以下のブラウザーについては動作を確認しています。
+
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+
+> [!NOTE]
+> ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。
+
+## その他の表示言語
 
 - [English](../index.md)
-
-このパッケージには Unity の [**Unity Render Streaming**](../../com.unity.template.renderstreaming/Documentation~/jp/index.md) を基に作られた公開 API とサンプルプロジェクトが含まれます。
-
-現在、1 つのサンプルがあります。
-
-- HDRP. 
-  > このサンプルをインポートすると、HDRP *(com.unity.render-pipelines.high-definition)* パッケージと Unity が提供している HDRP サンプルアセットのインストールと設定が自動的に行われます。
-
-## Windows 向けの簡単なチュートリアル
-
-1. 既存のプロジェクトを開きます。または、新しいプロジェクトを作成します。
-2. `Window` メニューをクリックし、`Package Manager` を開きます。次に、`Advanced` をクリックして `Show preview packages` にチェックを入れます。
-
-<img src="../images/show_preview_packages.png" width="480">
-
-3. 検索のモードを `All packages` にして、テキストボックスに `RenderStreaming` と入力します。
-
-<img src="../images/render_streaming_package.png" width="480">
-
-4. 右下の `Install` をクリックします。
-
-5. 入力システムに関するダイアログボックスが表示された場合は、`Yes` をクリックします。
-
-<img src="../images/input_system_backend.png" width="360">
-
-6. `Import in project` をクリックして HDRP サンプルをインポートします。
-この操作によって、HDRP パッケージ *(com.unity.render-pipelines.high-definition)* が自動的にインストールされます。
-
-<img src="../images/hdrp_sample.png" width="480">
-
-7. 下図の `Import Unity Package` ダイアログボックスが表示されたら、`Import` をクリックしてすべてのアセットをインポートします。
-
-<img src="../images/hdrp_unitypackage.png" width="240">
-
-8. すべてのインポートプロセスが終わった後、Project ビューから `Assets/SimpleScene` を開きます。
-
-<img src="../images/simplescene.png" width="240">
-
-9. `Edit/Render Streaming/Download web app` メニューアイテムをクリックして、あらかじめ用意されている[ウェブサーバー](https://github.com/Unity-Technologies/UnityRenderStreaming/releases)をダウンロードします。
-
-<img src="../images/download_webapp.png" width="300">
-
-10. ダウンロード先フォルダーを選択するウィンドウが表示されたら、`Select Folder` をクリックしてデフォルトのフォルダーにファイルをダウンロードします。
-
-<img src="../images/select_download_folder.png" width="240">
-
-
-11. ダウンロードが終了して、エクスプローラーの新しいウィンドウが開いたら、`webserver.exe` をクリックして Unity RenderStreaming ウェブサーバーを起動します。
-
-<img src="../images/webserver.png" width="240">
-
-12. Unity で再生モードに入ります。
-
-<img src="../images/play_mode.png" width="240">
-
-13. ブラウザーを立ち上げ、URL バーに `localhost` と入力し、中央に表示されている再生ボタンをクリックします。
-クリックすると、Unity のビューがブラウザーに表示されます。
-
-<img src="../images/browser.png" width="240">
-
-

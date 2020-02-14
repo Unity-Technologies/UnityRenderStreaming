@@ -1,65 +1,52 @@
-# com.unity.renderstreaming
+---
+uid: index.md
+title: index
+---
 
-- [Japanese](./jp/index.md)
+# Unity Render Streaming
 
 This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming/Documentation~/index.md).
 
-Currently, there is one sample:
+> [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
 
-- HDRP. 
-  > Importing this sample will automatically install and setup our HDRP sample assets along with the HDRP *(com.unity.render-pipelines.high-definition)* package.
+## Requirements
 
-## Simple Tutorial on Windows
+This version of Render Streaming is compatible with the following versions of the Unity Editor
+- **Unity 2019.3**
 
-1.  Open an existing or create a new project
-2.  Click on the `Window` Menu and open `Package Manager`. Then, click on `Advanced` and make sure `Show preview packages` is checked
+> [!NOTE]
+> Because this template depends on `HDRP 7.1`, it does not work correctly older Unity versions.
 
-	<img src="./images/show_preview_packages.png" width="480">
+| Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
+| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
+| Windows x64 | DirectX12    |                                                                                                                          |                    | 
+| Windows x64 | OpenGL       |                                                                                                                          |                    |
+| Windows x64 | Vulkan       |                                                                                                                          |                    | 
+| Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
+| Linux x64   | Vulkan       |                                                 	                                                                        |                    |
+| MacOS       | OpenGL       |                                                 	                                                                        |                    |
+| MacOS       | Metal        |                                                 	                                                                        | :white_check_mark: |
 
-3.  Make sure to search `All packages`, and type `RenderStreaming` in the text box.
+> [!WARNING]
+> In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
 
-	<img src="./images/render_streaming_package.png" width="480">
+### Hardware encoder
 
-4. Click `Install` on the bottom right.
+This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
-5. If an input system dialog box appears, click `Yes`
+### Browsers
 
-	<img src="./images/input_system_backend.png" width="360">
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
 
-6. Click on `Import in project` to import the HDRP sample.
-   This will also automatically install the HDRP package *(com.unity.render-pipelines.high-definition)*.
+> [!NOTE]
+> It may not work properly on some browsers caused by depending on the status of support about WebRTC.
 
-	<img src="./images/hdrp_sample.png" width="480" >
+## Other Languages
 
-7. When this `Import Unity Package` dialog box appears, click `Import` to import all assets.
-
-	<img src="./images/hdrp_unitypackage.png" width="240" >
-
-8. After all the import process has been finished, open `Assets/SimpleScene` in the Project View.
-
-	<img src="./images/simplescene.png" width="240" >
-
-9. Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
-
-	<img src="./images/download_webapp.png" width="300" >
-
-10. When the select download folder window appears, click on `Select Folder` to download the file to the default folder
-
-	<img src="./images/select_download_folder.png" width="240" >
-
-
-11. After the download is finished and a new explorer window is opened, click on `webserver.exe` to start 
-Unity RenderStreaming web server.
-
-	<img src="./images/webserver.png" width="240">
-
-12. Enter play mode in Unity
-
-	<img src="./images/play_mode.png" width="240">
-
-13. Open your browser and type `localhost` on the URL bar. Then click on the play button in the middle. 
-The view in Unity should then appear on your browser.
-
-	<img src="./images/browser.png" width="240">
-
-
+- [Japanese](./jp/index.md)

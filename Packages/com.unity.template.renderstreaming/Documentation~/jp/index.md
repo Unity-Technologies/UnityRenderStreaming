@@ -1,48 +1,47 @@
-# Unity Render Streaming
-
-- [English](../index.md)
+# Unity Render Streaming テンプレート
 
 **Unity Render Streaming** は、ブラウザー上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレーターや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
-ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。デベロッパーがソリューションをカスタマイズすることで、様々なソリューションを構築することができます。
 
-<img src="../images/multitouch.gif" width=500 align=center>
+このパッケージは、HDRP のシーンに対して Unity Render Streaming の利用に必要な設定を加えたテンプレートパッケージです。すぐに試してみたい方は[チュートリアルドキュメント](tutorial.md)をご覧ください。より技術的な詳細は Unity Render Streaming の[パッケージドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)をご覧ください。
 
-## ガイド
+![Browser HDRP scene](../images/browser_hdrpscene.png)
 
-* [概要](overview.md)
-* [チュートリアル](tutorial.md)
-* [ブラウザ入力](input.md)
-* [Web サーバ](webserver.md)
-* [Render Streaming リファレンス](class-renderstreaming.md)
-* [FAQ](faq.md)
+ストリーミング技術には [WebRTC](https://webrtc.org/) というテクノロジを用いて実現しています。このソリューションをカスタマイズすることで、様々なソリューションを構築することができます。
+
+> [!NOTE]
+> 既存のプロジェクトに対してストリーミング機能を追加する場合は、テンプレートではなく、Package Manager から `Unity Render Streaming` パッケージをインストールしてください。
+> 詳細は[パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)を確認してください。
 
 ## 動作環境
 
-- このバージョンの RenderStreaming は次のバージョンの Unity エディターに対応しています：
-  - 2019.1
+このテンプレートは次のバージョンの Unity エディターに対応しています。
+- Unity 2019.3
 
 > [!NOTE]
-> <`Unity 2018.3` はサポートされていません。>
+> このテンプレートは `HDRP 7.1` を使用しているため、古い Unity バージョンでは動作しません。
 
-> [!NOTE]
-> <`Unity 2019.2` は HDRP 5.x がサポートされないため、描画が正しく動作しません。>
+> [!WARNING]
+> Linux 環境と HDRP の組み合わせでの利用は、現在未対応です。Linux では Graphics API に `OpenGL` を選択した上で、レンダリングパイプラインは `Legacy` をご利用ください。
 
-- 現在は `windows64` 環境でのみ動作を確認しています。
+### ハードウェアエンコーダー
 
-- Graphics API は `DirectX11` のみサポートしています。
-
-- Scripting Backend の `IL2CPP` は現在のところサポートされていません。
-
-### グラフィックスカード
-
-バージョン 1.0.0 現在、 NVIDIA が提供するグラフィックボードに最適化されています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを参照してください。
-
-Graphics API は `Direct3D11` のみサポートしています。
+このパッケージでは、ハードウェアエンコーダーに **NVIDIA のグラフィックボード** を利用しています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては、 NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを確認してください。
 
 ### 対応ブラウザー
 
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Android Chrome
-- iOS Safari
+Unity Render Streaming は **WebRTC テクノロジー** を利用しており、 WebRTC に対応しているブラウザーと組み合わせて利用することができます。
+以下のブラウザーについては動作を確認しています。
+
+| Browser                           | Windows            | Mac                | iOS                | Android            |
+| --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+| Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
+| Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
+| Firefox                           | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+
+> [!NOTE]
+> ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。
+
+## その他の表示言語
+
+- [English](../index.md)

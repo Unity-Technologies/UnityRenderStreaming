@@ -1,4 +1,4 @@
-## ブラウザー入力処理
+# ブラウザー入力処理
 
 ブラウザーからの入力は以下をサポートしています。
 
@@ -36,11 +36,10 @@
 |5|position y|2|
 |7|force|4|
 
-## HTML UI
+### HTML ボタンイベント
 
 HTML UI のイベントはボタンコンポーネントにのみ対応しています。
-
-### Button
+ボタンイベントのカスタマイズについては、 [Render Streaming 設定](class-renderstreaming.md#inspector-settings) を確認してください。
 
 |index|value|size|
 |-------|-----|-----|

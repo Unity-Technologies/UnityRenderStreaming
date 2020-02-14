@@ -1,4 +1,4 @@
-# Render Streaming Overview
+# Overview
 
 The following is an explanation the general concepts of the Render Streaming system. 
 
@@ -6,15 +6,16 @@ The following is an explanation the general concepts of the Render Streaming sys
 
 The Render Streaming system consists of the following 3 components
 
-- Unity (Editor or Application)
-- Web server
-- Web browser 
+- **Unity** (Editor or Application)
+- **Web server**
+- **Web browser** 
 
-<img src="../images/renderstreaming_overview.png" width=500 align=center>
+![Render Streaming Overview](../images/renderstreaming_overview.png)
+
 
 In Render Streaming a P2P network is created between **Unity** and the **Web browser**, and this network sends data via UDP/IP. The **Web server** enables communication between the Web browser and Unity. This communication is called signaling. 
 
-> [!NOTE]
+> [!WARNING]
 > Currently does not support the following features.
 >
 > - Streaming video from the browser to Unity
@@ -24,7 +25,7 @@ In Render Streaming a P2P network is created between **Unity** and the **Web bro
 
 The following is an explanation of how signaling works. 
 
- <img src="../images/renderstreaming_sequence.png" width=600 align=center>
+![Render Streaming Sequence](../images/renderstreaming_sequence.png)
 
 1. Web browser sends **Offer SDP** to the Web server.
 2. Unity checks the Web server for unprocessed **Offer SDPs** and receives any found.
@@ -43,13 +44,13 @@ The Render Steraming package includes the following.
 - Sample code / assets
 - Web application
 
-<img src="../images/package_renderstreaming.png" width=300 align=center>
+![Package Render Streaming](../images/package_renderstreaming.png)
 
 ### WebRTC Package
 
-This provides the WebRTC C# API. See the WebRTC package documentation for details on the API.
+This provides the WebRTC C# API. See the [WebRTC package documentation](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/manual/en/index.html) for details on the API.
 
-<img src="../images/webrtc_package_manager.png" width=500 align=center>
+![WebRTC package manager](../images/webrtc_package_manager.png)
 
 ### Sample Code / Assets
 
