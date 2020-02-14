@@ -14,7 +14,7 @@ This template is compatible with Unity Editor version below.
 - Unity 2019.3
 
 > [!NOTE]
-> Because this template depends on `HDRP 7.1`, it does not work correctly old Unity version.
+> Because this template depends on `HDRP 7.1`, it does not work correctly older Unity versions.
 
 > [!WARNING]
 > In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
