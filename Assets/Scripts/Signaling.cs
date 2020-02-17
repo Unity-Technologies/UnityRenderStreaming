@@ -319,12 +319,12 @@ namespace Unity.RenderStreaming {
         private void WSError(object sender, WebSocketSharp.ErrorEventArgs e) {
 
             //TODO switch to HTTP here ?
-            Debug.Log($"Signaling: WS connection error: {e.Message}");
+            Debug.LogError($"Signaling: WS connection error: {e.Message}");
         }
 
         private void WSClosed(object sender, WebSocketSharp.CloseEventArgs e) {
 
-            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
+            Debug.LogError($"Signaling: WS connection closed, code: {e.Code}");
 
             _wsCloseEvent.Set();
             _webSocket = null;
@@ -333,7 +333,7 @@ namespace Unity.RenderStreaming {
         private void WSSend(object data) {
             
             if (this._webSocket == null || this._webSocket.ReadyState != WebSocketState.Open) {
-                Debug.Log("Signaling: WS is not connected. Unable to send message");
+                Debug.LogError("Signaling: WS is not connected. Unable to send message");
                 return;
             }
 
