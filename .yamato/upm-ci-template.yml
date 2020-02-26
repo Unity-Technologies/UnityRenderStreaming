@@ -13,7 +13,7 @@ pack:
     image: renderstreaming/win10:latest
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template pack
   artifacts:
     packages:
@@ -41,7 +41,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     {% else %}
     - cp -r WebApp upm-ci~/templates/ProjectData~/
     {% endif %}
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template test -u {{ editor.version }}
 # TODO:: `upm-ci template test` is failed using the package on the internal registry.
 #  triggers:
@@ -68,7 +68,7 @@ publish:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template publish
   triggers:
     tags:
