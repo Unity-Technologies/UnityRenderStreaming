@@ -7,8 +7,10 @@ test_platforms:
     flavor: b1.large
 packages:
   - name: renderstreaming
+    packagename: com.unity.renderstreaming
 ---
 
+{% for package in packages %}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
 promotion_test_{{ platform.name }}_{{ editor.version }}:
@@ -27,9 +29,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-{% for package in packages %}
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% endfor %}
 {% endfor %}
 {% endfor %}
 
@@ -53,9 +53,7 @@ promote_dry_run:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-{% for package in packages %}
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% endfor %}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
@@ -82,11 +80,11 @@ promote:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-{% for package in packages %}
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% endfor %}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
+{% endfor %}
+
 {% endfor %}
