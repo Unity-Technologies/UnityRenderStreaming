@@ -43,7 +43,7 @@ promote_dry_run:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package promote --dry-run
+    - upm-ci package promote --dry-run --package-path Packages/{{ package.packagename }}
   triggers:
     tags:
       only:
@@ -70,7 +70,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package promote
+    - upm-ci package promote --package-path Packages/{{ package.packagename }}
   triggers:
     tags:
       only:
