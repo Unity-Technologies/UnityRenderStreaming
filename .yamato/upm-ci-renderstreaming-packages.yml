@@ -4,7 +4,6 @@
 packages:
   - name: renderstreaming
     packagename: com.unity.renderstreaming
-    
 ---
 {% for package in packages %}
 pack_{{ package.name }}:
@@ -14,7 +13,7 @@ pack_{{ package.name }}:
     image: renderstreaming/win10:latest
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package pack --package-path Packages/{{ package.packagename }}
   artifacts:
     {{ package.name }}_package:  
@@ -30,7 +29,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package test -u {{ editor.version }} --package-path Packages/{{ package.packagename }}
   triggers:
     branches:
@@ -47,6 +46,31 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
 {% endfor %}
 {% endfor %}
 
+publish_dry_run_{{ package.name }}:
+  name: Publish Dry Run {{ package.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package publish --dry-run --package-path Packages/{{ package.packagename }}
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:  
+    {{ package.name }}_artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+
 publish_{{ package.name }}:
   name: Publish {{ package.packagename }}
   agent:
@@ -54,7 +78,7 @@ publish_{{ package.name }}:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci package publish --package-path Packages/{{ package.packagename }}
   triggers:
     tags:

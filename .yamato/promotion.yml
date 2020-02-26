@@ -1,15 +1,16 @@
 test_editors:
-  - version: 2019.1
+  - version: 2019.3
 test_platforms:
   - name: win
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
 packages:
-  - name: webrtc
   - name: renderstreaming
+    packagename: com.unity.renderstreaming
 ---
 
+{% for package in packages %}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
 promotion_test_{{ platform.name }}_{{ editor.version }}:
@@ -21,36 +22,41 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package test --unity-version {{ editor.version }}
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package test --unity-version {{ editor.version }} --package-path Packages/{{ package.packagename }}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-{% for package in packages %}
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% endfor %}
 {% endfor %}
-{% endfor %}
 
-promotion_test_trigger:
-  name: Promotion Tests Trigger
+promote_dry_run:
+  name: Promote Dry Run to Production
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
+  variables:
+    UPMCI_PROMOTION: 1
+  commands:
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package promote --dry-run --package-path Packages/{{ package.packagename }}
+  triggers:
+    tags:
+      only:
+        - /^(r|R)elease-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   artifacts:
-    logs:
+    artifacts:
       paths:
-        - "upm-ci~/test-results/**/*"
-    packages:
-      paths:
-        - "upm-ci~/packages/**/*"
+        - "upm-ci~/packages/*.tgz"
   dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
-    - .yamato/promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
+    - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
 {% endfor %}
 
@@ -63,8 +69,8 @@ promote:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package promote
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package promote --package-path Packages/{{ package.packagename }}
   triggers:
     tags:
       only:
@@ -74,11 +80,11 @@ promote:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-{% for package in packages %}
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% endfor %}
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
+{% endfor %}
+
 {% endfor %}
