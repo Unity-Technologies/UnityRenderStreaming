@@ -4,7 +4,6 @@
 packages:
   - name: renderstreaming
     packagename: com.unity.renderstreaming
-    
 ---
 {% for package in packages %}
 pack_{{ package.name }}:
