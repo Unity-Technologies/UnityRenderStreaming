@@ -1,4 +1,3 @@
-# .yamato/upm-ci-renderstreaming-packages.yml
 {% metadata_file .yamato/meta/environments.yml %}
 
 packages:
@@ -45,6 +44,32 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% endfor %}
+{% endfor %}
+
+publish_dry_run_{{ package.name }}:
+  name: Publish Dry Run {{ package.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package publish --dry-run --package-path Packages/{{ package.packagename }}
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:  
+    {{ package.name }}_artifacts.zip:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
 {% endfor %}
 
 publish_{{ package.name }}:
