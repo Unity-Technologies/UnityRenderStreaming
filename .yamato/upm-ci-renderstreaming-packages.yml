@@ -70,7 +70,6 @@ publish_dry_run_{{ package.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
-{% endfor %}
 
 publish_{{ package.name }}:
   name: Publish {{ package.packagename }}
