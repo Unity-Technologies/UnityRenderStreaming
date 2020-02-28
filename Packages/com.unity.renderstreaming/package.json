@@ -1,11 +1,11 @@
 {
   "name": "com.unity.renderstreaming",
   "displayName": "Unity Render Streaming",
-  "version": "1.2.0-preview",
+  "version": "1.2.1-preview",
   "unity": "2019.3",
   "description": "This is a package for using Unity Render Streaming technology. It contains two samples to use the technology.",
   "dependencies": {
-    "com.unity.webrtc": "1.1.0-preview",
+    "com.unity.webrtc": "1.1.1-preview",
     "com.unity.inputsystem": "1.0.0-preview.4"
   },   
  "samples": [ {
