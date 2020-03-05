@@ -23,7 +23,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package test --unity-version {{ editor.version }} --package-path Packages/{{ package.packagename }}
+    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.packagename }}
   artifacts:
     logs:
       paths:
@@ -43,7 +43,7 @@ promote_dry_run:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package promote --dry-run --package-path Packages/{{ package.packagename }}
+    - upm-ci package promote --dry-run --package-path {{ package.packagename }}
   triggers:
     tags:
       only:
@@ -70,7 +70,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package promote --package-path Packages/{{ package.packagename }}
+    - upm-ci package promote --package-path {{ package.packagename }}
   triggers:
     tags:
       only:
