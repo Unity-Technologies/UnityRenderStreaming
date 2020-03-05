@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.1-green.svg?style=flat-square" alt="unity 2019.1">
+<img src="https://img.shields.io/badge/unity-2019.3-green.svg?style=flat-square" alt="unity 2019.3">
 
 ## Documentation
 
@@ -19,7 +19,7 @@
 
 ## License
 
-- [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+- [LICENSE.md](LICENSE.md)
 
 ## Change log
 

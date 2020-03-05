@@ -18,7 +18,7 @@ namespace Unity.RenderStreaming.Editor
         //
 
         const string PathWebAppSourceCode = "tree/release/{0}/WebApp";
-        const string PathWebAppDocumentation = "blob/release/{0}/Packages/com.unity.template.renderstreaming/Documentation~/en/webserver.md";
+        const string PathWebAppDocumentation = "blob/release/{0}/com.unity.renderstreaming/Documentation~/en/webapp.md";
 
 
         static string GetWebAppURL(string version)

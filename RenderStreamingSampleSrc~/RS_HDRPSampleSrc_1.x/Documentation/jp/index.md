@@ -3,7 +3,7 @@
 - [English](../index.md)
 
 このプロジェクトには、
-[**com.unity.renderstreaming**](../../../../Packages/com.unity.renderstreaming/Documentation~/index.md) パッケージの HDRP サンプルの作成に使われているすべてのアセットが含まれています。
+[**com.unity.renderstreaming**](../../../../com.unity.renderstreaming/Documentation~/index.md) パッケージの HDRP サンプルの作成に使われているすべてのアセットが含まれています。
 
 このプロジェクトと[メインのプロジェクト](../../../../Readme.md)の間でのアセットの共有にはシンボリックリンクを使っています。
 Windows をお使いの場合は、以下の手順に従って事前にシンボリックリンクを有効にする必要があります。
