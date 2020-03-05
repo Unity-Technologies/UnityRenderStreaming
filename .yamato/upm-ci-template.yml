@@ -35,7 +35,7 @@ test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.vers
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
+#    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
     {% if platform.name == "win" %}
     - mkdir upm-ci~\templates\ProjectData~\WebApp
     - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
