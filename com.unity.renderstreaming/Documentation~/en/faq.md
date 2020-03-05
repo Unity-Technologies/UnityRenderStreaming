@@ -8,7 +8,7 @@ The browser version might be too old. Make sure that the latest version is insta
 
 ### Web app doesn't run on Safari browser
 
-Check the web server's [startup options](webserver.md). In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
+Check the web server's [startup options](webapp.md). In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
 
 ### Unity's initial startup fails
 
