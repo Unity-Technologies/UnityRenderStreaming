@@ -29,7 +29,7 @@ pack:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
 test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+  name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -88,7 +88,7 @@ publish:
     {% endfor %}
 
 publish_dryrun:
-  name: Publish {{ project.packagename }}
+  name: Publish Dry Run {{ project.packagename }}
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
