@@ -27,14 +27,15 @@ pack:
 
 {% for editor in editors %}
 {% for platform in platforms %}
-test_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+{% for param in platform.test_params %}
+test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
+#    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
     {% if platform.name == "win" %}
     - mkdir upm-ci~\templates\ProjectData~\WebApp
     - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
@@ -42,7 +43,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     - cp -r WebApp upm-ci~/templates/ProjectData~/
     {% endif %}
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template test -u {{ editor.version }}
+    - upm-ci template test -u {{ editor.version }} --platform {{ param.platform }} --backend {{ param.backend }}
   artifacts:
     logs:
       paths:
@@ -51,6 +52,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     - .yamato/upm-ci-template.yml#pack
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+{% endfor %}
 {% endfor %}
 {% endfor %}
 
@@ -79,7 +81,40 @@ publish:
     - .yamato/upm-ci-template.yml#pack
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-template.yml#test_{{ platform.name }}_{{ editor.version }}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
+    {% endfor %}
+
+publish_dryrun:
+  name: Publish Dry Run {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci template publish --dry-run
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+    packages:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+        - "upm-ci~/templates/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-template.yml#pack
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}    
 {% endfor %}

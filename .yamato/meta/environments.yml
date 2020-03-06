@@ -9,6 +9,15 @@ platforms:
     run_editor_tests_command:  run_editor_tests.cmd
     import_unity_package_command: import_unity_package.cmd
     unity_path: .Editor\Unity.exe
+    test_params:
+      - backend: mono
+        platform: editmode
+      - backend: mono
+        platform: playmode
+      - backend: mono
+        platform: standalone
+      - backend: il2cpp
+        platform: standalone    
   - name: mac
     type: Unity::VM::osx
     image: buildfarm/mac:stable
@@ -17,6 +26,7 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh    
     unity_path: .Editor/Unity.app/Contents/MacOS/Unity
+    test_params:
   - name: linux
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu-18.04:latest
@@ -25,3 +35,4 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh
     unity_path: .Editor/Unity
+    test_params:
