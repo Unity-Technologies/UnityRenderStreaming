@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { createServer } from './server';
 import { AddressInfo } from 'net';
+import * as WS from './websocket';
 
 export interface Options {
   secure?: boolean;
@@ -66,6 +67,9 @@ export class RenderStreaming {
         }
       });
     }
+
+    const ws = new WS.WSSignaling(this.server);
+    ws.start();
   }
 
   getIPAddress(): string[] {
