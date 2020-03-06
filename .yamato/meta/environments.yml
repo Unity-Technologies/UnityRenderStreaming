@@ -26,7 +26,6 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh    
     unity_path: .Editor/Unity.app/Contents/MacOS/Unity
-    test_params:
   - name: linux
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu-18.04:latest
@@ -35,4 +34,3 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh
     unity_path: .Editor/Unity
-    test_params:
