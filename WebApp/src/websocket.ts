@@ -37,9 +37,7 @@ export default class WSSignaling {
     constructor(server: Server) {
         this.server = server;
         this.wss = new websocket.Server({ server });
-    }
 
-    start() {
         this.wss.on('connection', (ws: WebSocket) => {
 
             clients.set(ws, new Set<string>());
@@ -90,7 +88,7 @@ export default class WSSignaling {
         const connectionId: string = uuid();
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
-        ws.send(JSON.stringify({connectionId:connectionId}))
+        ws.send(JSON.stringify({connectionId:connectionId}));
     }
 
     private onDisConnect(ws: WebSocket, message: any){
