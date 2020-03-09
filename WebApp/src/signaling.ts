@@ -1,40 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { v4 as uuid } from 'uuid';
+import Offer from './class/offer';
+import Answer from './class/answer';
+import Candidate from './class/candidate';
 
 const express = require('express');
 
 const router: Router = express.Router();
-
-class Offer {
-  sdp: string;
-  datetime: number;
-  constructor(sdp: string, datetime: number) {
-    this.sdp = sdp;
-    this.datetime = datetime;
-  }
-}
-
-class Answer {
-  sdp: string;
-  datetime: number;
-  constructor(sdp: string, datetime: number) {
-    this.sdp = sdp;
-    this.datetime = datetime;
-  }
-}
-
-class Candidate {
-  candidate: string;
-  sdpMLineIndex: number;
-  sdpMid: string;
-  datetime: number;
-  constructor(candidate: string, sdpMLineIndex: number, sdpMid: string, datetime: number) {
-    this.candidate = candidate;
-    this.sdpMLineIndex = sdpMLineIndex;
-    this.sdpMid = sdpMid;
-    this.datetime = datetime;
-  }
-}
 
 // [{sessonId:[connectionId,...]}]
 const clients: Map<string, Set<string>> = new Map<string, Set<string>>();
