@@ -9,6 +9,15 @@ platforms:
     run_editor_tests_command:  run_editor_tests.cmd
     import_unity_package_command: import_unity_package.cmd
     unity_path: .Editor\Unity.exe
+    test_params:
+      - backend: mono
+        platform: editmode
+      - backend: mono
+        platform: playmode
+      - backend: mono
+        platform: standalone
+      - backend: il2cpp
+        platform: standalone    
   - name: mac
     type: Unity::VM::osx
     image: buildfarm/mac:stable

@@ -1,3 +1,6 @@
+# .yamato/upm-ci-publish-github-release.yml
+{% metadata_file .yamato/meta/environments.yml %}
+
 platforms:
   - name: win
   - name: mac
@@ -20,7 +23,11 @@ publish_github_release:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    {% for editor in editors %}
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
     {% endfor %}
