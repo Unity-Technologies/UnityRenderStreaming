@@ -1,7 +1,14 @@
-export default class Signaling {
-  headers(sessionId) {
-    if (sessionId !== undefined) {
-      return { 'Content-Type': 'application/json', 'Session-Id': sessionId };
+export default class Signaling extends EventTarget {
+
+  constructor() {
+    super();
+    this.interval = 3000;
+    this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+  }
+
+  headers() {
+    if (this.sessionId !== undefined) {
+      return { 'Content-Type': 'application/json', 'Session-Id': this.sessionId };
     }
     else {
       return { 'Content-Type': 'application/json' };
@@ -11,51 +18,110 @@ export default class Signaling {
   url(method) {
     return location.protocol + '//' + location.host + location.pathname + 'signaling/' + method;
   };
-  async createConnection(sessionId) {
-    return await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(sessionId) });
+
+  async start() {
+    const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
+    const session = await createResponse.json();
+    this.sessionId = session.sessionId;
+
+    const res = await this.createConnection();
+    const connection = await res.json();
+    this.connectionId = connection.connectionId;
+
+    this.loopGetAnswer();
+    this.loopGetCandidate();
+  }
+
+  async loopGetAnswer() {
+    // receive answer message from 30secs ago
+    let lastTimeRequest = Date.now() - 30000;
+
+    while (true) {
+      const res = await this.getAnswer(lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const answers = data.answers;
+
+      answers.forEach(answer => {
+        this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
+      });
+
+      await this.sleep(this.interval);
+    }
+  }
+
+  async loopGetCandidate() {
+    // receive answer message from 30secs ago
+    let lastTimeRequest = Date.now() - 30000;
+
+    while (true) {
+      const res = await this.getCandidate(lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
+
+      if (candidates.length > 0) {
+        for (let candidate of candidates[0].candidates) {
+          this.dispatchEvent(new CustomEvent('candidate', { detail: candidate }));
+        }
+      }
+
+      await this.sleep(this.interval);
+    }
+  }
+
+  async stop() {
+    await this.deleteConnection();
+    this.connectionId = null;
+    await fetch(this.url(''), { method: 'DELETE', headers: this.headers() });
+    this.sessionId = null;
+  }
+
+  async createConnection() {
+    return await fetch(this.url('connection'), { method: 'PUT', headers: this.headers() });
   };
-  async deleteConnection(sessionId, connectionId) {
-    const data = { 'connectionId': connectionId };
-    return await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(sessionId), body: JSON.stringify(data) });
+  async deleteConnection() {
+    const data = { 'connectionId': this.connectionId };
+    return await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
   };
-  async sendOffer(sessionId, connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
-    return await fetch(this.url('offer'), { method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data) });
+
+  async sendOffer(sdp) {
+    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
+    await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
-  async sendAnswer(sessionId, connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
-    return await fetch(this.url('answer'), { method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data) });
+
+  async sendAnswer(sdp) {
+    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
+    await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
-  async sendCandidate(sessionId, connectionId, candidate, sdpMid, sdpMLineIndex) {
+
+  async sendCandidate(candidate, sdpMid, sdpMLineIndex) {
     const data = {
       'candidate': candidate,
       'sdpMLineIndex': sdpMLineIndex,
       'sdpMid': sdpMid,
-      'connectionId': connectionId
+      'connectionId': this.connectionId
     };
-    return await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(sessionId), body: JSON.stringify(data) });
+    await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
-  async create() {
-    return await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
+
+  async getOffer(fromTime = 0) {
+    return await fetch(this.url(`offer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   };
-  async delete(sessionId) {
-    return await fetch(this.url(''), { method: 'DELETE', headers: this.headers(sessionId) });
+  async getAnswer(fromTime = 0) {
+    return await fetch(this.url(`answer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   };
-  async getOffer(sessionId, fromTime = 0) {
-    return await fetch(this.url(`offer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers(sessionId) });
-  };
-  async getAnswer(sessionId, fromTime = 0) {
-    return await fetch(this.url(`answer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers(sessionId) });
-  };
-  async getCandidate(sessionId, fromTime = 0) {
-    return await fetch(this.url(`candidate?fromtime=${fromTime}`), { method: 'GET', headers: this.headers(sessionId) });
+  async getCandidate(fromTime = 0) {
+    return await fetch(this.url(`candidate?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   };
 }
 
-export class WebSocketSignaling {
+export class WebSocketSignaling extends EventTarget {
 
-  constructor(element) {
-    this.element = element;
+  constructor() {
+    super();
     this.websocket = new WebSocket("ws://localhost:80");
 
     this.websocket.onopen = () => {
@@ -77,13 +143,13 @@ export class WebSocketSignaling {
         case "disconnect":
           break;
         case "offer":
-          element.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
           break;
         case "answer":
-          element.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
           break;
         case "cadicate":
-          element.dispatchEvent(new CustomEvent('cadicate', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('cadicate', { detail: msg.data }));
           break;
         default:
           break;
@@ -92,7 +158,6 @@ export class WebSocketSignaling {
   }
 
   start() {
-    this.websocket.send(JSON.stringify({ type: "connect" }));
   }
 
   stop() {

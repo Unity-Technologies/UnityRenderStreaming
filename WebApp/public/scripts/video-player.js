@@ -1,4 +1,4 @@
-import Signaling from "./signaling.js"
+import Signaling, { WebSocketSignaling } from "./signaling.js"
 
 export class VideoPlayer {
   constructor(element, config) {
@@ -16,18 +16,22 @@ export class VideoPlayer {
       _this.video.play();
       _this.resizeVideo();
     }, true);
-    this.interval = 3000;
-    this.signaling = new Signaling();
-    this.ondisconnect = function(){};
-    this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+
+    if (false) {
+      this.signaling = new WebSocketSignaling();
+    } else {
+      this.signaling = new Signaling();
+    }
+
+    this.ondisconnect = function () { };
   }
 
   static getConfiguration(config) {
-    if(config === undefined) {
+    if (config === undefined) {
       config = {};
     }
     config.sdpSemantics = 'unified-plan';
-    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     return config;
   }
 
@@ -47,7 +51,7 @@ export class VideoPlayer {
       navigator.userAgent.match(/iPhone/i) ||
       navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i)
     ) {
-      let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
     }
 
@@ -59,7 +63,7 @@ export class VideoPlayer {
     this.pc.oniceconnectionstatechange = function (e) {
       console.log('iceConnectionState changed:', e);
       console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
-      if(_this.pc.iceConnectionState === 'disconnected') {
+      if (_this.pc.iceConnectionState === 'disconnected') {
         _this.ondisconnect();
       }
     };
@@ -71,8 +75,8 @@ export class VideoPlayer {
       _this.video.srcObject = e.streams[0];
     };
     this.pc.onicecandidate = function (e) {
-      if(e.candidate != null) {
-        _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+      if (e.candidate != null) {
+        _this.signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -87,77 +91,30 @@ export class VideoPlayer {
       console.log('Datachannel disconnected.');
     };
 
-    const createResponse = await this.signaling.create();
-    const data = await createResponse.json();
-    this.sessionId = data.sessionId;
+    this.signaling.addEventListener('answer', async (e) => {
+      const answer = e.detail;
+      const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
+      await _this.pc.setRemoteDescription(desc);
+    });
+
+    this.signaling.addEventListener('candidate', async (e) => {
+      const candidate = e.detail;
+      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
+      await _this.pc.addIceCandidate(iceCandidate);
+    });
+
+    // setup signaling
+    await this.signaling.start();
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
-    await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
-    const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
+    const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
-    await this.sendOffer(offer);
+    await this.signaling.sendOffer(offer.sdp);
   };
-
-  async createConnection() {
-    // signaling
-    const res = await this.signaling.createConnection(this.sessionId);
-    const data = await res.json();
-    this.connectionId = data.connectionId;
-  }
-
-  async sendOffer(offer) {
-    // signaling
-    await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
-    this.loopGetAnswer(this.sessionId, this.interval);
-    this.loopGetCandidate(this.sessionId, this.interval);
-  }
-
-  async loopGetAnswer(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getAnswer(sessionId, lastTimeRequest);
-      const data = await res.json();
-      const answers = data.answers;
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      if(answers.length > 0) {
-        const answer = answers[0];
-        await this.setAnswer(sessionId, answer.sdp);
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async loopGetCandidate(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getCandidate(sessionId, lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
-      if(candidates.length > 0) {
-        for(let candidate of candidates[0].candidates) {
-          const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
-          await this.pc.addIceCandidate(iceCandidate);
-        }
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async setAnswer(sessionId, sdp) {
-    const desc = new RTCSessionDescription({sdp:sdp, type:"answer"});
-    await this.pc.setRemoteDescription(desc);
-  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
@@ -200,7 +157,7 @@ export class VideoPlayer {
   };
 
   sendMsg(msg) {
-    if(this.channel == null) {
+    if (this.channel == null) {
       return;
     }
     switch (this.channel.readyState) {
@@ -214,7 +171,7 @@ export class VideoPlayer {
         console.log('Attempt to sendMsg message while closing');
         break;
       case 'closed':
-        console.log( 'Attempt to sendMsg message while connection closed.');
+        console.log('Attempt to sendMsg message while connection closed.');
         break;
     }
   };
