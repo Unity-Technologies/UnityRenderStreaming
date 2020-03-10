@@ -6,7 +6,7 @@ Unity Render Streaming テンプレートパッケージの利用を開始する
 
 テンプレートパッケージを [Github Release](https://github.com/Unity-Technologies/UnityRenderStreaming/releases) からダウンロードします。以下のパッケージをダウンロードしてください。
 
-- `com.unity.template.renderstreaming-x.x.x-preview.tgz`
+- `com.unity.template.renderstreaming-hd-x.x.x-preview.tgz`
 
 ![Download template package](../images/download_template_package.png)
 
@@ -20,7 +20,7 @@ Unity Render Streaming テンプレートパッケージの利用を開始する
 
 テンプレートパッケージを利用する際は、tgz ファイルをそれぞれ以下のフォルダーに配置します。
 
-`com.unity.template.renderstreaming-x.x.x-preview.tgz` を以下のフォルダーに移動
+`com.unity.template.renderstreaming-hd-x.x.x-preview.tgz` を以下のフォルダーに移動
 
 ```
   <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates

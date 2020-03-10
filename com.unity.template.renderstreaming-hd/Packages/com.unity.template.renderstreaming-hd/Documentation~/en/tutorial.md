@@ -6,7 +6,7 @@ This document describes the way to start using the template package of Unity Ren
 
 Download the template package from [Github Release](https://github.com/Unity-Technologies/com.unity.webrtc/releases). Please download the package below.
 
-- `com.unity.template.renderstreaming-x.x.x-preview.tgz`
+- `com.unity.template.renderstreaming-hd-x.x.x-preview.tgz`
 
 ![Download template package](../images/download_template_package.png)
 
@@ -21,7 +21,7 @@ The project template can be selected as a template when creating a new Unity pro
 ![Template unityhub](../images/template_in_unityhub.png)
 
 When using the template package, put the 2 tgz files in the following folders. 
-Move `com.unity.template.renderstreaming-x.x.x-preview.tgz` to this folder
+Move `com.unity.template.renderstreaming-hd-x.x.x-preview.tgz` to this folder
 
 ```
  <Unity Editor Root>/Data/Resources/PackageManager/ProjectTemplates

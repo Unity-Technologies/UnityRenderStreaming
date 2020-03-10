@@ -50,7 +50,7 @@ Browser support depends on the status of each browser's WebRTC support.
 
 - `com.unity.renderstreaming` -  [LICENSE.md](com.unity.renderstreaming/LICENSE.md)
 
-- `com.unity.template.renderstreaming` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/LICENSE.md)
+- `com.unity.template.renderstreaming-hd` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/LICENSE.md)
 
 ## Package Structure
 
@@ -64,7 +64,7 @@ Browser support depends on the status of each browser's WebRTC support.
 ├── EmptyProjectForTest~
 ├── Packages
 │   ├── com.unity.renderstreaming
-│   └── com.unity.template.renderstreaming
+│   └── com.unity.template.renderstreaming-hd
 ├── ProjectSettings
 ├── Plugin
 │   ├── WebRTCPlugin
