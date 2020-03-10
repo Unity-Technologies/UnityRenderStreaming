@@ -1,4 +1,13 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "Internal Packages",
+      "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
+      "scopes": [
+        "com.unity.renderstreaming"
+      ]
+    }
+  ],
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
@@ -7,7 +16,7 @@
     "com.unity.ide.vscode": "1.1.4",
     "com.unity.inputsystem": "1.0.0-preview.4",
     "com.unity.render-pipelines.high-definition": "7.1.8",
-    "com.unity.renderstreaming": "file:../../com.unity.renderstreaming",
+    "com.unity.renderstreaming": "2.0.0-preview.1",
     "com.unity.test-framework": "1.1.9",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.ugui": "1.0.0",
