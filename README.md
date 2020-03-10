@@ -56,21 +56,21 @@ Browser support depends on the status of each browser's WebRTC support.
 
 ```
 <root>
-├── Assets
-│   ├── Plugins
-│   ├── Scenes
-│   ├── Scripts
-│   └── Tests
+├── com.unity.renderstreaming
+│   ├── Documentation~
+│   ├── Editor
+│   ├── Runtime
+│   ├── Samples~
+│   └── Tests    
+├── com.unity.template.renderstreaming-hd
+│   ├── Assets
+│   │   └── Scenes
+│   ├── Packages
+│   └── ProjectSettings
 ├── EmptyProjectForTest~
-├── Packages
-│   ├── com.unity.renderstreaming
-│   └── com.unity.template.renderstreaming-hd
-├── ProjectSettings
-├── Plugin
-│   ├── WebRTCPlugin
-│   └── unity
 ├── RenderStreamingSampleSrc~
-│   └── RS_HDRPSampleSrc_1.x
+|   ├── RS_HDRPSampleSrc_1.x
+│   └── RS_URPSampleSrc_1.x
 └── WebApp
     ├── public
     ├── src
