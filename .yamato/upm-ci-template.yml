@@ -3,7 +3,7 @@
 
 projects:
   - name: renderstreaming
-    packagename: com.unity.template.renderstreaming
+    packagename: com.unity.template.renderstreaming-hd
 ---
 {% for project in projects %}
 pack:
@@ -14,7 +14,7 @@ pack:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template pack
+    - upm-ci template pack --project-path {{ project.packagename }}
   artifacts:
     packages:
       paths:
@@ -35,7 +35,7 @@ test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.vers
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-#    - patch -u Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
+#    - patch -u {{ project.packagename }}/Packages/manifest.json < BuildScripts~/add_internal_registry_manifest.patch
     {% if platform.name == "win" %}
     - mkdir upm-ci~\templates\ProjectData~\WebApp
     - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
@@ -43,7 +43,7 @@ test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.vers
     - cp -r WebApp upm-ci~/templates/ProjectData~/
     {% endif %}
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template test -u {{ editor.version }} --platform {{ param.platform }} --backend {{ param.backend }}
+    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
   artifacts:
     logs:
       paths:
@@ -64,7 +64,7 @@ publish:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template publish
+    - upm-ci template publish --project-path {{ project.packagename }}
   triggers:
     tags:
       only:
