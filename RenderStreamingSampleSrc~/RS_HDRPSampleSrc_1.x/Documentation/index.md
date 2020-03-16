@@ -3,7 +3,7 @@
 - [Japanese](./jp/index.md)
 
 This project contains all the assets that are used to create the HDRP sample for 
-[**com.unity.renderstreaming**](../../../Packages/com.unity.renderstreaming/Documentation~/index.md)
+[**com.unity.renderstreaming**](../../../com.unity.renderstreaming/Documentation~/index.md)
 package.
 
 Symbolic links are used to share assets between this project and [the main project](../../../Readme.md),
