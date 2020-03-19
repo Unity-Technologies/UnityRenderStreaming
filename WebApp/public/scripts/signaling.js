@@ -122,7 +122,14 @@ export class WebSocketSignaling extends EventTarget {
 
   constructor() {
     super();
-    this.websocket = new WebSocket("ws://localhost:80");
+
+    if (location.protocol === "https:") {
+      websocketUrl = "wss://" + location.host;
+    } else {
+      websocketUrl = "ws://" + location.host;
+    }
+
+    this.websocket = new WebSocket(websocketUrl);
 
     this.websocket.onopen = () => {
       this.websocket.send(JSON.stringify({ type: "connect" }));
