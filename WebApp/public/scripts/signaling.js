@@ -148,8 +148,8 @@ export class WebSocketSignaling extends EventTarget {
         case "answer":
           this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
           break;
-        case "cadicate":
-          this.dispatchEvent(new CustomEvent('cadicate', { detail: msg.data }));
+        case "candidate":
+          this.dispatchEvent(new CustomEvent('candidate', { detail: msg.data }));
           break;
         default:
           break;

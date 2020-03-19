@@ -49,7 +49,7 @@ export default class WSSignaling {
             ws.onmessage = (event: MessageEvent) => {
 
                 // JSON Schema expectation
-                // type: connect, disconnect, offer, answer, cadicate
+                // type: connect, disconnect, offer, answer, candidate
                 // from: from connection id
                 // to: to connection id
                 // data: any message data structure
@@ -66,7 +66,7 @@ export default class WSSignaling {
                         this.onConnect(ws);
                         break;
                     case "disconnect":
-                        this.onDisConnect(ws, msg.data);
+                        this.onDisconnect(ws, msg.data);
                         break;
                     case "offer":
                         this.onOffer(ws, msg.data);
@@ -74,8 +74,8 @@ export default class WSSignaling {
                     case "answer":
                         this.onAnswer(ws, msg.data);
                         break;
-                    case "cadicate":
-                        this.onCadicate(ws, msg.data);
+                    case "candidate":
+                        this.onCandidate(ws, msg.data);
                         break;
                     default:
                         break;
@@ -91,7 +91,7 @@ export default class WSSignaling {
         ws.send(JSON.stringify({connectionId:connectionId}));
     }
 
-    private onDisConnect(ws: WebSocket, message: any){
+    private onDisconnect(ws: WebSocket, message: any){
         const connectionIds = clients.get(ws);
         const connectionId = message.connectionId as string;
         connectionIds.delete(connectionId);
@@ -127,7 +127,7 @@ export default class WSSignaling {
         clients.forEach((_v, k) => k.send(JSON.stringify({from:connectionId, to:"", type:"answer", data:newAnswer})));
     }
 
-    private onCadicate(ws: WebSocket, message: any){
+    private onCandidate(ws: WebSocket, message: any){
         const connectionId = message.connectionId;
 
         if (!candidates.has(ws)) {
