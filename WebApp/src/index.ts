@@ -5,12 +5,14 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { createServer } from './server';
 import { AddressInfo } from 'net';
+import WSSignaling from './websocket';
 
 export interface Options {
   secure?: boolean;
   port?: number;
   keyfile?: string;
   certfile?: string;
+  websocket?: boolean;
 }
 
 export class RenderStreaming {
@@ -24,12 +26,14 @@ export class RenderStreaming {
           .option('-s, --secure', 'Enable HTTPS (you need server.key and server.cert)', process.env.SECURE || false)
           .option('-k, --keyfile <path>', 'https key file (default server.key)', process.env.KEYFILE || 'server.key')
           .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
+          .option('-w, --websocket', 'Enable Websocket Signaling', process.env.WEBSOCKET || false)
           .parse(argv);
         return {
           port: program.port,
           secure: program.secure,
           keyfile: program.keyfile,
           certfile: program.certfile,
+          websocket: program.websocket,
         };
       }
     };
@@ -65,6 +69,12 @@ export class RenderStreaming {
           console.log(`http://${address}:${port}`);
         }
       });
+    }
+
+    if (this.options.websocket) {
+      console.log(`start websocket signaling server ws://${this.getIPAddress()[0]}`)
+      //Start Websocket Signaling server
+      new WSSignaling(this.server);
     }
   }
 
