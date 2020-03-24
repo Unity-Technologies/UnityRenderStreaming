@@ -90,7 +90,7 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Signaling: HTTP polling error : " + e.ToString());
+                    Debug.LogError("Signaling: HTTP polling error : " + e);
                 }
 
                 Thread.Sleep((int)(m_timeout * 1000));
@@ -113,14 +113,13 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 else
                 {
-                    Debug.LogError("Signaling: " + response.ResponseUri.ToString() + " HTTP request failed (" +
-                                   response.StatusCode.ToString() + ")");
+                    Debug.LogError($"Signaling: {response.ResponseUri} HTTP request failed ({response.StatusCode})");
                     response.Close();
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("Signaling: HTTP request error " + e.ToString());
+                Debug.LogError("Signaling: HTTP request error " + e);
             }
 
             return null;
@@ -165,7 +164,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private bool HTTPCreate()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url}signaling");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url}/signaling");
             request.Method = "PUT";
             request.ContentType = "application/json";
             request.KeepAlive = false;
@@ -188,12 +187,12 @@ namespace Unity.RenderStreaming.Signaling
 
         private bool HTTPDelete()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url.ToString()}signaling");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url}/signaling");
             request.Method = "DELETE";
             request.ContentType = "application/json";
             request.KeepAlive = false;
 
-            Debug.Log($"Signaling: Removing HTTP connection from {m_url.ToString()}");
+            Debug.Log($"Signaling: Removing HTTP connection from {m_url}");
 
             return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
@@ -205,7 +204,7 @@ namespace Unity.RenderStreaming.Signaling
 
             Debug.Log("Signaling: Posting HTTP data: " + str);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(m_url.ToString() + path);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url}/{path}");
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
@@ -223,8 +222,7 @@ namespace Unity.RenderStreaming.Signaling
         private bool HTTPGetOffers()
         {
             HttpWebRequest request =
-                (HttpWebRequest)WebRequest.Create(
-                    $"{m_url.ToString()}signaling/offer?fromtime={m_lastTimeGetOfferRequest}");
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/offer?fromtime={m_lastTimeGetOfferRequest}");
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
@@ -249,8 +247,7 @@ namespace Unity.RenderStreaming.Signaling
         private bool HTTPGetCandidates()
         {
             HttpWebRequest request =
-                (HttpWebRequest)WebRequest.Create(
-                    $"{m_url.ToString()}signaling/candidate?fromtime={m_lastTimeGetCandidateRequest}");
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/candidate?fromtime={m_lastTimeGetCandidateRequest}");
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
