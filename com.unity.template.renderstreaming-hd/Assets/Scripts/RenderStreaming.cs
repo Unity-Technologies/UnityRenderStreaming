@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 using System.Text.RegularExpressions;
+using Unity.RenderStreaming.Signaling;
 
 namespace Unity.RenderStreaming
 {
@@ -24,14 +25,13 @@ namespace Unity.RenderStreaming
     public class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Address for signaling server")]
+
+        [SerializeField, Tooltip("Signaling server url")]
         private string urlSignaling = "http://localhost";
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
-        private RTCIceServer[] iceServers = new RTCIceServer[]
-        {
-            new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
-        };
+        private RTCIceServer[] iceServers =
+            new RTCIceServer[] {new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}};
 
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
@@ -50,14 +50,17 @@ namespace Unity.RenderStreaming
 
 #pragma warning restore 0649
 
-        private Signaling signaling;
+        private ISignaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
-        private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
+
+        private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels =
+            new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
+
         private RTCConfiguration conf;
         private MediaStream videoStream;
         private MediaStream audioStream;
 
-        void Awake()
+        public void Awake()
         {
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
             WebRTC.WebRTC.Initialize(encoderType);
@@ -65,14 +68,14 @@ namespace Unity.RenderStreaming
             RemoteInput.ActionButtonClick = OnButtonClick;
         }
 
-        void OnDestroy()
+        public void OnDestroy()
         {
             WebRTC.WebRTC.Finalize();
             RemoteInput.Destroy();
             Unity.WebRTC.Audio.Stop();
         }
 
-        void Start()
+        public void Start()
         {
             if (captureCamera == null)
             {
@@ -84,7 +87,6 @@ namespace Unity.RenderStreaming
             conf = default;
             conf.iceServers = iceServers;
 
-
             StartCoroutine(WebRTC.WebRTC.Update());
         }
 
@@ -92,7 +94,15 @@ namespace Unity.RenderStreaming
         {
             if (this.signaling == null)
             {
-                this.signaling = new Signaling(urlSignaling, interval);
+                if (urlSignaling.StartsWith("http"))
+                {
+                    this.signaling = new HttpSignaling(urlSignaling, interval);
+                }
+                else
+                {
+                    this.signaling = new WebSocketSignaling(urlSignaling, interval);
+                }
+
                 this.signaling.OnOffer += OnOffer;
                 this.signaling.OnIceCandidate += OnIceCandidate;
             }
@@ -111,7 +121,7 @@ namespace Unity.RenderStreaming
 
         public Vector2Int GetStreamingSize() { return streamingSize; }
 
-        void OnOffer(Signaling signaling, DescData data)
+        void OnOffer(ISignaling signaling, DescData data)
         {
             if (!pcs.TryGetValue(data.connectionId, out var pc))
             {
@@ -190,7 +200,7 @@ namespace Unity.RenderStreaming
             signaling.SendAnswer(data.connectionId, opCreateAnswer.desc);
         }
 
-        void OnIceCandidate(Signaling signaling, CandidateData data)
+        void OnIceCandidate(ISignaling signaling, CandidateData data)
         {
             RTCPeerConnection pc;
             if (pcs.TryGetValue(data.connectionId, out pc))
