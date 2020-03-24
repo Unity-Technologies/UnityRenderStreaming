@@ -124,12 +124,13 @@ export class WebSocketSignaling extends EventTarget {
     super();
 
     if (location.protocol === "https:") {
-      websocketUrl = "wss://" + location.host;
+      var websocketUrl = "wss://" + location.host;
     } else {
-      websocketUrl = "ws://" + location.host;
+      var websocketUrl = "ws://" + location.host;
     }
 
     this.websocket = new WebSocket(websocketUrl);
+    this.connectionId = null;
 
     this.websocket.onopen = () => {
       this.websocket.send(JSON.stringify({ type: "connect" }));
@@ -145,7 +146,7 @@ export class WebSocketSignaling extends EventTarget {
 
       switch (msg.type) {
         case "connect":
-          this.connectionId = msg.data.connectionId;
+          this.connectionId = msg.connectionId;
           break;
         case "disconnect":
           break;
@@ -164,7 +165,11 @@ export class WebSocketSignaling extends EventTarget {
     }
   }
 
-  start() {
+  async start() {
+    const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+    while(this.connectionId == null){
+      await sleep(100);
+    }
   }
 
   stop() {
@@ -173,12 +178,16 @@ export class WebSocketSignaling extends EventTarget {
 
   sendOffer(sdp) {
     const data = { 'sdp': sdp, 'connectionId': this.connectionId };
-    this.websocket.send(JSON.stringify({ type: "offer", from: this.connectionId, data: data }));
+    const sendJson = JSON.stringify({ type: "offer", from: this.connectionId, data: data });
+    console.log(sendJson);
+    this.websocket.send(sendJson);
   }
 
   sendAnswer(sdp) {
     const data = { 'sdp': sdp, 'connectionId': this.connectionId };
-    this.websocket.send(JSON.stringify({ type: "answer", from: this.connectionId, data: data }));
+    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, data: data });
+    console.log(sendJson);
+    this.websocket.send(sendJson);
   }
 
   sendCandidate(candidate, sdpMLineIndex, sdpMid) {
@@ -188,6 +197,8 @@ export class WebSocketSignaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': this.connectionId
     };
-    this.websocket.send(JSON.stringify({ type: "candidate", from: this.connectionId, data: data }));
+    const sendJson = JSON.stringify({ type: "candidate", from: this.connectionId, data: data });
+    console.log(sendJson);
+    this.websocket.send(sendJson);
   }
 }

@@ -88,7 +88,7 @@ export default class WSSignaling {
         const connectionId: string = uuid();
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
-        ws.send(JSON.stringify({connectionId:connectionId}));
+        ws.send(JSON.stringify({type:"connect", connectionId:connectionId}));
     }
 
     private onDisconnect(ws: WebSocket, message: any){
@@ -141,6 +141,11 @@ export default class WSSignaling {
         const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
         arr.push(candidate);
 
-        clients.forEach((_v, k) => k.send(JSON.stringify({from:connectionId, to:"", type:"candidate", data:candidate})));
+        clients.forEach((_v, k) => {
+            if(k === ws){
+                return;
+            }
+            k.send(JSON.stringify({from:connectionId, to:"", type:"candidate", data:candidate}));
+        });
     }
 }
