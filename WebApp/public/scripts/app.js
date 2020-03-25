@@ -1,5 +1,5 @@
 import { VideoPlayer } from "./video-player.js";
-import { registerKeyboardEvents, registerMouseEvents } from "./register-events.js";
+import { registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "./register-events.js";
 
 let playButton;
 let videoPlayer;
@@ -39,13 +39,13 @@ function onClickPlayButton() {
   playerDiv.appendChild(elementVideo);
   setupVideoPlayer(elementVideo).then(value => videoPlayer = value);
 
-  // add blue button
+  // add green button
   const elementBlueButton = document.createElement('button');
   elementBlueButton.id = "blueButton";
   elementBlueButton.innerHTML = "Light on";
   playerDiv.appendChild(elementBlueButton);
   elementBlueButton.addEventListener ("click", function() {
-    videoPlayer.sendClickEvent(1);
+    sendClickEvent(videoPlayer, 1);
   });
 
   // add green button
@@ -54,7 +54,7 @@ function onClickPlayButton() {
   elementGreenButton.innerHTML = "Light off";
   playerDiv.appendChild(elementGreenButton);
   elementGreenButton.addEventListener ("click", function() {
-    videoPlayer.sendClickEvent(2);
+    sendClickEvent(videoPlayer, 2);
   });
 
   // add orange button
@@ -63,7 +63,7 @@ function onClickPlayButton() {
   elementOrangeButton.innerHTML = "Play audio";
   playerDiv.appendChild(elementOrangeButton);
   elementOrangeButton.addEventListener ("click", function() {
-    videoPlayer.sendClickEvent(3);
+    sendClickEvent(videoPlayer, 3);
   });
 
   // add fullscreen button

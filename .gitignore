@@ -341,8 +341,10 @@ MigrationBackup/
 [Oo]bj/
 [Bb]uild/
 
-# Exclude Documentation folder
+# Exclude folder
 !Documentation~
+!BuildScripts~
+!EmptyProjectForTest~
 
 # Exclude webrtc source 
 Plugin/webrtc
