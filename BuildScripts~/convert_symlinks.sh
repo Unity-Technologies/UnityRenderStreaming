@@ -1,6 +1,6 @@
 
 ESCAPED_PATH=${1}
-TEMP_SYMLINK="${ESCAPED_PAT}Temp" 
+TEMP_SYMLINK="${ESCAPED_PATH}Temp" 
 
 echo
 echo --------------------------------------------------------------------------
