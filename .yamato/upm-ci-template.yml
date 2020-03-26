@@ -16,7 +16,7 @@ pack_{{ project.name }}:
     flavor: b1.large  
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh \"$0\"' {} \;    
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
     - upm-ci template pack --project-path {{ project.packagename }}
   artifacts:
     packages:
