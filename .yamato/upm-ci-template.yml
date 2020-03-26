@@ -4,16 +4,20 @@
 projects:
   - name: renderstreaming
     packagename: com.unity.template.renderstreaming-hd
+projects:
+  - name: renderstreaming-rtx
+    packagename: com.unity.template.renderstreaming-rtx
 ---
 {% for project in projects %}
 pack:
   name: Pack {{ project.packagename }}
-  agent:
+  agent:  
     type: Unity::VM
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+    image: package-ci/ubuntu:stable    
+    flavor: b1.large  
   commands:
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
     - upm-ci template pack --project-path {{ project.packagename }}
   artifacts:
     packages:
