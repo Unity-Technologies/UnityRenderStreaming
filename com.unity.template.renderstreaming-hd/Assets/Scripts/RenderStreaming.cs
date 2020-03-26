@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,9 +18,26 @@ namespace Unity.RenderStreaming
         public ButtonClickEvent click;
     }
 
+    [System.Serializable]
+    public class JsonICE
+    {
+        public string lifetimeDuration;
+        public string blockStatus;
+        public string iceTransportPolicy;
+        public RTCIceServer[] iceServers;
+
+        public static JsonICE CreateFromJSON(string jsonString)
+        {
+            return JsonUtility.FromJson<JsonICE>(jsonString);
+        }
+    }
+
     public class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField, Tooltip("URL to fetch JSON ICE servers from")]
+        private string iceServerURL = "http://localhost:8000/turn";
+
         [SerializeField, Tooltip("Address for signaling server")]
         private string urlSignaling = "http://localhost";
 
@@ -57,6 +74,67 @@ namespace Unity.RenderStreaming
         private MediaStream videoStream;
         private MediaStream audioStream;
 
+        // Helper function for getting the command line arguments
+        private static string GetArg(string name)
+        {
+            var args = System.Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == name && args.Length > i + 1)
+                {
+                    return args[i + 1];
+                }
+            }
+            return null;
+        }
+
+        IEnumerator GetRTCIceServers(System.Action<RTCIceServer[]> result)
+        {
+            List<RTCIceServer> serverList = new List<RTCIceServer>();
+
+            // Add servers from config
+            foreach (var server in iceServers)
+            {
+                serverList.Add(server);
+            }
+
+            string iceUrlArg = GetArg("-iceUrl");
+            if (iceUrlArg != null)
+            {
+                iceServerURL = iceUrlArg;
+            }
+
+            if (iceServerURL.Length > 0)
+            {
+                Debug.Log($"Fetching ICE servers from: {iceServerURL}");
+                yield return FetchICE(iceServerURL, (server) =>
+                {
+                    Debug.Log($"got ice server from json: {string.Join(",", server.urls)}");
+                    serverList.Add(server);
+                });
+            }
+
+            result(serverList.ToArray());
+        }
+
+        IEnumerator FetchICE(string url, System.Action<RTCIceServer> result)
+        {
+            UnityWebRequest request = UnityWebRequest.Get(url);
+            yield return request.SendWebRequest();
+            if (request.isNetworkError)
+            {
+                Debug.LogError($"Failed to fetch ICE servers from {url}: {request.error}");
+            }
+            else
+            {
+                JsonICE ice = JsonICE.CreateFromJSON(request.downloadHandler.text);
+                foreach (var server in ice.iceServers)
+                {
+                    result(server);
+                }
+            }
+        }
+
         public void Awake()
         {
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
@@ -79,19 +157,27 @@ namespace Unity.RenderStreaming
             }
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, RenderTextureDepth.DEPTH_24);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
+
+            string signalingArg = GetArg("-signaling");
+            if (signalingArg != null)
+            {
+                urlSignaling = signalingArg;
+            }
+            Debug.Log($"Using signaling server: {urlSignaling}");
             signaling = new Signaling(urlSignaling);
+
             var opCreate = signaling.Create();
             yield return opCreate;
             if (opCreate.webRequest.isNetworkError)
             {
-                Debug.LogError($"Network Error: {opCreate.webRequest.error}");
+                Debug.LogError($"Failed to connect to signaling server at {urlSignaling}: {opCreate.webRequest.error}");
                 yield break;
             }
             var newResData = opCreate.webRequest.DownloadHandlerJson<NewResData>().GetObject();
             sessionId = newResData.sessionId;
 
             conf = default;
-            conf.iceServers = iceServers;
+            yield return StartCoroutine(GetRTCIceServers((result) => conf.iceServers = result));
             StartCoroutine(WebRTC.WebRTC.Update());
             StartCoroutine(LoopPolling());
         }

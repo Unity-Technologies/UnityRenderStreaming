@@ -1,4 +1,4 @@
-﻿using Unity.RenderStreaming;
+using Unity.RenderStreaming;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,6 +10,7 @@ public class RenderStreamingEditor : Editor
         {
             serializedObject.Update();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("iceServerURL"));
             ShowIceServerList(serializedObject.FindProperty("iceServers"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("streamingSize"));
