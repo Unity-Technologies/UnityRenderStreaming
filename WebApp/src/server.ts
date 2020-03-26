@@ -6,11 +6,12 @@ import signaling from './signaling';
 
 import { log, LogLevel } from './log';
 
-export const createServer = (): express.Application => {
+export const createServer = (config): express.Application => {
   const app: express.Application = express();
   // const signal = require('./signaling');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+  app.get('/protocol', (req, res) => res.json({useWebSocket: config.websocket}));
   app.use('/signaling', signaling);
   app.use(express.static(path.join(__dirname, '/../public/stylesheets')));
   app.use(express.static(path.join(__dirname, '/../public/scripts')));

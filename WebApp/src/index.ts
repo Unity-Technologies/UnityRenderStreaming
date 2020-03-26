@@ -49,7 +49,7 @@ export class RenderStreaming {
 
   constructor(options: Options) {
     this.options = options;
-    this.app = createServer();
+    this.app = createServer(this.options);
     if (this.options.secure) {
       this.server = https.createServer({
         key: fs.readFileSync(options.keyfile),

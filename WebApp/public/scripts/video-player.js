@@ -17,12 +17,6 @@ export class VideoPlayer {
       _this.resizeVideo();
     }, true);
 
-    if (false) {
-      this.signaling = new WebSocketSignaling();
-    } else {
-      this.signaling = new Signaling();
-    }
-
     this.ondisconnect = function () { };
   }
 
@@ -53,6 +47,17 @@ export class VideoPlayer {
     ) {
       let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
+    }
+
+    // Decide Signaling Protocol
+    const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
+    const createResponse = await fetch(protocolEndPoint);
+    const res = await createResponse.json();
+
+    if (res.useWebSocket) {
+      this.signaling = new WebSocketSignaling();
+    } else {
+      this.signaling = new Signaling();
     }
 
     // Create peerConnection with proxy server and set up handlers
@@ -99,7 +104,7 @@ export class VideoPlayer {
 
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
-      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
+      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
       await _this.pc.addIceCandidate(iceCandidate);
     });
 
