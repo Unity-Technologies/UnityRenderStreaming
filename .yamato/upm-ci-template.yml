@@ -2,14 +2,13 @@
 {% metadata_file .yamato/meta/environments.yml %}
 
 projects:
-  - name: renderstreaming
+  - name: renderstreaming-hd
     packagename: com.unity.template.renderstreaming-hd
-projects:
   - name: renderstreaming-rtx
     packagename: com.unity.template.renderstreaming-rtx
 ---
 {% for project in projects %}
-pack:
+pack_{{ project.name }}:
   name: Pack {{ project.packagename }}
   agent:  
     type: Unity::VM
@@ -32,7 +31,7 @@ pack:
 {% for editor in editors %}
 {% for platform in platforms %}
 {% for param in platform.test_params %}
-test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
@@ -60,7 +59,7 @@ test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.vers
 {% endfor %}
 {% endfor %}
 
-publish:
+publish_{{ project.name }}:
   name: Publish {{ project.packagename }}
   agent:
     type: Unity::VM
@@ -91,7 +90,7 @@ publish:
     {% endfor %}
     {% endfor %}
 
-publish_dryrun:
+publish_dryrun_{{ project.name }}:
   name: Publish Dry Run {{ project.packagename }}
   agent:
     type: Unity::VM
