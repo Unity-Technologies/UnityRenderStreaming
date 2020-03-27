@@ -6,11 +6,11 @@ editor_version: 2019.3
 samples:
   - name: HDRP
     project_path: RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x
-    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
+    unitypackage_path: com.unity.renderstreaming/Samples~/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/HDRP/Editor/RenderStreamingHDRPSimple.unitypackage
   - name: URP
     project_path: RenderStreamingSampleSrc~/RS_URPSampleSrc
-    unitypackage_path: Packages/com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
+    unitypackage_path: com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/URP/Editor/RenderStreamingURPSimple.unitypackage
 
 project_path: EmptyProjectForTest~

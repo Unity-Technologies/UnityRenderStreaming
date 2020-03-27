@@ -17,7 +17,7 @@ Use this command to display the help guide:
 npm run start -- -h
 ```
 
-See [the documentation](../Packages/com.unity.template.renderstreaming/Documentation~/jp/webserver.md) for details on the options.
+See [the documentation](../com.unity.renderstreaming/Documentation~/en/webapp.md) for details on the options.
 
 This command will start the server using `ts-node`: 
 
@@ -39,4 +39,4 @@ Render Streaming uses a simple web API for signaling. [Postman](https://www.getp
 
 View a summary of the API by importing `WebApp/test/renderstreaming.postman_collection.json` in Postman. Operation tests can also be run on the API while the web server is active. 
 
-<img src="../Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
+<img src="../com.unity.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
