@@ -8,7 +8,7 @@ using WebSocketSharp;
 
 namespace Unity.RenderStreaming.Signaling
 {
-    public class WebSocketSignaling : ISignaling
+    public class FurioosSignaling : ISignaling
     {
         private string m_url;
         private float m_timeout;
@@ -17,7 +17,9 @@ namespace Unity.RenderStreaming.Signaling
         private AutoResetEvent m_wsCloseEvent;
         private WebSocket m_webSocket;
 
-        public WebSocketSignaling(string url, float timeout)
+        public delegate void OnSignedInHandler(ISignaling sender);
+
+        public FurioosSignaling(string url, float timeout)
         {
             m_url = url;
             m_timeout = timeout;
@@ -31,13 +33,13 @@ namespace Unity.RenderStreaming.Signaling
             m_signalingThread.Start();
         }
 
-
         public void Stop()
         {
             m_running = false;
             m_webSocket?.Close();
         }
 
+        public event OnSignedInHandler OnSignedIn;
         public event OnOfferHandler OnOffer;
         public event OnAnswerHandler OnAnswer;
         public event OnIceCandidateHandler OnIceCandidate;
@@ -133,36 +135,33 @@ namespace Unity.RenderStreaming.Signaling
 
                 if (!string.IsNullOrEmpty(routedMessage.type))
                 {
-                    // need only for furioos
-                    // if (msg.type == "signIn")
-                    // {
-                    //     if (msg.status == "SUCCESS")
-                    //     {
-                    //         this.m_connectionId = msg.connectionId;
-                    //         this.m_sessionId = msg.peerId;
-                    //         Debug.Log("Signaling: Slot signed in.");
-                    //
-                    //         this.WSSend(
-                    //             "{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
-                    //
-                    //         OnSignedIn?.Invoke(this);
-                    //     }
-                    //     else
-                    //     {
-                    //         Debug.LogError("Signaling: Sign-in error : " + msg.message);
-                    //     }
-                    // }
-                    // else if (msg.type == "reconnect")
-                    // {
-                    //     if (msg.status == "SUCCESS")
-                    //     {
-                    //         Debug.Log("Signaling: Slot reconnected.");
-                    //     }
-                    //     else
-                    //     {
-                    //         Debug.LogError("Signaling: Reconnect error : " + msg.message);
-                    //     }
-                    // }
+                    if (msg.type == "signIn")
+                    {
+                        if (msg.status == "SUCCESS")
+                        {
+                            Debug.Log("Signaling: Slot signed in.");
+
+                            this.WSSend(
+                                "{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
+
+                            OnSignedIn?.Invoke(this);
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Sign-in error : " + msg.message);
+                        }
+                    }
+                    else if (msg.type == "reconnect")
+                    {
+                        if (msg.status == "SUCCESS")
+                        {
+                            Debug.Log("Signaling: Slot reconnected.");
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Reconnect error : " + msg.message);
+                        }
+                    }
 
                     if (routedMessage.type == "offer")
                     {
@@ -207,7 +206,7 @@ namespace Unity.RenderStreaming.Signaling
         private void WSConnected(object sender, EventArgs e)
         {
             Debug.Log("Signaling: WS connected.");
-            this.WSSend("{\"type\":\"connect\"}");
+            this.WSSend("{\"type\" :\"signIn\",\"peerName\" :\"Unity Test App\"}");
         }
 
 
