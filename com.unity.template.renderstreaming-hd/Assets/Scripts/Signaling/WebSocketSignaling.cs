@@ -133,36 +133,6 @@ namespace Unity.RenderStreaming.Signaling
 
                 if (!string.IsNullOrEmpty(routedMessage.type))
                 {
-                    // need only for furioos
-                    // if (msg.type == "signIn")
-                    // {
-                    //     if (msg.status == "SUCCESS")
-                    //     {
-                    //         this.m_connectionId = msg.connectionId;
-                    //         this.m_sessionId = msg.peerId;
-                    //         Debug.Log("Signaling: Slot signed in.");
-                    //
-                    //         this.WSSend(
-                    //             "{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
-                    //
-                    //         OnSignedIn?.Invoke(this);
-                    //     }
-                    //     else
-                    //     {
-                    //         Debug.LogError("Signaling: Sign-in error : " + msg.message);
-                    //     }
-                    // }
-                    // else if (msg.type == "reconnect")
-                    // {
-                    //     if (msg.status == "SUCCESS")
-                    //     {
-                    //         Debug.Log("Signaling: Slot reconnected.");
-                    //     }
-                    //     else
-                    //     {
-                    //         Debug.LogError("Signaling: Reconnect error : " + msg.message);
-                    //     }
-                    // }
 
                     if (routedMessage.type == "offer")
                     {
@@ -213,7 +183,6 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSError(object sender, ErrorEventArgs e)
         {
-            //TODO switch to HTTP here ?
             Debug.LogError($"Signaling: WS connection error: {e.Message}");
         }
 

@@ -8,6 +8,14 @@ using WebSocketSharp;
 
 namespace Unity.RenderStreaming.Signaling
 {
+    [Serializable]
+    public class FurioosRoutedMessage<T>
+    {
+        public string from;
+        public string to;
+        public T message;
+    }
+
     public class FurioosSignaling : ISignaling
     {
         private string m_url;
@@ -56,10 +64,9 @@ namespace Unity.RenderStreaming.Signaling
             data.sdp = answer.sdp;
             data.type = "answer";
 
-            RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
+            FurioosRoutedMessage<DescData> routedMessage = new FurioosRoutedMessage<DescData>();
             routedMessage.to = connectionId;
-            routedMessage.data = data;
-            routedMessage.type = "answer";
+            routedMessage.message = data;
 
             WSSend(routedMessage);
         }
@@ -72,10 +79,9 @@ namespace Unity.RenderStreaming.Signaling
             data.sdpMLineIndex = candidate.sdpMLineIndex;
             data.sdpMid = candidate.sdpMid;
 
-            RoutedMessage<CandidateData> routedMessage = new RoutedMessage<CandidateData>();
+            FurioosRoutedMessage<CandidateData> routedMessage = new FurioosRoutedMessage<CandidateData>();
             routedMessage.to = connectionId;
-            routedMessage.data = data;
-            routedMessage.type = "candidate";
+            routedMessage.message = data;
 
             WSSend(routedMessage);
         }
@@ -121,28 +127,26 @@ namespace Unity.RenderStreaming.Signaling
 
             try
             {
-                var routedMessage = JsonUtility.FromJson<RoutedMessage<SignalingMessage>>(content);
+                var routedMessage = JsonUtility.FromJson<FurioosRoutedMessage<SignalingMessage>>(content);
 
                 SignalingMessage msg;
-                if (!string.IsNullOrEmpty(routedMessage.type))
+                if (!string.IsNullOrEmpty(routedMessage.from))
                 {
-                    msg = routedMessage.data;
+                    msg = routedMessage.message;
                 }
                 else
                 {
                     msg = JsonUtility.FromJson<SignalingMessage>(content);
                 }
 
-                if (!string.IsNullOrEmpty(routedMessage.type))
+                if (!string.IsNullOrEmpty(msg.type))
                 {
                     if (msg.type == "signIn")
                     {
                         if (msg.status == "SUCCESS")
                         {
                             Debug.Log("Signaling: Slot signed in.");
-
-                            this.WSSend(
-                                "{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
+                            this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
 
                             OnSignedIn?.Invoke(this);
                         }
@@ -163,7 +167,7 @@ namespace Unity.RenderStreaming.Signaling
                         }
                     }
 
-                    if (routedMessage.type == "offer")
+                    if (msg.type == "offer")
                     {
                         if (!string.IsNullOrEmpty(routedMessage.from))
                         {
@@ -212,7 +216,6 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSError(object sender, ErrorEventArgs e)
         {
-            //TODO switch to HTTP here ?
             Debug.LogError($"Signaling: WS connection error: {e.Message}");
         }
 
