@@ -85,7 +85,6 @@ namespace Unity.RenderStreaming {
         private readonly Uri _uri;
         private readonly float _timeout;
         private string _sessionId;
-        private string _connectionId;
         private WebSocket _webSocket;
         private long _lastTimeGetOfferRequest;
         private long _lastTimeGetCandidateRequest;
@@ -245,10 +244,10 @@ namespace Unity.RenderStreaming {
 
                         if (msg.status == "SUCCESS"){
 
-                            this._connectionId = msg.connectionId;
                             this._sessionId = msg.peerId;
                             Debug.Log("Signaling: Slot signed in.");
 
+                            // This message is only used for Furioos streaming. ToDo: Separate Signaling Process Sample and Furioos @kannan-xiao4
                             this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
 
                             OnSignedIn?.Invoke(this);
@@ -282,7 +281,7 @@ namespace Unity.RenderStreaming {
                         } else {
                             Debug.LogError("Signaling: Received message from unknown peer");
                         }
-                       
+
                     }
 
                 } else if (!string.IsNullOrEmpty(msg.candidate)) {
@@ -299,7 +298,7 @@ namespace Unity.RenderStreaming {
                     } else {
                         Debug.LogError("Signaling: Received message from unknown peer");
                     }
-                   
+
                 }
 
             } catch (Exception ex) {
@@ -331,7 +330,7 @@ namespace Unity.RenderStreaming {
         }
 
         private void WSSend(object data) {
-            
+
             if (this._webSocket == null || this._webSocket.ReadyState != WebSocketState.Open) {
                 Debug.LogError("Signaling: WS is not connected. Unable to send message");
                 return;
@@ -398,7 +397,7 @@ namespace Unity.RenderStreaming {
                 Debug.LogError("Signaling: HTTP request error " + e.ToString());
             }
             return null;
-            
+
         }
 
 
