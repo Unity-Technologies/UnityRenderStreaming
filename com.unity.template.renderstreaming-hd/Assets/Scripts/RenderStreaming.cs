@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +36,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
+        [SerializeField, Tooltip("Streaming bit rate")]
+        private int bitRate = 1000000;
+
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
@@ -67,17 +70,13 @@ namespace Unity.RenderStreaming
 
         public void OnDestroy()
         {
-            WebRTC.WebRTC.Finalize();
+            WebRTC.WebRTC.Dispose();
             RemoteInput.Destroy();
             Unity.WebRTC.Audio.Stop();
         }
         public IEnumerator Start()
         {
-            if (captureCamera == null)
-            {
-                captureCamera = Camera.main;
-            }
-            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, RenderTextureDepth.DEPTH_24);
+            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, bitRate);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
             signaling = new Signaling(urlSignaling);
             var opCreate = signaling.Create();
@@ -177,19 +176,21 @@ namespace Unity.RenderStreaming
             var pc = pcs[connectionId];
             var op = pc.CreateAnswer(ref options);
             yield return op;
-            if (op.isError)
+            if (op.IsError)
             {
-                Debug.LogError($"Network Error: {op.error}");
+                Debug.LogError($"Network Error: {op.Error}");
                 yield break;
             }
-            var opLocalDesc = pc.SetLocalDescription(ref op.desc);
+
+            var desc = op.Desc;
+            var opLocalDesc = pc.SetLocalDescription(ref desc);
             yield return opLocalDesc;
-            if (opLocalDesc.isError)
+            if (opLocalDesc.IsError)
             {
-                Debug.LogError($"Network Error: {opLocalDesc.error}");
+                Debug.LogError($"Network Error: {opLocalDesc.Error}");
                 yield break;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.desc.sdp);
+            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.Desc.sdp);
             yield return op3;
             if (op3.webRequest.isNetworkError)
             {
@@ -225,7 +226,7 @@ namespace Unity.RenderStreaming
                 }
                 foreach (var candidate in candidateContainer.candidates)
                 {
-                    RTCIceCandidate _candidate = default;
+                    RTCIceCandidate​ _candidate = default;
                     _candidate.candidate = candidate.candidate;
                     _candidate.sdpMLineIndex = candidate.sdpMLineIndex;
                     _candidate.sdpMid = candidate.sdpMid;
@@ -235,7 +236,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate candidate)
+        IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate​ candidate)
         {
             var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
             yield return opCandidate;
