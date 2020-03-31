@@ -1,22 +1,22 @@
-# TURN サーバとの連携
+# TURN Servers
 
-Unity Render Streaming でストリーミングが正しく動作しない場合、まずは [トラブルに関する質問](faq.md) を参照してください。
-もしファイアウォールの問題であった場合は、ファイアウォールの設定を変更するか、 **TURN サーバ** を利用する必要があります。
+If streaming is not functioning correctly in Unity Render Streaming, consult the [troubleshooting guide](faq.md).
+If you are experiencing firewall issues, you may need to change your firewall settings or use a **TURN server**.
 
-**TURN（Traversal Using Relay around NAT）**とは、NAT やファイアウォールを超えて通信を行うための通信プロトコルです。TURN を利用するには、NAT の外側に **TURN サーバ** を設置する必要があります。
+**TURN（Traversal Using Relay around NAT）** is a communication protocol for transmitting across NAT and firewalls. A **TURN server** must be set up on the outside of the NAT in order to use TURN.
 
-このドキュメントでは、Unity Render Streaming を TURN サーバと連携する方法について説明します。
+This document covers the process of linking Unity Render Streaming to a TURN server.
 
-## インスタンスの設定
+## Instance settings
 
-TURN サーバを実現するソフトウェアとして [coturn](https://github.com/coturn/coturn) を利用します。coturn は TURN サーバのオープンソース実装です。
-coturn を GCP インスタンス上で実行する方法について説明します。
+[coturn](https://github.com/coturn/coturn) software is an open source implementation for TURN servers. 
+The following is an explanation for running coturn on a GCP instance.
 
- `apt` コマンドで coturn をインストールするため、インスタンスイメージには **ubuntu-minimal-1604-xenial-v20190628** を利用しています。coturn がサポートしているディストリビューションであれば問題ありません。 coturn の詳細については、 [coturn の ドキュメント](https://github.com/coturn/coturn) を確認してください。
+**ubuntu-minimal-1604-xenial-v20190628** is used in the instance image so that the `apt` command can be used to install coturn. If the distribution is supported by coturn, there shouldn't be any issues. See the [coturn documentation](https://github.com/coturn/coturn) for details on coturn.
 
-### Firewall rules の設定
+### Firewall rules settings
 
-TURN サーバが利用するポートを公開する必要があるので、ファイアウォールの設定を追加します。
+The port used by the TURN server needs to be public, so add the following settings to the firewall.
 
 | Protocol | PORT                   |
 | -------- | ---------------------- |
@@ -25,68 +25,68 @@ TURN サーバが利用するポートを公開する必要があるので、フ
 
 ![TURN firewall rules](../images/turn-firewall-rules.png)
 
-### coturn のインストール
+### Installing coturn
 
-GCPインスタンスに `ssh` でログインしてください。 
-`coturn` をインストールします。
+Log into the GCP instance with `ssh`. 
+Install `coturn`.
 
 ```shell
 sudo apt install coturn
 ```
 
-coturn を TURN サーバとして利用するため、デーモンで起動するときの設定を変更します。
-以下のファイルを編集します。
+Change the settings for booting with a daemon to use coturn as a TURN server. 
+Edit the following file. 
 
 ```shell
 sudo vim /etc/default/coturn
 ```
 
-以下の行を追加します。
+Add the following line.
 
 ```
 TURNSERVER_ENABLED=1
 ```
 
-次に、coturn の設定ファイルを編集します。
+Next, edit the coturn settings file.
 
 ```shell
 sudo vim /etc/turnserver.conf
 ```
 
-以下の行のコメントを外して、各自の内容に応じて記述します。
+Remove the comments from the following lines, and add any necessary information.
 
 ```shell
-# 外部のピアに教える TURN サーバーが待ち構えるIPアドレス
+# The TURN server IP address to be sent to external peers
 external-ip=10.140.0.4
 
-# 認証を有効化する
+# Validate credentials
 lt-cred-mech
 
-# ユーザ名とパスワードを指定
+# Designate username and password
 user=username:password
 
-# レルムの設定
+# Realm settings
 realm=yourcompany.com
 
-# ログファイルの設定
+# Log file settings
 log-file=/var/tmp/turn.log
 ```
 
-設定完了後、coturn サービスを再起動します。
+When finished, restart the coturn service. 
 
 ```shell
 sudo systemctl restart coturn
 ```
 
-### 導通確認
+### Connection verification
 
-coturn の設定を完了したら、TURN サーバの動作を確認するためログを監視します。
+After completing the coturn settings, check the log to verify that the TURN server is function correctly.
 
 ```
 tail -f /var/tmp/turn_xxxx-xx-xx.log
 ```
 
-[webrtc サンプル](https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/) を利用して TURN サーバへの接続を行います。以下のように設定して `Add Server` ボタンを押します。
+Use the [webrtc sample](https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/) to connect to the TURN server. Use the following settings and click `Add Server`.
 
 | Parameter        | Example                               |
 | ---------------- | ------------------------------------- |
@@ -96,11 +96,11 @@ tail -f /var/tmp/turn_xxxx-xx-xx.log
 
 <img src="../images/turn-connection-testing.png" width=600 align=center>
 
-`Gather candidates` ボタンを押すと、リストに通信経路候補が表示されます。TURN サーバ側にもログが出力されていることを確認してください。 
+Click `Gather candidates` to show a list of potential communication paths. Verify that a log is also printed on the TURN server side. 
 
-### ブラウザ側の変更
+### Browser side changes
 
-ブラウザ側は `video-player.js` の `config.iceServers` の設定を変更します。
+Change the `config.iceServers` settings under `video-player.js` on the browser side.
 
 ```javascript
 config.iceServers = [{
@@ -113,8 +113,8 @@ config.iceServers = [{
 ];
 ```
 
-### Unity 側の変更
+### Unity side changes 
 
-`Render Streaming` インスペクタの `Ice Servers` に TURN サーバの設定を追加してください。
+Add the TURN server settings to `Ice Server` in the `Render Streaming` inspector.
 
 ![TURN Render Streaming inspector](../images/turn-renderstreaming-inspector.png)
