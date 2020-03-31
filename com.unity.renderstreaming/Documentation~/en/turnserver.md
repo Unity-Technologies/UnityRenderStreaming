@@ -115,6 +115,6 @@ config.iceServers = [{
 
 ### Unity side changes 
 
-Add the TURN server settings to `Ice Servers` in the `Render Streaming` inspector.
+Add the TURN server settings to `Ice Server` in the `Render Streaming` inspector.
 
 ![TURN Render Streaming inspector](../images/turn-renderstreaming-inspector.png)
