@@ -364,4 +364,3 @@ export function sendClickEvent(videoPlayer, elementId) {
   data.setInt16(1, elementId, true);
   videoPlayer && videoPlayer.sendMsg(data.buffer);
 }
->>>>>>> Gamepad support
