@@ -1,9 +1,16 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.RenderStreaming;
 
-namespace UnityTemplateProjects
+namespace Unity.RenderStreaming
 {
+    public interface IInput
+    {
+        Mouse Mouse { get; }
+        Keyboard Keyboard { get; }
+        Touchscreen Touchscreen { get; }
+        Gamepad Gamepad { get; }
+    }
+
     public class SimpleCameraController : MonoBehaviour
     {
         class CameraState
@@ -77,9 +84,38 @@ namespace UnityTemplateProjects
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
         public bool invertY = false;
 
+        private Gamepad m_gamepad;
+        private Keyboard m_keyboard;
+        private Mouse m_mouse;
+        private Touchscreen m_screen;
+
+        public void SetInput(IInput input)
+        {
+            m_mouse = input.Mouse;
+            m_keyboard = input.Keyboard;
+            m_screen = input.Touchscreen;
+            m_gamepad = input.Gamepad;
+        }
+
+        public void Reset()
+        {
+            m_mouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
+            m_keyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
+            m_screen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
+            m_gamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
+        }
+
         void Start()
         {
+            Reset();
             m_InitialCameraState.SetFromTransform(transform);
+
+            RenderStreaming.Instance.AddController(this);
+        }
+
+        void OnDestroy()
+        {
+            RenderStreaming.Instance.RemoveController(this);
         }
 
         void OnEnable()
@@ -111,79 +147,85 @@ namespace UnityTemplateProjects
 
             m_TargetCameraState.yaw += input.x * mouseSensitivityFactor;
             m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
-
         }
 
 //---------------------------------------------------------------------------------------------------------------------
 
         Vector3 GetInputTranslationDirection()
         {
-            var lastGamepad = Gamepad.all.Count > 0 ? Gamepad.all[Gamepad.all.Count-1] : null;
             Vector3 direction = new Vector3();
-            if (Keyboard.current.wKey.isPressed || (lastGamepad != null? lastGamepad.dpad.up.isPressed : false))
+            if (m_keyboard.wKey.isPressed)
             {
                 direction += Vector3.forward;
             }
-            if (Keyboard.current.sKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.down.isPressed : false))
+            if (m_keyboard.sKey.isPressed)
             {
                 direction += Vector3.back;
             }
-            if (Keyboard.current.aKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.left.isPressed : false))
+            if (m_keyboard.aKey.isPressed)
             {
                 direction += Vector3.left;
             }
-            if (Keyboard.current.dKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.right.isPressed : false))
+            if (m_keyboard.dKey.isPressed)
             {
                 direction += Vector3.right;
             }
-            if (Keyboard.current.qKey.isPressed)
+            if (m_keyboard.qKey.isPressed)
             {
                 direction += Vector3.down;
             }
-            if (Keyboard.current.eKey.isPressed)
+            if (m_keyboard.eKey.isPressed)
             {
                 direction += Vector3.up;
             }
 
-            //Translation
-            var activeTouches = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches;
-            if (activeTouches.Count == 2)
+            // gamepad right stick control
+            if (m_gamepad.rightStick != null)
             {
-                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
-            } else if (IsMouseDragged(Mouse.current,true)) {
-                direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
-            } else if (IsMouseDragged(RemoteInput.RemoteMouse,true)) {
-                direction = GetTranslationFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
+                var axis = m_gamepad.rightStick.ReadValue();
+                direction += new Vector3(axis.x, 0, axis.y);
             }
 
+            //Translation
+            if (m_screen.touches.Count == 2)
+            {
+                var activeTouches = m_screen.touches.ToArray();
+                direction = GetTranslationFromInput((activeTouches[0].delta.ReadValue() + activeTouches[1].delta.ReadValue()) / 2f);
+            }
+            else if (IsMouseDragged(m_mouse,true))
+            {
+                direction = GetTranslationFromInput(m_mouse.delta.ReadValue());
+            }
             return direction;
         }
 
         void FixedUpdate()
         {
-            if (Keyboard.current.uKey.isPressed)
+            if (m_keyboard.uKey.isPressed)
             {
                 ResetCamera();
                 return;
             }
 
             // Rotation 
-            if (IsMouseDragged(Mouse.current,false)) {
-                UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
-            } else if (IsMouseDragged(RemoteInput.RemoteMouse,false)) {
-                UpdateTargetCameraStateFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
-            } else if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count == 1) {
-                UpdateTargetCameraStateFromInput(UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[0].delta);                
+            if (IsMouseDragged(m_mouse,false))
+            {
+                UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
+            }
+            else if (m_screen.touches.Count == 1)
+            {
+                var activeTouches = m_screen.touches.ToArray();
+                UpdateTargetCameraStateFromInput(activeTouches[0].delta.ReadValue());
             }
             
-            // Rotation from joystick 
-            if(Gamepad.all.Count > 0)           
-                UpdateTargetCameraStateFromInput(Gamepad.all[Gamepad.all.Count-1].leftStick.ReadValue());
+            // Rotation from joystick
+            if(m_gamepad.leftStick != null)
+                UpdateTargetCameraStateFromInput(m_gamepad.leftStick.ReadValue());
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 
             // Speed up movement when shift key held
-            if (Keyboard.current.leftShiftKey.isPressed)
+            if (m_keyboard.leftShiftKey.isPressed)
             {
                 translation *= 10.0f;
             }

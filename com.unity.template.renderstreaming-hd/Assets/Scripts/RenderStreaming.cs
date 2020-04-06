@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.WebRTC;
 using System.Text.RegularExpressions;
@@ -53,24 +54,29 @@ namespace Unity.RenderStreaming
 #pragma warning restore 0649
 
         private ISignaling signaling;
-        private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
-        private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
+        private readonly Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
+        private readonly Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
+        private readonly Dictionary<RemoteInput, SimpleCameraController> m_remoteInputAndCameraController = new Dictionary<RemoteInput, SimpleCameraController>();
+        private readonly Dictionary<RTCDataChannel, RemoteInput> m_channelIdAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
+        private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private RTCConfiguration conf;
         private MediaStream videoStream;
         private MediaStream audioStream;
 
+        public static RenderStreaming Instance { get; private set; }
+
         public void Awake()
         {
+            Instance = this;
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
             WebRTC.WebRTC.Initialize(encoderType);
-            RemoteInput.Initialize();
-            RemoteInput.ActionButtonClick = OnButtonClick;
         }
 
         public void OnDestroy()
         {
+            Instance = null;
             WebRTC.WebRTC.Dispose();
-            RemoteInput.Destroy();
+            RemoteInputReceiver.Dispose();
             Unity.WebRTC.Audio.Stop();
         }
         public void Start()
@@ -98,8 +104,17 @@ namespace Unity.RenderStreaming
                 this.signaling.OnOffer += OnOffer;
                 this.signaling.OnIceCandidate += OnIceCandidate;
             }
-
             this.signaling.Start();
+        }
+
+        public void AddController(SimpleCameraController controller)
+        {
+            m_listController.Add(controller);
+        }
+
+        public void RemoveController(SimpleCameraController controller)
+        {
+            m_listController.Remove(controller);
         }
 
         void OnDisable()
@@ -196,19 +211,41 @@ namespace Unity.RenderStreaming
 
         void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
         {
-            Dictionary<int, RTCDataChannel> channels;
-            if (!mapChannels.TryGetValue(pc, out channels))
+            if (!mapChannels.TryGetValue(pc, out var channels))
             {
                 channels = new Dictionary<int, RTCDataChannel>();
                 mapChannels.Add(pc, channels);
             }
             channels.Add(channel.Id, channel);
 
-            if(channel.Label == "data")
+            if (channel.Label != "data")
             {
-                channel.OnMessage = new DelegateOnMessage(bytes => { RemoteInput.ProcessInput(bytes); });
-                channel.OnClose = new DelegateOnClose(() => { RemoteInput.Reset(); });
+                return;
             }
+
+            RemoteInput input = RemoteInputReceiver.Create();
+            m_channelIdAndRemoteInput.Add(channel, input);
+            channel.OnMessage = bytes => m_channelIdAndRemoteInput[channel].ProcessInput(bytes);
+            channel.OnClose = () => OnCloseChannel(channel);
+
+            SimpleCameraController controller = m_listController
+                .FirstOrDefault(_controller => !m_remoteInputAndCameraController.ContainsValue(_controller));
+
+            if(controller != null)
+            {
+                controller.SetInput(input);
+                m_remoteInputAndCameraController.Add(input, controller);
+            }
+        }
+
+        void OnCloseChannel(RTCDataChannel channel)
+        {
+            RemoteInput input = m_channelIdAndRemoteInput[channel];
+            SimpleCameraController controller = m_remoteInputAndCameraController[input];
+            controller.Reset();
+            m_remoteInputAndCameraController.Remove(input);
+            m_channelIdAndRemoteInput.Remove(channel);
+            RemoteInputReceiver.Delete(input);
         }
 
         void OnButtonClick(int elementId)

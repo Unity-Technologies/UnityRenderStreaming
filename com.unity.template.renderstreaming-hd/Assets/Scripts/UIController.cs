@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -42,8 +42,7 @@ namespace Unity.RenderStreaming
             }
 
             bool pointerFromMouse
-                =  HighlightPointerFromMouse(RemoteInput.RemoteMouse, m_renderStreaming.GetStreamingSize())
-                || HighlightPointerFromMouse(Mouse.current, new Vector2Int(Screen.width, Screen.height));
+                =  HighlightPointerFromMouse(Mouse.current, new Vector2Int(Screen.width, Screen.height));
             if (pointerFromMouse)
                 return;
 

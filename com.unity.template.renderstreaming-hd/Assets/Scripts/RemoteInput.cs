@@ -4,6 +4,8 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UE = UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming
 {
@@ -48,79 +50,113 @@ namespace Unity.RenderStreaming
         dpadRight,
         axis0 = 100,
         axis1
-        
     }
 
-    public static class RemoteInput
+    public static class RemoteInputReceiver
     {
-        public static Keyboard Keyboard { get; private set; }
-        public static Mouse RemoteMouse { get; private set; }
-        public static Touchscreen RemoteTouch { get; private set; }
+        private static readonly Dictionary<uint, RemoteInput> s_mapInputUserIdAndRemoteInput;
+        private static readonly List<uint> s_listId;
+        private static readonly InputUser[] s_listUser;
 
-        static Dictionary<double, GamepadState> GamepadsStates;
-        static Dictionary<double, int> GamepadsMap;
-        public static Action<int> ActionButtonClick;
+
+        public static IList<uint> Ids { get { return s_listId; } }
+
+
+        static RemoteInputReceiver()
+        {
+            s_mapInputUserIdAndRemoteInput = new Dictionary<uint, RemoteInput>();
+            s_listId = new List<uint>();
+        }
+
+        public static void Dispose()
+        {
+            s_mapInputUserIdAndRemoteInput.Clear();
+            s_listId.Clear();
+        }
+
+        public static RemoteInput Create()
+        {
+            InputUser user = InputUser.CreateUserWithoutPairedDevices();
+            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Mouse>(), user);
+            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Keyboard>(), user);
+            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Gamepad>(), user);
+            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
+            RemoteInput remoteInput = new RemoteInput(ref user);
+            s_mapInputUserIdAndRemoteInput.Add(user.id, remoteInput);
+            s_listId.Add(user.id);
+            foreach (var id in s_listId)
+            {
+                UnityEngine.Debug.Log(id);
+            }
+            return remoteInput;
+        }
+
+        public static void Delete(RemoteInput remoteInput)
+        {
+            uint userId = s_mapInputUserIdAndRemoteInput.First(pair => pair.Value == remoteInput).Key;
+            InputUser user = InputUser.all.First(_user => _user.id == userId);
+            var devices = user.pairedDevices;
+            user.UnpairDevicesAndRemoveUser();
+            foreach (var device in devices)
+            {
+                InputSystem.RemoveDevice(device);
+            }
+            s_mapInputUserIdAndRemoteInput.Remove(user.id);
+            s_listId.Remove(user.id);
+        }
+    }
+
+    public class RemoteInput : IInput
+    {
+        private GamepadState m_gamepadState;
+
+        public Mouse Mouse { get; }
+        public Keyboard Keyboard { get; }
+        public Touchscreen Touchscreen { get; }
+        public Gamepad Gamepad { get; }
+
+        public Action<int> ActionButtonClick;
 
         static UnityEngine.Vector2Int m_prevMousePos;
-        static bool m_isInitialized = false;
 
-        public static void Initialize()
+        private const int offset = 0;
+
+        public RemoteInput(ref InputUser user)
         {
-            Keyboard = InputSystem.AddDevice<Keyboard>();
-            RemoteMouse = InputSystem.AddDevice<Mouse>();
-            EnhancedTouchSupport.Enable();
-            RemoteTouch = InputSystem.AddDevice<Touchscreen>();
-            GamepadsStates = new Dictionary<double, GamepadState>();
-            GamepadsMap = new Dictionary<double, int>();
-            m_isInitialized = true;
+            Mouse = user.pairedDevices.FirstOrDefault(device => device is Mouse) as Mouse;
+            Keyboard = user.pairedDevices.FirstOrDefault(device => device is Keyboard) as Keyboard;
+            Touchscreen = user.pairedDevices.FirstOrDefault(device => device is Touchscreen) as Touchscreen;
+            Gamepad = user.pairedDevices.FirstOrDefault(device => device is Gamepad) as Gamepad;
         }
 
 //---------------------------------------------------------------------------------------------------------------------
-        public static void Destroy()
-        {
-            InputSystem.RemoveDevice(RemoteMouse);
-            InputSystem.RemoveDevice(Keyboard);
-            EnhancedTouchSupport.Disable();
-            InputSystem.RemoveDevice(RemoteTouch);
-            var totalRemoteGamepads = Gamepad.all.Count - GamepadsMap.Count;
-            for(int i = Gamepad.all.Count - 1; i >= totalRemoteGamepads; i-- )
-            {
-                InputSystem.RemoveDevice(Gamepad.all[i]);
-            }
-            GamepadsStates.Clear();
-            RemoteMouse = null;
-            Keyboard = null;
-            RemoteTouch = null;
-            m_isInitialized = false;
-        }
-//---------------------------------------------------------------------------------------------------------------------
 
-        public static void ProcessInput(byte[] bytes)
+        public void ProcessInput(byte[] bytes)
         {
-            switch ((EventType)bytes[0])
+            switch ((EventType)bytes[offset + 0])
             {
                 case EventType.Keyboard:
-                    var type = (KeyboardEventType)bytes[1];
-                    var repeat = bytes[2] == 1;
-                    var key = bytes[3];
-                    var character = (char)bytes[4];
+                    var type = (KeyboardEventType)bytes[offset + 1];
+                    var repeat = bytes[offset + 2] == 1;
+                    var key = bytes[offset + 3];
+                    var character = (char)bytes[offset + 4];
                     ProcessKeyEvent(type, repeat, key, character);
                     break;
                 case EventType.Mouse:
-                    var deltaX = BitConverter.ToInt16(bytes, 1);
-                    var deltaY = BitConverter.ToInt16(bytes, 3);
+                    var deltaX = BitConverter.ToInt16(bytes, offset + 1);
+                    var deltaY = BitConverter.ToInt16(bytes, offset + 3);
                     var button = bytes[5];
                     ProcessMouseMoveEvent(deltaX, deltaY, button);
                     break;
                 case EventType.MouseWheel:
-                    var scrollX = BitConverter.ToSingle(bytes, 1);
-                    var scrollY = BitConverter.ToSingle(bytes, 5);
+                    var scrollX = BitConverter.ToSingle(bytes, offset + 1);
+                    var scrollY = BitConverter.ToSingle(bytes, offset + 5);
                     ProcessMouseWheelEvent(scrollX, scrollY);
                     break;
                 case EventType.Touch:
                     {
-                        var length = bytes[1];
-                        var index = 2;
+                        var length = bytes[offset + 1];
+                        var index = offset + 2;
                         var touches = new TouchState[length];
                         for (int i = 0; i < length; i++)
                         {
@@ -152,69 +188,44 @@ namespace Unity.RenderStreaming
                     
                     break;
                 case EventType.ButtonClick:
-                    var elementId = BitConverter.ToInt16(bytes, 1);
+                    var elementId = BitConverter.ToInt16(bytes, offset + 1);
                     ProcessButtonClickEvent(elementId);
                     break;
                 case EventType.Gamepad:
                     {
-                        var id = BitConverter.ToDouble(bytes, 1);
-
-                        if(!GamepadsMap.ContainsKey(id))
-                        {
-                            UE.Debug.Log("connecting " + id + " -> " + Gamepad.all.Count);
-                            GamepadsMap[id] = Gamepad.all.Count;
-                            InputSystem.AddDevice<Gamepad>();
-                            GamepadsStates[id]=new GamepadState();
-                        }
-
-                        GamepadEventType gamepad_type = (GamepadEventType)bytes[9];
+                        GamepadEventType gamepadEventType = (GamepadEventType)bytes[offset + 9];
                         
-                        switch (gamepad_type)
+                        switch (gamepadEventType)
                         {
                             case GamepadEventType.ButtonDown:
                             case GamepadEventType.ButtonUp:
                             case GamepadEventType.ButtonPressed:
                                 {
-                                    var buttonIndex = bytes[10];
-                                    var value = BitConverter.ToDouble(bytes, 11);
-                                    ProcessGamepadButtonEvent(gamepad_type,(GamepadKeyCode) buttonIndex, id, value);
+                                    var buttonIndex = bytes[offset + 10];
+                                    var value = BitConverter.ToDouble(bytes, offset + 11);
+                                    ProcessGamepadButtonEvent(gamepadEventType, (GamepadKeyCode) buttonIndex, value);
                                 }
                                 break;
                             case GamepadEventType.Axis:
                                 {
-                                    var buttonIndex = bytes[10];
-                                    var x = BitConverter.ToDouble(bytes, 11);
-                                    var y = BitConverter.ToDouble(bytes, 19);
-                                    ProcessGamepadAxisEvent(x, y, (GamepadKeyCode) buttonIndex, id);
+                                    var buttonIndex = bytes[offset + 10];
+                                    var x = BitConverter.ToDouble(bytes, offset + 11);
+                                    var y = BitConverter.ToDouble(bytes, offset + 19);
+                                    ProcessGamepadAxisEvent(x, y, (GamepadKeyCode) buttonIndex);
                                 }
                                 break;
                         }
-                        InputSystem.QueueStateEvent(Gamepad.all[GamepadsMap[id]], GamepadsStates[id]);
+                        InputSystem.QueueStateEvent(Gamepad, m_gamepadState);
                     }
                     break;
             }
         }
 
-        public static void Reset()
+        #region Gamepads Events
+        void ProcessGamepadButtonEvent(GamepadEventType state, GamepadKeyCode buttonIndex, double value)
         {
-            if (!m_isInitialized)
-                return;
-
-            foreach(int index in GamepadsMap.Values)
-            {
-                InputSystem.QueueStateEvent(Gamepad.all[index], new GamepadState());
-            }
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState());
-            InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
-            InputSystem.QueueStateEvent(RemoteTouch, new TouchState());
-            InputSystem.Update();
-        }
-
-#region Gamepads Events
-        static void ProcessGamepadButtonEvent(GamepadEventType state, GamepadKeyCode buttonIndex, double id, double value)
-        {
-            GamepadButton buttonToUpdate=GamepadButton.DpadUp;
-            GamepadState gamepadState = GamepadsStates[id];
+            GamepadButton buttonToUpdate = GamepadButton.DpadUp;
+            GamepadState gamepadState = m_gamepadState;
             switch(buttonIndex)
             {
                 case GamepadKeyCode.dpadUp:
@@ -253,21 +264,21 @@ namespace Unity.RenderStreaming
                     UE.Debug.Log("Unmapped button code: " + buttonIndex);
                     break;                   
             }
-            GamepadsStates[id] = gamepadState.WithButton(buttonToUpdate, GamepadEventType.ButtonDown == state || GamepadEventType.ButtonPressed == state);
+            m_gamepadState = gamepadState.WithButton(buttonToUpdate, GamepadEventType.ButtonDown == state || GamepadEventType.ButtonPressed == state);
         }
 
-        static void ProcessGamepadAxisEvent(double x, double y, GamepadKeyCode axisKeyCode, double id)
+        void ProcessGamepadAxisEvent(double x, double y, GamepadKeyCode axisKeyCode)
         {
-            GamepadState gamepadState = GamepadsStates[id];
+            GamepadState gamepadState = m_gamepadState;
             if(axisKeyCode == GamepadKeyCode.axis0)
                 gamepadState.leftStick = new UE.Vector2((float)x, (float)y);
             if(axisKeyCode == GamepadKeyCode.axis1)
                 gamepadState.rightStick = new UE.Vector2((float)x, (float)y);
 
-            GamepadsStates[id]= gamepadState;
+            m_gamepadState = gamepadState;
         }
 #endregion
-        static void ProcessKeyEvent(KeyboardEventType state, bool repeat, byte keyCode, char character)
+        void ProcessKeyEvent(KeyboardEventType state, bool repeat, byte keyCode, char character)
         {
             switch(state)
             {
@@ -287,11 +298,11 @@ namespace Unity.RenderStreaming
             }
         }
 
-        static void ProcessMouseMoveEvent(short x, short y, byte button)
+        void ProcessMouseMoveEvent(short x, short y, byte button)
         {
             UnityEngine.Vector2Int pos = new UnityEngine.Vector2Int(x, y);
             UnityEngine.Vector2Int delta = pos- m_prevMousePos;
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState {
+            InputSystem.QueueStateEvent(Mouse, new MouseState {
                 position = pos,
                 delta = delta,
                 buttons = button
@@ -299,19 +310,19 @@ namespace Unity.RenderStreaming
             m_prevMousePos = pos;
         }
 
-        static void ProcessMouseWheelEvent(float scrollX, float scrollY)
+        void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
+            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
         }
 
-        static void ProcessTouchMoveEvent(TouchState[] touches)
+        void ProcessTouchMoveEvent(TouchState[] touches)
         {
             for (var i = 0; i < touches.Length; i++)
             {
-                InputSystem.QueueStateEvent(RemoteTouch, touches[i]);
+                InputSystem.QueueStateEvent(Touchscreen, touches[i]);
             }
         }
-        static void ChangeEndStateUnusedTouches(TouchState[] touches)
+        void ChangeEndStateUnusedTouches(TouchState[] touches)
         {
             int touchCount = Touch.activeTouches.Count;
             for (var i = 0; i < touchCount; i++)
@@ -323,7 +334,7 @@ namespace Unity.RenderStreaming
                     {
                         continue;
                     }
-                    InputSystem.QueueStateEvent(RemoteTouch, new TouchState
+                    InputSystem.QueueStateEvent(Touchscreen, new TouchState
                     {
                         touchId = touchId,
                         phase = TouchPhase.Ended,
@@ -333,12 +344,9 @@ namespace Unity.RenderStreaming
             }
         }
 
-        static void ProcessButtonClickEvent(int elementId)
+        void ProcessButtonClickEvent(int elementId)
         {
-            if (ActionButtonClick != null)
-            {
-                ActionButtonClick(elementId);
-            }
+            ActionButtonClick?.Invoke(elementId);
         }
     }
 }
