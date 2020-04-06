@@ -36,6 +36,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
+        [SerializeField, Tooltip("Streaming bit rate")]
+        private int bitRate = 1000000;
+
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
@@ -67,18 +70,14 @@ namespace Unity.RenderStreaming
 
         void OnDestroy()
         {
-            WebRTC.WebRTC.Finalize();
+            WebRTC.WebRTC.Dispose();
             RemoteInput.Destroy();
             Unity.WebRTC.Audio.Stop();
         }
 
         void Start()
         {
-            if (captureCamera == null)
-            {
-                captureCamera = Camera.main;
-            }
-            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, RenderTextureDepth.DEPTH_24);
+            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, bitRate);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
 
             conf = default;
@@ -155,39 +154,48 @@ namespace Unity.RenderStreaming
             data.sdp = Regex.Replace(data.sdp, pattern,
                 "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
 
-            RTCSessionDescription desc = default;
-            desc.type = RTCSdpType.Offer;
-            desc.sdp = data.sdp;
+            RTCSessionDescription _desc = default;
+            _desc.type = RTCSdpType.Offer;
+            _desc.sdp = data.sdp;
 
 
             RTCAnswerOptions options = default;
 
-            var opSetRemoteDescription = pc.SetRemoteDescription(ref desc);
-            while (opSetRemoteDescription.MoveNext()) ;
-            if (opSetRemoteDescription.isError)
+            var opSetRemoteDescription = pc.SetRemoteDescription(ref _desc);
+            while (opSetRemoteDescription.MoveNext())
             {
-                Debug.LogError($"SetRemoteDescription Error: {opSetRemoteDescription.error}");
+            }
+
+            if (opSetRemoteDescription.IsError)
+            {
+                Debug.LogError($"SetRemoteDescription Error: {opSetRemoteDescription.Error}");
                 return;
             }
 
             var opCreateAnswer = pc.CreateAnswer(ref options);
-            while (opCreateAnswer.MoveNext()) ;
-
-            if (opCreateAnswer.isError)
+            while (opCreateAnswer.MoveNext())
             {
-                Debug.LogError($"CreateAnswer Error: {opCreateAnswer.error}");
+            }
+
+            if (opCreateAnswer.IsError)
+            {
+                Debug.LogError($"CreateAnswer Error: {opCreateAnswer.Error}");
                 return;
             }
 
-            var opSetLocalDescription = pc.SetLocalDescription(ref opCreateAnswer.desc);
-            while (opSetLocalDescription.MoveNext()) ;
-            if (opSetLocalDescription.isError)
+            RTCSessionDescription desc = opCreateAnswer.Desc;
+            var opSetLocalDescription = pc.SetLocalDescription(ref desc);
+            while (opSetLocalDescription.MoveNext())
             {
-                Debug.LogError($"SetLocalDescription Error: {opSetLocalDescription.error}");
+            }
+
+            if (opSetLocalDescription.IsError)
+            {
+                Debug.LogError($"SetLocalDescription Error: {opSetLocalDescription.Error}");
                 return;
             }
 
-            signaling.SendAnswer(data.connectionId, opCreateAnswer.desc);
+            signaling.SendAnswer(data.connectionId, opCreateAnswer.Desc);
         }
 
         void OnIceCandidate(Signaling signaling, CandidateData data)

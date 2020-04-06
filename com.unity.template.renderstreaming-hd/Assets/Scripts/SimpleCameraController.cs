@@ -118,20 +118,21 @@ namespace UnityTemplateProjects
 
         Vector3 GetInputTranslationDirection()
         {
+            var lastGamepad = Gamepad.all.Count > 0 ? Gamepad.all[Gamepad.all.Count-1] : null;
             Vector3 direction = new Vector3();
-            if (Keyboard.current.wKey.isPressed)
+            if (Keyboard.current.wKey.isPressed || (lastGamepad != null? lastGamepad.dpad.up.isPressed : false))
             {
                 direction += Vector3.forward;
             }
-            if (Keyboard.current.sKey.isPressed)
+            if (Keyboard.current.sKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.down.isPressed : false))
             {
                 direction += Vector3.back;
             }
-            if (Keyboard.current.aKey.isPressed)
+            if (Keyboard.current.aKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.left.isPressed : false))
             {
                 direction += Vector3.left;
             }
-            if (Keyboard.current.dKey.isPressed)
+            if (Keyboard.current.dKey.isPressed || (lastGamepad != null ? lastGamepad.dpad.right.isPressed : false))
             {
                 direction += Vector3.right;
             }
@@ -174,7 +175,10 @@ namespace UnityTemplateProjects
             } else if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count == 1) {
                 UpdateTargetCameraStateFromInput(UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[0].delta);                
             }
-
+            
+            // Rotation from joystick 
+            if(Gamepad.all.Count > 0)           
+                UpdateTargetCameraStateFromInput(Gamepad.all[Gamepad.all.Count-1].leftStick.ReadValue());
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 
