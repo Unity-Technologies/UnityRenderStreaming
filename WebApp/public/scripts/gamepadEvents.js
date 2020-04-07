@@ -7,27 +7,6 @@ var gamepadsConnectedTimeStamp = {}
 const _axisOffset = 100;
 const _axisMultiplier = 1;
 const _axisYInverted = -1;
-const GamepadButtonsKeyCode = 
-{
-  button0: 0,
-  button1: 1,
-  button2: 2,
-  button3: 3,
-  button4: 4,
-  button5: 5,
-  button6: 6,
-  button7: 7,
-  button8: 8,
-  button9: 9,
-  axis0button: 10,
-  axis1button: 11,
-  dpadup : 12,
-  dpaddown: 13,
-  dpadleft: 14,
-  dpadright: 15,
-  axis0: _axisOffset,
-  axis1: 101
-};
 
 class GamepadButtonEvent extends Event
 {

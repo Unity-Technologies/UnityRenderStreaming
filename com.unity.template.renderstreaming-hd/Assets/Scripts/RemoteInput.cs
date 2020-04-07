@@ -41,53 +41,41 @@ namespace Unity.RenderStreaming
         Button6,
         Button7,
         Button8,
-        button9,
-        axis0Button,
-        axis1Button,
-        dpadUp,
-        dpadDown,
-        dpadLeft,
-        dpadRight,
-        axis0 = 100,
-        axis1
+        Button9,
+        Axis0Button,
+        Axis1Button,
+        DpadUp,
+        DpadDown,
+        DpadLeft,
+        DpadRight,
+        Axis0 = 100,
+        Axis1
     }
 
     public static class RemoteInputReceiver
     {
         private static readonly Dictionary<uint, RemoteInput> s_mapInputUserIdAndRemoteInput;
-        private static readonly List<uint> s_listId;
         private static readonly InputUser[] s_listUser;
-
-
-        public static IList<uint> Ids { get { return s_listId; } }
-
 
         static RemoteInputReceiver()
         {
             s_mapInputUserIdAndRemoteInput = new Dictionary<uint, RemoteInput>();
-            s_listId = new List<uint>();
         }
 
         public static void Dispose()
         {
             s_mapInputUserIdAndRemoteInput.Clear();
-            s_listId.Clear();
         }
 
         public static RemoteInput Create()
         {
             InputUser user = InputUser.CreateUserWithoutPairedDevices();
-            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Mouse>(), user);
-            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Keyboard>(), user);
-            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Gamepad>(), user);
-            InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
+            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Mouse>(), user);
+            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Keyboard>(), user);
+            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Gamepad>(), user);
+            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
             RemoteInput remoteInput = new RemoteInput(ref user);
             s_mapInputUserIdAndRemoteInput.Add(user.id, remoteInput);
-            s_listId.Add(user.id);
-            foreach (var id in s_listId)
-            {
-                UnityEngine.Debug.Log(id);
-            }
             return remoteInput;
         }
 
@@ -95,14 +83,13 @@ namespace Unity.RenderStreaming
         {
             uint userId = s_mapInputUserIdAndRemoteInput.First(pair => pair.Value == remoteInput).Key;
             InputUser user = InputUser.all.First(_user => _user.id == userId);
-            var devices = user.pairedDevices;
-            user.UnpairDevicesAndRemoveUser();
-            foreach (var device in devices)
+            var arrayDeviceId = user.pairedDevices.Select(device => device.deviceId).ToArray();
+            foreach (var deviceId in arrayDeviceId)
             {
-                InputSystem.RemoveDevice(device);
+                InputSystem.RemoveDevice(InputSystem.GetDeviceById(deviceId));
             }
+            user.UnpairDevicesAndRemoveUser();
             s_mapInputUserIdAndRemoteInput.Remove(user.id);
-            s_listId.Remove(user.id);
         }
     }
 
@@ -228,16 +215,16 @@ namespace Unity.RenderStreaming
             GamepadState gamepadState = m_gamepadState;
             switch(buttonIndex)
             {
-                case GamepadKeyCode.dpadUp:
+                case GamepadKeyCode.DpadUp:
                     buttonToUpdate = GamepadButton.DpadUp;
                     break;
-                case GamepadKeyCode.dpadDown:
+                case GamepadKeyCode.DpadDown:
                     buttonToUpdate = GamepadButton.DpadDown;
                     break;
-                case GamepadKeyCode.dpadLeft:
+                case GamepadKeyCode.DpadLeft:
                     buttonToUpdate = GamepadButton.DpadLeft;
                     break;
-                case GamepadKeyCode.dpadRight:
+                case GamepadKeyCode.DpadRight:
                     buttonToUpdate = GamepadButton.DpadRight;
                     break;
                 case GamepadKeyCode.Button0:
@@ -252,6 +239,12 @@ namespace Unity.RenderStreaming
                 case GamepadKeyCode.Button3:
                     buttonToUpdate = GamepadButton.X;
                     break;
+                case GamepadKeyCode.Button4:
+                    buttonToUpdate = GamepadButton.LeftShoulder;
+                    break;
+                case GamepadKeyCode.Button5:
+                    buttonToUpdate = GamepadButton.RightShoulder;
+                    break;
                 case GamepadKeyCode.Button6:
                     buttonToUpdate = GamepadButton.LeftTrigger;
                     gamepadState.leftTrigger = (float)value;
@@ -259,6 +252,12 @@ namespace Unity.RenderStreaming
                 case GamepadKeyCode.Button7:
                     buttonToUpdate = GamepadButton.RightTrigger;
                     gamepadState.rightTrigger = (float) value;
+                    break;
+                case GamepadKeyCode.Axis0Button:
+                    buttonToUpdate = GamepadButton.LeftStick;
+                    break;
+                case GamepadKeyCode.Axis1Button:
+                    buttonToUpdate = GamepadButton.RightStick;
                     break;    
                 default:
                     UE.Debug.Log("Unmapped button code: " + buttonIndex);
@@ -270,9 +269,9 @@ namespace Unity.RenderStreaming
         void ProcessGamepadAxisEvent(double x, double y, GamepadKeyCode axisKeyCode)
         {
             GamepadState gamepadState = m_gamepadState;
-            if(axisKeyCode == GamepadKeyCode.axis0)
+            if(axisKeyCode == GamepadKeyCode.Axis0)
                 gamepadState.leftStick = new UE.Vector2((float)x, (float)y);
-            if(axisKeyCode == GamepadKeyCode.axis1)
+            if(axisKeyCode == GamepadKeyCode.Axis1)
                 gamepadState.rightStick = new UE.Vector2((float)x, (float)y);
 
             m_gamepadState = gamepadState;

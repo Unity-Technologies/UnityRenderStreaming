@@ -11,6 +11,30 @@ namespace Unity.RenderStreaming
         Gamepad Gamepad { get; }
     }
 
+    public class DefaultInput : IInput
+    {
+        public Mouse Mouse { get; }
+        public Keyboard Keyboard { get; }
+        public Touchscreen Touchscreen { get; }
+        public Gamepad Gamepad { get; }
+
+        public DefaultInput()
+        {
+            Mouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
+            Keyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
+            Touchscreen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
+            Gamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
+        }
+
+        public void MakeCurrent()
+        {
+            Mouse.MakeCurrent();
+            Keyboard.MakeCurrent();
+            Touchscreen.MakeCurrent();
+            Gamepad.MakeCurrent();
+        }
+    }
+
     public class SimpleCameraController : MonoBehaviour
     {
         class CameraState
@@ -97,25 +121,16 @@ namespace Unity.RenderStreaming
             m_gamepad = input.Gamepad;
         }
 
-        public void Reset()
-        {
-            m_mouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
-            m_keyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
-            m_screen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
-            m_gamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
-        }
-
         void Start()
         {
-            Reset();
             m_InitialCameraState.SetFromTransform(transform);
 
-            RenderStreaming.Instance.AddController(this);
+            RenderStreaming.Instance?.AddController(this);
         }
 
         void OnDestroy()
         {
-            RenderStreaming.Instance.RemoveController(this);
+            RenderStreaming.Instance?.RemoveController(this);
         }
 
         void OnEnable()
@@ -143,7 +158,7 @@ namespace Unity.RenderStreaming
             if (!invertY) {
                 input.y *= -1;
             }
-            float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude) * 0.1f;
+            float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude);
 
             m_TargetCameraState.yaw += input.x * mouseSensitivityFactor;
             m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
