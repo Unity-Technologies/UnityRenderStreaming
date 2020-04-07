@@ -1,9 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 using System.Text.RegularExpressions;
+using Unity.RenderStreaming.Signaling;
 
 namespace Unity.RenderStreaming
 {
@@ -52,11 +52,10 @@ namespace Unity.RenderStreaming
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
 
-        private Signaling signaling;
+        private ISignaling signaling;
         private Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private RTCConfiguration conf;
-        private string sessionId;
         private MediaStream videoStream;
         private MediaStream audioStream;
 
@@ -74,178 +73,127 @@ namespace Unity.RenderStreaming
             RemoteInput.Destroy();
             Unity.WebRTC.Audio.Stop();
         }
-        public IEnumerator Start()
+        public void Start()
         {
             videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, bitRate);
             audioStream = Unity.WebRTC.Audio.CaptureStream();
-            signaling = new Signaling(urlSignaling);
-            var opCreate = signaling.Create();
-            yield return opCreate;
-            if (opCreate.webRequest.isNetworkError)
-            {
-                Debug.LogError($"Network Error: {opCreate.webRequest.error}");
-                yield break;
-            }
-            var newResData = opCreate.webRequest.DownloadHandlerJson<NewResData>().GetObject();
-            sessionId = newResData.sessionId;
-
             conf = default;
             conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
-            StartCoroutine(LoopPolling());
+        }
+
+        void OnEnable()
+        {
+            if (this.signaling == null)
+            {
+                if (urlSignaling.StartsWith("ws"))
+                {
+                    this.signaling = new WebSocketSignaling(urlSignaling, interval);
+                }
+                else
+                {
+                    this.signaling = new HttpSignaling(urlSignaling, interval);
+                }
+
+                this.signaling.OnOffer += OnOffer;
+                this.signaling.OnIceCandidate += OnIceCandidate;
+            }
+
+            this.signaling.Start();
+        }
+
+        void OnDisable()
+        {
+            if (this.signaling != null)
+            {
+                this.signaling.Stop();
+                this.signaling = null;
+            }
         }
 
         public Vector2Int GetStreamingSize() { return streamingSize; }
 
-        long lastTimeGetOfferRequest = 0;
-        long lastTimeGetCandidateRequest = 0;
 
-        IEnumerator LoopPolling()
+        void OnOffer(ISignaling signaling, DescData e)
         {
-            // ignore messages arrived before 30 secs ago
-            lastTimeGetOfferRequest = DateTime.UtcNow.ToJsMilliseconds() - 30000;
-            lastTimeGetCandidateRequest = DateTime.UtcNow.ToJsMilliseconds() - 30000;
-
-            while (true)
+            RTCSessionDescription _desc;
+            _desc.type = RTCSdpType.Offer;
+            _desc.sdp = e.sdp;
+            var connectionId = e.connectionId;
+            if (pcs.ContainsKey(connectionId))
             {
-                yield return StartCoroutine(GetOffer());
-                yield return StartCoroutine(GetCandidate());
-                yield return new WaitForSeconds(interval);
+                return;
             }
-        }
+            var pc = new RTCPeerConnection();
+            pcs.Add(e.connectionId, pc);
 
-        IEnumerator GetOffer()
-        {
-            var op = signaling.GetOffer(sessionId, lastTimeGetOfferRequest);
-            yield return op;
-            if (op.webRequest.isNetworkError)
+            pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
+            pc.SetConfiguration(ref conf);
+            pc.OnIceCandidate = new DelegateOnIceCandidate(candidate =>
             {
-                Debug.LogError($"Network Error: {op.webRequest.error}");
-                yield break;
-            }
-            var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
-            lastTimeGetOfferRequest = date.ToJsMilliseconds();
-
-            var obj = op.webRequest.DownloadHandlerJson<OfferResDataList>().GetObject();
-            if (obj == null)
+                signaling.SendCandidate(e.connectionId, candidate);
+            });
+            pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
             {
-                yield break;
-            }
-            foreach (var offer in obj.offers)
-            {
-                RTCSessionDescription _desc;
-                _desc.type = RTCSdpType.Offer;
-                _desc.sdp = offer.sdp;
-                var connectionId = offer.connectionId;
-                if (pcs.ContainsKey(connectionId))
+                if(state == RTCIceConnectionState.Disconnected)
                 {
-                    continue;
+                    pc.Close();
+                    pcs.Remove(e.connectionId);
                 }
-                var pc = new RTCPeerConnection();
-                pcs.Add(offer.connectionId, pc);
-
-                pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
-                pc.SetConfiguration(ref conf);
-                pc.OnIceCandidate = new DelegateOnIceCandidate(candidate => { StartCoroutine(OnIceCandidate(offer.connectionId, candidate)); });
-                pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
-                {
-                    if(state == RTCIceConnectionState.Disconnected)
-                    {
-                        pc.Close();
-                    }
-                });
-                //make video bit rate starts at 16000kbits, and 160000kbits at max.
-                string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
-                _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
-                pc.SetRemoteDescription(ref _desc);
-                foreach (var track in videoStream.GetTracks())
-                {
-                    pc.AddTrack(track);
-                }
-                foreach(var track in audioStream.GetTracks())
-                {
-                    pc.AddTrack(track);
-                }
-                StartCoroutine(Answer(connectionId));
+            });
+            //make video bit rate starts at 16000kbits, and 160000kbits at max.
+            string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
+            _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
+            pc.SetRemoteDescription(ref _desc);
+            foreach (var track in videoStream.GetTracks())
+            {
+                pc.AddTrack(track);
             }
-        }
+            foreach(var track in audioStream.GetTracks())
+            {
+                pc.AddTrack(track);
+            }
 
-        IEnumerator Answer(string connectionId)
-        {
             RTCAnswerOptions options = default;
-            var pc = pcs[connectionId];
             var op = pc.CreateAnswer(ref options);
-            yield return op;
+            while (op.MoveNext())
+            {
+            }
             if (op.IsError)
             {
                 Debug.LogError($"Network Error: {op.Error}");
-                yield break;
+                return;
             }
 
             var desc = op.Desc;
             var opLocalDesc = pc.SetLocalDescription(ref desc);
-            yield return opLocalDesc;
+            while (opLocalDesc.MoveNext())
+            {
+            }
             if (opLocalDesc.IsError)
             {
                 Debug.LogError($"Network Error: {opLocalDesc.Error}");
-                yield break;
+                return;
             }
-            var op3 = signaling.PostAnswer(this.sessionId, connectionId, op.Desc.sdp);
-            yield return op3;
-            if (op3.webRequest.isNetworkError)
-            {
-                Debug.LogError($"Network Error: {op3.webRequest.error}");
-                yield break;
-            }
+
+            signaling.SendAnswer(connectionId, desc);
         }
 
-        IEnumerator GetCandidate()
+        void OnIceCandidate(ISignaling signaling, CandidateData e)
         {
-            var op = signaling.GetCandidate(sessionId, lastTimeGetCandidateRequest);
-            yield return op;
-
-            if (op.webRequest.isNetworkError)
+            if (!pcs.TryGetValue(e.connectionId, out var pc))
             {
-                Debug.LogError($"Network Error: {op.webRequest.error}");
-                yield break;
+                return;
             }
-            var date = DateTimeExtension.ParseHttpDate(op.webRequest.GetResponseHeader("Date"));
-            lastTimeGetCandidateRequest = date.ToJsMilliseconds();
 
-            var obj = op.webRequest.DownloadHandlerJson<CandidateContainerResDataList>().GetObject();
-            if (obj == null)
-            {
-                yield break;
-            }
-            foreach (var candidateContainer in obj.candidates)
-            {
-                RTCPeerConnection pc;
-                if (!pcs.TryGetValue(candidateContainer.connectionId, out pc))
-                {
-                    continue;
-                }
-                foreach (var candidate in candidateContainer.candidates)
-                {
-                    RTCIceCandidate​ _candidate = default;
-                    _candidate.candidate = candidate.candidate;
-                    _candidate.sdpMLineIndex = candidate.sdpMLineIndex;
-                    _candidate.sdpMid = candidate.sdpMid;
+            RTCIceCandidate​ _candidate = default;
+            _candidate.candidate = e.candidate;
+            _candidate.sdpMLineIndex = e.sdpMLineIndex;
+            _candidate.sdpMid = e.sdpMid;
 
-                    pcs[candidateContainer.connectionId].AddIceCandidate(ref _candidate);
-                }
-            }
+            pc.AddIceCandidate(ref _candidate);
         }
 
-        IEnumerator OnIceCandidate(string connectionId, RTCIceCandidate​ candidate)
-        {
-            var opCandidate = signaling.PostCandidate(sessionId, connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
-            yield return opCandidate;
-            if (opCandidate.webRequest.isNetworkError)
-            {
-                Debug.LogError($"Network Error: {opCandidate.webRequest.error}");
-                yield break;
-            }
-        }
         void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
         {
             Dictionary<int, RTCDataChannel> channels;
