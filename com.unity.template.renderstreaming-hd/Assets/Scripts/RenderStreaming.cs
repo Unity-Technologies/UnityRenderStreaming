@@ -253,12 +253,31 @@ namespace Unity.RenderStreaming
             // device.current must be changed after removing devices
             m_defaultInput.MakeCurrent();
 
-            if(m_remoteInputAndCameraController.TryGetValue(input, out var controller))
+            if (m_remoteInputAndCameraController.TryGetValue(input, out var controller))
             {
-                controller.SetInput(m_defaultInput);
+                RemoteInput newInput = FindPrioritizedInput();
+                if (newInput == null)
+                {
+                    controller.SetInput(m_defaultInput);
+                }
+                else
+                {
+                    controller.SetInput(newInput);
+                    m_remoteInputAndCameraController.Add(newInput, controller);
+                }
             }
             m_remoteInputAndCameraController.Remove(input);
+
             m_channelIdAndRemoteInput.Remove(channel);
+        }
+
+        RemoteInput FindPrioritizedInput()
+        {
+            var list = RemoteInputReceiver.All();
+
+            // filter here
+            // return null if not found the input
+            return list.Except(m_remoteInputAndCameraController.Keys).FirstOrDefault();
         }
 
         void OnButtonClick(int elementId)

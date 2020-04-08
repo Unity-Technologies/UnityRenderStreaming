@@ -55,16 +55,24 @@ namespace Unity.RenderStreaming
     public static class RemoteInputReceiver
     {
         private static readonly Dictionary<uint, RemoteInput> s_mapInputUserIdAndRemoteInput;
+        private static readonly List<RemoteInput> s_listRemoteInput;
         private static readonly InputUser[] s_listUser;
 
         static RemoteInputReceiver()
         {
             s_mapInputUserIdAndRemoteInput = new Dictionary<uint, RemoteInput>();
+            s_listRemoteInput = new List<RemoteInput>();
         }
 
         public static void Dispose()
         {
             s_mapInputUserIdAndRemoteInput.Clear();
+            s_listRemoteInput.Clear();
+        }
+
+        public static IReadOnlyList<RemoteInput> All()
+        {
+            return s_listRemoteInput;
         }
 
         public static RemoteInput Create()
@@ -76,6 +84,8 @@ namespace Unity.RenderStreaming
             user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
             RemoteInput remoteInput = new RemoteInput(ref user);
             s_mapInputUserIdAndRemoteInput.Add(user.id, remoteInput);
+            s_listRemoteInput.Add(remoteInput);
+
             return remoteInput;
         }
 
@@ -84,12 +94,13 @@ namespace Unity.RenderStreaming
             uint userId = s_mapInputUserIdAndRemoteInput.First(pair => pair.Value == remoteInput).Key;
             InputUser user = InputUser.all.First(_user => _user.id == userId);
             var arrayDeviceId = user.pairedDevices.Select(device => device.deviceId).ToArray();
+            user.UnpairDevicesAndRemoveUser();
             foreach (var deviceId in arrayDeviceId)
             {
                 InputSystem.RemoveDevice(InputSystem.GetDeviceById(deviceId));
             }
-            user.UnpairDevicesAndRemoveUser();
             s_mapInputUserIdAndRemoteInput.Remove(user.id);
+            s_listRemoteInput.Remove(remoteInput);
         }
     }
 
