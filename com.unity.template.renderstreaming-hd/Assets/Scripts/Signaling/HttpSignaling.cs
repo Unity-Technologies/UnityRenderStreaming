@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Threading;
 using Unity.WebRTC;
 using UnityEngine;
@@ -24,6 +25,12 @@ namespace Unity.RenderStreaming.Signaling
         {
             m_url = url;
             m_timeout = timeout;
+
+            if (m_url.StartsWith("https"))
+            {
+                ServicePointManager.ServerCertificateValidationCallback =
+                    (sender, certificate, chain, errors) => true;
+            }
         }
 
         public void Start()
