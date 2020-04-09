@@ -54,19 +54,19 @@ namespace Unity.RenderStreaming
 
     public static class RemoteInputReceiver
     {
-        private static readonly Dictionary<uint, RemoteInput> s_mapInputUserIdAndRemoteInput;
+        private static readonly Dictionary<RemoteInput, uint> s_mapRemoteInputAndInputUserId;
         private static readonly List<RemoteInput> s_listRemoteInput;
         private static readonly InputUser[] s_listUser;
 
         static RemoteInputReceiver()
         {
-            s_mapInputUserIdAndRemoteInput = new Dictionary<uint, RemoteInput>();
+            s_mapRemoteInputAndInputUserId = new Dictionary<RemoteInput, uint>();
             s_listRemoteInput = new List<RemoteInput>();
         }
 
         public static void Dispose()
         {
-            s_mapInputUserIdAndRemoteInput.Clear();
+            s_mapRemoteInputAndInputUserId.Clear();
             s_listRemoteInput.Clear();
         }
 
@@ -83,7 +83,7 @@ namespace Unity.RenderStreaming
             user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Gamepad>(), user);
             user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
             RemoteInput remoteInput = new RemoteInput(ref user);
-            s_mapInputUserIdAndRemoteInput.Add(user.id, remoteInput);
+            s_mapRemoteInputAndInputUserId.Add(remoteInput, user.id);
             s_listRemoteInput.Add(remoteInput);
 
             return remoteInput;
@@ -91,7 +91,7 @@ namespace Unity.RenderStreaming
 
         public static void Delete(RemoteInput remoteInput)
         {
-            uint userId = s_mapInputUserIdAndRemoteInput.First(pair => pair.Value == remoteInput).Key;
+            uint userId = s_mapRemoteInputAndInputUserId[remoteInput];
             InputUser user = InputUser.all.First(_user => _user.id == userId);
             var arrayDeviceId = user.pairedDevices.Select(device => device.deviceId).ToArray();
             user.UnpairDevicesAndRemoveUser();
@@ -99,7 +99,7 @@ namespace Unity.RenderStreaming
             {
                 InputSystem.RemoveDevice(InputSystem.GetDeviceById(deviceId));
             }
-            s_mapInputUserIdAndRemoteInput.Remove(user.id);
+            s_mapRemoteInputAndInputUserId.Remove(remoteInput);
             s_listRemoteInput.Remove(remoteInput);
         }
     }
