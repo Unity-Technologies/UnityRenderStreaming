@@ -121,22 +121,17 @@ namespace Unity.RenderStreaming
             m_gamepad = input.Gamepad;
         }
 
-        void Start()
-        {
-            m_InitialCameraState.SetFromTransform(transform);
-
-            RenderStreaming.Instance?.AddController(this);
-        }
-
-        void OnDestroy()
-        {
-            RenderStreaming.Instance?.RemoveController(this);
-        }
-
         void OnEnable()
         {
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
+
+            RenderStreaming.Instance?.AddController(this);
+        }
+
+        void OnDisable()
+        {
+            RenderStreaming.Instance?.RemoveController(this);
         }
 
 //---------------------------------------------------------------------------------------------------------------------
