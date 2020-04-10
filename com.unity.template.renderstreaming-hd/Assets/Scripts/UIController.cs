@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -60,14 +61,17 @@ namespace Unity.RenderStreaming
             if (pointerFromMouse)
                 return;
 
+            var touches = m_screen.GetTouches();
 
-            if (m_screen.touches.Count > 0)
+            if (touches.Count() > 0)
             {
                 var position = Vector2.zero;
-                var count = m_screen.touches.Count;
+                var count = touches.Count();
+                var activeTouches = touches.ToArray();
+
                 for (var i = 0; i < count; i++)
                 {
-                    position += m_screen.touches[i].position.ReadValue();
+                    position += activeTouches[i].screenPosition;
                 }
                 pointer.rectTransform.anchoredPosition = position / (float)count;
                 pointer.color = Color.red;

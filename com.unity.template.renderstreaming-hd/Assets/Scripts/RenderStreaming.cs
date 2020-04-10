@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.WebRTC;
 using System.Text.RegularExpressions;
 using Unity.RenderStreaming.Signaling;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Unity.RenderStreaming
 {
@@ -72,11 +73,13 @@ namespace Unity.RenderStreaming
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
             WebRTC.WebRTC.Initialize(encoderType);
             m_defaultInput = new DefaultInput();
+            EnhancedTouchSupport.Enable();
         }
 
         public void OnDestroy()
         {
             Instance = null;
+            EnhancedTouchSupport.Disable();
             WebRTC.WebRTC.Dispose();
             RemoteInputReceiver.Dispose();
             Unity.WebRTC.Audio.Stop();

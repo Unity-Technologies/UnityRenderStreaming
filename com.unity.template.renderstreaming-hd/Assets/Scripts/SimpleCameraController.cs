@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace Unity.RenderStreaming
 {
@@ -32,6 +36,14 @@ namespace Unity.RenderStreaming
             RemoteKeyboard.MakeCurrent();
             RemoteTouchscreen.MakeCurrent();
             RemoteGamepad.MakeCurrent();
+        }
+    }
+
+    static class TouchScreenExtension
+    {
+        public static IEnumerable<EnhancedTouch> GetTouches(this Touchscreen screen)
+        {
+            return EnhancedTouch.activeTouches.Where(touch => touch.screen == screen);
         }
     }
 
@@ -205,11 +217,12 @@ namespace Unity.RenderStreaming
                 direction += new Vector3(axis.x, 0, axis.y);
             }
 
+            var touches = m_screen.GetTouches();
             //Translation
-            if (m_screen.touches.Count == 2)
+            if (touches.Count() == 2)
             {
-                var activeTouches = m_screen.touches.ToArray();
-                direction = GetTranslationFromInput((activeTouches[0].delta.ReadValue() + activeTouches[1].delta.ReadValue()) / 2f);
+                var activeTouches = touches.ToArray();
+                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
             }
             else if (IsMouseDragged(m_mouse,true))
             {
@@ -226,15 +239,17 @@ namespace Unity.RenderStreaming
                 return;
             }
 
+            var touches = m_screen.GetTouches();
+
             // Rotation 
             if (IsMouseDragged(m_mouse,false))
             {
                 UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
             }
-            else if (m_screen.touches.Count == 1)
+            else if (touches.Count() == 1)
             {
-                var activeTouches = m_screen.touches.ToArray();
-                UpdateTargetCameraStateFromInput(activeTouches[0].delta.ReadValue());
+                var activeTouches = touches.ToArray();
+                UpdateTargetCameraStateFromInput(activeTouches[0].delta);
             }
             
             // Rotation from joystick
