@@ -5,33 +5,33 @@ namespace Unity.RenderStreaming
 {
     public interface IInput
     {
-        Mouse Mouse { get; }
-        Keyboard Keyboard { get; }
-        Touchscreen Touchscreen { get; }
-        Gamepad Gamepad { get; }
+        Mouse RemoteMouse { get; }
+        Keyboard RemoteKeyboard { get; }
+        Touchscreen RemoteTouchscreen { get; }
+        Gamepad RemoteGamepad { get; }
     }
 
     public class DefaultInput : IInput
     {
-        public Mouse Mouse { get; }
-        public Keyboard Keyboard { get; }
-        public Touchscreen Touchscreen { get; }
-        public Gamepad Gamepad { get; }
+        public Mouse RemoteMouse { get; }
+        public Keyboard RemoteKeyboard { get; }
+        public Touchscreen RemoteTouchscreen { get; }
+        public Gamepad RemoteGamepad { get; }
 
         public DefaultInput()
         {
-            Mouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
-            Keyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
-            Touchscreen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
-            Gamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
+            RemoteMouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
+            RemoteKeyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
+            RemoteTouchscreen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
+            RemoteGamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
         }
 
         public void MakeCurrent()
         {
-            Mouse.MakeCurrent();
-            Keyboard.MakeCurrent();
-            Touchscreen.MakeCurrent();
-            Gamepad.MakeCurrent();
+            RemoteMouse.MakeCurrent();
+            RemoteKeyboard.MakeCurrent();
+            RemoteTouchscreen.MakeCurrent();
+            RemoteGamepad.MakeCurrent();
         }
     }
 
@@ -115,10 +115,10 @@ namespace Unity.RenderStreaming
 
         public void SetInput(IInput input)
         {
-            m_mouse = input.Mouse;
-            m_keyboard = input.Keyboard;
-            m_screen = input.Touchscreen;
-            m_gamepad = input.Gamepad;
+            m_mouse = input.RemoteMouse;
+            m_keyboard = input.RemoteKeyboard;
+            m_screen = input.RemoteTouchscreen;
+            m_gamepad = input.RemoteGamepad;
         }
 
         void OnEnable()

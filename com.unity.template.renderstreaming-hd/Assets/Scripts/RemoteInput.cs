@@ -108,10 +108,10 @@ namespace Unity.RenderStreaming
     {
         private GamepadState m_gamepadState;
 
-        public Mouse Mouse { get; }
-        public Keyboard Keyboard { get; }
-        public Touchscreen Touchscreen { get; }
-        public Gamepad Gamepad { get; }
+        public Mouse RemoteMouse { get; }
+        public Keyboard RemoteKeyboard { get; }
+        public Touchscreen RemoteTouchscreen { get; }
+        public Gamepad RemoteGamepad { get; }
 
         public Action<int> ActionButtonClick;
 
@@ -121,10 +121,10 @@ namespace Unity.RenderStreaming
 
         public RemoteInput(ref InputUser user)
         {
-            Mouse = user.pairedDevices.FirstOrDefault(device => device is Mouse) as Mouse;
-            Keyboard = user.pairedDevices.FirstOrDefault(device => device is Keyboard) as Keyboard;
-            Touchscreen = user.pairedDevices.FirstOrDefault(device => device is Touchscreen) as Touchscreen;
-            Gamepad = user.pairedDevices.FirstOrDefault(device => device is Gamepad) as Gamepad;
+            RemoteMouse = user.pairedDevices.FirstOrDefault(device => device is Mouse) as Mouse;
+            RemoteKeyboard = user.pairedDevices.FirstOrDefault(device => device is Keyboard) as Keyboard;
+            RemoteTouchscreen = user.pairedDevices.FirstOrDefault(device => device is Touchscreen) as Touchscreen;
+            RemoteGamepad = user.pairedDevices.FirstOrDefault(device => device is Gamepad) as Gamepad;
         }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ namespace Unity.RenderStreaming
                                 }
                                 break;
                         }
-                        InputSystem.QueueStateEvent(Gamepad, m_gamepadState);
+                        InputSystem.QueueStateEvent(RemoteGamepad, m_gamepadState);
                     }
                     break;
             }
@@ -295,15 +295,15 @@ namespace Unity.RenderStreaming
                 case KeyboardEventType.KeyDown:
                     if (!repeat)
                     {
-                        InputSystem.QueueStateEvent(Keyboard, new KeyboardState((Key)keyCode));
+                        InputSystem.QueueStateEvent(RemoteKeyboard, new KeyboardState((Key)keyCode));
                     }
                     if(character != 0)
                     {
-                        InputSystem.QueueTextEvent(Keyboard, character);
+                        InputSystem.QueueTextEvent(RemoteKeyboard, character);
                     }
                     break;
                 case KeyboardEventType.KeyUp:
-                    InputSystem.QueueStateEvent(Keyboard, new KeyboardState());
+                    InputSystem.QueueStateEvent(RemoteKeyboard, new KeyboardState());
                     break;
             }
         }
@@ -312,7 +312,7 @@ namespace Unity.RenderStreaming
         {
             UnityEngine.Vector2Int pos = new UnityEngine.Vector2Int(x, y);
             UnityEngine.Vector2Int delta = pos- m_prevMousePos;
-            InputSystem.QueueStateEvent(Mouse, new MouseState {
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState {
                 position = pos,
                 delta = delta,
                 buttons = button
@@ -322,14 +322,14 @@ namespace Unity.RenderStreaming
 
         void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(Mouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
+            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
         }
 
         void ProcessTouchMoveEvent(TouchState[] touches)
         {
             for (var i = 0; i < touches.Length; i++)
             {
-                InputSystem.QueueStateEvent(Touchscreen, touches[i]);
+                InputSystem.QueueStateEvent(RemoteTouchscreen, touches[i]);
             }
         }
         void ChangeEndStateUnusedTouches(TouchState[] touches)
@@ -344,7 +344,7 @@ namespace Unity.RenderStreaming
                     {
                         continue;
                     }
-                    InputSystem.QueueStateEvent(Touchscreen, new TouchState
+                    InputSystem.QueueStateEvent(RemoteTouchscreen, new TouchState
                     {
                         touchId = touchId,
                         phase = TouchPhase.Ended,
