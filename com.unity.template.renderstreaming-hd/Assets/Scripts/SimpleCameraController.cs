@@ -83,31 +83,38 @@ namespace Unity.RenderStreaming
             }
         }
 
-        CameraState m_TargetCameraState = new CameraState();
-        CameraState m_InterpolatingCameraState = new CameraState();
-        CameraState m_InitialCameraState = new CameraState();
-
         [Header("Movement Settings")]
         [Tooltip("Movement Sensitivity Factor."), Range(0.001f, 1f)]
         [SerializeField] float       m_movementSensitivityFactor = 0.1f;
 
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
-        public float boost = 3.5f;
+        [SerializeField]
+        private float boost = 3.5f;
 
         [Tooltip("Time it takes to interpolate camera position 99% of the way to the target."), Range(0.001f, 1f)]
-        public float positionLerpTime = 0.2f;
-
+        [SerializeField]
+        private float positionLerpTime = 0.2f;
 
         [Header("Rotation Settings")]
         [Tooltip("X = Change in mouse position.\nY = Multiplicative factor for camera rotation.")]
-        public AnimationCurve mouseSensitivityCurve = new AnimationCurve(new Keyframe(0f, 0.5f, 0f, 5f), new Keyframe(1f, 2.5f, 0f, 0f));
+        [SerializeField]
+        private AnimationCurve mouseSensitivityCurve = new AnimationCurve(new Keyframe(0f, 0.5f, 0f, 5f), new Keyframe(1f, 2.5f, 0f, 0f));
 
         [Tooltip("Time it takes to interpolate camera rotation 99% of the way to the target."), Range(0.001f, 1f)]
-        public float rotationLerpTime = 0.01f;
+        [SerializeField]
+        private float rotationLerpTime = 0.01f;
 
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
-        public bool invertY = false;
+        [SerializeField]
+        private bool invertY = false;
 
+        [Tooltip("Instance for controlling UI that renders to the camera.")]
+        [SerializeField]
+        private UIController uiController;
+
+        readonly CameraState m_TargetCameraState = new CameraState();
+        readonly CameraState m_InterpolatingCameraState = new CameraState();
+        readonly CameraState m_InitialCameraState = new CameraState();
         private Gamepad m_gamepad;
         private Keyboard m_keyboard;
         private Mouse m_mouse;
@@ -119,6 +126,8 @@ namespace Unity.RenderStreaming
             m_keyboard = input.RemoteKeyboard;
             m_screen = input.RemoteTouchscreen;
             m_gamepad = input.RemoteGamepad;
+
+            uiController.SetInput(input);
         }
 
         void OnEnable()
