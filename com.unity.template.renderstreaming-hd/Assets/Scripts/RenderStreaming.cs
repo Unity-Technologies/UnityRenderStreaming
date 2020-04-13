@@ -50,8 +50,8 @@ namespace Unity.RenderStreaming
         private ButtonClickElement[] arrayButtonClickEvent;
 #pragma warning restore 0649
 
-        private ISignaling signaling;
-        private readonly Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
+        private ISignaling m_signaling;
+        private readonly Dictionary<string, RTCPeerConnection> m_mapConnectionIdAndPeer = new Dictionary<string, RTCPeerConnection>();
         private readonly Dictionary<RTCPeerConnection, DataChannelDictionary> m_mapPeerAndChannelDictionary = new Dictionary<RTCPeerConnection, DataChannelDictionary>();
         private readonly Dictionary<RemoteInput, SimpleCameraController> m_remoteInputAndCameraController = new Dictionary<RemoteInput, SimpleCameraController>();
         private readonly Dictionary<RTCDataChannel, RemoteInput> m_mapChannelAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
@@ -97,21 +97,21 @@ namespace Unity.RenderStreaming
 
         void OnEnable()
         {
-            if (this.signaling == null)
+            if (this.m_signaling == null)
             {
                 if (urlSignaling.StartsWith("ws"))
                 {
-                    this.signaling = new WebSocketSignaling(urlSignaling, interval);
+                    this.m_signaling = new WebSocketSignaling(urlSignaling, interval);
                 }
                 else
                 {
-                    this.signaling = new HttpSignaling(urlSignaling, interval);
+                    this.m_signaling = new HttpSignaling(urlSignaling, interval);
                 }
 
-                this.signaling.OnOffer += OnOffer;
-                this.signaling.OnIceCandidate += OnIceCandidate;
+                this.m_signaling.OnOffer += OnOffer;
+                this.m_signaling.OnIceCandidate += OnIceCandidate;
             }
-            this.signaling.Start();
+            this.m_signaling.Start();
         }
 
         public void AddController(SimpleCameraController controller)
@@ -137,10 +137,10 @@ namespace Unity.RenderStreaming
 
         void OnDisable()
         {
-            if (this.signaling != null)
+            if (this.m_signaling != null)
             {
-                this.signaling.Stop();
-                this.signaling = null;
+                this.m_signaling.Stop();
+                this.m_signaling = null;
             }
         }
 
@@ -150,12 +150,12 @@ namespace Unity.RenderStreaming
             _desc.type = RTCSdpType.Offer;
             _desc.sdp = e.sdp;
             var connectionId = e.connectionId;
-            if (pcs.ContainsKey(connectionId))
+            if (m_mapConnectionIdAndPeer.ContainsKey(connectionId))
             {
                 return;
             }
             var pc = new RTCPeerConnection();
-            pcs.Add(e.connectionId, pc);
+            m_mapConnectionIdAndPeer.Add(e.connectionId, pc);
 
             pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
             pc.SetConfiguration(ref m_conf);
@@ -168,7 +168,7 @@ namespace Unity.RenderStreaming
                 if(state == RTCIceConnectionState.Disconnected)
                 {
                     pc.Close();
-                    pcs.Remove(e.connectionId);
+                    m_mapConnectionIdAndPeer.Remove(e.connectionId);
                 }
             });
             //make video bit rate starts at 16000kbits, and 160000kbits at max.
@@ -211,7 +211,7 @@ namespace Unity.RenderStreaming
 
         void OnIceCandidate(ISignaling signaling, CandidateData e)
         {
-            if (!pcs.TryGetValue(e.connectionId, out var pc))
+            if (!m_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
             {
                 return;
             }
