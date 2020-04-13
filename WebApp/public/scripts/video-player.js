@@ -1,5 +1,10 @@
 import Signaling, { WebSocketSignaling } from "./signaling.js"
 
+// enum type of event sending from Unity
+var UnityEventType = {
+  SWITCH_VIDEO: 0
+};
+
 export class VideoPlayer {
   constructor(elements, config) {
     const _this = this;
@@ -42,11 +47,6 @@ export class VideoPlayer {
     config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     return config;
   }
-
-  // enum type of event sending from Unity
-  UnityEventType = {
-    SWITCH_VIDEO: 0
-  };
 
   async setupConnection() {
     const _this = this;
