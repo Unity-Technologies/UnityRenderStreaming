@@ -9,7 +9,7 @@
     "newman": "newman run test/renderstreaming.postman_collection.json",
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
-    "lint": "eslint --fix 'src/*.ts'",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
     "pack": "pkg ."
   },
   "dependencies": {
