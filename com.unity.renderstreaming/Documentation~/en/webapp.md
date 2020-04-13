@@ -37,6 +37,7 @@ After downloading, run it from the command line.
 | -s --secure           | Use https                                          |             |
 | -k —keyfile \<path\>  | Designate the private key file to use with https   | server.key  |
 | -c —certfile \<path\> | Designate the certification file to use with https | server.cert |
+| -w --websocket        | Use Websocket as signaling protocol                |             |
 
 ### Command Examples
 
@@ -50,6 +51,12 @@ This command will run the server as https. Port 443 will be used. A certificate 
 
 ```shell
 .\webserver -s -p 443
+```
+
+The command will run in the mode that uses WebSocket as the signaling protocol.
+
+```shell
+.\webserver -w
 ```
 
 When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming component in Unity to https as well.
