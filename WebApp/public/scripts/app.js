@@ -38,7 +38,14 @@ function onClickPlayButton() {
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
-  setupVideoPlayer(elementVideo).then(value => videoPlayer = value);
+
+  // add video thumbnail
+  const elementVideoThumb = document.createElement('video');
+  elementVideoThumb.id = 'VideoThumbnail';
+  elementVideoThumb.style.touchAction = 'none';
+  playerDiv.appendChild(elementVideoThumb);
+
+  setupVideoPlayer([elementVideo, elementVideoThumb]).then(value => videoPlayer = value);
 
   // add green button
   const elementBlueButton = document.createElement('button');
@@ -95,14 +102,14 @@ function onClickPlayButton() {
   }
 }
 
-async function setupVideoPlayer(element, config) {
-  const videoPlayer = new VideoPlayer(element, config);
+async function setupVideoPlayer(elements, config) {
+  const videoPlayer = new VideoPlayer(elements, config);
   await videoPlayer.setupConnection();
 
   videoPlayer.ondisconnect = onDisconnect;
   registerGamepadEvents(videoPlayer);
   registerKeyboardEvents(videoPlayer);
-  registerMouseEvents(videoPlayer, element);
+  registerMouseEvents(videoPlayer, elements[0]);
   
   startGamepadDetection();
   return videoPlayer;

@@ -1,7 +1,7 @@
 import Signaling, { WebSocketSignaling } from "./signaling.js"
 
 export class VideoPlayer {
-  constructor(element, config) {
+  constructor(elements, config) {
     const _this = this;
     this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
@@ -10,12 +10,26 @@ export class VideoPlayer {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
-    this.video = element;
+
+    // main video
+    this.localStream = new MediaStream();
+    this.video = elements[0];
     this.video.playsInline = true;
     this.video.addEventListener('loadedmetadata', function () {
       _this.video.play();
       _this.resizeVideo();
     }, true);
+
+    // thumbnail video
+    this.localStream2 = new MediaStream();
+    this.videoThumb = elements[1];
+    this.videoThumb.playsInline = true;
+    this.videoThumb.addEventListener('loadedmetadata', function () {
+      _this.videoThumb.play();
+    }, true);
+
+    this.videoTrackList = [];
+    this.videoTrackIndex = 0;
 
     this.ondisconnect = function () { };
   }
@@ -76,8 +90,16 @@ export class VideoPlayer {
       console.log('iceGatheringState changed:', e);
     };
     this.pc.ontrack = function (e) {
-      console.log('New track added: ', e.streams);
-      _this.video.srcObject = e.streams[0];
+      console.log('New track added: id:', e.track.id);
+      console.log('New track added: label:', e.track.label);
+      console.log('New track added: kind:', e.track.kind);
+
+      if(e.track.kind == 'video') {
+        _this.videoTrackList.push(e.track);
+      }
+      if(e.track.kind == 'audio') {
+        _this.localStream.addTrack(e.track);
+      }
     };
     this.pc.onicecandidate = function (e) {
       if (e.candidate != null) {
@@ -95,6 +117,15 @@ export class VideoPlayer {
     this.channel.onclose = function () {
       console.log('Datachannel disconnected.');
     };
+    this.channel.onmessage = function (msg) {
+      console.log('Datachannel onmessage. :', msg.data);
+      const bytes = new Uint8Array(msg.data);
+      switch(bytes[0]) {
+        case 0:
+          _this.switchVideo(bytes[1]);
+          break;
+      }
+    };
 
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
@@ -110,6 +141,13 @@ export class VideoPlayer {
 
     // setup signaling
     await this.signaling.start();
+
+    // Add transceivers to receive multi stream.
+    // It can receive two video tracks and one audio track from Unity app.
+    // This operation is required to generate offer SDP correctly.
+    this.pc.addTransceiver('video', { direction: 'recvonly' });
+    this.pc.addTransceiver('video', { direction: 'recvonly' });
+    this.pc.addTransceiver('audio', { direction: 'recvonly' });
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
@@ -132,6 +170,31 @@ export class VideoPlayer {
     this._videoOriginX = clientRect.left + videoOffsetX;
     this._videoOriginY = clientRect.top + videoOffsetY;
   }
+
+  switchVideo(indexVideoTrack) {
+    this.video.srcObject = this.localStream;
+    this.videoThumb.srcObject = this.localStream2;
+
+    if(indexVideoTrack == 0) {
+      this.replaceTrack(this.localStream, this.videoTrackList[0]);
+      this.replaceTrack(this.localStream2, this.videoTrackList[1]);
+    }
+    else {
+      this.replaceTrack(this.localStream, this.videoTrackList[1]);
+      this.replaceTrack(this.localStream2, this.videoTrackList[0]);
+    }
+  }
+
+  replaceTrack(stream, newTrack) {
+    const tracks = stream.getVideoTracks();
+    for(const track of tracks) {
+      if(track.king == 'video') {
+        stream.removeTrack(track);
+      }
+    }
+    stream.addTrack(newTrack);
+  }  
+
 
   get videoWidth() {
     return this.video.videoWidth;

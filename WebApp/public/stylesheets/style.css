@@ -28,6 +28,14 @@ body{
   height: 100%;
 }
 
+#VideoThumbnail{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 30%;
+}
+
 #greenButton{
     position: absolute;
     bottom: 10px;

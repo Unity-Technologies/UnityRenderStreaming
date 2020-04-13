@@ -35,12 +35,6 @@ namespace Unity.RenderStreaming
             }
         };
 
-        [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
-        private Vector2Int streamingSize = new Vector2Int(1280, 720);
-
-        [SerializeField, Tooltip("Streaming bit rate")]
-        private int bitRate = 1000000;
-
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
@@ -58,12 +52,12 @@ namespace Unity.RenderStreaming
         private readonly Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
         private readonly Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
         private readonly Dictionary<RemoteInput, SimpleCameraController> m_remoteInputAndCameraController = new Dictionary<RemoteInput, SimpleCameraController>();
-        private readonly Dictionary<RTCDataChannel, RemoteInput> m_channelIdAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
+        private readonly Dictionary<RTCDataChannel, RemoteInput> m_mapChannelAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
-        private RTCConfiguration conf;
-        private MediaStream videoStream;
-        private MediaStream audioStream;
+        private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
+        private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
+        private RTCConfiguration conf;
 
         public static RenderStreaming Instance { get; private set; }
 
@@ -86,8 +80,8 @@ namespace Unity.RenderStreaming
         }
         public void Start()
         {
-            videoStream = captureCamera.CaptureStream(streamingSize.x, streamingSize.y, bitRate);
-            audioStream = Unity.WebRTC.Audio.CaptureStream();
+            m_audioStream = Unity.WebRTC.Audio.CaptureStream();
+
             conf = default;
             conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
@@ -123,6 +117,16 @@ namespace Unity.RenderStreaming
             m_listController.Remove(controller);
         }
 
+        public void AddVideoStreamTrack(VideoStreamTrack track)
+        {
+            m_listVideoStreamTrack.Add(track);
+        }
+
+        public void RemoveVideoStreamTrack(VideoStreamTrack track)
+        {
+            m_listVideoStreamTrack.Remove(track);
+        }
+
         void OnDisable()
         {
             if (this.signaling != null)
@@ -131,9 +135,6 @@ namespace Unity.RenderStreaming
                 this.signaling = null;
             }
         }
-
-        public Vector2Int GetStreamingSize() { return streamingSize; }
-
 
         void OnOffer(ISignaling signaling, DescData e)
         {
@@ -166,11 +167,11 @@ namespace Unity.RenderStreaming
             string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
             _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
             pc.SetRemoteDescription(ref _desc);
-            foreach (var track in videoStream.GetTracks())
+            foreach (var track in m_listVideoStreamTrack)
             {
                 pc.AddTrack(track);
             }
-            foreach(var track in audioStream.GetTracks())
+            foreach(var track in m_audioStream.GetTracks())
             {
                 pc.AddTrack(track);
             }
@@ -234,8 +235,8 @@ namespace Unity.RenderStreaming
             // device.current must be changed after creating devices
             m_defaultInput.MakeCurrent();
 
-            m_channelIdAndRemoteInput.Add(channel, input);
-            channel.OnMessage = bytes => m_channelIdAndRemoteInput[channel].ProcessInput(bytes);
+            m_mapChannelAndRemoteInput.Add(channel, input);
+            channel.OnMessage = bytes => m_mapChannelAndRemoteInput[channel].ProcessInput(bytes);
             channel.OnClose = () => OnCloseChannel(channel);
 
             SimpleCameraController controller = m_listController
@@ -245,12 +246,16 @@ namespace Unity.RenderStreaming
             {
                 controller.SetInput(input);
                 m_remoteInputAndCameraController.Add(input, controller);
+
+                byte index = (byte)m_listController.IndexOf(controller);
+                byte[] bytes = {0, index};
+                channel.Send(bytes);
             }
         }
 
         void OnCloseChannel(RTCDataChannel channel)
         {
-            RemoteInput input = m_channelIdAndRemoteInput[channel];
+            RemoteInput input = m_mapChannelAndRemoteInput[channel];
             RemoteInputReceiver.Delete(input);
 
             // device.current must be changed after removing devices
@@ -271,7 +276,7 @@ namespace Unity.RenderStreaming
             }
             m_remoteInputAndCameraController.Remove(input);
 
-            m_channelIdAndRemoteInput.Remove(channel);
+            m_mapChannelAndRemoteInput.Remove(channel);
         }
 
         RemoteInput FindPrioritizedInput()
