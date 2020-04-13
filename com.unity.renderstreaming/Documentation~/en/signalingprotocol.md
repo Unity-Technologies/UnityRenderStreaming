@@ -24,33 +24,49 @@ Both of the signaling classes implement `ISignaling`.
 If you want to create your own signaling class, you can inherit `ISignaling` to use it directly from the UnityRenderStreaming class.
 The following is a description of each method.
 
-### void Start();
-A method to call when starting signaling.
-In the sample, we are establishing a session with the server for each protocol.
+```
+void Start();
+```
+- A method to call when starting signaling.
+- In the sample, we are establishing a session with the server for each protocol.
 
-### void Stop();
+```
+void Stop();
+```
 A method to call when you want to stop signaling.
 In the sample, we are terminating the session with the server for each protocol.
 
-### public delegate void OnOfferHandler(ISignaling signaling, DescData e);
-### event OnOfferHandler OnOffer;
-This is a delegate that registers the process to be performed when a new Offer is received by signaling.
+```
+public delegate void OnOfferHandler(ISignaling signaling, DescData e);
+event OnOfferHandler OnOffer;
+```
+- This is a delegate that registers the process to be performed when a new Offer is received by signaling.
 
-### public delegate void OnAnswerHandler(ISignaling signaling, DescData e);
-### event OnAnswerHandler OnAnswer;
-This is a delegate that registers the process to be performed when a new Answer is received by signaling.
-In the current version, it is not used in Unity because it does not receive Answers.
+```
+public delegate void OnAnswerHandler(ISignaling signaling, DescData e);
+event OnAnswerHandler OnAnswer;
+```
+- This is a delegate that registers the process to be performed when a new Answer is received by signaling.
+- In the current version, it is not used in Unity because it does not receive Answers.
 
-### public delegate void OnIceCandidateHandler(ISignaling signaling, CandidateData e);
-### event OnIceCandidateHandler OnIceCandidate;
-This is a delegate that registers the process to be performed when it receives a new Cadicate by signaling.
+```
+public delegate void OnIceCandidateHandler(ISignaling signaling, CandidateData e);
+event OnIceCandidateHandler OnIceCandidate;
+```
+- This is a delegate that registers the process to be performed when it receives a new Cadicate by signaling.
 
-### void SendOffer();
-A method to call when sending an Offer in signaling.
-In the current version, it is not implemented in the sample because it is not possible to send Offer from Unity.
+```
+void SendOffer();
+```
+- A method to call when sending an Offer in signaling.
+- In the current version, it is not implemented in the sample because it is not possible to send Offer from Unity.
 
-### void SendAnswer(string connectionId, RTCSessionDescription answer);
-A method to call when sending an Answer in signaling.
+```
+void SendAnswer(string connectionId, RTCSessionDescription answer);
+```
+- A method to call when sending an Answer in signaling.
 
-### void SendCandidate(string connectionId, RTCIceCandidate candidate);
-A method to call when sending a Candidate in signaling.
+```
+void SendCandidate(string connectionId, RTCIceCandidate candidate);
+```
+- A method to call when sending a Candidate in signaling.
