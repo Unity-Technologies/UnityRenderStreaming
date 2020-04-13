@@ -9,6 +9,8 @@ using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Unity.RenderStreaming
 {
+    using DataChannelDictionary = Dictionary<int, RTCDataChannel>;
+
     [Serializable]
     public class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
 
@@ -50,16 +52,22 @@ namespace Unity.RenderStreaming
 
         private ISignaling signaling;
         private readonly Dictionary<string, RTCPeerConnection> pcs = new Dictionary<string, RTCPeerConnection>();
-        private readonly Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>> mapChannels = new Dictionary<RTCPeerConnection, Dictionary<int, RTCDataChannel>>();
+        private readonly Dictionary<RTCPeerConnection, DataChannelDictionary> m_mapPeerAndChannelDictionary = new Dictionary<RTCPeerConnection, DataChannelDictionary>();
         private readonly Dictionary<RemoteInput, SimpleCameraController> m_remoteInputAndCameraController = new Dictionary<RemoteInput, SimpleCameraController>();
         private readonly Dictionary<RTCDataChannel, RemoteInput> m_mapChannelAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
-        private RTCConfiguration conf;
+        private RTCConfiguration m_conf;
 
         public static RenderStreaming Instance { get; private set; }
+
+        enum UnityEventType
+        {
+            SwitchVideo = 0
+        }
+
 
         public void Awake()
         {
@@ -82,8 +90,8 @@ namespace Unity.RenderStreaming
         {
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
 
-            conf = default;
-            conf.iceServers = iceServers;
+            m_conf = default;
+            m_conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
         }
 
@@ -150,7 +158,7 @@ namespace Unity.RenderStreaming
             pcs.Add(e.connectionId, pc);
 
             pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
-            pc.SetConfiguration(ref conf);
+            pc.SetConfiguration(ref m_conf);
             pc.OnIceCandidate = new DelegateOnIceCandidate(candidate =>
             {
                 signaling.SendCandidate(e.connectionId, candidate);
@@ -218,10 +226,10 @@ namespace Unity.RenderStreaming
 
         void OnDataChannel(RTCPeerConnection pc, RTCDataChannel channel)
         {
-            if (!mapChannels.TryGetValue(pc, out var channels))
+            if (!m_mapPeerAndChannelDictionary.TryGetValue(pc, out var channels))
             {
-                channels = new Dictionary<int, RTCDataChannel>();
-                mapChannels.Add(pc, channels);
+                channels = new DataChannelDictionary();
+                m_mapPeerAndChannelDictionary.Add(pc, channels);
             }
             channels.Add(channel.Id, channel);
 
@@ -231,6 +239,7 @@ namespace Unity.RenderStreaming
             }
 
             RemoteInput input = RemoteInputReceiver.Create();
+            input.ActionButtonClick = OnButtonClick;
 
             // device.current must be changed after creating devices
             m_defaultInput.MakeCurrent();
@@ -239,6 +248,7 @@ namespace Unity.RenderStreaming
             channel.OnMessage = bytes => m_mapChannelAndRemoteInput[channel].ProcessInput(bytes);
             channel.OnClose = () => OnCloseChannel(channel);
 
+            // find controller that not assigned remote input
             SimpleCameraController controller = m_listController
                 .FirstOrDefault(_controller => !m_remoteInputAndCameraController.ContainsValue(_controller));
 
@@ -248,7 +258,7 @@ namespace Unity.RenderStreaming
                 m_remoteInputAndCameraController.Add(input, controller);
 
                 byte index = (byte)m_listController.IndexOf(controller);
-                byte[] bytes = {0, index};
+                byte[] bytes = {(byte)UnityEventType.SwitchVideo, index};
                 channel.Send(bytes);
             }
         }
@@ -261,6 +271,7 @@ namespace Unity.RenderStreaming
             // device.current must be changed after removing devices
             m_defaultInput.MakeCurrent();
 
+            // reassign remote input to controller
             if (m_remoteInputAndCameraController.TryGetValue(input, out var controller))
             {
                 RemoteInput newInput = FindPrioritizedInput();

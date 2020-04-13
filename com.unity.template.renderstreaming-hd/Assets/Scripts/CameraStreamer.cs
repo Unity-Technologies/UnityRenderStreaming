@@ -28,11 +28,5 @@ namespace Unity.RenderStreaming
         {
             RenderStreaming.Instance?.RemoveVideoStreamTrack(m_track);
         }
-
-        private void OnAudioFilterRead(float[] data, int channels)
-        {
-            WebRTC.Audio.Update(data, channels);
-        }
     }
-
 }

@@ -20,7 +20,7 @@ export class VideoPlayer {
       _this.resizeVideo();
     }, true);
 
-    // thumbnail video
+    // secondly video
     this.localStream2 = new MediaStream();
     this.videoThumb = elements[1];
     this.videoThumb.playsInline = true;
@@ -42,6 +42,11 @@ export class VideoPlayer {
     config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     return config;
   }
+
+  // enum type of event sending from Unity
+  UnityEventType = {
+    SWITCH_VIDEO: 0
+  };
 
   async setupConnection() {
     const _this = this;
@@ -90,10 +95,6 @@ export class VideoPlayer {
       console.log('iceGatheringState changed:', e);
     };
     this.pc.ontrack = function (e) {
-      console.log('New track added: id:', e.track.id);
-      console.log('New track added: label:', e.track.label);
-      console.log('New track added: kind:', e.track.kind);
-
       if(e.track.kind == 'video') {
         _this.videoTrackList.push(e.track);
       }
@@ -118,10 +119,10 @@ export class VideoPlayer {
       console.log('Datachannel disconnected.');
     };
     this.channel.onmessage = function (msg) {
-      console.log('Datachannel onmessage. :', msg.data);
+      // receive message from unity and operate message
       const bytes = new Uint8Array(msg.data);
       switch(bytes[0]) {
-        case 0:
+        case UnityEventType.SWITCH_VIDEO:
           _this.switchVideo(bytes[1]);
           break;
       }
@@ -171,6 +172,7 @@ export class VideoPlayer {
     this._videoOriginY = clientRect.top + videoOffsetY;
   }
 
+  // switch streaming destination main video and secondly video
   switchVideo(indexVideoTrack) {
     this.video.srcObject = this.localStream;
     this.videoThumb.srcObject = this.localStream2;
@@ -185,6 +187,7 @@ export class VideoPlayer {
     }
   }
 
+  // replace video track related the MediaStream
   replaceTrack(stream, newTrack) {
     const tracks = stream.getVideoTracks();
     for(const track of tracks) {
@@ -193,8 +196,7 @@ export class VideoPlayer {
       }
     }
     stream.addTrack(newTrack);
-  }  
-
+  }
 
   get videoWidth() {
     return this.video.videoWidth;
