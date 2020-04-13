@@ -1,4 +1,4 @@
-﻿using Unity.WebRTC;
+using Unity.WebRTC;
 
 namespace Unity.RenderStreaming.Signaling
 {
@@ -17,6 +17,6 @@ namespace Unity.RenderStreaming.Signaling
 
         void SendOffer();
         void SendAnswer(string connectionId, RTCSessionDescription answer);
-        void SendCandidate(string connectionId, RTCIceCandidate candidate);
+        void SendCandidate(string connectionId, RTCIceCandidate​ candidate);
     }
 }

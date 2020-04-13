@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -21,17 +22,31 @@ namespace Unity.RenderStreaming
         private Color transparentColor = new Color(0, 0, 0, 0);
         private RectTransform m_rectTransform = null;
 
+        private Gamepad m_gamepad;
+        private Keyboard m_keyboard;
+        private Mouse m_mouse;
+        private Touchscreen m_screen;
+
+        public void SetInput(IInput input)
+        {
+            m_mouse = input.RemoteMouse;
+            m_keyboard = input.RemoteKeyboard;
+            m_screen = input.RemoteTouchscreen;
+            m_gamepad = input.RemoteGamepad;
+
+            m_keyboard.onTextInput += OnTextInput;
+        }
+
         void Start()
         {
             m_rectTransform = GetComponent<RectTransform>();
-            Keyboard.current.onTextInput += OnTextInput;
             canvasGroup.alpha = 0;
             text.text = string.Empty;
         }
 
         void FixedUpdate()
         {
-            if (!Keyboard.current.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
+            if (!m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
                 canvasGroup.alpha = transitionCurve.Evaluate(timeTransition);
@@ -42,19 +57,21 @@ namespace Unity.RenderStreaming
             }
 
             bool pointerFromMouse
-                =  HighlightPointerFromMouse(RemoteInput.RemoteMouse, m_renderStreaming.GetStreamingSize())
-                || HighlightPointerFromMouse(Mouse.current, new Vector2Int(Screen.width, Screen.height));
+                =  HighlightPointerFromMouse(m_mouse, new Vector2Int(Screen.width, Screen.height));
             if (pointerFromMouse)
                 return;
 
+            var touches = m_screen.GetTouches();
 
-            if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count > 0)
+            if (touches.Count() > 0)
             {
                 var position = Vector2.zero;
-                var count = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count;
+                var count = touches.Count();
+                var activeTouches = touches.ToArray();
+
                 for (var i = 0; i < count; i++)
                 {
-                    position += UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[i].screenPosition;
+                    position += activeTouches[i].screenPosition;
                 }
                 pointer.rectTransform.anchoredPosition = position / (float)count;
                 pointer.color = Color.red;

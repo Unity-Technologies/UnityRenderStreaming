@@ -500,7 +500,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 168218571}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.8100357}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.8100524}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Profile: {fileID: 11400000, guid: a123fc0ac58cb774e8592c925f167e7c, type: 2}
   m_StaticLightingSkyUniqueID: 1
-  m_SkySettings: {fileID: 1782495815}
+  m_SkySettings: {fileID: 1698567181}
   m_SkySettingsFromProfile: {fileID: -1658960478407648048, guid: a123fc0ac58cb774e8592c925f167e7c,
     type: 2}
 --- !u!4 &313761475
@@ -1155,7 +1155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045786cf504bd7347842d6948241cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urlSignaling: http://localhost
+  urlSignaling: https://localhost
   iceServers:
   - credential: 
     credentialType: 0
@@ -1163,7 +1163,7 @@ MonoBehaviour:
     - stun:stun.l.google.com:19302
     username: 
   streamingSize: {x: 1280, y: 720}
-  bitrate: 1000000
+  bitRate: 1000000
   interval: 5
   captureCamera: {fileID: 1297650283}
   hardwareEncoderSupport: 1
@@ -1606,7 +1606,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1037846703}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.6870085}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.6870127}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}
@@ -2324,15 +2324,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0.5
-      inSlope: 4.6264863
-      outSlope: 4.6264863
+      inSlope: 0.90255296
+      outSlope: 0.90255296
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.11557238
+      outWeight: 0.12129551
     - serializedVersion: 3
-      time: 1
-      value: 2.5
+      time: 0.991006
+      value: 0.99528265
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2344,6 +2344,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   rotationLerpTime: 0.01
   invertY: 0
+  uiController: {fileID: 754844279}
 --- !u!1 &1394380099
 GameObject:
   m_ObjectHideFlags: 0
@@ -2726,7 +2727,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1782495815
+--- !u!114 &1698567181
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3056,7 +3057,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2059789766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5100355, y: 1.196, z: 1.1760179}
+  m_LocalPosition: {x: 2.5100522, y: 1.196, z: 1.1760262}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}
