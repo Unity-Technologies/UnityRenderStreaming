@@ -235,8 +235,6 @@ export function registerKeyboardEvents(videoPlayer) {
 
 export function registerMouseEvents(videoPlayer, playerElement) {
   const _videoPlayer = videoPlayer;
-  const _playerElement = playerElement;
-  const _document = document;
 
   // Listen to mouse events
   playerElement.addEventListener('click', sendMouse, false);
