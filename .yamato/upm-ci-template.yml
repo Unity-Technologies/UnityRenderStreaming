@@ -47,6 +47,10 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% endif %}
     - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
   artifacts:
     logs:
       paths:
