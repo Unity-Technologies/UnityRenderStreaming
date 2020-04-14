@@ -56,7 +56,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 {% endfor %}
