@@ -53,7 +53,7 @@ event OnAnswerHandler OnAnswer;
 public delegate void OnIceCandidateHandler(ISignaling signaling, CandidateData e);
 event OnIceCandidateHandler OnIceCandidate;
 ```
-- This is a delegate that registers the process to be performed when it receives a new Cadicate by signaling.
+- This is a delegate that registers the process to be performed when it receives a new Candidateby signaling.
 
 ```
 void SendOffer();
