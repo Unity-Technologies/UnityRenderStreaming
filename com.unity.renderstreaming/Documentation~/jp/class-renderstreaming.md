@@ -1,4 +1,4 @@
-# Render Streaming 設定
+## Render Streaming コンポーネント
 
 **Render Streaming** のインスペクタから以下の設定を変更できます。
 
@@ -6,9 +6,9 @@
 - カメラからの入力をストリームとして送信
 - ブラウザからの入力とイベントとの関連付け
 
-![Render Streaming backend](../images/renderstreaming_inspector.png)
+![Render Streaming inspector](../images/renderstreaming_inspector.png)
 
-## プロパティ
+### プロパティ
 
 | パラメーター                   | 説明                                                                       | デフォルト                        |
 | ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
@@ -25,3 +25,23 @@
 | **Array Button Click Event** | ブラウザー上のボタンクリックイベントを登録します                                  |                                 |
 | *Element Id*                 | ブラウザーから送られる ID を指定します                                          |                                 |
 | *Click*                      | ボタンクリックイベントを登録します                                              |                                 |
+
+## CameraStreamer コンポーネント
+
+![Camera Streamer inspector](../images/renderstreaming_inspector.png)
+
+### プロパティ
+
+| パラメーター                   | 説明                                                                       | デフォルト                        |
+| ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
+| **URL Signaling**            | シグナリングサーバーの URL を指定します                                         | http://localhost                |
+
+## AudioStreamer コンポーネント
+
+![Audio Streamer inspector](../images/renderstreaming_inspector.png)
+
+### プロパティ
+
+| パラメーター                   | 説明                                                                       | デフォルト                        |
+| ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
+| **URL Signaling**            | シグナリングサーバーの URL を指定します                                         | http://localhost                |
