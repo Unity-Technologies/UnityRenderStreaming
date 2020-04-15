@@ -1,12 +1,12 @@
 {
-  "name": "com.unity.template.renderstreaming",
-  "displayName": "Unity Render Streaming Template",
-  "version": "1.2.2-preview",
+  "name": "com.unity.template.renderstreaming-hd",
+  "displayName": "Unity Render Streaming Template HDRP",
+  "version": "2.0.0-preview",
   "type": "template",
   "unity": "2019.3",
   "description": "This is HDRP sample scene project integrated with Unity Render Streaming technology.\n\nAlong with its signaling web server, you could play around the scene in any webrtc supported web browser.",
   "dependencies": {
-    "com.unity.renderstreaming": "1.2.2-preview",
+    "com.unity.renderstreaming": "2.0.0-preview.1",
     "com.unity.render-pipelines.high-definition": "7.3.1"
   }
 }

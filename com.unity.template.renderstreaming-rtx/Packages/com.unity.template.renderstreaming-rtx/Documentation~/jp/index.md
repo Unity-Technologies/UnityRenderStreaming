@@ -1,4 +1,4 @@
-# Unity Render Streaming HDRP テンプレート
+# Unity Render Streaming レイトレーシング テンプレート
 
 **Unity Render Streaming** は、ブラウザー上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレーターや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
 
