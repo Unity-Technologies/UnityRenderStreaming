@@ -1,10 +1,10 @@
 # ブラウザー入力処理
 
-Unity Render Streaming は、ブラウザからのユーザー入力をサポートしています。ブラウザ上での操作をあたかも Unity 上で操作しているかのように再現できます。
-
 - [入力デバイス](#input-device)
 - [データフォーマット](#dataformat)
 - [マルチユーザー](#multi-user)
+
+Unity Render Streaming は、ブラウザからのユーザー入力をサポートしています。ブラウザ上での操作をあたかも Unity 上で操作しているかのように再現できます。
 
 ## 入力デバイス
 
@@ -94,10 +94,10 @@ RemoteInput input = RemoteInputReceiver.Create();
 channel.OnMessage = bytes => input.ProcessInput(bytes);
 ```
 
-`RemoteInput` のインスタンスから4種類のデバイス
+`RemoteInput` のインスタンスから入力デバイスを取得して、デバイスの値を参照することで入力を制御することができます。例えばキーボード入力は以下のように記述します。
 
 ```CSharp
-// RemoteInput のインスタンスを作成
+// キーボードのデバイスを取得して、w キー押下時に処理
 Keyboard keyboard = input.RemoteKeyboard;
 if(keyboard.wKey.isPressed)
 {
