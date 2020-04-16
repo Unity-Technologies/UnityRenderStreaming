@@ -27,7 +27,7 @@ public class RenderStreamingEditor : Editor
         {
             var element = list.GetArrayElementAtIndex(i);
             var label = "Ice server [" + i + "]";
-            EditorGUILayout.PropertyField(element, new GUIContent(label));
+            EditorGUILayout.PropertyField(element, new GUIContent(label), false);
             if (element.isExpanded)
             {
                 EditorGUI.indentLevel += 1;
