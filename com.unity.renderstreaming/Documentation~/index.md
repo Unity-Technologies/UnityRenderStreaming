@@ -7,6 +7,10 @@ title: index
 
 This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md).
 
+> [!WARNING]
+> Because this version is in development, please do not use it. The latest version is `1.2.3`.
+> You can check the version you are using on the Package Manager.
+
 > [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
 
 ## Requirements

@@ -1,4 +1,4 @@
-# Unity Render Streaming HDRP template
+# Unity Render Streaming Raytracing template
 
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 
