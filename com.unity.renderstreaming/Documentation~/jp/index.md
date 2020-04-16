@@ -17,12 +17,12 @@
 - Unity 2019.3
 
 > [!NOTE]
-> このテンプレートは `HDRP 7.1` を使用しているため、古い Unity バージョンでは動作しません。
+> HDRP テンプレートは `HDRP 7.3` を使用しているため、Unity2019.3 以前のバージョンでは動作しません。
 
 | Platform    | Graphics API | Hardware Encoder                                                                                                             | Software Encoder   |
 | ----------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| Windows x64 | DirectX11    | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) | :white_check_mark: |
-| Windows x64 | DirectX12    |                                                                                                                              |                    |
+| Windows x64 | DirectX11    | :white_check_mark: (NVIDIA の[グラフィックスカード](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) | :white_check_mark: |
+| Windows x64 | DirectX12    | :white_check_mark: (NVIDIA の[グラフィックスカード](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) | :white_check_mark: |
 | Windows x64 | OpenGL       |                                                                                                                              |                    |
 | Windows x64 | Vulkan       |                                                                                                                              |                    |
 | Linux x64   | OpenGL       | :white_check_mark: (NVIDIA の[グラフィックスカード]((https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)が必要) |                    |
@@ -35,7 +35,7 @@
 
 ### ハードウェアエンコーダー
 
-このパッケージでは、ハードウェアエンコーダーに **NVIDIA のグラフィックボード** を利用しています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。推奨グラフィックボードのリストについては、 NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを確認してください。
+このパッケージでは、ハードウェアエンコーダーに **NVIDIA のグラフィックボード** を利用しています。推奨するグラフィックボード上で動作させることで、低遅延のストリーミング配信を実現することができます。ハードウェアエンコーダーが利用可能なグラフィックボードのリストについては、 NVIDIA が公開している [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) のウェブページを確認してください。
 
 ### 対応ブラウザー
 
@@ -47,7 +47,7 @@ Unity Render Streaming は **WebRTC テクノロジー** を利用しており�
 | Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
 | Firefox                           | :white_check_mark: |                    |                    |                    |
-| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+| Microfoft edge (Chrominium based) | :white_check_mark: | :white_check_mark: |                   |                    |                    |
 
 > [!NOTE]
 > ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。
