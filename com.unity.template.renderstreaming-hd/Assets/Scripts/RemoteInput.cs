@@ -117,8 +117,6 @@ namespace Unity.RenderStreaming
 
         static UnityEngine.Vector2Int m_prevMousePos;
 
-        private const int offset = 0;
-
         public RemoteInput(ref InputUser user)
         {
             RemoteMouse = user.pairedDevices.FirstOrDefault(device => device is Mouse) as Mouse;
@@ -131,30 +129,30 @@ namespace Unity.RenderStreaming
 
         public void ProcessInput(byte[] bytes)
         {
-            switch ((EventType)bytes[offset + 0])
+            switch ((EventType)bytes[0])
             {
                 case EventType.Keyboard:
-                    var type = (KeyboardEventType)bytes[offset + 1];
-                    var repeat = bytes[offset + 2] == 1;
-                    var key = bytes[offset + 3];
-                    var character = (char)bytes[offset + 4];
+                    var type = (KeyboardEventType)bytes[1];
+                    var repeat = bytes[2] == 1;
+                    var key = bytes[3];
+                    var character = (char)bytes[4];
                     ProcessKeyEvent(type, repeat, key, character);
                     break;
                 case EventType.Mouse:
-                    var deltaX = BitConverter.ToInt16(bytes, offset + 1);
-                    var deltaY = BitConverter.ToInt16(bytes, offset + 3);
+                    var deltaX = BitConverter.ToInt16(bytes, 1);
+                    var deltaY = BitConverter.ToInt16(bytes, 3);
                     var button = bytes[5];
                     ProcessMouseMoveEvent(deltaX, deltaY, button);
                     break;
                 case EventType.MouseWheel:
-                    var scrollX = BitConverter.ToSingle(bytes, offset + 1);
-                    var scrollY = BitConverter.ToSingle(bytes, offset + 5);
+                    var scrollX = BitConverter.ToSingle(bytes, 1);
+                    var scrollY = BitConverter.ToSingle(bytes, 5);
                     ProcessMouseWheelEvent(scrollX, scrollY);
                     break;
                 case EventType.Touch:
                     {
-                        var length = bytes[offset + 1];
-                        var index = offset + 2;
+                        var length = bytes[1];
+                        var index = 2;
                         var touches = new TouchState[length];
                         for (int i = 0; i < length; i++)
                         {
@@ -186,12 +184,12 @@ namespace Unity.RenderStreaming
                     
                     break;
                 case EventType.ButtonClick:
-                    var elementId = BitConverter.ToInt16(bytes, offset + 1);
+                    var elementId = BitConverter.ToInt16(bytes, 1);
                     ProcessButtonClickEvent(elementId);
                     break;
                 case EventType.Gamepad:
                     {
-                        GamepadEventType gamepadEventType = (GamepadEventType)bytes[offset + 9];
+                        GamepadEventType gamepadEventType = (GamepadEventType)bytes[1];
                         
                         switch (gamepadEventType)
                         {
@@ -199,16 +197,16 @@ namespace Unity.RenderStreaming
                             case GamepadEventType.ButtonUp:
                             case GamepadEventType.ButtonPressed:
                                 {
-                                    var buttonIndex = bytes[offset + 10];
-                                    var value = BitConverter.ToDouble(bytes, offset + 11);
+                                    var buttonIndex = bytes[2];
+                                    var value = BitConverter.ToDouble(bytes, 3);
                                     ProcessGamepadButtonEvent(gamepadEventType, (GamepadKeyCode) buttonIndex, value);
                                 }
                                 break;
                             case GamepadEventType.Axis:
                                 {
-                                    var buttonIndex = bytes[offset + 10];
-                                    var x = BitConverter.ToDouble(bytes, offset + 11);
-                                    var y = BitConverter.ToDouble(bytes, offset + 19);
+                                    var buttonIndex = bytes[2];
+                                    var x = BitConverter.ToDouble(bytes, 3);
+                                    var y = BitConverter.ToDouble(bytes, 11);
                                     ProcessGamepadAxisEvent(x, y, (GamepadKeyCode) buttonIndex);
                                 }
                                 break;

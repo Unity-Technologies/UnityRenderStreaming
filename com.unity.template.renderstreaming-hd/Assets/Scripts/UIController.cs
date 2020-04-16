@@ -16,7 +16,6 @@ namespace Unity.RenderStreaming
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
                 new Keyframe(1f, 0f, 0f, 0f));
-        [SerializeField] RenderStreaming m_renderStreaming = null;
 
         private float timeTransition = 0f;
         private Color transparentColor = new Color(0, 0, 0, 0);
