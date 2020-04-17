@@ -4,9 +4,11 @@
 
 #### Windows
 
+このドキュメントは Windows 上でのセットアップを前提にしています。
+
 #### Chocolatey
 
-Chocolatey は Windows で動作するパッケージマネージャーです。こちらの [リンク](https://chocolatey.org/install) からインストールできます。
+**Chocolatey** は Windows で動作するパッケージマネージャーです。こちらの [リンク](https://chocolatey.org/install) からインストールできます。
 
 #### OpenSSL
 
@@ -96,7 +98,7 @@ Email Address []:anthonyma@unity3d.com
 
 1. `マイクロソフト管理コンソール（mmc.exe）`を検索して起動します
 
-    ![mmc.exe](images/https_step3_01_jp.png)
+    ![mmc.exe](../images/https_step3_01_jp.png)
 
 2. `ファイル > スナップインの追加と削除...` を選択します
 
