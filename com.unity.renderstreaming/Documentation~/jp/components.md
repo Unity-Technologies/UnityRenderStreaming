@@ -1,3 +1,5 @@
+# コンポーネント設定
+
 ## `Render Streaming` コンポーネント
 
 **Render Streaming** のインスペクタでは、以下の設定を変更できます。
