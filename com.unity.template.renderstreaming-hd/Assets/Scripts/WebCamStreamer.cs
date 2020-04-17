@@ -11,15 +11,11 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
-        [SerializeField, Tooltip("Device index for Web camera")]
+        [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex;
 
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
-
-        void Awake()
-        {
-        }
 
         IEnumerator Start()
         {
