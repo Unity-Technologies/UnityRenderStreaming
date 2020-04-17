@@ -1,6 +1,6 @@
 {
   "name": "com.unity.template.renderstreaming-hd",
-  "displayName": "Unity Render Streaming Template HDRP",
+  "displayName": "Render Streaming HDRP",
   "version": "2.0.0-preview",
   "type": "template",
   "unity": "2019.3",
