@@ -2,7 +2,7 @@
 
 The following is an explanation the general concepts of the Render Streaming system. 
 
-### System Structure
+## System Structure
 
 The Render Streaming system consists of the following 3 components
 
@@ -21,7 +21,7 @@ In Render Streaming a P2P network is created between **Unity** and the **Web bro
 > - Streaming video from the browser to Unity
 > - Streaming audio from the browser to Unity
 
-### The Signaling Process
+## The Signaling Process
 
 The following is an explanation of how signaling works. 
 
@@ -36,7 +36,7 @@ The following is an explanation of how signaling works.
 7. Unity sends **ICE Candidate**to the Web server.
 8. Web browser checks the Web server for unprocessed **ICE Candidate** and receives any found. 
 
-### Package Structure 
+## Package Structure 
 
 The Render Steraming package includes the following.
 
