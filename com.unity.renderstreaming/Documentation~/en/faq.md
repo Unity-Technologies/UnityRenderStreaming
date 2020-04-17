@@ -4,7 +4,9 @@
 
 ### Video stream not showing in browser
 
-The browser version might be too old. Make sure that the latest version is installed.
+The browser version might be too old. Make sure that the latest version is installed. Or firewall settings can be caused by the issue, please try once to turn off it.
+
+Please try to check no error log on the browser console and Unity debug console. 
 
 ### Web app doesn't run on Safari browser
 
@@ -13,7 +15,7 @@ Check the web server's [startup options](webapp.md). In **Safari** and **iOS Saf
 ### Unity's initial startup fails
 
 Confirm you're using a `Graphics API` and compare [requirements](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/en/overview.html) of `com.unity.webrtc`.
-Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
+If you use the hardware encoder, Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
 
 ### Web server fails to run 
 
@@ -49,15 +51,15 @@ Currently, version 1.0 does not support simulcast.
 
 ### Can you broadcast the feed from multiple cameras?
 
-Currently, version 1.0 cannot.
+It is available. If you use the hardware encoder, make sure the limitation of the number of cameras using at the same time. See the NVIDIA [document]](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix).
 
 ### How do you increase the video quality?
 
-Video quality depends on the quality of the network. 
+You can set the resolution of the frame on the `CameraStreamer` inspector. Please make sure video quality depends on the quality of the network. 
 
 ### Is Realtime-Raytracing supported? 
 
-Currently, version 1.2 cannot.
+It is available. Please see the detail on the HDRP [document](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@7.1/manual/Ray-Tracing-Getting-Started.html).
 
 ## Questions about support
 
