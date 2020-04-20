@@ -7,7 +7,7 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 <img src="com.unity.renderstreaming/Documentation~/images/browser_hdrpscene.png" width=500 align=center>
 
-This repository manages a 1 package and 2 templates. Details can be found in the `README.md` for each package.
+This repository manages 1 package and 2 templates. Details can be found in the `README.md` for each package.
 
 - [com.unity.template.renderstreaming-hd](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/README.md)
 - [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-rtx/README.md)

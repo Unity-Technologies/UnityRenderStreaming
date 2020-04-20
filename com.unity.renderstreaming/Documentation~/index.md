@@ -19,7 +19,7 @@ This version of Render Streaming is compatible with the following versions of th
 - **Unity 2019.3**
 
 > [!NOTE]
-> Because this template depends on `HDRP 7.3`, it does not work correctly older than `Unity 2019.3`.
+> Because this template depends on `HDRP 7.3`, it does not work correctly older versions than `Unity 2019.3`.
 
 | Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
 | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |

@@ -4,7 +4,7 @@
 
 ### Windows
 
-This document is written about setting on Windows.
+This document is written assuming that the OS is Windows.
 
 ### Chocolatey
 

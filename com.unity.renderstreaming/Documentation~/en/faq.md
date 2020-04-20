@@ -4,9 +4,9 @@
 
 ### Video stream not showing in browser
 
-The browser version might be too old. Make sure that the latest version is installed. Or firewall settings can be caused by the issue, please try once to turn off it.
+The browser version might be too old. Make sure that the latest version is installed. Or firewall settings can also cause the issue, please try to turn it off once.
 
-Please try to check no error log on the browser console and Unity debug console. 
+Please check if there is any error log on the browser console and Unity debug console.
 
 ### Web app doesn't run on Safari browser
 
@@ -51,15 +51,15 @@ Currently, version 1.0 does not support simulcast.
 
 ### Can you broadcast the feed from multiple cameras?
 
-It is available. If you use the hardware encoder, make sure the limitation of the number of cameras using at the same time. See the NVIDIA [document]](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix).
+Yes. If you use the hardware encoder, make sure to check the limitation of the number of cameras used at the same time. See the NVIDIA [document](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix).
 
 ### How do you increase the video quality?
 
-You can set the resolution of the frame on the `CameraStreamer` inspector. Please make sure video quality depends on the quality of the network. 
+You can set the resolution of the frame on the `CameraStreamer` inspector. Keep in mind that video quality depends on the quality of the network. 
 
 ### Is Realtime-Raytracing supported? 
 
-It is available. Please see the detail on the HDRP [document](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@7.1/manual/Ray-Tracing-Getting-Started.html).
+Yes. Please see the detail on the HDRP [document](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@7.1/manual/Ray-Tracing-Getting-Started.html).
 
 ## Questions about support
 
