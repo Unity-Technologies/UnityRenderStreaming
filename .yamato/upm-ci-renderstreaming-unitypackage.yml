@@ -85,7 +85,7 @@ push_renderstreaming_exported_unitypackage:
     {% for sample in samples %}
     - git add {{ sample.unitypackage_path }}
     {% endfor %}
-    - git commit -m "Update unitypacakge"
+    - git commit -m "[skip ci] Update unitypacakge"
     - git push origin HEAD:$GIT_BRANCH
   dependencies:
     {% for sample in samples %}
