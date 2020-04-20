@@ -17,7 +17,7 @@ The signalling server is polled at specified intervals to obtain the Offer and C
 
 ## WebSocketSignaling
 Signaling is handled by WebSocket.
-When the signaling server receives the Offer or Candidate, it distributes it to the connected clients.
+When the signaling server receives the Offer or Candidate, the server distributes it to the connected clients.
 
 ## Proprietary Signaling Class
 Both of the signaling classes implement `ISignaling`.
@@ -53,7 +53,7 @@ event OnAnswerHandler OnAnswer;
 public delegate void OnIceCandidateHandler(ISignaling signaling, CandidateData e);
 event OnIceCandidateHandler OnIceCandidate;
 ```
-- This is a delegate that registers the process to be performed when it receives a new Candidateby signaling.
+- This is a delegate that registers the process to be performed when it receives a new Candidate by signaling.
 
 ```
 void SendOffer();
