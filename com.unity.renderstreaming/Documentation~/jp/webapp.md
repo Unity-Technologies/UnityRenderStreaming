@@ -46,6 +46,7 @@ Web アプリケーションのダウンロードが終了したら、コマン�
 | -s --secure           | `https` を使用します                      |            |
 | -k --keyfile \<path\> | `https` で使用する秘密鍵ファイルを指定します | server.key  |
 | -c --certfile \<path\>| `https` で使用する証明書ファイルを指定します | server.cert |
+| -w --websocket        | シグナリングプロトコルとしてwebsocketを使用します。 |         |
 
 ### コマンドの例
 
@@ -59,6 +60,12 @@ Web アプリケーションのダウンロードが終了したら、コマン�
 
 ```shell
 .\webserver -s -p 443
+```
+
+以下のコマンドを実行するとシグナリングプロトコルとしてWebSocketを使用するモードで起動します。
+
+```shell
+.\webserver -w
 ```
 
 以下のコマンドを実行するとヘルプを表示します。
