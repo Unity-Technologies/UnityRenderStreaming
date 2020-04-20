@@ -6,6 +6,7 @@ using Unity.WebRTC;
 using System.Text.RegularExpressions;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
@@ -71,6 +72,20 @@ namespace Unity.RenderStreaming
 
         public void Awake()
         {
+            if (Application.platform != RuntimePlatform.LinuxEditor && Application.platform != RuntimePlatform.LinuxPlayer)
+            {
+                if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3)
+                {
+                    Debug.LogError($"Not Support OpenGL API on {Application.platform}");
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#else
+                    Application.Quit ();
+#endif
+                    return;
+                }
+            }
+
             Instance = this;
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
             WebRTC.WebRTC.Initialize(encoderType);
