@@ -40,9 +40,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Time interval for polling from signaling server")]
         private float interval = 5.0f;
 
-        [SerializeField, Tooltip("Camera to capture video stream")]
-        private Camera captureCamera;
-
         [SerializeField, Tooltip("Enable or disable hardware encoder")]
         private bool hardwareEncoderSupport = true;
 
