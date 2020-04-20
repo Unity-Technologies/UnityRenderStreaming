@@ -1,6 +1,6 @@
 {
   "name": "com.unity.template.renderstreaming-rtx",
-  "displayName": "Unity Render Streaming Template Raytracing",
+  "displayName": "Render Streaming Raytracing",
   "version": "2.0.0-preview",
   "type": "template",
   "unity": "2019.3",
