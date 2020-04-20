@@ -20,7 +20,7 @@ Click on the `Window` Menu and open `Package Manager`. Then, click on `Advanced`
 
 Make sure to search `All packages`, and type `RenderStreaming` in the text box.
 
-![Render Streaming Package](../images/render_streaming_package.png)
+![Render Streaming Package](../images/renderstreaming_package.png)
 
 Click `Install` on the bottom right.
 
