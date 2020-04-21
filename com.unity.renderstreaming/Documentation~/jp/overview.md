@@ -2,7 +2,7 @@
 
 Unity Render Streaming のシステムの概観について説明します。
 
-### システム構成
+## システム構成
 
 Unity Render Streaming のシステムは以下の 3 つで構成されます。
 
@@ -21,7 +21,7 @@ Unity Render Streaming では、**Unity** と **Web ブラウザー** が P2P �
 > - ブラウザーから Unity へのビデオ送信
 > - ブラウザーから Unity へのオーディオ送信
 
-### シグナリング処理の流れ
+## シグナリング処理
 
 Unity Render Streaming におけるシグナリング処理の流れを説明します。
 
@@ -36,7 +36,7 @@ Unity Render Streaming におけるシグナリング処理の流れを説明し
 7. Unity から Web サーバーに **ICE Candidate** を送信します。
 8. Web ブラウザーから Web サーバーに問い合わせて、未処理の **ICE Candidate** を取得します。
 
-### パッケージの構成
+## パッケージの構成
 
 Unity Render Steraming パッケージは、以下の3つのコンポーネントで構成されています。
 

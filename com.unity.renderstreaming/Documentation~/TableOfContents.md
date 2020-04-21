@@ -8,6 +8,7 @@
     * [Setting for TURN Server](en/turnserver)
     * [About Signaling Protocol](en/signalingprotocol)
 * [Render Streaming Settings](en/class-renderstreaming)
+* [Components Settings](en/components)
 * [FAQ](en/faq)
 * 日本語
     * [Unity Render Streaming](jp/index)
@@ -20,4 +21,5 @@
         * [TURN サーバの設定](jp/turnserver)
         * [シグナリングプロトコルについて](jp/signalingprotocol)
     * [Render Streaming 設定](jp/class-renderstreaming)
+    * [コンポーネントの設定](jp/components)
     * [よくある質問](jp/faq)

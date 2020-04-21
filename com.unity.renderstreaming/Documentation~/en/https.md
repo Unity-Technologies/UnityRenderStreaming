@@ -4,9 +4,11 @@
 
 ### Windows
 
+This document is written assuming that the OS is Windows.
+
 ### Chocolatey
 
-Chocolatey is a package manager for Windows (like apt-get or yum but for Windows).
+**Chocolatey** is a package manager for Windows (like apt-get or yum but for Windows).
 Link to install Chocolatey: [https://chocolatey.org/install](https://chocolatey.org/install)
 
 ### OpenSSL
