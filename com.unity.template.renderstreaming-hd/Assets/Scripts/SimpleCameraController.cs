@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming
 
         [Tooltip("Instance for controlling UI that renders to the camera.")]
         [SerializeField]
-        private UIController uiController;
+        private UIController uiController = null;
 
         readonly CameraState m_TargetCameraState = new CameraState();
         readonly CameraState m_InterpolatingCameraState = new CameraState();

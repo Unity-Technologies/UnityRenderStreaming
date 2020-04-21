@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
         [SerializeField, Tooltip("Device index of web camera")]
-        private int deviceIndex;
+        private int deviceIndex = 0;
 
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
