@@ -17,7 +17,7 @@ pack_{{ project.name }}:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
-        - "upm-ci~/templates/**/*"
+#        - "upm-ci~/templates/**/*"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
