@@ -17,6 +17,9 @@ pack_{{ project.name }}:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+# todo(kazuki): Commented out to avoid the error occurred when publishing the template packages to GitHub release.
+#               This error occurring caused by two templates using the same file path to put artifacts.
+#
 #        - "upm-ci~/templates/**/*"
   dependencies:
     {% for platform in platforms %}
