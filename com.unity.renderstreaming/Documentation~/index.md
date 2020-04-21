@@ -51,6 +51,18 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 > [!NOTE]
 > It may not work properly on some browsers caused by depending on the status of support about WebRTC.
 
+## Samples
+
+Currently, there are two samples:
+
+### HDRP sample
+
+Importing this sample will automatically install and setup our HDRP sample assets along with the [HDRP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest) *(com.unity.render-pipelines.high-definition)* package.
+
+### URP sample
+
+Importing this sample will automatically install and setup our URP sample assets along with the [URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) *(com.unity.render-pipelines.universal)* package.
+
 ## Other Languages
 
 - [Japanese](./jp/index.md)

@@ -4,12 +4,12 @@ Unity Render Streaming は、ブラウザからのユーザー入力をサポー
 
 ## Input devices
 
-The following browser inputs are supported. 
+ブラウザーからの入力は以下のデバイスをサポートしています。同時に複数のデバイスを利用することが可能です。
 
-- Mouse events
-- Keyboard events
-- Touch events
-- Button events
+- マウス
+- キーボード
+- タッチ
+- ゲームパッド
 
 The browser sends byte sequences, and Unity uses the `New Input System`.
 
@@ -66,6 +66,8 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 
 `axis` の場合は以下。
 
+|index|value|size|
+|-----|-----|----|
 |0|5|1|
 |1|event type|1|
 |2|button index|1|
