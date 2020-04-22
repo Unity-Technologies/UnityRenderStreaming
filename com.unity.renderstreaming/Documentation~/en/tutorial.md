@@ -1,7 +1,7 @@
 # Tutorial
 
 In this tutorial, we introduce the way to use samples published on Package Manager.
-If you want to have a tutorial for the template, please see the document on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
+For template installation tutorial, please see the document on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
 
 ## Install package
 
