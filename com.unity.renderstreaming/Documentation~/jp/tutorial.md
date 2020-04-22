@@ -12,7 +12,7 @@
 
 検索のモードを `All packages` にして、テキストボックスに `RenderStreaming` と入力します。
 
-![Render Streaming package](../images/render_streaming_package.png)
+![Render Streaming package](../images/renderstreaming_package.png)
 
 右下の `Install` をクリックします。
 

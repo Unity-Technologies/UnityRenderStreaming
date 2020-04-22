@@ -1,17 +1,9 @@
 # Tutorial
 
-Currently, there are two samples:
+In this tutorial, we introduce the way to use samples published on Package Manager.
+For template installation tutorial, please see the document on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
 
-### HDRP sample
-
-Importing this sample will automatically install and setup our HDRP sample assets along with the [HDRP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest) *(com.unity.render-pipelines.high-definition)* package.
-
-### URP sample
-
-Importing this sample will automatically install and setup our URP sample assets along with the [URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) *(com.unity.render-pipelines.universal)* package.
-
-
-## Simple Tutorial on Windows
+## Install package
 
 Open an existing or create a new project
 Click on the `Window` Menu and open `Package Manager`. Then, click on `Advanced` and make sure `Show preview packages` is checked
@@ -28,6 +20,8 @@ If an input system dialog box appears, click `Yes`
 
 ![Input system backend](../images/input_system_backend.png)
 
+## Install HDRP sample
+
 Click on `Import in project` to import the HDRP sample.
    This will also automatically install the HDRP package *(com.unity.render-pipelines.high-definition)*.
 
@@ -40,6 +34,8 @@ When this `Import Unity Package` dialog box appears, click `Import` to import al
 After all the import process has been finished, open `Assets/SimpleScene` in the Project View.
 
 ![Simple Scene](../images/simplescene.png)
+
+## Install web application
 
 Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 
@@ -54,6 +50,8 @@ Unity RenderStreaming web server.
 
 ![Web Server](../images/webserver.png)
 
+## Play Unity
+
 Enter play mode in Unity
 
 ![Play mode](../images/play_mode.png)
@@ -62,3 +60,7 @@ Open your browser and type `localhost` on the URL bar. Then click on the play bu
 The view in Unity should then appear on your browser.
 
 ![Browser](../images/browser.png)
+
+## After tutorial
+
+About general questions, please see [FAQ](faq.md) page. About the operation of inspectors, please see [Components settings](components.md) page. About options of web application, please see [The web application](webapp.md) page.
