@@ -118,9 +118,16 @@ export class VideoPlayer {
     this.channel.onclose = function () {
       console.log('Datachannel disconnected.');
     };
-    this.channel.onmessage = function (msg) {
+    this.channel.onmessage = async (msg) => {
       // receive message from unity and operate message
-      const bytes = new Uint8Array(msg.data);
+      let data;
+      // receive message data type is blob only on Firefox
+      if(navigator.userAgent.indexOf('Firefox') != -1) {
+        data = await msg.data.arrayBuffer();
+      }else{
+        data = msg.data;
+      }
+      const bytes = new Uint8Array(data);
       switch(bytes[0]) {
         case UnityEventType.SWITCH_VIDEO:
           _this.switchVideo(bytes[1]);
@@ -191,7 +198,7 @@ export class VideoPlayer {
   replaceTrack(stream, newTrack) {
     const tracks = stream.getVideoTracks();
     for(const track of tracks) {
-      if(track.king == 'video') {
+      if(track.kind == 'video') {
         stream.removeTrack(track);
       }
     }
