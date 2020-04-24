@@ -11,6 +11,7 @@
 ### iOS Safari で動作しない
 
 Web サーバーの[起動時オプション](webapp.md)を確認してください。**Safari** 及び **iOS Safari** は、**http** では WebRTC の機能を利用できません。 **https** を利用する必要があります。
+また **iOS Safari**においては、 自己署名証明書によるサーバーの場合、WebSocketによるシグナリングは動作いたしません。詳しくは、[こちら](signalingprotocol.md)を確認してください。
 
 ### 実行時に初期化で失敗する
 

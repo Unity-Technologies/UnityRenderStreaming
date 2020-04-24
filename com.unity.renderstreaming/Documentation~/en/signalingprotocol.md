@@ -18,6 +18,9 @@ The signalling server is polled at specified intervals to obtain the Offer and C
 ## WebSocketSignaling
 Signaling is handled by WebSocket.
 When the signaling server receives the Offer or Candidate, the server distributes it to the connected clients.
+> [!WARNING]
+> WebSocket does not work in iOS Safari on servers that use self-signed certificates.
+> If you want to verify the behavior of WebSocket signaling in iOS Safari, use a certificate issued by a trusted certification authority. Or try signaling with Http.
 
 ## Proprietary Signaling Class
 Both of the signaling classes implement `ISignaling`.
