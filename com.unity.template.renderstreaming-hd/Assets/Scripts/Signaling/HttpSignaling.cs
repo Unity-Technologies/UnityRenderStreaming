@@ -46,7 +46,10 @@ namespace Unity.RenderStreaming.Signaling
         }
 
         public event OnOfferHandler OnOffer;
+        #pragma warning disable 0067
+        // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
+        #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
 
         public void SendOffer()
