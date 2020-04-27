@@ -1,3 +1,5 @@
+upm:
+  registry_url: https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
 editors:
   - version: 2019.3
 platforms:

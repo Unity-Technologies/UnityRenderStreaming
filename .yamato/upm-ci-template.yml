@@ -15,7 +15,7 @@ pack_{{ project.name }}:
     image: package-ci/ubuntu:stable    
     flavor: b1.large  
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
     - upm-ci template pack --project-path {{ project.packagename }}
   artifacts:
@@ -45,7 +45,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% else %}
     - cp -r WebApp upm-ci~/templates/ProjectData~/
     {% endif %}
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
 #
 #  todo(kazuki): Templete test is broken on Yamato yet, The date completed is still undecided.
@@ -74,7 +74,7 @@ publish_{{ project.name }}:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci template publish --project-path {{ project.packagename }}
   triggers:
     tags:
@@ -105,7 +105,7 @@ publish_dryrun_{{ project.name }}:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci template publish --dry-run
   triggers:
     tags:
