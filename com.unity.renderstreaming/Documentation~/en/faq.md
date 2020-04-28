@@ -22,6 +22,11 @@ If you use the hardware encoder, Make sure you're using a graphics card that sup
 
 Make sure the port isn't being used by another service. 
 
+### uGUI can't be operated through a browser.
+
+It is only possible to operate when the focus is on the running application.
+This problem depends on the availability of `com.unity.inputsystem`.
+
 ## Issues with the environment
 
 ### Which versions of Unity can be used?
