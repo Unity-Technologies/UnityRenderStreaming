@@ -35,6 +35,7 @@ export class VideoPlayer {
 
     this.videoTrackList = [];
     this.videoTrackIndex = 0;
+    this.maxVideoTrackLength = 2;
 
     this.ondisconnect = function () { };
   }
@@ -101,6 +102,9 @@ export class VideoPlayer {
       if(e.track.kind == 'audio') {
         _this.localStream.addTrack(e.track);
       }
+      if(_this.videoTrackList.length == _this.maxVideoTrackLength) {
+        _this.switchVideo(_this.videoTrackIndex);
+      }
     };
     this.pc.onicecandidate = function (e) {
       if (e.candidate != null) {
@@ -128,9 +132,10 @@ export class VideoPlayer {
         data = msg.data;
       }
       const bytes = new Uint8Array(data);
+      _this.videoTrackIndex = bytes[1];
       switch(bytes[0]) {
         case UnityEventType.SWITCH_VIDEO:
-          _this.switchVideo(bytes[1]);
+          _this.switchVideo(_this.videoTrackIndex);
           break;
       }
     };
