@@ -5,7 +5,9 @@
 * [Web Application](en/webapp)
     * [Browser Input Process](en/input)
     * [Configure Self-Signed Credentials for https](en/https)
-* [Render Streaming Settings](en/class-renderstreaming)
+    * [Setting for TURN Server](en/turnserver)
+    * [About Signaling Protocol](en/signalingprotocol)
+* [Components Settings](en/components)
 * [FAQ](en/faq)
 * 日本語
     * [Unity Render Streaming](jp/index)
@@ -16,5 +18,6 @@
         * [ブラウザー入力処理](jp/input)
         * [HTTPSの証明書の設定](jp/https)
         * [TURN サーバの設定](jp/turnserver)
-    * [Render Streaming 設定](jp/class-renderstreaming)
+        * [シグナリングプロトコルについて](jp/signalingprotocol)
+    * [コンポーネントの設定](jp/components)
     * [よくある質問](jp/faq)

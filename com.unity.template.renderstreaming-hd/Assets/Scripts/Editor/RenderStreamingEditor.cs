@@ -1,4 +1,4 @@
-﻿using Unity.RenderStreaming;
+using Unity.RenderStreaming;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,8 +12,6 @@ public class RenderStreamingEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"));
             ShowIceServerList(serializedObject.FindProperty("iceServers"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("streamingSize"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("captureCamera"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("hardwareEncoderSupport"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("arrayButtonClickEvent"), true);
             serializedObject.ApplyModifiedProperties();
@@ -28,7 +26,7 @@ public class RenderStreamingEditor : Editor
         {
             var element = list.GetArrayElementAtIndex(i);
             var label = "Ice server [" + i + "]";
-            EditorGUILayout.PropertyField(element, new GUIContent(label));
+            EditorGUILayout.PropertyField(element, new GUIContent(label), false);
             if (element.isExpanded)
             {
                 EditorGUI.indentLevel += 1;

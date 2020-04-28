@@ -13,7 +13,7 @@ pack_{{ package.name }}:
     image: renderstreaming/win10:latest
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci package pack --package-path {{ package.packagename }}
   artifacts:
     {{ package.name }}_package:  
@@ -29,7 +29,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }}
   triggers:
     branches:
@@ -53,7 +53,7 @@ publish_dry_run_{{ package.name }}:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci package publish --dry-run --package-path {{ package.packagename }}
   triggers:
     tags:
@@ -78,7 +78,7 @@ publish_{{ package.name }}:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils@latest -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
     - upm-ci package publish --package-path {{ package.packagename }}
   triggers:
     tags:

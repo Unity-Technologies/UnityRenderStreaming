@@ -7,17 +7,18 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 
 <img src="com.unity.renderstreaming/Documentation~/images/browser_hdrpscene.png" width=500 align=center>
 
-This repository manages 2 packages. Details can be found in the `README.md` for each package.
+This repository manages 1 package and 2 templates. Details can be found in the `README.md` for each package.
 
-- [com.unity.template.renderstreaming](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/README.md)
+- [com.unity.template.renderstreaming-hd](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/README.md)
+- [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-rtx/README.md)
 - [com.unity.renderstreaming](com.unity.renderstreaming/README.md)
 
 ## Branch
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/1.2.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | Stable         |
-| [release/2.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.0) | In development |
+| [release/1.2.3](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.3) | Stable         |
+| [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Operating Environment
 
@@ -50,7 +51,9 @@ Browser support depends on the status of each browser's WebRTC support.
 
 - `com.unity.renderstreaming` -  [LICENSE.md](com.unity.renderstreaming/LICENSE.md)
 
-- `com.unity.template.renderstreaming` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/LICENSE.md)
+- `com.unity.template.renderstreaming-hd` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/LICENSE.md)
+
+- `com.unity.template.renderstreaming-rtx` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-rtx/LICENSE.md)
 
 ## Package Structure
 
@@ -61,6 +64,14 @@ Browser support depends on the status of each browser's WebRTC support.
 │   ├── Editor
 │   └── Samples~
 ├── com.unity.template.renderstreaming-hd
+│   ├── Assets
+│   │   ├── Plugins
+│   │   ├── Scenes
+│   │   ├── Scripts
+│   │   └── Tests
+│   ├── Packages
+│   └── ProjectSettings
+├── com.unity.template.renderstreaming-rtx
 │   ├── Assets
 │   │   ├── Plugins
 │   │   ├── Scenes
@@ -84,7 +95,7 @@ Browser support depends on the status of each browser's WebRTC support.
 | ------- | ---------------------------------------------------------------------------- | ---------------------------------------------------  |
 | `1.0`   |[M72](https://groups.google.com/d/msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)| - First release                                      |
 | `2.0`   |[M79](https://groups.google.com/d/msg/discuss-webrtc/X8q5Ae9VKco/YYty_HWFAQAJ)| - Multi camera <br>- DirectX12 (DXR) Support         |
-| `2.1`   |                                                                              | - AMD graphics hw encoder <br>- UWP platform Support |
+| `2.1`   |                                                                              | - Profiler tool <br>- Bitrate control                |
 
 ## FAQ
 

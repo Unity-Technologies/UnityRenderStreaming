@@ -1,4 +1,4 @@
-# Unity Render Streaming テンプレート
+# Unity Render Streaming HDRP テンプレート
 
 **Unity Render Streaming** は、ブラウザー上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレーターや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
 
@@ -18,7 +18,7 @@
 - Unity 2019.3
 
 > [!NOTE]
-> このテンプレートは `HDRP 7.1` を使用しているため、古い Unity バージョンでは動作しません。
+> このテンプレートは `HDRP 7.3` を使用しているため、古い Unity バージョンでは動作しません。
 
 > [!WARNING]
 > Linux 環境と HDRP の組み合わせでの利用は、現在未対応です。Linux では Graphics API に `OpenGL` を選択した上で、レンダリングパイプラインは `Legacy` をご利用ください。

@@ -1,9 +1,52 @@
-﻿using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.RenderStreaming;
 
-namespace UnityTemplateProjects
+using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+
+namespace Unity.RenderStreaming
 {
+    public interface IInput
+    {
+        Mouse RemoteMouse { get; }
+        Keyboard RemoteKeyboard { get; }
+        Touchscreen RemoteTouchscreen { get; }
+        Gamepad RemoteGamepad { get; }
+    }
+
+    public class DefaultInput : IInput
+    {
+        public Mouse RemoteMouse { get; }
+        public Keyboard RemoteKeyboard { get; }
+        public Touchscreen RemoteTouchscreen { get; }
+        public Gamepad RemoteGamepad { get; }
+
+        public DefaultInput()
+        {
+            RemoteMouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
+            RemoteKeyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
+            RemoteTouchscreen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
+            RemoteGamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
+        }
+
+        public void MakeCurrent()
+        {
+            RemoteMouse.MakeCurrent();
+            RemoteKeyboard.MakeCurrent();
+            RemoteTouchscreen.MakeCurrent();
+            RemoteGamepad.MakeCurrent();
+        }
+    }
+
+    static class TouchScreenExtension
+    {
+        public static IEnumerable<EnhancedTouch> GetTouches(this Touchscreen screen)
+        {
+            return EnhancedTouch.activeTouches.Where(touch => touch.screen == screen);
+        }
+    }
+
     public class SimpleCameraController : MonoBehaviour
     {
         class CameraState
@@ -52,40 +95,64 @@ namespace UnityTemplateProjects
             }
         }
 
-        CameraState m_TargetCameraState = new CameraState();
-        CameraState m_InterpolatingCameraState = new CameraState();
-        CameraState m_InitialCameraState = new CameraState();
-
         [Header("Movement Settings")]
         [Tooltip("Movement Sensitivity Factor."), Range(0.001f, 1f)]
         [SerializeField] float       m_movementSensitivityFactor = 0.1f;
 
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
-        public float boost = 3.5f;
+        [SerializeField]
+        private float boost = 3.5f;
 
         [Tooltip("Time it takes to interpolate camera position 99% of the way to the target."), Range(0.001f, 1f)]
-        public float positionLerpTime = 0.2f;
-
+        [SerializeField]
+        private float positionLerpTime = 0.2f;
 
         [Header("Rotation Settings")]
         [Tooltip("X = Change in mouse position.\nY = Multiplicative factor for camera rotation.")]
-        public AnimationCurve mouseSensitivityCurve = new AnimationCurve(new Keyframe(0f, 0.5f, 0f, 5f), new Keyframe(1f, 2.5f, 0f, 0f));
+        [SerializeField]
+        private AnimationCurve mouseSensitivityCurve = new AnimationCurve(new Keyframe(0f, 0.5f, 0f, 5f), new Keyframe(1f, 2.5f, 0f, 0f));
 
         [Tooltip("Time it takes to interpolate camera rotation 99% of the way to the target."), Range(0.001f, 1f)]
-        public float rotationLerpTime = 0.01f;
+        [SerializeField]
+        private float rotationLerpTime = 0.01f;
 
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
-        public bool invertY = false;
+        [SerializeField]
+        private bool invertY = false;
 
-        void Start()
+        [Tooltip("Instance for controlling UI that renders to the camera.")]
+        [SerializeField]
+        private UIController uiController = null;
+
+        readonly CameraState m_TargetCameraState = new CameraState();
+        readonly CameraState m_InterpolatingCameraState = new CameraState();
+        readonly CameraState m_InitialCameraState = new CameraState();
+        private Gamepad m_gamepad;
+        private Keyboard m_keyboard;
+        private Mouse m_mouse;
+        private Touchscreen m_screen;
+
+        public void SetInput(IInput input)
         {
-            m_InitialCameraState.SetFromTransform(transform);
+            m_mouse = input.RemoteMouse;
+            m_keyboard = input.RemoteKeyboard;
+            m_screen = input.RemoteTouchscreen;
+            m_gamepad = input.RemoteGamepad;
+
+            uiController.SetInput(input);
         }
 
         void OnEnable()
         {
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
+
+            RenderStreaming.Instance?.AddController(this);
+        }
+
+        void OnDisable()
+        {
+            RenderStreaming.Instance?.RemoveController(this);
         }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -107,11 +174,10 @@ namespace UnityTemplateProjects
             if (!invertY) {
                 input.y *= -1;
             }
-            float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude) * 0.1f;
+            float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude);
 
             m_TargetCameraState.yaw += input.x * mouseSensitivityFactor;
             m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
-
         }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -119,67 +185,81 @@ namespace UnityTemplateProjects
         Vector3 GetInputTranslationDirection()
         {
             Vector3 direction = new Vector3();
-            if (Keyboard.current.wKey.isPressed)
+            if (m_keyboard.wKey.isPressed)
             {
                 direction += Vector3.forward;
             }
-            if (Keyboard.current.sKey.isPressed)
+            if (m_keyboard.sKey.isPressed)
             {
                 direction += Vector3.back;
             }
-            if (Keyboard.current.aKey.isPressed)
+            if (m_keyboard.aKey.isPressed)
             {
                 direction += Vector3.left;
             }
-            if (Keyboard.current.dKey.isPressed)
+            if (m_keyboard.dKey.isPressed)
             {
                 direction += Vector3.right;
             }
-            if (Keyboard.current.qKey.isPressed)
+            if (m_keyboard.qKey.isPressed)
             {
                 direction += Vector3.down;
             }
-            if (Keyboard.current.eKey.isPressed)
+            if (m_keyboard.eKey.isPressed)
             {
                 direction += Vector3.up;
             }
 
-            //Translation
-            var activeTouches = UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches;
-            if (activeTouches.Count == 2)
+            // gamepad right stick control
+            if (m_gamepad.rightStick != null)
             {
-                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
-            } else if (IsMouseDragged(Mouse.current,true)) {
-                direction = GetTranslationFromInput(Mouse.current.delta.ReadValue());
-            } else if (IsMouseDragged(RemoteInput.RemoteMouse,true)) {
-                direction = GetTranslationFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
+                var axis = m_gamepad.rightStick.ReadValue();
+                direction += new Vector3(axis.x, 0, axis.y);
             }
 
+            var touches = m_screen.GetTouches();
+            //Translation
+            if (touches.Count() == 2)
+            {
+                var activeTouches = touches.ToArray();
+                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
+            }
+            else if (IsMouseDragged(m_mouse,true))
+            {
+                direction = GetTranslationFromInput(m_mouse.delta.ReadValue());
+            }
             return direction;
         }
 
         void FixedUpdate()
         {
-            if (Keyboard.current.uKey.isPressed)
+            if (m_keyboard.uKey.isPressed)
             {
                 ResetCamera();
                 return;
             }
 
-            // Rotation 
-            if (IsMouseDragged(Mouse.current,false)) {
-                UpdateTargetCameraStateFromInput(Mouse.current.delta.ReadValue());
-            } else if (IsMouseDragged(RemoteInput.RemoteMouse,false)) {
-                UpdateTargetCameraStateFromInput(RemoteInput.RemoteMouse.delta.ReadValue());
-            } else if (UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches.Count == 1) {
-                UpdateTargetCameraStateFromInput(UnityEngine.InputSystem.EnhancedTouch.Touch.activeTouches[0].delta);                
-            }
+            var touches = m_screen.GetTouches();
 
+            // Rotation 
+            if (IsMouseDragged(m_mouse,false))
+            {
+                UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
+            }
+            else if (touches.Count() == 1)
+            {
+                var activeTouches = touches.ToArray();
+                UpdateTargetCameraStateFromInput(activeTouches[0].delta);
+            }
+            
+            // Rotation from joystick
+            if(m_gamepad.leftStick != null)
+                UpdateTargetCameraStateFromInput(m_gamepad.leftStick.ReadValue());
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 
             // Speed up movement when shift key held
-            if (Keyboard.current.leftShiftKey.isPressed)
+            if (m_keyboard.leftShiftKey.isPressed)
             {
                 translation *= 10.0f;
             }

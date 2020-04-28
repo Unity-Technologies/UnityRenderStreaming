@@ -4,6 +4,14 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2020-04-15
+
+- Added: Multi camera support
+- Added: Gamepad support
+- Added: Websocket support
+- Changed: Upgrading HDRP to 7.3.1
+- Changed: Upgrading input system to 1.0.0-preview.6
+
 ## [1.2.2] - 2020-03-06
 
 - Fixed: Fix build error when build standalone

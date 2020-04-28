@@ -1,4 +1,4 @@
-# Unity Render Streaming template
+# Unity Render Streaming HDRP template
 
 **Unity Render Streaming** is a solution that provides Unity's high definition rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 
@@ -14,7 +14,7 @@ This template is compatible with Unity Editor version below.
 - Unity 2019.3
 
 > [!NOTE]
-> Because this template depends on `HDRP 7.1`, it does not work correctly older Unity versions.
+> Because this template depends on `HDRP 7.3`, it does not work correctly older Unity versions.
 
 > [!WARNING]
 > In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
