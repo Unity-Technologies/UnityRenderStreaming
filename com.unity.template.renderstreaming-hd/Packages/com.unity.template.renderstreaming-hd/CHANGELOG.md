@@ -4,9 +4,10 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2020-04-15
+## [2.0.0] - 2020-04-30
 
 - Added: Multi camera support
+- Added: Multi controller support
 - Added: Gamepad support
 - Added: Websocket support
 - Changed: Upgrading HDRP to 7.3.1
