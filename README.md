@@ -17,13 +17,12 @@ This repository manages 1 package and 2 templates. Details can be found in the `
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/1.2.3](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/1.2.3) | Stable         |
+| [release/2.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.0) | Stable         |
 | [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Operating Environment
 
 This solution is compatible with `Unity 2019.3`.
-`Unity 2018.3` relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so it is incompatible with this solution.
 
 | Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
 | ----------- | ------------ | ------------------------------------------------- | ------------------ |
@@ -91,11 +90,13 @@ Browser support depends on the status of each browser's WebRTC support.
 
 ## Roadmap
 
-| Version | libwebrtc version                                                            | Focus                                                |
-| ------- | ---------------------------------------------------------------------------- | ---------------------------------------------------  |
-| `1.0`   |[M72](https://groups.google.com/d/msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)| - First release                                      |
-| `2.0`   |[M79](https://groups.google.com/d/msg/discuss-webrtc/X8q5Ae9VKco/YYty_HWFAQAJ)| - Multi camera <br>- DirectX12 (DXR) Support         |
-| `2.1`   |                                                                              | - Profiler tool <br>- Bitrate control                |
+| Version | Focus                                               |
+| ------- | --------------------------------------------------- |
+| `1.0`   | - First release                                     |
+| `1.1`   | - Upgrade HDRP version 5.16                         |
+| `1.2`   | - Unity 2019.3 support                              |
+| `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support        |
+| `2.1`   | - Unity 2020.1 support <br>- Bitrate control sample |
 
 ## FAQ
 
