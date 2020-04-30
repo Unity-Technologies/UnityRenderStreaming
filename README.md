@@ -17,7 +17,7 @@ This repository manages 1 package and 2 templates. Details can be found in the `
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/2.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.0) | Stable         |
+| [release/2.0.1](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.1) | Stable         |
 | [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Operating Environment
