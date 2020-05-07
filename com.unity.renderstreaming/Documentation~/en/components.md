@@ -28,20 +28,20 @@
 
 ## `CameraStreamer` Component
 
-`Camera` コンポーネントのカメラのレンダリング結果をストリーミングします。 レンダリング結果を格納するために `Target Texture` を使用します。
+This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
 ![Camera Streamer inspector](../images/camerastreamer_inspector.png)
 
-### プロパティ
+### Properties
 
-| パラメーター                   | 説明                                                                       | デフォルト                        |
+| Parameter                   | Description                                                                       | Default                        |
 | ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
-| **Streaming Size**           | ストリーミングに使用するフレームバッファのサイズです                              | 1280, 720                       |
+| **Streaming Size**           | Size of the frame buffer used for streaming                              | 1280, 720                       |
 
 ## `AudioStreamer` Component
 
-`AudioListener` コンポーネントのオーディオのレンダリング結果をストリーミングします。 
+This component streams the `AudioListener` component's audio rendering results. 
 
-### プロパティ
+### Properties
 
-なし
+None

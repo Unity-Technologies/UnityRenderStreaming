@@ -1,15 +1,15 @@
 # Browser Input Process
 
-Unity Render Streaming は、ブラウザからのユーザー入力をサポートしています。ブラウザ上での操作をあたかも Unity 上で操作しているかのように再現できます。
+Unity Render Streaming supports user input from the browser, making it possible to replicate operating Unity in the browser. 
 
 ## Input devices
 
-ブラウザーからの入力は以下のデバイスをサポートしています。同時に複数のデバイスを利用することが可能です。
+Browser input is supported for the following devices. Multiple devices can be used simultaneously. 
 
-- マウス
-- キーボード
-- タッチ
-- ゲームパッド
+- Mouse
+- Keyboard
+- Touch
+- Gamepad
 
 The browser sends byte sequences, and Unity uses the `New Input System`.
 
@@ -33,7 +33,7 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 
 ### Touch Events
 
-タッチイベントは検出された指の本数に応じてデータサイズが可変になります。 1バイト目の `length` の値が検出された指の本数になります。
+The data size for touch events varies depending on the number of detected fingers. The `length` value of the first byte corresponds to the number of detected fingers.
 
 |index|value|size|
 |-------|-----|-----|
@@ -44,9 +44,9 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 |5|position y|2|
 |7|force|4|
 
-### ゲームパッドイベント
+### Gamepad Events
 
-ゲームパッドのイベントは4種類あり、種類によってデータフォーマットが異なります。
+There are four types of gamepad events. Each type has a different data format. 
 
 | event name | value |
 |-------|-----|
@@ -55,7 +55,7 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 | button pressed | 2 |
 | axis | 3 |
 
-`button down` 、 `button up` 、 `button pressed` の場合は以下。
+For `button down` 、 `button up` 、 `button pressed`:
 
 |index|value|size|
 |-------|-----|-----|
@@ -64,7 +64,7 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 |2|button index|1|
 |3|value|8|
 
-`axis` の場合は以下。
+For `axis`:
 
 |index|value|size|
 |-----|-----|----|
@@ -74,20 +74,20 @@ The browser sends byte sequences, and Unity uses the `New Input System`.
 |3|axis x|8|
 |11|axis y|8|
 
-## マルチユーザー
+## Multi-user
 
-複数ユーザーの入力を制御するために `RemoteInputReceiver` クラスが利用できます。  `RemoteInputReceiver.Create` を呼び出して、 `RemoteInput` のインスタンスを作成します。次に `RTCDataChannel` から受け取ったメッセージを `RemoteInput.ProcessInput` メソッドに受け渡します。
+The `RemoteInputReceiver` class can be used to control inputs from multiple users. Call `RemoteInputReceiver.Create` to create a `RemoteInput` instance. Next the message from the `RTCDataChannel`is passed to the `RemoteInput.ProcessInput` method.
 
 ```CSharp
-// RemoteInput のインスタンスを作成
+// Create a RemoteInput instance
 RemoteInput input = RemoteInputReceiver.Create();
 channel.OnMessage = bytes => input.ProcessInput(bytes);
 ```
 
-`RemoteInput` のインスタンスから入力デバイスを取得して、デバイスの値を参照することで入力を制御することができます。例えばキーボード入力は以下のように記述します。
+Get the input device from the `RemoteInput` instance and reference the device value to control the input. Below is an example of using keyboard input. 
 
 ```CSharp
-// キーボードのデバイスを取得して、w キー押下時に処理
+// Get the keyboard device, process on w key press
 Keyboard keyboard = input.RemoteKeyboard;
 if(keyboard.wKey.isPressed)
 {
