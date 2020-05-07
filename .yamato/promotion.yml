@@ -24,7 +24,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.packagename }}
   artifacts:
     logs:
@@ -44,7 +44,7 @@ promote_dry_run:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci package promote --dry-run --package-path {{ package.packagename }}
   triggers:
     tags:
@@ -71,7 +71,7 @@ promote:
   variables:
     UPMCI_PROMOTION: 1
   commands:
-    - npm install upm-ci-utils@latest -g --registry {{ upm.registry_url }}
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci package promote --package-path {{ package.packagename }}
   triggers:
     tags:
