@@ -16,7 +16,7 @@
 | Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
 | Firefox                           | :white_check_mark: |                    |                    |                    |
-| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+| Microsoft edge (Chromium based)   | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > **Safari** 及び **iOS Safari** は、 **http** では WebRTC の機能を利用できません。 **https** で利用する必要があります。
