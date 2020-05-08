@@ -10,18 +10,11 @@ packages:
 
 publish_github_release:
   name: Trigger publish Webapp and templates to Github Release
-  agent:
-    type: Unity::VM
-    image: package-ci/ubuntu:stable
-    flavor: b1.large
   triggers:
+    cancel_old_ci: true
     tags:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"        
   dependencies:
     - publish_github_release_webapp
     {% for project in projects %}
