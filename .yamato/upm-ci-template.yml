@@ -16,11 +16,7 @@ pack_{{ project.name }}:
   artifacts:
     packages:
       paths:
-        - "upm-ci~/packages/**/*"
-# todo(kazuki): Commented out to avoid the error occurred when publishing the template packages to GitHub release.
-#               This error occurring caused by two templates using the same file path to put artifacts.
-#
-#        - "upm-ci~/templates/**/*"
+        - "upm-ci~/**/*"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -45,14 +41,10 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% endif %}
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
-#
-#  todo(kazuki): Templete test is broken on Yamato yet, The date completed is still undecided.
-#                Uncomment this once the issue will be fixed.
-#
-#  triggers:
-#    branches:
-#      only:
-#      - "/.*/"
+  triggers:
+    pull_requests:
+      only:
+        - "/.*/"
   artifacts:
     logs:
       paths:
