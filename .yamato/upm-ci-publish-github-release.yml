@@ -15,7 +15,6 @@ publish_github_release:
     image: package-ci/ubuntu:stable
     flavor: b1.large
   triggers:
-    cancel_old_ci: true
     tags:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
@@ -39,10 +38,6 @@ publish_github_release_webapp:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver.exe"
-  triggers:
-    tags:
-      only:
-        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
    {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -58,10 +53,6 @@ publish_github_release_template_{{ project.name }}:
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz"
-  triggers:
-    tags:
-      only:
-        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
 {% endfor %}
