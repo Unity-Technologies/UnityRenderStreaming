@@ -42,7 +42,7 @@ Browser support depends on the status of each browser's WebRTC support.
 - Desktop Chrome
 - Desktop Firefox
 - Desktop Safari
-- Desktop Microsoft Edge (Chrominium-based)
+- Desktop Microsoft Edge (Chromium-based)
 - Android Chrome
 - iOS Safari
 

@@ -16,7 +16,7 @@ The following browsers are compatible:
 | Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
 | Firefox                           | :white_check_mark: |                    |                    |                    |
-| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+| Microsoft edge (Chromium based)   | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.

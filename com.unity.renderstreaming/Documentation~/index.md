@@ -42,7 +42,7 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 | Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
 | Firefox                           | :white_check_mark: |                    |                    |                    |
-| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+| Microsoft edge (Chromium based)   | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > It may not work properly on some browsers caused by depending on the status of support about WebRTC.

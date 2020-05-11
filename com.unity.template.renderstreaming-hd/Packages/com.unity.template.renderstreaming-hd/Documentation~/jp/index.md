@@ -37,7 +37,7 @@ Unity Render Streaming は **WebRTC テクノロジー** を利用しており�
 | Google Chrome                     | :white_check_mark: | :white_check_mark: |                    | :white_check_mark: |
 | Safari                            |                    | :white_check_mark: | :white_check_mark: |                    |
 | Firefox                           | :white_check_mark: |                    |                    |                    |
-| Microfoft edge (Chrominium based) | :white_check_mark: |                    |                    |                    |
+| Microsoft edge (Chromium based)   | :white_check_mark: |                    |                    |                    |
 
 > [!NOTE]
 > ブラウザーの WebRTC 対応状況によっては、正しく動作しない場合があります。
