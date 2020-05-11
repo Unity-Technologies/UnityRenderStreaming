@@ -7,36 +7,45 @@ platforms:
 packages:
   - name: renderstreaming
 ---
+
 publish_github_release:
-  name: Publish Template and Webapp to Github Release
+  name: Trigger publish Webapp and templates to Github Release
+  triggers:
+    cancel_old_ci: true
+    tags:
+      only:
+        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  dependencies:
+    - publish_github_release_webapp
+    {% for project in projects %}
+    - publish_github_release_template_{{ project.name }}
+    {% endfor %}
+
+publish_github_release_webapp:
+  name: Publish Webapp to Github Release
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
     - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.template.renderstreaming-hd-%GIT_TAG%.tgz"
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/com.unity.template.renderstreaming-rtx-%GIT_TAG%.tgz"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver.exe"
-  triggers:
-    tags:
-      only:
-        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
    {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
    {% endfor %}
-   {% for project in projects %}
+
+{% for project in projects %}
+publish_github_release_template_{{ project.name }}:
+  name: Publish Template to Github Release
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install github-release-cli -g
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz"
+  dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
-   {% endfor %}
-# todo(kazuki): template test is broken on Yamato, commented out before until the problem is corrected.  
-# 
-#    {% for editor in editors %}
-#   {% for platform in platforms %}
-#    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-#    {% for param in platform.test_params %}
-#    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-#    {% endfor %}
-#    {% endfor %}
-#    {% endfor %}
+{% endfor %}
