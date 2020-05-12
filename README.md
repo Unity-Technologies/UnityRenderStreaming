@@ -10,7 +10,7 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 This repository manages 1 package and 2 templates. Details can be found in the `README.md` for each package.
 
 - [com.unity.template.renderstreaming-hd](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/README.md)
-- [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-rtx/README.md)
+- [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/README.md)
 - [com.unity.renderstreaming](com.unity.renderstreaming/README.md)
 
 ## Branch
@@ -52,7 +52,7 @@ Browser support depends on the status of each browser's WebRTC support.
 
 - `com.unity.template.renderstreaming-hd` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/LICENSE.md)
 
-- `com.unity.template.renderstreaming-rtx` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-rtx/LICENSE.md)
+- `com.unity.template.renderstreaming-rtx` -  [LICENSE.md](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/LICENSE.md)
 
 ## Package Structure
 
