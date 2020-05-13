@@ -1,13 +1,29 @@
----
-uid: index.md
-title: index
----
-
 # Unity Render Streaming
 
-This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md).
+This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md). We can develop a peer-to-peer streaming solution quickly by using this package.
 
 > [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
+
+## Main features
+
+This package provides the main features below.
+
+- Video streaming
+- Audio streaming
+- Remote control
+
+### Video streaming
+
+We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported. 
+
+![feature-multicamera](images/feature_multicamera.png)
+
+### Audio streaming
+This package enables streaming sounds generated on Unity. And it can cast to multi-browsers simultaneously.
+
+### Remote control
+
+It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Browser input process](en/input.md) page.
 
 ## Requirements
 
