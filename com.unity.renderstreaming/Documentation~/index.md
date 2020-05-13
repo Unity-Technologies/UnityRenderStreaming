@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md). By this package, it is made possible to develop quickly the streaming solution using P2P.
+This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md). We can develop a peer-to-peer streaming solution quickly by using this package.
 
 > [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
 
@@ -14,16 +14,16 @@ This package provides the main features below.
 
 ### Video streaming
 
-It makes possible to broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported. 
+We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported. 
 
 ![feature-multicamera](images/feature_multicamera.png)
 
 ### Audio streaming
-This package makes possible to stream sounds generated on Unity. And it can cast to multi-browsers simultaneously.
+This package enables streaming sounds generated on Unity. And it can cast to multi-browsers simultaneously.
 
 ### Remote control
 
-It becomes possible to send input messages to Unity from the browser. Of course, sending from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Browser input process](en/input.md) page.
+It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Browser input process](en/input.md) page.
 
 ## Requirements
 
