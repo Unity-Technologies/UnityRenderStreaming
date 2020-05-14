@@ -1,13 +1,13 @@
 {
   "name": "com.unity.renderstreaming",
   "displayName": "Unity Render Streaming",
-  "version": "2.0.1-preview",
+  "version": "2.0.2-preview",
   "unity": "2019.3",
   "description": "This is a package for using Unity Render Streaming technology. It contains two samples to use the technology.",
   "dependencies": {
-    "com.unity.webrtc": "2.0.1-preview",
-    "com.unity.inputsystem": "1.0.0-preview.6"
-  },   
+    "com.unity.webrtc": "2.0.2-preview",
+    "com.unity.inputsystem": "1.0.0"
+  },
  "samples": [ {
      "displayName": "HDRP",
      "description": "HDRP Unity Render Streaming Sample",
