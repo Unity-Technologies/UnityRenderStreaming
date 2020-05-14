@@ -16,9 +16,9 @@ publish_github_release:
       only:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
-    - publish_github_release_webapp
+    - .yamato/upm-ci-publish-github-release.yml#publish_github_release_webapp
     {% for project in projects %}
-    - publish_github_release_template_{{ project.name }}
+    - .yamato/upm-ci-publish-github-release.yml#publish_github_release_template_{{ project.name }}
     {% endfor %}
 
 publish_github_release_webapp:
@@ -38,7 +38,7 @@ publish_github_release_webapp:
 
 {% for project in projects %}
 publish_github_release_template_{{ project.name }}:
-  name: Publish Template to Github Release
+  name: Publish Template to Github Release {{ project.name }}
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
