@@ -17,7 +17,7 @@ This repository manages 1 package and 2 templates. Details can be found in the `
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/2.0.1](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.1) | Stable         |
+| [release/2.0.2](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.2) | Stable         |
 | [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Operating Environment
@@ -27,7 +27,7 @@ This solution is compatible with `Unity 2019.3`.
 | Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
 | ----------- | ------------ | ------------------------------------------------- | ------------------ |
 | Windows x64 | DirectX11    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
-| Windows x64 | DirectX12    |                                                   |                    | 
+| Windows x64 | DirectX12    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
 | Windows x64 | OpenGL       |                                                   |                    |
 | Windows x64 | Vulkan       |                                                   |                    | 
 | Linux x64   | OpenGL       | :white_check_mark: (Require NVIDIA Graphics card) |                    |
