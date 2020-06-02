@@ -1,85 +1,106 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.1-green.svg?style=flat-square" alt="unity 2019.1">
+<img src="https://img.shields.io/badge/unity-2019.3-green.svg?style=flat-square" alt="unity 2019.3">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://github.com/Unity-Technologies/com.unity.webrtc) to create their own unique solutions. 
 
-<img src="Packages/com.unity.template.renderstreaming/Documentation~/images/multitouch.gif" width=500 align=center>
+<img src="com.unity.renderstreaming/Documentation~/images/browser_hdrpscene.png" width=500 align=center>
 
-This repository manages 2 packages. Details can be found in the `README.md` for each package.
+This repository manages 1 package and 2 templates. Details can be found in the `README.md` for each package.
 
-- [com.unity.template.renderstreaming](Packages/com.unity.template.renderstreaming/Documentation~/index.md)
-- [com.unity.renderstreaming](Packages/com.unity.renderstreaming/Documentation~/index.md)
+- [com.unity.template.renderstreaming-hd](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/README.md)
+- [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/README.md)
+- [com.unity.renderstreaming](com.unity.renderstreaming/README.md)
+
+## Branch
+
+| Branch                                                                                         | Status         |
+| ---------------------------------------------------------------------------------------------- | -------------- |
+| [release/2.0.2](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.2) | Stable         |
+| [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Operating Environment
 
-This solution is compatible with Unity 2019.1. Currently it only runs in a Windows 64-bit environment.
-Unity 2018.3 relies on the [New Input System](https://github.com/Unity-Technologies/InputSystem), so it is incompatible with this solution.
+This solution is compatible with `Unity 2019.3`.
+
+| Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
+| ----------- | ------------ | ------------------------------------------------- | ------------------ |
+| Windows x64 | DirectX11    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
+| Windows x64 | DirectX12    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
+| Windows x64 | OpenGL       |                                                   |                    |
+| Windows x64 | Vulkan       |                                                   |                    | 
+| Linux x64   | OpenGL       | :white_check_mark: (Require NVIDIA Graphics card) |                    |
+| Linux x64   | Vulkan       |                                                   |                    |
+| MacOS       | OpenGL       |                                                   |                    |
+| MacOS       | Metal        |                                                   | :white_check_mark: |
 
 ### Supported Browsers
 
 Browser support depends on the status of each browser's WebRTC support.
 
 - Desktop Chrome
-
 - Desktop Firefox
-
 - Desktop Safari
-
+- Desktop Microsoft Edge (Chromium-based)
 - Android Chrome
-
 - iOS Safari
 
 ### License
 
-- `com.unity.renderstreaming` -  [LICENSE.md](Packages/com.unity.renderstreaming/LICENSE.md)
+- `com.unity.renderstreaming` -  [LICENSE.md](com.unity.renderstreaming/LICENSE.md)
 
-- `com.unity.template.renderstreaming` -  [LICENSE.md](Packages/com.unity.template.renderstreaming/LICENSE.md)
+- `com.unity.template.renderstreaming-hd` -  [LICENSE.md](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/LICENSE.md)
 
-### Graphics Cards
-
-This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
+- `com.unity.template.renderstreaming-rtx` -  [LICENSE.md](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/LICENSE.md)
 
 ## Package Structure
 
 ```
 <root>
-├── Assets
-│   ├── Plugins
-│   ├── Scenes
-│   ├── Scripts
-│   └── Tests
+├── com.unity.renderstreaming
+│   ├── Documentation~
+│   ├── Editor
+│   └── Samples~
+├── com.unity.template.renderstreaming-hd
+│   ├── Assets
+│   │   ├── Plugins
+│   │   ├── Scenes
+│   │   ├── Scripts
+│   │   └── Tests
+│   ├── Packages
+│   └── ProjectSettings
+├── com.unity.template.renderstreaming-rtx
+│   ├── Assets
+│   │   ├── Plugins
+│   │   ├── Scenes
+│   │   ├── Scripts
+│   │   └── Tests
+│   ├── Packages
+│   └── ProjectSettings
 ├── EmptyProjectForTest~
-├── Packages
-│   ├── com.unity.renderstreaming
-│   └── com.unity.template.renderstreaming
-├── ProjectSettings
-├── Plugin
-│   ├── WebRTCPlugin
-│   └── unity
 ├── RenderStreamingSampleSrc~
-│   └── RS_HDRPSampleSrc_1.x
+|   ├── RS_HDRPSampleSrc_1.x
+│   └── RS_URPSampleSrc_1.x
 └── WebApp
-    ├── public
-    ├── src
-    └── test
+    ├── public
+    ├── src
+    └── test
 ```
 
 ## Roadmap
 
-|Version|libwebrtc version|Focus|
-|-------|-----|-----|
-|`1.0`|[M72](https://groups.google.com/forum/#!msg/discuss-webrtc/3h4y0fimHwg/j6G4dTVvCAAJ)|- First release |
-|`2.0`||- Multi camera <br>- DirectX12 (DXR) Support <br>- Simulcast |
-|`2.1`||- Linux support <br>- Add HW encoder |
+| Version | Focus                                               |
+| ------- | --------------------------------------------------- |
+| `1.0`   | - First release                                     |
+| `1.1`   | - Upgrade HDRP version 5.16                         |
+| `1.2`   | - Unity 2019.3 support                              |
+| `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support        |
+| `2.1`   | - Unity 2020.1 support <br>- Bitrate control sample |
 
 ## FAQ
 
-Read [this page](Packages/com.unity.template.renderstreaming/Documentation~/en/faq.md).
-
-## Sample Sources
-- [HDRP](RenderStreamingSampleSrc~/RS_HDRPSampleSrc_1.x/Documentation/index.md)
+Read [this page](com.unity.renderstreaming/Documentation~/en/faq.md) and [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413/)
 
 ## Contributors
 
@@ -88,3 +109,4 @@ Read [this page](Packages/com.unity.template.renderstreaming/Documentation~/en/f
 - [@flame99999](https://github.com/flame99999)
 - [@koseyile](https://github.com/koseyile)
 - [@sindharta](https://github.com/sindharta)
+- [@kannan-xiao4](https://github.com/kannan-xiao4)

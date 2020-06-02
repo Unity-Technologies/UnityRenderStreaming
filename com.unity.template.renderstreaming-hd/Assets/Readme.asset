@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
+  m_Name: Readme
+  m_EditorClassIdentifier: 
+  icon: {fileID: 2800000, guid: 9b84c330de497af4793fd7b376afed13, type: 3}
+  title: HDRP with Unity Render Streaming (Preview)
+  sections:
+  - heading: Unity Render Streaming
+    text: Unity Render Streaming is a technology to connect browser with server operated
+      Unity instance through WebRTC technology.
+    linkText: 
+    url: 
+  - heading: 
+    text: This template is a good starting point for people who want to stream unity
+      rendering result to web browser and control it on browser in realtime. This
+      template utilizes Unity Render Streaming technology, which enables connecting
+      browser with server operated Unity instance through WebRTC technology.
+    linkText: 
+    url: 
+  - heading: 
+    text: To read more about Unity RenderStreaming please refer to the manual page.
+    linkText: Unity Render Streaming (English)
+    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/stable/com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md
+  - heading: 
+    text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
+    linkText: Unity Render Streaming (Japanese)
+    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/stable/com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/jp/index.md
+  - heading: WebRTC Package
+    text: The Unity WebRTC package implements Unity Render Streaming technology and provides
+      C# WebRTC API for you to build WebRTC applications inside Unity. To read more
+      about it please refer to the manual page
+    linkText: WebRTC Package (English)
+    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/stable/Documentation~/index.md
+  - heading: 
+    text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
+    linkText: WebRTC Package (Japanese)
+    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/stable/Documentation~/jp/index.md
+  - heading: 
+    text: This project uses the Package Manager to bring you the latest features
+      Unity has to offer. Open the Package Manager from Windows > Package Manager
+      and make sure you're using the most recent version of WebRTC package. To update
+      packages, select your desired package from the list on the left, and click the
+      Update to button in the bottom right corner.
+    linkText: 
+    url: 
+  loadedLayout: 1

@@ -33,7 +33,7 @@ pack_{{ platform.name }}:
   artifacts:
     packages:
       paths:
-        - "Assets/bin~/**/*"
+        - "WebApp/bin~/**/*"
 {% endfor %}
 
 {% for platform in platforms %}

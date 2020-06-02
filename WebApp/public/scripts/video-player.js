@@ -1,153 +1,12 @@
-import Signaling from "./signaling.js"
+import Signaling, { WebSocketSignaling } from "./signaling.js"
 
-const InputEvent = {
-  Keyboard: 0,
-  Mouse: 1,
-  MouseWheel: 2,
-  Touch: 3,
-  ButtonClick: 4
+// enum type of event sending from Unity
+var UnityEventType = {
+  SWITCH_VIDEO: 0
 };
-
-const KeyboardEventType = {
-  Up: 0,
-  Down: 1
-}
-
-const PointerPhase = {
-  None: 0,
-  Began: 1,
-  Moved: 2,
-  Ended: 3,
-  Canceled: 4,
-  Stationary: 5
-}
-
-const Keymap = {
-  "Space": 1,
-  "Enter": 2,
-  "Tab": 3,
-  "Backquote": 4,
-  "Quote": 5,
-  "Semicolon": 6,
-  "Comma": 7,
-  "Period": 8,
-  "Slash": 9,
-  "Backslash": 10,
-  "LeftBracket": 11,
-  "RightBracket": 12,
-  "Minus": 13,
-  "Equals": 14,
-  "KeyA": 15,
-  "KeyB": 16,
-  "KeyC": 17,
-  "KeyD": 18,
-  "KeyE": 19,
-  "KeyF": 20,
-  "KeyG": 21,
-  "KeyH": 22,
-  "KeyI": 23,
-  "KeyJ": 24,
-  "KeyK": 25,
-  "KeyL": 26,
-  "KeyM": 27,
-  "KeyN": 28,
-  "KeyO": 29,
-  "KeyP": 30,
-  "KeyQ": 31,
-  "KeyR": 32,
-  "KeyS": 33,
-  "KeyT": 34,
-  "KeyU": 35,
-  "KeyV": 36,
-  "KeyW": 37,
-  "KeyX": 38,
-  "KeyY": 39,
-  "KeyZ": 40,
-  "Digit1": 41,
-  "Digit2": 42,
-  "Digit3": 43,
-  "Digit4": 44,
-  "Digit5": 45,
-  "Digit6": 46,
-  "Digit7": 47,
-  "Digit8": 48,
-  "Digit9": 49,
-  "Digit0": 50,
-  "ShiftLeft": 51,
-  "ShiftRight": 52,
-  "AltLeft": 53,
-  "AltRight": 54,
-  // "AltGr": 54,
-  "ControlLeft": 55,
-  "ControlRight": 56,
-  "MetaLeft": 57,
-  "MetaRight": 58,
-  // "LeftWindows": 57,
-  // "RightWindows": 58,
-  // "LeftApple": 57,
-  // "RightApple": 58,
-  // "LeftCommand": 57,
-  // "RightCommand": 58,
-  "ContextMenu": 59,
-  "Escape": 60,
-  "ArrowLeft": 61,
-  "ArrowRight": 62,
-  "ArrowUp": 63,
-  "ArrowDown": 64,
-  "Backspace": 65,
-  "PageDown": 66,
-  "PageUp": 67,
-  "Home": 68,
-  "End": 69,
-  "Insert": 70,
-  "Delete": 71,
-  "CapsLock": 72,
-  "NumLock": 73,
-  "PrintScreen": 74,
-  "ScrollLock": 75,
-  "Pause": 76,
-  "NumpadEnter": 77,
-  "NumpadDivide": 78,
-  "NumpadMultiply": 79,
-  "NumpadPlus": 80,
-  "NumpadMinus": 81,
-  "NumpadPeriod": 82,
-  "NumpadEquals": 83,
-  "Numpad0": 84,
-  "Numpad1": 85,
-  "Numpad2": 86,
-  "Numpad3": 87,
-  "Numpad4": 88,
-  "Numpad5": 89,
-  "Numpad6": 90,
-  "Numpad7": 91,
-  "Numpad8": 92,
-  "Numpad9": 93,
-  "F1": 94,
-  "F2": 95,
-  "F3": 96,
-  "F4": 97,
-  "F5": 98,
-  "F6": 99,
-  "F7": 100,
-  "F8": 101,
-  "F9": 102,
-  "F10": 103,
-  "F11": 104,
-  "F12": 105,
-  // "OEM1": 106,
-  // "OEM2": 107,
-  // "OEM3": 108,
-  // "OEM4": 109,
-  // "OEM5": 110,
-  // "IMESelected": 111,
-};
-
 
 export class VideoPlayer {
-
-  constructor(element, config) {
-
+  constructor(elements, config) {
     const _this = this;
     this.cfg = VideoPlayer.getConfiguration(config);
     this.pc = null;
@@ -156,83 +15,37 @@ export class VideoPlayer {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
-    this.video = element;
+
+    // main video
+    this.localStream = new MediaStream();
+    this.video = elements[0];
     this.video.playsInline = true;
     this.video.addEventListener('loadedmetadata', function () {
       _this.video.play();
       _this.resizeVideo();
     }, true);
-    this.interval = 3000;
-    this.signaling = new Signaling();
-    this.ondisconnect = function(){};
-    this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
+    // secondly video
+    this.localStream2 = new MediaStream();
+    this.videoThumb = elements[1];
+    this.videoThumb.playsInline = true;
+    this.videoThumb.addEventListener('loadedmetadata', function () {
+      _this.videoThumb.play();
+    }, true);
 
-      this.sendTouchMove = (e) => {
-        this.sendTouch(e, PointerPhase.Moved);
-        e.preventDefault();
-      }
+    this.videoTrackList = [];
+    this.videoTrackIndex = 0;
+    this.maxVideoTrackLength = 2;
 
-      this.sendTouchStart = (e) => {
-        this.sendTouch(e, PointerPhase.Began);
-        e.preventDefault();
-      }
-
-      this.sendTouchEnd = (e) => {
-        this.sendTouch(e, PointerPhase.Ended);
-        e.preventDefault();
-      }
-
-      this.sendTouchCancel = (e) => {
-        this.sendTouch(e, PointerPhase.Canceled);
-        e.preventDefault();
-      }
-
-      this.sendMouse = (e) => {
-        const scale = this.videoScale;
-        const originX = this.videoOriginX;
-        const originY = this.videoOriginY;
-
-        const x = (e.clientX - originX) / scale;
-        // According to Unity Coordinate system
-        // const y = (e.clientY - originY) / scale;
-        const y = this.videoHeight - (e.clientY - originY) / scale;
-
-        console.log("x: " + x + ", y: " + y + ", scale: " + scale + ", originX: " + originX + ", originY: " + originY + " mouse button:" + e.buttons);
-        let data = new DataView(new ArrayBuffer(6));
-        data.setUint8(0, InputEvent.Mouse);
-        data.setInt16(1, x, true);
-        data.setInt16(3, y, true);
-        data.setUint8(5, e.buttons);
-        this.sendMsg(data.buffer);
-      }
-
-      this.sendMouseWheel = (e) => {
-        console.log("mouse wheel with delta " + e.wheelDelta);
-        let data = new DataView(new ArrayBuffer(9));
-        data.setUint8(0, InputEvent.MouseWheel);
-        data.setFloat32(1, e.deltaX, true);
-        data.setFloat32(5, e.deltaY, true);
-        this.sendMsg(data.buffer);
-      }
-
-      this.sendKeyUp = (e) => {
-        this.sendKey(e, KeyboardEventType.Up);
-      }
-
-      this.sendKeyDown = (e) => {
-        this.sendKey(e, KeyboardEventType.Down);
-      }
-
-
+    this.ondisconnect = function () { };
   }
 
   static getConfiguration(config) {
-    if(config === undefined) {
+    if (config === undefined) {
       config = {};
     }
     config.sdpSemantics = 'unified-plan';
-    config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     return config;
   }
 
@@ -252,8 +65,19 @@ export class VideoPlayer {
       navigator.userAgent.match(/iPhone/i) ||
       navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i)
     ) {
-      let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
+    }
+
+    // Decide Signaling Protocol
+    const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
+    const createResponse = await fetch(protocolEndPoint);
+    const res = await createResponse.json();
+
+    if (res.useWebSocket) {
+      this.signaling = new WebSocketSignaling();
+    } else {
+      this.signaling = new Signaling();
     }
 
     // Create peerConnection with proxy server and set up handlers
@@ -261,115 +85,92 @@ export class VideoPlayer {
     this.pc.onsignalingstatechange = function (e) {
       console.log('signalingState changed:', e);
     };
-
     this.pc.oniceconnectionstatechange = function (e) {
       console.log('iceConnectionState changed:', e);
       console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
-      if(_this.pc.iceConnectionState === 'disconnected') {
+      if (_this.pc.iceConnectionState === 'disconnected') {
         _this.ondisconnect();
       }
     };
-
     this.pc.onicegatheringstatechange = function (e) {
       console.log('iceGatheringState changed:', e);
     };
-
     this.pc.ontrack = function (e) {
-      console.log('New track added: ', e.streams);
-      _this.video.srcObject = e.streams[0];
-    };
-
-    this.pc.onicecandidate = function (e) {
-      if(e.candidate != null) {
-        _this.signaling.sendCandidate(_this.sessionId, _this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+      if(e.track.kind == 'video') {
+        _this.videoTrackList.push(e.track);
+      }
+      if(e.track.kind == 'audio') {
+        _this.localStream.addTrack(e.track);
+      }
+      if(_this.videoTrackList.length == _this.maxVideoTrackLength) {
+        _this.switchVideo(_this.videoTrackIndex);
       }
     };
-
+    this.pc.onicecandidate = function (e) {
+      if (e.candidate != null) {
+        _this.signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+      }
+    };
     // Create data channel with proxy server and set up handlers
     this.channel = this.pc.createDataChannel('data');
     this.channel.onopen = function () {
       console.log('Datachannel connected.');
     };
-
     this.channel.onerror = function (e) {
       console.log("The error " + e.error.message + " occurred\n while handling data with proxy server.");
     };
-
     this.channel.onclose = function () {
       console.log('Datachannel disconnected.');
     };
+    this.channel.onmessage = async (msg) => {
+      // receive message from unity and operate message
+      let data;
+      // receive message data type is blob only on Firefox
+      if(navigator.userAgent.indexOf('Firefox') != -1) {
+        data = await msg.data.arrayBuffer();
+      }else{
+        data = msg.data;
+      }
+      const bytes = new Uint8Array(data);
+      _this.videoTrackIndex = bytes[1];
+      switch(bytes[0]) {
+        case UnityEventType.SWITCH_VIDEO:
+          _this.switchVideo(_this.videoTrackIndex);
+          break;
+      }
+    };
 
-    const createResponse = await this.signaling.create();
-    const data = await createResponse.json();
-    this.sessionId = data.sessionId;
+    this.signaling.addEventListener('answer', async (e) => {
+      const answer = e.detail;
+      const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
+      await _this.pc.setRemoteDescription(desc);
+    });
+
+    this.signaling.addEventListener('candidate', async (e) => {
+      const candidate = e.detail;
+      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
+      await _this.pc.addIceCandidate(iceCandidate);
+    });
+
+    // setup signaling
+    await this.signaling.start();
+
+    // Add transceivers to receive multi stream.
+    // It can receive two video tracks and one audio track from Unity app.
+    // This operation is required to generate offer SDP correctly.
+    this.pc.addTransceiver('video', { direction: 'recvonly' });
+    this.pc.addTransceiver('video', { direction: 'recvonly' });
+    this.pc.addTransceiver('audio', { direction: 'recvonly' });
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
-    await this.createConnection();
     // set local sdp
     offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
-    const desc = new RTCSessionDescription({sdp:offer.sdp, type:"offer"});
+    const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
-    await this.sendOffer(offer);
-  }
-
-  async createConnection() {
-    // signaling
-    const res = await this.signaling.createConnection(this.sessionId);
-    const data = await res.json();
-    this.connectionId = data.connectionId;
-  }
-
-  async sendOffer(offer) {
-    // signaling
-    await this.signaling.sendOffer(this.sessionId, this.connectionId, offer.sdp);
-    this.loopGetAnswer(this.sessionId, this.interval);
-    this.loopGetCandidate(this.sessionId, this.interval);
-  }
-
-  async loopGetAnswer(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getAnswer(sessionId, lastTimeRequest);
-      const data = await res.json();
-      const answers = data.answers;
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      if(answers.length > 0) {
-        const answer = answers[0];
-        await this.setAnswer(sessionId, answer.sdp);
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async loopGetCandidate(sessionId, interval) {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while(true) {
-      const res = await this.signaling.getCandidate(sessionId, lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
-      if(candidates.length > 0) {
-        for(let candidate of candidates[0].candidates) {
-          const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex});
-          await this.pc.addIceCandidate(iceCandidate);
-        }
-      }
-      await this.sleep(interval);
-    }
-  }
-
-  async setAnswer(sessionId, sdp) {
-    const desc = new RTCSessionDescription({sdp:sdp, type:"answer"});
-    await this.pc.setRemoteDescription(desc);
-  }
+    await this.signaling.sendOffer(offer.sdp);
+  };
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
@@ -381,6 +182,32 @@ export class VideoPlayer {
     const videoOffsetY = videoRatio > clientRatio ? (clientRect.height - this.videoHeight * this._videoScale) * 0.5 : 0;
     this._videoOriginX = clientRect.left + videoOffsetX;
     this._videoOriginY = clientRect.top + videoOffsetY;
+  }
+
+  // switch streaming destination main video and secondly video
+  switchVideo(indexVideoTrack) {
+    this.video.srcObject = this.localStream;
+    this.videoThumb.srcObject = this.localStream2;
+
+    if(indexVideoTrack == 0) {
+      this.replaceTrack(this.localStream, this.videoTrackList[0]);
+      this.replaceTrack(this.localStream2, this.videoTrackList[1]);
+    }
+    else {
+      this.replaceTrack(this.localStream, this.videoTrackList[1]);
+      this.replaceTrack(this.localStream2, this.videoTrackList[0]);
+    }
+  }
+
+  // replace video track related the MediaStream
+  replaceTrack(stream, newTrack) {
+    const tracks = stream.getVideoTracks();
+    for(const track of tracks) {
+      if(track.kind == 'video') {
+        stream.removeTrack(track);
+      }
+    }
+    stream.addTrack(newTrack);
   }
 
   get videoWidth() {
@@ -409,10 +236,10 @@ export class VideoPlayer {
       this.pc.close();
       this.pc = null;
     }
-  }
+  };
 
   sendMsg(msg) {
-    if(this.channel == null) {
+    if (this.channel == null) {
       return;
     }
     switch (this.channel.readyState) {
@@ -426,79 +253,8 @@ export class VideoPlayer {
         console.log('Attempt to sendMsg message while closing');
         break;
       case 'closed':
-        console.log( 'Attempt to sendMsg message while connection closed.');
+        console.log('Attempt to sendMsg message while connection closed.');
         break;
     }
-  }
-
-
-
-  sendKey(e, type) {
-    const key = Keymap[e.code];
-    const character = e.key.length === 1 ? e.key.charCodeAt(0) : 0;
-    console.log("key down " + key + ", repeat = " + e.repeat + ", character = " + character);
-    this.sendMsg(new Uint8Array([InputEvent.Keyboard, type, e.repeat, key, character]).buffer);
-  }
-
-  sendTouch(e, phase) {
-    const changedTouches = Array.from(e.changedTouches);
-    const touches = Array.from(e.touches);
-    const phrases = [];
-
-    for (let i = 0; i < changedTouches.length; i++) {
-      if (touches.find(function (t) {
-        return t.identifier === changedTouches[i].identifier
-      }) === undefined) {
-        touches.push(changedTouches[i]);
-      }
-    }
-
-    for (let i = 0; i < touches.length; i++) {
-      touches[i].identifier;
-      phrases[i] = changedTouches.find(
-        function (e) {
-          return e.identifier === touches[i].identifier
-        }) === undefined ? PointerPhase.Stationary : phase;
-    }
-
-    console.log("touch phase:" + phase + " length:" + changedTouches.length + " pageX" + changedTouches[0].pageX + ", pageX: " + changedTouches[0].pageY + ", force:" + changedTouches[0].force);
-
-    let data = new DataView(new ArrayBuffer(2 + 13 * touches.length));
-    data.setUint8(0, InputEvent.Touch);
-    data.setUint8(1, touches.length);
-    let byteOffset = 2;
-    for (let i = 0; i < touches.length; i++) {
-
-      const scale = this.videoScale;
-      const originX = this.videoOriginX;
-      const originY = this.videoOriginY;
-
-      const x = (touches[i].pageX - originX) / scale;
-      // According to Unity Coordinate system
-      // const y = (touches[i].pageX - originY) / scale;
-      const y = this.videoHeight - (touches[i].pageY - originY) / scale;
-
-      data.setInt32(byteOffset, touches[i].identifier, true);
-      byteOffset += 4;
-      data.setUint8(byteOffset, phrases[i]);
-      byteOffset += 1;
-      data.setInt16(byteOffset, x, true);
-      byteOffset += 2;
-      data.setInt16(byteOffset, y, true);
-      byteOffset += 2;
-      data.setFloat32(byteOffset, touches[i].force, true);
-      byteOffset += 4;
-    }
-    this.sendMsg(data.buffer);
-  }
-
-
-
-  sendClickEvent(videoPlayer, elementId) {
-      let data = new DataView(new ArrayBuffer(3));
-      data.setUint8(0, InputEvent.ButtonClick);
-      data.setInt16(1, elementId, true);
-      this.sendMsg(data.buffer);
-  }
-
+  };
 }

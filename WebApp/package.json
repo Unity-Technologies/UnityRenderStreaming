@@ -1,6 +1,6 @@
 {
   "name": "webserver",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "prestart": "npm install",
@@ -9,14 +9,17 @@
     "newman": "newman run test/renderstreaming.postman_collection.json",
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
-    "lint": "eslint --fix 'src/*.ts'",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
     "pack": "pkg ."
   },
   "dependencies": {
     "@types/express": "^4.16.1",
     "@types/node": "^11.12.0",
+    "@types/ws": "^7.2.2",
+    "debug": "~2.6.9",
     "express": "~4.16.0",
-    "debug": "~2.6.9"
+    "uuid": "^3.4.0",
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.12",

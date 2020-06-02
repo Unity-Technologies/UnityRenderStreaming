@@ -17,7 +17,7 @@ npm run start
 npm run start -- -h
 ```
 
-オプションの詳細については[ドキュメント](../Packages/com.unity.template.renderstreaming/Documentation~/jp/webserver.md)を参照してください。
+オプションの詳細については[ドキュメント](../com.unity.renderstreaming/Documentation~/jp/webapp.md)を参照してください。
 
 また、以下のコマンドで `ts-node` を利用してサーバを起動します。
 
@@ -39,4 +39,4 @@ Render Streaming のシグナリングはシンプルな Web API で実現して
 
 Postman で `WebApp/test/renderstreaming.postman_collection.json` をインポートすると、API の一覧を確認することができます。また、Web サーバを起動した状態であれば API の動作テストを行うことができます。
 
-<img src="../Packages/com.unity.template.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>
+<img src="../com.unity.renderstreaming/Documentation~/images/postman_example.png" width=600 align=center>

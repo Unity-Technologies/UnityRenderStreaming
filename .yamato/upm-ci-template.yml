@@ -1,66 +1,74 @@
 # .yamato/upm-ci-template.yml
-{% metadata_file .yamato/environments.yml %}
+{% metadata_file .yamato/meta/environments.yml %}
 
-projects:
-  - name: renderstreaming
-    packagename: com.unity.template.renderstreaming
 ---
 {% for project in projects %}
-pack:
+pack_{{ project.name }}:
   name: Pack {{ project.packagename }}
-  agent:
+  agent:  
     type: Unity::VM
-    image: renderstreaming/win10:latest
-    flavor: b1.large
+    image: package-ci/ubuntu:stable    
+    flavor: b1.large  
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template pack
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
+    - upm-ci template pack --project-path {{ project.packagename }}
   artifacts:
     packages:
       paths:
-        - "upm-ci~/packages/**/*"
-        - "upm-ci~/templates/**/*"
+        - "upm-ci~/**/*"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
 
+# todo(kazuki): workaround renderstreaming-rtx template test error on Yamato.
+#
+{% if project.name == "renderstreaming-hd" %}
 {% for editor in editors %}
 {% for platform in platforms %}
-test_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ project.packagename }} {{ editor.version }} on {{ platform.name }}
+{% for param in platform.test_params %}
+test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template test -u {{ editor.version }}
-#  TODO:: `upm-ci template test` is failed using the package on the internal registry.
-#  triggers:
-#    branches:
-#      only:
-#      - "/.*/"
-#      except:
-#      - "master"
+    {% if platform.name == "win" %}
+    - mkdir upm-ci~\templates\ProjectData~\WebApp
+    - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
+    {% else %}
+    - cp -r WebApp upm-ci~/templates/ProjectData~/
+    {% endif %}
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+  triggers:
+    branches:
+      only:
+        - "/.*/"
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 {% endfor %}
 {% endfor %}
+{% endfor %}
+{% endif %} # if project.name == "renderstreaming-hd"
 
-publish:
+publish_{{ project.name }}:
   name: Publish {{ project.packagename }}
   agent:
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - npm install upm-ci-utils -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci template publish
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - upm-ci template publish --project-path {{ project.packagename }}
   triggers:
     tags:
       only:
@@ -77,7 +85,40 @@ publish:
     - .yamato/upm-ci-template.yml#pack
     {% for editor in editors %}
     {% for platform in platforms %}
-    - .yamato/upm-ci-template.yml#test_{{ platform.name }}_{{ editor.version }}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
+    {% endfor %}
+
+publish_dryrun_{{ project.name }}:
+  name: Publish Dry Run {{ project.packagename }}
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - upm-ci template publish --dry-run
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+    packages:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+        - "upm-ci~/templates/*.tgz"
+  dependencies:
+    - .yamato/upm-ci-template.yml#pack
+    {% for editor in editors %}
+    {% for platform in platforms %}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}    
 {% endfor %}
