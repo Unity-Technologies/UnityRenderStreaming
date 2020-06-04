@@ -2,7 +2,7 @@ using Unity.RenderStreaming;
 using UnityEditor;
 using UnityEngine;
 using Unity.RenderStreaming.Signaling;
-using Boo.Lang;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(RenderStreaming))]
 public class RenderStreamingEditor : Editor
