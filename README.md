@@ -46,6 +46,14 @@ Browser support depends on the status of each browser's WebRTC support.
 - Android Chrome
 - iOS Safari
 
+### Furioos compatibility
+
+**Unity Render Streaming** is also supported natively by Furioos platform https://www.furioos.com/ .
+That means that you can easily build a RenderStreaming application, upload it on Furioos and enjoy all the features of RenderStreaming without worrying about the deployment and scalability issues of your project.
+To do so, the requirement is to select "FurioosSignaling" in the "Signaling server type" parameter of the RenderStreaming script.
+This allow your application to connect to Furioos services when running on the managed virtual machines.
+Then just build a standalone Windows version of your application, zip it and upload it on your account at https://portal.furioos.com/ .
+
 ### License
 
 - `com.unity.renderstreaming` -  [LICENSE.md](com.unity.renderstreaming/LICENSE.md)
@@ -110,3 +118,4 @@ Read [this page](com.unity.renderstreaming/Documentation~/en/faq.md) and [Unity 
 - [@koseyile](https://github.com/koseyile)
 - [@sindharta](https://github.com/sindharta)
 - [@kannan-xiao4](https://github.com/kannan-xiao4)
+- [@samuel-tranchet](https://github.com/samuel-tranchet)

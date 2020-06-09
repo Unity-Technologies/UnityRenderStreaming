@@ -117,7 +117,7 @@ function getCookie(cname) {
   return "";
 }
 
-function gamepadHandler(event, connecting) {
+export function gamepadHandler(event, connecting) {
   var gamepad = event.gamepad;
 
   var key = gamepad.id.replace(/\s/g,'');
@@ -155,9 +155,4 @@ function gamepadHandler(event, connecting) {
     }
     console.log("disconnected: " + gamepad.id)
   }
-}
-
-export function startGamepadDetection() {
-  window.addEventListener("gamepadconnected", function(e) { gamepadHandler(e, true); }, false);
-  window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(e, false); }, false);
 }

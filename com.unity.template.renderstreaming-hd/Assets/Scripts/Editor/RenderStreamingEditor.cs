@@ -1,6 +1,8 @@
 using Unity.RenderStreaming;
 using UnityEditor;
 using UnityEngine;
+using Unity.RenderStreaming.Signaling;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(RenderStreaming))]
 public class RenderStreamingEditor : Editor
@@ -9,6 +11,7 @@ public class RenderStreamingEditor : Editor
     {
         {
             serializedObject.Update();
+            ShowSignalingTypes(serializedObject.FindProperty("signalingType"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"));
             ShowIceServerList(serializedObject.FindProperty("iceServers"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
@@ -38,5 +41,32 @@ public class RenderStreamingEditor : Editor
             }
         }
         EditorGUI.indentLevel -= 1;
+    }
+
+    static void ShowSignalingTypes(SerializedProperty signalingType){
+
+        System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        List<string> options = new List<string>();
+        List<string> types = new List<string>();
+
+        int selected = 0;
+        int i = 0;
+
+        foreach (var referencedAssembly in assembly.GetReferencedAssemblies()) {
+            foreach (System.Type type in System.Reflection.Assembly.Load(referencedAssembly).GetTypes()) {
+                if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
+                    if(type.FullName == signalingType.stringValue){
+                        selected = i;
+                    }
+                    options.Add(type.Name);
+                    types.Add(type.FullName);
+                    i++;
+                }
+            }
+        }
+
+        selected = EditorGUILayout.Popup("Signaling server type", selected, options.ToArray());
+        signalingType.stringValue = types[selected];
+
     }
 }

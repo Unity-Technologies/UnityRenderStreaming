@@ -1,6 +1,5 @@
 import { VideoPlayer } from "./video-player.js";
 import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "./register-events.js";
-import { startGamepadDetection } from "./gamepadEvents.js";
 
 let playButton;
 let videoPlayer;
@@ -111,7 +110,6 @@ async function setupVideoPlayer(elements, config) {
   registerKeyboardEvents(videoPlayer);
   registerMouseEvents(videoPlayer, elements[0]);
   
-  startGamepadDetection();
   return videoPlayer;
 }
 

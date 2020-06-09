@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
@@ -26,7 +26,6 @@ namespace Unity.RenderStreaming.Signaling
 
     public class FurioosSignaling : ISignaling
     {
-        private string m_url;
         private float m_timeout;
         private bool m_running;
         private Thread m_signalingThread;
@@ -37,7 +36,6 @@ namespace Unity.RenderStreaming.Signaling
 
         public FurioosSignaling(string url, float timeout)
         {
-            m_url = url;
             m_timeout = timeout;
             m_wsCloseEvent = new AutoResetEvent(false);
         }
@@ -113,13 +111,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSCreate()
         {
-            m_webSocket = new WebSocket(m_url);
-            if (m_url.StartsWith("wss"))
-            {
-                m_webSocket.SslConfiguration.EnabledSslProtocols =
-                    (SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
-            }
-
+            m_webSocket = new WebSocket("ws://127.0.0.1:8081");
             m_webSocket.OnOpen += WSConnected;
             m_webSocket.OnMessage += WSProcessMessage;
             m_webSocket.OnError += WSError;
@@ -127,7 +119,7 @@ namespace Unity.RenderStreaming.Signaling
 
             Monitor.Enter(m_webSocket);
 
-            Debug.Log($"Signaling: Connecting WS {m_url}");
+            Debug.Log($"Signaling: Connecting to Furioos Server");
             m_webSocket.ConnectAsync();
         }
 

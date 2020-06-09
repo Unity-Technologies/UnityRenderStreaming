@@ -24,9 +24,12 @@ namespace Unity.RenderStreaming
 
     public class RenderStreaming : MonoBehaviour
     {
-#pragma warning disable 0649
-        [SerializeField, Tooltip("Address for signaling server")]
+        #pragma warning disable 0649
+        [SerializeField, Tooltip("Signaling server url")]
         private string urlSignaling = "http://localhost";
+
+        [SerializeField, Tooltip("Type of signaling server")]
+        private string signalingType = typeof(HttpSignaling).FullName;
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
@@ -96,15 +99,10 @@ namespace Unity.RenderStreaming
         {
             if (this.m_signaling == null)
             {
-                if (urlSignaling.StartsWith("ws"))
-                {
-                    this.m_signaling = new WebSocketSignaling(urlSignaling, interval);
-                }
-                else
-                {
-                    this.m_signaling = new HttpSignaling(urlSignaling, interval);
-                }
 
+                Type t = Type.GetType(signalingType);
+                object[] args = { urlSignaling, interval };
+                this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
                 this.m_signaling.OnOffer += OnOffer;
                 this.m_signaling.OnIceCandidate += OnIceCandidate;
             }
