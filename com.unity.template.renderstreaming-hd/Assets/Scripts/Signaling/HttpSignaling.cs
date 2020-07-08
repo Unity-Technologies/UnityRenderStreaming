@@ -178,6 +178,7 @@ namespace Unity.RenderStreaming.Signaling
             request.Method = "PUT";
             request.ContentType = "application/json";
             request.KeepAlive = false;
+            request.ContentLength = 0;
 
             Debug.Log($"Signaling: Connecting HTTP {m_url}");
 
