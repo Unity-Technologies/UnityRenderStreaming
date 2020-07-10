@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-This package contains public APIs and project samples that are built on top of our [**Unity Render Streaming**](../../com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md). We can develop a peer-to-peer streaming solution quickly by using this package.
+This package contains public APIs and project samples that are built on top of our **Unity Render Streaming**. We can develop a peer-to-peer streaming solution quickly by using this package.
 
 > [!Video https://www.youtube.com/embed/c2pp_T5xzeU]
 
