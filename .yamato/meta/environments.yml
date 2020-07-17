@@ -26,7 +26,7 @@ platforms:
         platform: standalone    
   - name: mac
     type: Unity::VM::osx
-    image: buildfarm/mac:stable
+    image: package-ci/mac:stable
     flavor: m1.mac
     copy_sample_command: ./copy_sample.sh
     run_editor_tests_command:  ./run_editor_tests.sh
