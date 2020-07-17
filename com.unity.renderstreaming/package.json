@@ -17,6 +17,12 @@
      "displayName": "URP",
      "description": "URP Unity Render Streaming Sample",
      "path": "Samples~/URP"
+   }, 
+   {
+     "displayName": "LegacyRP",
+     "description": "LegacyRP Unity Render Streaming Sample",
+     "path": "Samples~/LegacyRP"
    }
+   
  ]
 }
