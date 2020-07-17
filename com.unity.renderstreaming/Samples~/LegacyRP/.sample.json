@@ -1,0 +1,5 @@
+{
+	"displayName":"LegacyRP Sample",
+	"description": "RenderStreaming samples which use LegacyRP",
+	"createSeparatePackage": false
+}
