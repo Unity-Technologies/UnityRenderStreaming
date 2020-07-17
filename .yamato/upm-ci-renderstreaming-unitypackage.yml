@@ -12,6 +12,10 @@ samples:
     project_path: RenderStreamingSampleSrc~/RS_URPSampleSrc
     unitypackage_path: com.unity.renderstreaming/Samples~/URP/Editor/RenderStreamingURPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/URP/Editor/RenderStreamingURPSimple.unitypackage
+  - name: LegacyRP
+    project_path: RenderStreamingSampleSrc~/RS_LegacyRPSampleSrc
+    unitypackage_path: com.unity.renderstreaming/Samples~/LegacyRP/Editor/RenderStreamingLegacyRPSimple.unitypackage
+    imported_unitypackage_path: Assets/Samples/LegacyRP/Editor/RenderStreamingLegacyRPSimple.unitypackage
 
 project_path: EmptyProjectForTest~
 
