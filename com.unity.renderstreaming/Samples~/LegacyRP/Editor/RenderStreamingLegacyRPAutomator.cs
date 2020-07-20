@@ -51,7 +51,10 @@ public class RenderStreamingLegacyRPAutomator
 
     static void OnPackageListRequestSuccess(Request<PackageCollection> req) {
 
+        UnityEditor.EditorApplication.LockReloadAssemblies();
         ImportLegacyRPSample();
+        UnityEditor.EditorApplication.UnlockReloadAssemblies();
+        m_sampleImported = true;
 
         //update json
         RenderStreamingSettings settings = LoadSettings();
@@ -66,20 +69,6 @@ public class RenderStreamingLegacyRPAutomator
         //Change the C# file to trigger recompilation next time "Import in project" is pushed again
         File.AppendAllText(m_codePath, System.Environment.NewLine + "//Automatically Modified to trigger recompilation");
         UnityEditor.AssetDatabase.ImportAsset(m_codePath);
-    }
-
-
-//---------------------------------------------------------------------------------------------------------------------
-
-    static void OnLegacyRPPackageAdded(Request<PackageInfo> req) {
-        ImportLegacyRPSample();
-        UnityEditor.EditorApplication.UnlockReloadAssemblies();
-        m_sampleImported = true;
-    }
-
-//---------------------------------------------------------------------------------------------------------------------
-    static void OnLegacyRPPackageAddFailed(Request<PackageInfo> req) {
-        UnityEditor.EditorApplication.UnlockReloadAssemblies();
     }
 
 
