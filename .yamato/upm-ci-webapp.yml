@@ -9,7 +9,7 @@ platforms:
     type: Unity::VM::osx
     image: buildfarm/mac:stable
     flavor: m1.mac
-    pack_command: ./pack_webapp.sh
+    pack_command: ./pack_webapp_mac.sh
     test_command: ./test_webapp.sh
   - name: linux
     type: Unity::VM
