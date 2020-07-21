@@ -30,6 +30,7 @@ publish_github_release_webapp:
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
+    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver_mac"
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver.exe"
   dependencies:
    {% for platform in platforms %}

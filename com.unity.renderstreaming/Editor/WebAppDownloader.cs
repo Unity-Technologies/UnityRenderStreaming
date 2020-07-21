@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming.Editor
         const string LatestKnownVersion = "2.0.0-preview";
 
         // TODO::fix release process of webserver runtime.
-        const string PathWebAppForMac = "releases/download/{0}/webserver";
+        const string PathWebAppForMac = "releases/download/{0}/webserver_mac";
         const string PathWebAppForLinux = "releases/download/{0}/webserver";
         const string PathWebAppForWin = "releases/download/{0}/webserver.exe";
         //
