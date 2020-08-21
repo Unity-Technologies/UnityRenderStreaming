@@ -1,8 +1,9 @@
 upm:
   registry_url: https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
   package_version: stable
+intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
 editors:
-  - version: 2019.3
+  - version: 2019.4
 platforms:
   - name: win
     type: Unity::VM::GPU
