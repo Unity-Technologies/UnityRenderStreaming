@@ -784,7 +784,7 @@
 		{
 			"id": "94471478-f191-4511-acc9-a0636873ed02",
 			"key": "url",
-			"value": "localhost",
+			"value": "localhost:8080",
 			"type": "string"
 		},
 		{
