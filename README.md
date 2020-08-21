@@ -1,6 +1,6 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.3-green.svg?style=flat-square" alt="unity 2019.3">
+<img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://github.com/Unity-Technologies/com.unity.webrtc) to create their own unique solutions. 
@@ -17,34 +17,12 @@ This repository manages 1 package and 2 templates. Details can be found in the `
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/2.0.2](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.0.2) | Stable         |
+| [release/2.1.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.1.0) | Stable         |
 | [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
-## Operating Environment
+## Requirements
 
-This solution is compatible with `Unity 2019.3`.
-
-| Platform    | Graphics API | Hardware Encoder                                  | Software Encoder   |
-| ----------- | ------------ | ------------------------------------------------- | ------------------ |
-| Windows x64 | DirectX11    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
-| Windows x64 | DirectX12    | :white_check_mark: (Require NVIDIA Graphics card) | :white_check_mark: | 
-| Windows x64 | OpenGL       |                                                   |                    |
-| Windows x64 | Vulkan       |                                                   |                    | 
-| Linux x64   | OpenGL       | :white_check_mark: (Require NVIDIA Graphics card) |                    |
-| Linux x64   | Vulkan       |                                                   |                    |
-| MacOS       | OpenGL       |                                                   |                    |
-| MacOS       | Metal        |                                                   | :white_check_mark: |
-
-### Supported Browsers
-
-Browser support depends on the status of each browser's WebRTC support.
-
-- Desktop Chrome
-- Desktop Firefox
-- Desktop Safari
-- Desktop Microsoft Edge (Chromium-based)
-- Android Chrome
-- iOS Safari
+Please see [Requirements](com.unity.renderstreaming/Documentation~/index.md#requirements) section.
 
 ### Furioos compatibility
 
@@ -98,13 +76,15 @@ Then just build a standalone Windows version of your application, zip it and upl
 
 ## Roadmap
 
-| Version | Focus                                               |
-| ------- | --------------------------------------------------- |
-| `1.0`   | - First release                                     |
-| `1.1`   | - Upgrade HDRP version 5.16                         |
-| `1.2`   | - Unity 2019.3 support                              |
-| `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support        |
-| `2.1`   | - Unity 2020.1 support <br>- Bitrate control sample |
+| Version | Focus                                                   |
+| ------- | ------------------------------------------------------- |
+| `1.0`   | - First release                                         |
+| `1.1`   | - Upgrade HDRP version 5.16                             |
+| `1.2`   | - Unity 2019.3 support                                  |
+| `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support            |
+| `2.1`   | - Unity 2019.4 support <br>- Add bitrate control sample |
+| `2.2`   | - Add video receiver <br>- HDRP/URP on Linux support    |
+| `2.3`   | - Gyro input remote control <br>- iOS platform sample   |
 
 ## FAQ
 
