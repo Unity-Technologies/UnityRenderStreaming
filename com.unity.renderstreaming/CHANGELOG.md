@@ -6,9 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.1.0] - 2020-08-28
 
+### Added 
+
+- Add a sample used Built-in Render Pipeline as graphics render pipeline
+
 ### Changed
 
 - Upgrading WebRTC to `2.1.0-preview`
+
+### Fixed
+
+- Fixed the issue when pressing multiple buttons on a keyboard
 
 ## [2.0.2] - 2020-05-14
 
