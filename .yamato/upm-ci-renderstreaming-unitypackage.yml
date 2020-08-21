@@ -55,7 +55,7 @@ test_renderstreaming_sample_{{ sample.name }}_{{ platform.name }}_{{ editor.vers
     {% if platform.name == "win" %}
     - pip install unity-downloader-cli --index-url {{ intra_pypi_url }} --upgrade
     {% else %}
-    - sudo pip install unity-downloader-cli --index-url {{ intra_pypi_url }}--upgrade
+    - sudo pip install unity-downloader-cli --index-url {{ intra_pypi_url }} --upgrade
     {% endif %}
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --published
     - {{ platform.run_editor_tests_command }} "{{ platform.unity_path }}" {{ project_path }} "./Logs/Editor01.log" "./Logs/TestResults01.xml"
