@@ -11,13 +11,14 @@ Please take a look at [the tutorial document](en/tutorial.md) if you want to try
 ## Requirements
 
 This template is compatible with Unity Editor version below. 
-- Unity 2019.3
+
+- Unity 2019.4
 
 > [!NOTE]
 > Because this template depends on `HDRP 7.3`, it does not work correctly older Unity versions.
 
 > [!WARNING]
-> In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
+> In the current version, The combination of Linux and HDRP is not supported. Need to select `OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
 
 ### Hardware encoder
 

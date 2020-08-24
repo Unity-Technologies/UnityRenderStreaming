@@ -28,10 +28,10 @@ It is possible to send input messages to Unity from the browser, and sending inp
 ## Requirements
 
 This version of Render Streaming is compatible with the following versions of the Unity Editor
-- **Unity 2019.3**
+- **Unity 2019.4**
 
 > [!NOTE]
-> Because this template depends on `HDRP 7.3`, it does not work correctly older versions than `Unity 2019.3`.
+> Because this template depends on `HDRP 7.3`, it does not work correctly older versions than `Unity 2019.4`.
 
 | Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
 | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |
@@ -41,11 +41,14 @@ This version of Render Streaming is compatible with the following versions of th
 | Windows x64 | Vulkan       |                                                                                                                          |                    | 
 | Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
 | Linux x64   | Vulkan       |                                                 	                                                                        |                    |
-| MacOS       | OpenGL       |                                                 	                                                                        |                    |
 | MacOS       | Metal        |                                                 	                                                                        | :white_check_mark: |
 
 > [!WARNING]
 > In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
+
+> [!NOTE]
+> Supporting OpenGL API on MacOS is not planned.
+
 
 ### Hardware encoder
 
@@ -63,6 +66,17 @@ This solution is optimised for NVIDIA graphics cards. Using a recommended graphi
 > [!NOTE]
 > It may not work properly on some browsers caused by depending on the status of support about WebRTC.
 
+### Furioos compatibility
+
+> [!NOTE]
+> This is an experimental feature.
+
+**Unity Render Streaming** is also supported natively by Furioos platform https://www.furioos.com/ .
+That means that you can easily build a RenderStreaming application, upload it on Furioos and enjoy all the features of RenderStreaming without worrying about the deployment and scalability issues of your project.
+To do so, the requirement is to select "FurioosSignaling" in the "Signaling server type" parameter of the RenderStreaming script.
+This allow your application to connect to Furioos services when running on the managed virtual machines.
+Then just build a standalone Windows version of your application, zip it and upload it on your account at https://portal.furioos.com/ .
+
 ## Samples
 
 Currently, there are two samples:
@@ -74,6 +88,10 @@ Importing this sample will automatically install and setup our HDRP sample asset
 ### URP sample
 
 Importing this sample will automatically install and setup our URP sample assets along with the [URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) *(com.unity.render-pipelines.universal)* package.
+
+### Legacy pipeline sample
+
+This is the simplest sample with legacy pipeline.
 
 ## Other Languages
 
