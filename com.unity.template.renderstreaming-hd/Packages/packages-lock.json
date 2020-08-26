@@ -56,31 +56,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.nuget.newtonsoft-json": {
-      "version": "2.0.0-preview",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.package-manager-doctools": {
-      "version": "file:com.unity.package-manager-doctools",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.package-validation-suite": "0.10.0-preview",
-        "com.unity.nuget.newtonsoft-json": "2.0.0-preview"
-      }
-    },
-    "com.unity.package-validation-suite": {
-      "version": "0.10.0-preview",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "nuget.mono-cecil": "0.1.6-preview"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.render-pipelines.core": {
       "version": "7.3.1",
       "depth": 1,
@@ -183,13 +158,6 @@
       "dependencies": {
         "com.unity.editorcoroutines": "1.0.0"
       },
-      "url": "https://packages.unity.com"
-    },
-    "nuget.mono-cecil": {
-      "version": "0.1.6-preview",
-      "depth": 2,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
