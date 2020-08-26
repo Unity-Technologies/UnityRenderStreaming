@@ -79,7 +79,7 @@ Then just build a standalone Windows version of your application, zip it and upl
 
 ## Samples
 
-Currently, there are two samples:
+Currently, there are three samples:
 
 ### HDRP sample
 

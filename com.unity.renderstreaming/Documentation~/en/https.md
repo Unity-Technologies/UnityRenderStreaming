@@ -134,7 +134,7 @@ Email Address []:anthonyma@unity3d.com
 
     ![Add/Remove Snap-in...](../images/https_step3_09.png)
 
-10. Browse to the location of the `rootSSL.pem` file created in [Step 2: Create a Certificate File](#Step-2:-Create-a-Certificate-File) and then select `Next`.
+10. Browse to the location of the `rootSSL.pem` file created in **Step 2** and then select `Next`.
 
     ![Add/Remove Snap-in...](../images/https_step3_10.png)
 

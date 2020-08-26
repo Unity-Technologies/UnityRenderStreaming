@@ -69,7 +69,7 @@ Unity Render Streaming は **WebRTC テクノロジー** を利用しており�
 
 ## サンプル
 
-このパッケージには以下の2つのサンプルが含まれています。 Package Manager からサンプルをプロジェクトにインポートできます。
+このパッケージには以下の3つのサンプルが含まれています。 Package Manager からサンプルをプロジェクトにインポートできます。
 
 ### HDRP サンプル
 
@@ -78,6 +78,10 @@ Unity Render Streaming は **WebRTC テクノロジー** を利用しており�
 ### URP サンプル
 
 このサンプルをインポートすると、[URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) (*com.unity.render-pipelines.universal*) パッケージと Unity が提供している URP サンプルアセットのインストールと設定が自動的に行われます。
+
+### Build-in rendering pipeline サンプル
+
+ビルドインのレンダリングパイプラインを利用したサンプルです。
 
 ## その他の表示言語
 
