@@ -53,7 +53,7 @@ Yes. However, the more devices being transmitted to, the greater the burden on t
 
 ### Is simulcast supported?
 
-Currently, does not support simulcast.
+Currently, we do not support simulcast.
 
 ### Can you broadcast the feed from multiple cameras?
 
