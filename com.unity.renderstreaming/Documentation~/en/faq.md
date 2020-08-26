@@ -31,7 +31,7 @@ This problem depends on the availability of `com.unity.inputsystem`.
 
 ### Which versions of Unity can be used?
 
-It is available on Unity 2019.3.
+It is available on Unity 2019.4.
 
 ### Which OS can be used?
 
@@ -53,7 +53,7 @@ Yes. However, the more devices being transmitted to, the greater the burden on t
 
 ### Is simulcast supported?
 
-Currently, version 1.0 does not support simulcast.
+Currently, we do not support simulcast.
 
 ### Can you broadcast the feed from multiple cameras?
 

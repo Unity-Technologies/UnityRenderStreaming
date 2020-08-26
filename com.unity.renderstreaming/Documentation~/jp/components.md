@@ -21,7 +21,7 @@
 | *Credencial*                 | TURN サーバーを利用するときにサーバーにログインするときに使用する資格情報            |                                 |
 | *Credencial Type*            | TURN サーバーを利用するときにログイン時に使用される資格情報の種類を指定します        | Password                        |
 | **Interval**                 | シグナリングサーバーへのポーリング頻度を秒単位で指定します。<br>シグナリングプロトコルとしてHttpを使用している場合のみ有効です。　| 5 (秒)                           |
-| **Hardware Encoder Support** | [ハードウェアエンコーダ](index.html#ハードウェアエンコーダー) の使用有無を選択します | オン                            |
+| **Hardware Encoder Support** | [ハードウェアエンコーダ](index.md#ハードウェアエンコーダー) の使用有無を選択します | オン                            |
 | **Array Button Click Event** | ブラウザー上のボタンクリックイベントを登録します                                  |                                 |
 | *Element Id*                 | ブラウザーから送られる ID を指定します                                          |                                 |
 | *Click*                      | ボタンクリックイベントを登録します                                              |                                 |

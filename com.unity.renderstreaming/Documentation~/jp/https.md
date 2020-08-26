@@ -178,7 +178,7 @@ Email Address []:anthonyma@unity3d.com
 
 ### 手順 5：秘密鍵（`client-1.local.key`）と、新しく作ったドメイン用の認証リクエスト（`client-1.local.csr`）を作成する
 
-次のコマンドを実行します。なお、下記のフィールドの値は [手順 1：秘密鍵を作成する](#Step-1:-Create-a-Private-Key) で使った値と同じであるとします。
+次のコマンドを実行します。なお、下記のフィールドの値は **手順 1** で使った値と同じであるとします。
 
 * C=CA （国）
 * ST=Quebec （州）
