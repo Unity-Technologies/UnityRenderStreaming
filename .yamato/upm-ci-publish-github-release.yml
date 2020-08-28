@@ -27,6 +27,8 @@ publish_github_release_webapp:
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
+  variables:
+    GIT_TAG: Foo
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
@@ -44,6 +46,8 @@ publish_github_release_template_{{ project.name }}:
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
+  variables:
+    GIT_TAG: Foo
   commands:
     - npm install github-release-cli -g
     - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz"
