@@ -109,7 +109,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.renderstreaming": "2.1.0-preview.1",
+        "com.unity.renderstreaming": "2.1.0-preview.2",
         "com.unity.render-pipelines.high-definition": "7.3.1"
       }
     },
@@ -151,7 +151,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.webrtc": {
-      "version": "2.1.0-preview.1",
+      "version": "2.1.0-preview.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

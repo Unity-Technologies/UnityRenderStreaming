@@ -124,12 +124,13 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "file:C:/com.unity.webrtc",
+      "version": "2.1.0-preview.4",
       "depth": 0,
-      "source": "local",
+      "source": "registry",
       "dependencies": {
         "com.unity.editorcoroutines": "1.0.0"
-      }
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
