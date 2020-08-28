@@ -23,7 +23,7 @@ The port used by the TURN server needs to be public, so add the following settin
 | TCP      | 32355-65535, 3478-3479 |
 | UDP      | 32355-65535, 3478-3479 |
 
-![TURN firewall rules](../images/turn-firewall-rules.png)
+![TURN firewall rules](images/turn-firewall-rules.png)
 
 ### Installing coturn
 
@@ -94,7 +94,7 @@ Use the [webrtc sample](https://webrtc.github.io/samples/src/content/peerconnect
 | TURN username    | username                              |
 | TURN password    | password                              |
 
-<img src="../images/turn-connection-testing.png" width=600 align=center>
+<img src="images/turn-connection-testing.png" width=600 align=center>
 
 Click `Gather candidates` to show a list of potential communication paths. Verify that a log is also printed on the TURN server side. 
 
@@ -117,4 +117,4 @@ config.iceServers = [{
 
 Add the TURN server settings to `Ice Server` in the `Render Streaming` inspector.
 
-![TURN Render Streaming inspector](../images/turn-renderstreaming-inspector.png)
+![TURN Render Streaming inspector](images/turn-renderstreaming-inspector.png)

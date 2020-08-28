@@ -100,51 +100,51 @@ Email Address []:anthonyma@unity3d.com
 
 1. Search for and run `Microsoft Management Console (mmc.exe)`
 
-    ![mmc.exe](../images/https_step3_01.png)
+    ![mmc.exe](images/https_step3_01.png)
 
 2. Go to `File > Add/Remove Snap-in...`
 
-    ![Add/Remove Snap-in...](../images/https_step3_02.png)
+    ![Add/Remove Snap-in...](images/https_step3_02.png)
 
 3. Click on `Certificates` and then `Add >`
 
-    ![Add/Remove Snap-in...](../images/https_step3_03.png)
+    ![Add/Remove Snap-in...](images/https_step3_03.png)
 
 4. Select `Computer Account` and then `Next >`
 
-    ![Add/Remove Snap-in...](../images/https_step3_04.png)
+    ![Add/Remove Snap-in...](images/https_step3_04.png)
 
 5. Select `Local computer (the computer this console is running on)` and then `Finish`
 
-    ![Add/Remove Snap-in...](../images/https_step3_05.png)
+    ![Add/Remove Snap-in...](images/https_step3_05.png)
 
 6. Select `OK` in the `Add or Remove Snap-ins` window
 
-    ![Add/Remove Snap-in...](../images/https_step3_06.png)
+    ![Add/Remove Snap-in...](images/https_step3_06.png)
 
 7. Expand `Console Root > Certificates (Local Computer)` in the `Console1 - [Console Root]` window
 
-    ![Add/Remove Snap-in...](../images/https_step3_07.png)
+    ![Add/Remove Snap-in...](images/https_step3_07.png)
 
 8. Select `Trusted Root Certification Authorities` then `Right-Click` on `Certificates` and select `All Tasks > Import...`
 
-    ![Add/Remove Snap-in...](../images/https_step3_08.png)
+    ![Add/Remove Snap-in...](images/https_step3_08.png)
 
 9. Select `Next` in the `Certificate Import Wizard` window
 
-    ![Add/Remove Snap-in...](../images/https_step3_09.png)
+    ![Add/Remove Snap-in...](images/https_step3_09.png)
 
 10. Browse to the location of the `rootSSL.pem` file created in **Step 2** and then select `Next`.
 
-    ![Add/Remove Snap-in...](../images/https_step3_10.png)
+    ![Add/Remove Snap-in...](images/https_step3_10.png)
 
 11. Select `Place all certificates in the following store` and ensure that `Trusted Root Certification Authorities` is the value in the `Certificate store:` field, and then select `Next`.
 
-    ![Add/Remove Snap-in...](../images/https_step3_11.png)
+    ![Add/Remove Snap-in...](images/https_step3_11.png)
 
 12. Select `Finish`.
 
-    ![Add/Remove Snap-in...](../images/https_step3_12.png)
+    ![Add/Remove Snap-in...](images/https_step3_12.png)
 
 ## Step 4: Create a Local Domain Site
 
