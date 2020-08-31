@@ -8,7 +8,7 @@
 - Streaming input from cameras 
 - Associating browser input with events
 
-![Render Streaming Inspector](../images/renderstreaming_inspector.png)
+![Render Streaming Inspector](images/renderstreaming_inspector.png)
 
 ## Properties
 
@@ -30,7 +30,7 @@
 
 This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
-![Camera Streamer inspector](../images/camerastreamer_inspector.png)
+![Camera Streamer inspector](images/camerastreamer_inspector.png)
 
 ### Properties
 

@@ -10,7 +10,7 @@ The Render Streaming system consists of the following 3 components
 - **Web server**
 - **Web browser** 
 
-![Render Streaming Overview](../images/renderstreaming_overview.png)
+![Render Streaming Overview](images/renderstreaming_overview.png)
 
 
 In Render Streaming a P2P network is created between **Unity** and the **Web browser**, and this network sends data via UDP/IP. The **Web server** enables communication between the Web browser and Unity. This communication is called signaling. 
@@ -25,7 +25,7 @@ In Render Streaming a P2P network is created between **Unity** and the **Web bro
 
 The following is an explanation of how signaling works. 
 
-![Render Streaming Sequence](../images/renderstreaming_sequence.png)
+![Render Streaming Sequence](images/renderstreaming_sequence.png)
 
 1. Web browser sends **Offer SDP** to the Web server.
 2. Unity checks the Web server for unprocessed **Offer SDPs** and receives any found.
@@ -44,13 +44,13 @@ The Render Steraming package includes the following.
 - Sample code / assets
 - Web application
 
-![Package Render Streaming](../images/package_renderstreaming.png)
+![Package Render Streaming](images/package_renderstreaming.png)
 
 ### WebRTC Package
 
 This provides the WebRTC C# API. See the [WebRTC package documentation](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/manual/en/index.html) for details on the API.
 
-![WebRTC package manager](../images/webrtc_package_manager.png)
+![WebRTC package manager](images/webrtc_package_manager.png)
 
 ### Sample Code / Assets
 

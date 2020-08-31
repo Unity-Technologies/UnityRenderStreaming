@@ -26,7 +26,7 @@ The following browsers are compatible:
 Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 After downloading, run it from the command line.
 
-![Launch webserver explorer](../images/launch_webserver_explorer.png)
+![Launch webserver explorer](images/launch_webserver_explorer.png)
 
 ### Command Options
 

@@ -7,7 +7,7 @@
 
 In the example, the schema given to `URL Signaling` is used to determine which protocol to use.
 
-![Render Streaming backend](../images/websocket_signaling_inspector.png)
+![Render Streaming backend](images/websocket_signaling_inspector.png)
 
 If it starts with `http`, HttpSignaling is used. If it starts with `ws`, WebSocketSignaling is used.
 
