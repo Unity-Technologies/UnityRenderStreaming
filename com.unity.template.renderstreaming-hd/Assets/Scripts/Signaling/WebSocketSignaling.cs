@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
@@ -24,6 +24,12 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
+        public string connectionId
+        {
+            get;
+            private set;
+        }
+
         public void Start()
         {
             m_running = true;
@@ -38,6 +44,7 @@ namespace Unity.RenderStreaming.Signaling
             m_webSocket?.Close();
         }
 
+        public event OnConnectHandler OnConnect;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -45,9 +52,19 @@ namespace Unity.RenderStreaming.Signaling
         #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
 
-        public void SendOffer()
+        public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
-            throw new NotImplementedException();
+            DescData data = new DescData();
+            data.connectionId = connectionId;
+            data.sdp = offer.sdp;
+            data.type = "offer";
+
+            RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
+            routedMessage.from = connectionId;
+            routedMessage.data = data;
+            routedMessage.type = "offer";
+
+            WSSend(routedMessage);
         }
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
@@ -136,8 +153,12 @@ namespace Unity.RenderStreaming.Signaling
 
                 if (!string.IsNullOrEmpty(routedMessage.type))
                 {
-
-                    if (routedMessage.type == "offer")
+                    if (routedMessage.type == "connect")
+                    {
+                        connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
+                        OnConnect?.Invoke(this);
+                    }
+                    else if (routedMessage.type == "offer")
                     {
                         if (!string.IsNullOrEmpty(routedMessage.from))
                         {
@@ -191,7 +212,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSClosed(object sender, CloseEventArgs e)
         {
-            Debug.LogError($"Signaling: WS connection closed, code: {e.Code}");
+            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
 
             m_wsCloseEvent.Set();
             m_webSocket = null;
