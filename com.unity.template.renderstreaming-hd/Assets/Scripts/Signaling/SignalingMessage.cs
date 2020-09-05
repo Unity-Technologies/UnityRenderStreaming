@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -55,6 +55,13 @@ namespace Unity.RenderStreaming
         public DescData[] offers;
     }
 
+    [Serializable]
+    class AnswerResDataList
+    {
+        public DescData[] answers;
+    }
+
+    
     [Serializable]
     class CandidateContainerResDataList
     {

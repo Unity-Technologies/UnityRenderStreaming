@@ -40,8 +40,12 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            m_running = false;
-            m_webSocket?.Close();
+            if (m_running)
+            {
+                m_running = false;
+                m_webSocket?.Close();
+                m_signalingThread.Abort();
+            }
         }
 
         public event OnConnectHandler OnConnect;
@@ -167,6 +171,22 @@ namespace Unity.RenderStreaming.Signaling
                             offer.sdp = msg.sdp;
 
                             OnOffer?.Invoke(this, offer);
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Received message from unknown peer");
+                        }
+                    }
+                    else if (routedMessage.type == "answer")
+                    {
+                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        {
+                            DescData answer = new DescData
+                            {
+                                connectionId = routedMessage.from,
+                                sdp = msg.sdp
+                            };
+                            OnAnswer?.Invoke(this, answer);
                         }
                         else
                         {

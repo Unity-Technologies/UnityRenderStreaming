@@ -16,7 +16,6 @@ namespace Unity.RenderStreaming.Signaling
         private Thread m_signalingThread;
 
         private string m_sessionId;
-        private string m_connectionId;
         private long m_lastTimeGetOfferRequest;
         private long m_lastTimeGetCandidateRequest;
 
@@ -35,10 +34,8 @@ namespace Unity.RenderStreaming.Signaling
 
         public string connectionId
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            private set;
         }
 
         public void Start()
@@ -64,7 +61,12 @@ namespace Unity.RenderStreaming.Signaling
 
         public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
-            throw new NotImplementedException();
+            DescData data = new DescData();
+            data.connectionId = connectionId;
+            data.sdp = offer.sdp;
+            data.type = "offer";
+
+            HTTPPost("signaling/offer", data);
         }
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
@@ -101,11 +103,18 @@ namespace Unity.RenderStreaming.Signaling
                 Thread.Sleep((int)(m_timeout * 1000));
             }
 
+            while (m_running && string.IsNullOrEmpty(connectionId))
+            {
+                HTTPConnect();
+                Thread.Sleep((int)(m_timeout * 1000));
+            }
+
             while (m_running)
             {
                 try
                 {
                     HTTPGetOffers();
+                    HTTPGetAnswers();
                     HTTPGetCandidates();
                 }
                 catch (Exception e)
@@ -240,6 +249,29 @@ namespace Unity.RenderStreaming.Signaling
             return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
+        private bool HTTPConnect()
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
+            request.Method = "PUT";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", m_sessionId);
+            request.KeepAlive = false;
+
+            HttpWebResponse response = HTTPGetResponse(request);
+            CreateConnectionResData data = HTTPParseJsonResponse<CreateConnectionResData>(response);
+
+            if (data == null) return false;
+
+            m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
+                .ToJsMilliseconds();
+
+            connectionId = data.connectionId;
+            OnConnect?.Invoke(this);
+
+            return true;
+        }
+
         private bool HTTPGetOffers()
         {
             HttpWebRequest request =
@@ -260,6 +292,31 @@ namespace Unity.RenderStreaming.Signaling
             foreach (var offer in list.offers)
             {
                 OnOffer?.Invoke(this, offer);
+            }
+
+            return true;
+        }
+
+        private bool HTTPGetAnswers()
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/answer?fromtime={m_lastTimeGetOfferRequest}");
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", m_sessionId);
+            request.KeepAlive = false;
+
+            HttpWebResponse response = HTTPGetResponse(request);
+            AnswerResDataList list = HTTPParseJsonResponse<AnswerResDataList>(response);
+
+            if (list == null) return false;
+
+            m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
+                .ToJsMilliseconds();
+
+            foreach (var answer in list.answers)
+            {
+                OnAnswer?.Invoke(this, answer);
             }
 
             return true;
