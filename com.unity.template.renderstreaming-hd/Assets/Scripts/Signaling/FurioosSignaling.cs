@@ -61,8 +61,12 @@ namespace Unity.RenderStreaming.Signaling
             m_webSocket?.Close();
         }
 
+        //todo: not implemented
+        public event OnStartHandler OnStart;
+
         public event OnSignedInHandler OnSignedIn;
 
+        //todo: not implemented
         public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
@@ -102,6 +106,11 @@ namespace Unity.RenderStreaming.Signaling
             routedMessage.message = data;
 
             WSSend(routedMessage);
+        }
+
+        public void CreateConnection()
+        {
+            this.WSSend("{\"type\":\"connect\"}");
         }
 
         private void WSManage()

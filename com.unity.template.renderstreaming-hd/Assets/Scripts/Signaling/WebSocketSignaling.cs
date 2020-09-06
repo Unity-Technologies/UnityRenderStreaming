@@ -42,6 +42,7 @@ namespace Unity.RenderStreaming.Signaling
             }
         }
 
+        public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
@@ -94,6 +95,11 @@ namespace Unity.RenderStreaming.Signaling
             routedMessage.type = "candidate";
 
             WSSend(routedMessage);
+        }
+
+        public void CreateConnection()
+        {
+            this.WSSend("{\"type\":\"connect\"}");
         }
 
         private void WSManage()
@@ -215,7 +221,7 @@ namespace Unity.RenderStreaming.Signaling
         private void WSConnected(object sender, EventArgs e)
         {
             Debug.Log("Signaling: WS connected.");
-            this.WSSend("{\"type\":\"connect\"}");
+            OnStart?.Invoke(this);
         }
 
 

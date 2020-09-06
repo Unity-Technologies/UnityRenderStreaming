@@ -43,6 +43,7 @@ namespace Unity.RenderStreaming.Signaling
             m_running = false;
         }
 
+        public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
 
         public event OnOfferHandler OnOffer;
@@ -83,6 +84,11 @@ namespace Unity.RenderStreaming.Signaling
             HTTPPost("signaling/candidate", data);
         }
 
+        public void CreateConnection()
+        {
+            HTTPConnect();
+        }
+
         private void HTTPPooling()
         {
             // ignore messages arrived before 30 secs ago
@@ -93,13 +99,6 @@ namespace Unity.RenderStreaming.Signaling
             while (m_running && string.IsNullOrEmpty(m_sessionId))
             {
                 HTTPCreate();
-                Thread.Sleep((int)(m_timeout * 1000));
-            }
-
-            while (m_running)
-            {
-                if(HTTPConnect())
-                    break;
                 Thread.Sleep((int)(m_timeout * 1000));
             }
 
@@ -201,6 +200,8 @@ namespace Unity.RenderStreaming.Signaling
             {
                 m_sessionId = resp.sessionId;
                 Debug.Log("Signaling: HTTP connected, sessionId : " + m_sessionId);
+
+                OnStart?.Invoke(this);
                 return true;
             }
             else
