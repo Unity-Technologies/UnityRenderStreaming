@@ -193,22 +193,23 @@ namespace Unity.RenderStreaming.Signaling
                             Debug.LogError("Signaling: Received message from unknown peer");
                         }
                     }
-                }
-                else if (!string.IsNullOrEmpty(msg.candidate))
-                {
-                    if (!string.IsNullOrEmpty(routedMessage.from))
+                    else if (routedMessage.type == "candidate")
                     {
-                        CandidateData candidate = new CandidateData();
-                        candidate.connectionId = routedMessage.from;
-                        candidate.candidate = msg.candidate;
-                        candidate.sdpMLineIndex = msg.sdpMLineIndex;
-                        candidate.sdpMid = msg.sdpMid;
-
-                        OnIceCandidate?.Invoke(this, candidate);
-                    }
-                    else
-                    {
-                        Debug.LogError("Signaling: Received message from unknown peer");
+                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        {
+                            CandidateData candidate = new CandidateData
+                            {
+                                connectionId = routedMessage.@from,
+                                candidate = msg.candidate,
+                                sdpMLineIndex = msg.sdpMLineIndex,
+                                sdpMid = msg.sdpMid
+                            };
+                            OnIceCandidate?.Invoke(this, candidate);
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Received message from unknown peer");
+                        }
                     }
                 }
             }
