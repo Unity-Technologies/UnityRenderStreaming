@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnSignedInHandler OnSignedIn;
 
-        public event OnConnectHandler OnConnect;
+        public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class

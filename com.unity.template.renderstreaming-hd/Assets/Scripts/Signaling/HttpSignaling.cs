@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Net.Security;
 using System.Threading;
 using Unity.WebRTC;
 using UnityEngine;
@@ -32,12 +31,6 @@ namespace Unity.RenderStreaming.Signaling
             }
         }
 
-        public string connectionId
-        {
-            get;
-            private set;
-        }
-
         public void Start()
         {
             m_running = true;
@@ -50,7 +43,7 @@ namespace Unity.RenderStreaming.Signaling
             m_running = false;
         }
 
-        public event OnConnectHandler OnConnect;
+        public event OnConnectHandler OnCreateConnection;
 
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
@@ -103,9 +96,10 @@ namespace Unity.RenderStreaming.Signaling
                 Thread.Sleep((int)(m_timeout * 1000));
             }
 
-            while (m_running && string.IsNullOrEmpty(connectionId))
+            while (m_running)
             {
-                HTTPConnect();
+                if(HTTPConnect())
+                    break;
                 Thread.Sleep((int)(m_timeout * 1000));
             }
 
@@ -266,8 +260,7 @@ namespace Unity.RenderStreaming.Signaling
             m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
                 .ToJsMilliseconds();
 
-            connectionId = data.connectionId;
-            OnConnect?.Invoke(this);
+            OnCreateConnection?.Invoke(this, data.connectionId);
 
             return true;
         }

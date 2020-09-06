@@ -24,12 +24,6 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
-        public string connectionId
-        {
-            get;
-            private set;
-        }
-
         public void Start()
         {
             m_running = true;
@@ -48,7 +42,7 @@ namespace Unity.RenderStreaming.Signaling
             }
         }
 
-        public event OnConnectHandler OnConnect;
+        public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -159,8 +153,8 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
-                        connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
-                        OnConnect?.Invoke(this);
+                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
+                        OnCreateConnection?.Invoke(this, connectionId);
                     }
                     else if (routedMessage.type == "offer")
                     {
