@@ -245,7 +245,8 @@ namespace Unity.RenderStreaming
             bool startRaised2 = false;
             bool offerRaised = false;
             bool answerRaised = false;
-            bool candidateRaised = false;
+            bool candidateRaised1 = false;
+            bool candidateRaised2 = false;
             string connectionId1 = null;
 
             signaling1.Start();
@@ -266,10 +267,13 @@ namespace Unity.RenderStreaming
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
             Assert.True(Wait(() => answerRaised));
 
-            signaling2.OnIceCandidate += (s, e) => { candidateRaised = true; };
+            signaling2.OnIceCandidate += (s, e) => { candidateRaised1 = true; };
             signaling1.SendCandidate(connectionId1, m_candidate);
+            Assert.True(Wait(() => candidateRaised1));
 
-            Assert.True(Wait(() => candidateRaised));
+            signaling1.OnIceCandidate += (s, e) => { candidateRaised2 = true; };
+            signaling2.SendCandidate(connectionId1, m_candidate);
+            Assert.True(Wait(() => candidateRaised2));
         }
     }
 }
