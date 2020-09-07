@@ -8,12 +8,14 @@ using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.RenderStreaming
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
-    public class SignalingTest
+    [Ignore("todo: need to upgrade com.unity.renderstreaming version 2.2")]
+    public class SignalingTest : IPrebuildSetup
     {
         static bool Wait(Func<bool> condition, int millisecondsTimeout = 1000, int millisecondsInterval = 100)
         {
@@ -35,20 +37,41 @@ namespace Unity.RenderStreaming
         private Process m_ServerProcess;
         private RTCSessionDescription m_DescOffer;
         private RTCSessionDescription m_DescAnswer;
-        private RTCIceCandidate​? m_candidate;
+        private RTCIceCandidate​ m_candidate;
 
         private ISignaling signaling1;
         private ISignaling signaling2;
+
+        public SignalingTest()
+        {
+        }
 
         public SignalingTest(Type type)
         {
             m_SignalingType = type;
         }
 
+        // this is override method for IPrebuildSetup
+        public void Setup()
+        {
+#if UNITY_EDITOR
+            string dir = System.IO.Directory.GetCurrentDirectory();
+            string fileName = Editor.WebAppDownloader.GetFileName();
+            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
+            {
+                // already exists.
+                return;
+            }
+            bool downloadRaised = false;
+            Editor.WebAppDownloader.DownloadCurrentVersionWebApp(dir, success => { downloadRaised = true; });
+            Wait(() => downloadRaised, 10000);
+#endif
+        }
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // todo: download and launch webapp for signaling test
+            // todo: download webapp for signaling test
             m_ServerProcess = new Process();
 
             string dir = System.IO.Directory.GetCurrentDirectory();
@@ -68,7 +91,7 @@ namespace Unity.RenderStreaming
             m_ServerProcess.StartInfo = startInfo;
             m_ServerProcess.OutputDataReceived += (sender, e) =>
             {
-                UnityEngine.Debug.Log(e.Data);
+                Debug.Log(e.Data);
             };
             bool success = m_ServerProcess.Start();
             Assert.True(success);
@@ -93,17 +116,18 @@ namespace Unity.RenderStreaming
             throw new ArgumentException();
         }
 
-        [UnitySetUp]
+        [UnitySetUp, Timeout(1000)]
         public IEnumerator UnitySetUp()
         {
             WebRTC.WebRTC.Initialize();
 
             RTCConfiguration config = default;
+            RTCIceCandidate​? candidate_ = null;
             config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
 
             var peer1 = new RTCPeerConnection(ref config);
             var peer2 = new RTCPeerConnection(ref config);
-            peer1.OnIceCandidate += candidate => { m_candidate = candidate; };
+            peer1.OnIceCandidate = candidate => { candidate_ = candidate; };
 
             MediaStream stream = WebRTC.Audio.CaptureStream();
             peer1.AddTrack(stream.GetTracks().First());
@@ -126,7 +150,8 @@ namespace Unity.RenderStreaming
             var op6 = peer1.SetRemoteDescription(ref m_DescAnswer);
             yield return op6;
 
-            yield return new WaitUntil(() => m_candidate != null);
+            yield return new WaitUntil(() => candidate_ != null);
+            m_candidate = candidate_.Value;
 
             stream.Dispose();
             peer1.Close();
@@ -242,7 +267,7 @@ namespace Unity.RenderStreaming
             Assert.True(Wait(() => answerRaised));
 
             signaling2.OnIceCandidate += (s, e) => { candidateRaised = true; };
-            signaling1.SendCandidate(connectionId1, m_candidate.Value);
+            signaling1.SendCandidate(connectionId1, m_candidate);
 
             Assert.True(Wait(() => candidateRaised));
         }
