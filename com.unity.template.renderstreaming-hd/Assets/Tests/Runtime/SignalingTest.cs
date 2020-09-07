@@ -51,21 +51,22 @@ namespace Unity.RenderStreaming
             m_SignalingType = type;
         }
 
-        // this is override method for IPrebuildSetup
+        //        // todo:(kazuki) need to upgrade com.unity.renderstreaming version 2.2
+        //        // this is override method for IPrebuildSetup
         public void Setup()
         {
-#if UNITY_EDITOR
-            string dir = System.IO.Directory.GetCurrentDirectory();
-            string fileName = Editor.WebAppDownloader.GetFileName();
-            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
-            {
-                // already exists.
-                return;
-            }
-            bool downloadRaised = false;
-            Editor.WebAppDownloader.DownloadCurrentVersionWebApp(dir, success => { downloadRaised = true; });
-            Wait(() => downloadRaised, 10000);
-#endif
+            //#if UNITY_EDITOR
+            //            string dir = System.IO.Directory.GetCurrentDirectory();
+            //            string fileName = Editor.WebAppDownloader.GetFileName();
+            //            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
+            //            {
+            //                // already exists.
+            //                return;
+            //            }
+            //            bool downloadRaised = false;
+            //            Editor.WebAppDownloader.DownloadCurrentVersionWebApp(dir, success => { downloadRaised = true; });
+            //            Wait(() => downloadRaised, 10000);
+            //#endif
         }
 
         [OneTimeSetUp]
