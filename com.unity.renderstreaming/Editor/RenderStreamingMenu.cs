@@ -1,8 +1,5 @@
 using UnityEditor;
-using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
-using System.Net;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -12,7 +9,7 @@ namespace Unity.RenderStreaming.Editor
         static void DownloadWebAppFromMenu() {
             WebAppDownloader.GetPackageVersion("com.unity.renderstreaming", (version) => {
                 var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
-                WebAppDownloader.DownloadWebApp(version, dstPath);
+                WebAppDownloader.DownloadWebApp(version, dstPath, null);
             });
         }
 

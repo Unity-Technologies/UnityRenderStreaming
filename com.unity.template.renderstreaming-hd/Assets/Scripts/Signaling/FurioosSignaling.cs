@@ -40,6 +40,14 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
+        public string connectionId
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public void Start()
         {
             m_running = true;
@@ -53,15 +61,20 @@ namespace Unity.RenderStreaming.Signaling
             m_webSocket?.Close();
         }
 
+        //todo: not implemented
+        public event OnStartHandler OnStart;
+
         public event OnSignedInHandler OnSignedIn;
+
+        //todo: not implemented
+        public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
         #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
-
-        public void SendOffer()
+        public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
             throw new NotImplementedException();
         }
@@ -93,6 +106,11 @@ namespace Unity.RenderStreaming.Signaling
             routedMessage.message = data;
 
             WSSend(routedMessage);
+        }
+
+        public void CreateConnection()
+        {
+            this.WSSend("{\"type\":\"connect\"}");
         }
 
         private void WSManage()

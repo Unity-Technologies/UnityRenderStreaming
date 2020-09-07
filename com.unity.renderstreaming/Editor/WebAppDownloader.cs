@@ -1,6 +1,4 @@
 using UnityEditor;
-using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using System.Net;
 
@@ -12,25 +10,30 @@ namespace Unity.RenderStreaming.Editor
         const string LatestKnownVersion = "2.1.0-preview";
 
         // TODO::fix release process of webserver runtime.
-        const string PathWebAppForMac = "releases/download/{0}/webserver_mac";
-        const string PathWebAppForLinux = "releases/download/{0}/webserver";
-        const string PathWebAppForWin = "releases/download/{0}/webserver.exe";
+        const string FileNameWebAppForMac = "webserver_mac";
+        const string FileNameWebAppForLinux = "webserver";
+        const string FileNameWebAppForWin = "webserver.exe";
         //
 
         const string PathWebAppSourceCode = "tree/release/{0}/WebApp";
         const string PathWebAppDocumentation = "blob/release/{0}/com.unity.renderstreaming/Documentation~/en/webapp.md";
 
-
-        static string GetWebAppURL(string version)
+        public static string GetFileName()
         {
 #if UNITY_EDITOR_WIN
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForWin, version));
+            return FileNameWebAppForWin;
 #elif UNITY_EDITOR_OSX
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForMac, version));
+            return FileNameWebAppForMac;
 #elif UNITY_EDITOR_LINUX
-            var url = System.IO.Path.Combine(URLRoot, string.Format(PathWebAppForLinux, version));
+            return FileNameWebAppForLinux;
 #endif
-            return url;
+        }
+
+        public static string GetWebAppURL(string version)
+        {
+            string path = string.Format("releases/download/{version}");
+            string fileName = GetFileName();
+            return System.IO.Path.Combine(URLRoot, System.IO.Path.Combine(path, fileName));
         }
 
         public static string GetURLDocumentation(string version)
@@ -47,18 +50,24 @@ namespace Unity.RenderStreaming.Editor
             return System.IO.Path.Combine(URLRoot, string.Format(PathWebAppSourceCode, result.Value));
         }
 
-        public static void DownloadCurrentVersionWebApp(string dstPath) {
+        public static void DownloadCurrentVersionWebApp(string dstPath, System.Action<bool> callback) {
             GetPackageVersion("com.unity.renderstreaming", (version) => {
-                DownloadWebApp(version, dstPath);
+                DownloadWebApp(version, dstPath, callback);
             });
         }
 
-        public static void DownloadWebApp(string version, string dstPath)
+        public static void DownloadWebApp(string version, string dstPath, System.Action<bool> callback)
         {
             var url = GetWebAppURL(version);
             var client = new WebClient();
             var filename = System.IO.Path.GetFileName(url);
             var tmpFilePath = System.IO.Path.Combine(Application.temporaryCachePath, filename);
+
+            if (string.IsNullOrEmpty(dstPath))
+            {
+                callback?.Invoke(false);
+                return;
+            }
 
             client.DownloadFileCompleted += (sender, e) =>
             {
@@ -66,23 +75,21 @@ namespace Unity.RenderStreaming.Editor
                 if (e.Error != null) {
                     //Try downloading using the latest known version to work.
                     if (version != LatestKnownVersion) {
-                        DownloadWebApp(LatestKnownVersion, dstPath);
+                        DownloadWebApp(LatestKnownVersion, dstPath, callback);
                     } else {
                         Debug.LogError("Failed downloading webserver from: " + url + " . Error: " + e.Error.ToString());
                     }
+                    callback?.Invoke(false);
                     return;
                 }
 
                 if (!System.IO.File.Exists(tmpFilePath))
                 {
                     Debug.LogErrorFormat("Download failed. url:{0}", url);
+                    callback?.Invoke(false);
                     return;
                 }
 
-                if (string.IsNullOrEmpty(dstPath))
-                {
-                    return;
-                }
                 dstPath = System.IO.Path.Combine(dstPath, filename);
                 if (System.IO.File.Exists(dstPath))
                 {
@@ -90,6 +97,7 @@ namespace Unity.RenderStreaming.Editor
                 }
                 System.IO.File.Move(tmpFilePath, dstPath);
                 EditorUtility.RevealInFinder(dstPath);
+                callback?.Invoke(true);
             };
             client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
             {
@@ -100,7 +108,6 @@ namespace Unity.RenderStreaming.Editor
                 }
             };
             client.DownloadFileAsync(new System.Uri(url), tmpFilePath);
-
         }
 
         public static void GetPackageVersion(string packageName, System.Action<string> callback)
