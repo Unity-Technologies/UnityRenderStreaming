@@ -95,7 +95,6 @@ namespace Unity.RenderStreaming
             m_conf = default;
             m_conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
-            StartCoroutine(Monitor());
         }
 
         void OnEnable()
