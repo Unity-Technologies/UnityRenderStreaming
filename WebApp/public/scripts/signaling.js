@@ -151,12 +151,21 @@ export class WebSocketSignaling extends EventTarget {
         case "disconnect":
           break;
         case "offer":
+          if (msg.from === this.connectionId) {
+            return;
+          }
           this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
           break;
         case "answer":
+          if (msg.from === this.connectionId) {
+            return;
+          }
           this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
           break;
         case "candidate":
+          if (msg.from === this.connectionId) {
+            return;
+          }
           this.dispatchEvent(new CustomEvent('candidate', { detail: msg.data }));
           break;
         default:
