@@ -17,6 +17,11 @@ namespace Unity.RenderStreaming
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
 
+        public void ChangeBitrate(ulong bitrate)
+        {
+            RenderStreaming.Instance?.ChangeBitrate(m_track, bitrate);
+        }
+
         IEnumerator Start()
         {
             if (WebCamTexture.devices.Length == 0)

@@ -12,6 +12,11 @@ namespace Unity.RenderStreaming
         private Camera m_camera;
         private VideoStreamTrack m_track;
 
+        public void ChangeBitrate(ulong bitrate)
+        {
+            RenderStreaming.Instance?.ChangeBitrate(m_track, bitrate);
+        }
+
         void Awake()
         {
             m_camera = GetComponent<Camera>();
