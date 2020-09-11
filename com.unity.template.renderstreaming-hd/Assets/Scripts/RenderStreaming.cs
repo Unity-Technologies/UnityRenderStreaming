@@ -58,7 +58,7 @@ namespace Unity.RenderStreaming
         private readonly Dictionary<RTCDataChannel, RemoteInput> m_mapChannelAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
-        private readonly Dictionary<MediaStreamTrack, RTCRtpSender> m_mapTrackAndSender = new Dictionary<MediaStreamTrack, RTCRtpSender>();
+        private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
@@ -132,12 +132,17 @@ namespace Unity.RenderStreaming
             m_listVideoStreamTrack.Remove(track);
         }
 
-        public void ChangeBitrate(VideoStreamTrack track, ulong bitrate)
+        public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
         {
-            RTCRtpSendParameters parameters = m_mapTrackAndSender[track].GetParameters();
-            foreach (var encoding in parameters.Encodings)
+            foreach (var sender in m_mapTrackAndSenderList[track])
             {
-                encoding.maxBitrate = bitrate;
+                RTCRtpSendParameters parameters = sender.GetParameters();
+                foreach (var encoding in parameters.Encodings)
+                {
+                    if(bitrate != null) encoding.maxBitrate = bitrate;
+                    if (framerate != null) encoding.maxFramerate = framerate;
+                }
+                sender.SetParameters(parameters);
             }
         }
 
@@ -179,15 +184,15 @@ namespace Unity.RenderStreaming
             });
 
             pc.SetRemoteDescription(ref _desc);
-            foreach (var track in m_listVideoStreamTrack)
+            foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
             {
                 RTCRtpSender sender = pc.AddTrack(track);
-                m_mapTrackAndSender.Add(track, sender);
-            }
-            foreach(var track in m_audioStream.GetTracks())
-            {
-                RTCRtpSender sender = pc.AddTrack(track);
-                m_mapTrackAndSender.Add(track, sender);
+                if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+                {
+                    list = new List<RTCRtpSender>();
+                    m_mapTrackAndSenderList.Add(track, list);
+                }
+                list.Add(sender);
             }
 
             RTCAnswerOptions options = default;
