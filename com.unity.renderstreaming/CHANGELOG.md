@@ -4,6 +4,14 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2020-09-11
+
+### Changed
+
+- Upgrading WebRTC to `2.1.1-preview`
+- Changed not to customize SDP to make stabilize bitrate of video streaming
+- Erase Japanese documentation due to migrating to internal translation system
+
 ## [2.1.0] - 2020-08-28
 
 ### Added 
