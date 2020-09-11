@@ -6,6 +6,7 @@ export class SendVideo {
         this.config = SendVideo.getConfiguration();
         this.pc = null;
         this.localStream = null;
+        this.remoteStram = new MediaStream();
         this.negotiationneededCounter = 0;
         this.isOffer = false;
     }
@@ -29,12 +30,10 @@ export class SendVideo {
 
     async setupConnection(remoteVideo) {
         const _this = this;
-        // close current RTCPeerConnection
-        if (this.pc) {
-            console.log('Close current PeerConnection');
-            this.pc.close();
-            this.pc = null;
-        }
+        this.remoteVideo = remoteVideo;
+        this.remoteVideo.srcObject = this.remoteStram;
+
+        this.remoteStram.onaddtrack = async (e) => await _this.remoteVideo.play();
 
         const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
         const createResponse = await fetch(protocolEndPoint);
@@ -44,6 +43,55 @@ export class SendVideo {
             this.signaling = new WebSocketSignaling();
         } else {
             this.signaling = new Signaling();
+        }
+
+        this.signaling.addEventListener('offer', async (e) => {
+            console.error(e);
+            if (_this.pc) {
+                console.error('peerConnection alreay exist');
+            }
+            _this.prepareNewPeerConnection(false);
+            const offer = e.detail.data;
+            const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
+            await _this.pc.setRemoteDescription(desc);
+            let answer = await _this.pc.createAnswer();
+            await _this.pc.setLocalDescription(answer);
+            _this.signaling.sendAnswer(e.detail.from, answer.sdp);
+        });
+
+        this.signaling.addEventListener('answer', async (e) => {
+            if (!_this.pc) {
+                console.error('peerConnection NOT exist!');
+                return;
+            }
+            const answer = e.detail.data;
+            const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
+            await _this.pc.setRemoteDescription(desc);
+        });
+
+        this.signaling.addEventListener('candidate', async (e) => {
+            const candidate = e.detail.data;
+            const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
+            _this.pc.addIceCandidate(iceCandidate);
+        });
+
+        await this.signaling.start();
+        this.prepareNewPeerConnection(true);
+    }
+
+    async addTrack() {
+        const _this = this;
+        this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
+    }
+
+    prepareNewPeerConnection(isOffer) {
+        const _this = this;
+        this.isOffer = isOffer;
+        // close current RTCPeerConnection
+        if (this.pc) {
+            console.log('Close current PeerConnection');
+            this.pc.close();
+            this.pc = null;
         }
 
         // Create peerConnection with proxy server and set up handlers
@@ -66,13 +114,7 @@ export class SendVideo {
         };
 
         this.pc.ontrack = async (e) => {
-            if (e.track.kind == 'video') {
-                remoteVideo.srcObject = e.streams[0];
-                await remoteVideo.play();
-            }
-            if (e.track.kind == 'audio') {
-                _this.localStream.addTrack(e.track);
-            }
+            _this.remoteStram.addTrack(e.track);
         };
 
         this.pc.onicecandidate = e => {
@@ -81,37 +123,18 @@ export class SendVideo {
             }
         };
 
-        this.signaling.addEventListener('offer', async (e) => {
-            const offer = e.detail;
-            const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-            await _this.pc.setRemoteDescription(desc);
-            let answer = await _this.pc.createAnswer();
-            await _this.pc.setLocalDescription(answer);
-            _this.signaling.sendAnswer(answer.sdp);    
-        });
-
-        this.signaling.addEventListener('answer', async (e) => {
-            const answer = e.detail;
-            const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-            await _this.pc.setRemoteDescription(desc);
-        });
-
-        this.signaling.addEventListener('candidate', async (e) => {
-            const candidate = e.detail;
-            const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-            _this.pc.addIceCandidate(iceCandidate);
-        });
-
-        // setup this.signaling
-        await this.signaling.start();
-
-        this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
-
-        const offer = await this.pc.createOffer();
-        // set local sdp
-        const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-        await this.pc.setLocalDescription(desc);
-        await this.signaling.sendOffer(offer.sdp);
+        this.pc.onnegotiationneeded = async () => {
+            if (_this.isOffer) {
+                if (_this.negotiationneededCounter === 0) {
+                    let offer = await _this.pc.createOffer();
+                    console.log('createOffer() succsess in promise');
+                    await _this.pc.setLocalDescription(offer);
+                    console.log('setLocalDescription() succsess in promise');
+                    _this.signaling.sendOffer(offer.sdp);
+                    _this.negotiationneededCounter++;
+                }
+            }
+        };
     }
 
     hangUp() {

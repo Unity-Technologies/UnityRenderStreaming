@@ -9,8 +9,10 @@ let sendVideo = new SendVideo();
 
 let startButton = document.getElementById('startVideoButton');
 startButton.addEventListener('click', startVideo);
-let connectButton = document.getElementById('connectButton');
-connectButton.addEventListener('click', connect);
+let setupButton = document.getElementById('setUpButton');
+setupButton.addEventListener('click', setUp);
+let addTrackButton = document.getElementById('addTrackButton');
+addTrackButton.addEventListener('click', addTrack);
 let hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
@@ -19,8 +21,12 @@ async function startVideo() {
     await sendVideo.startVideo(localVideo);
 }
 
-async function connect() {
+async function setUp() {
     await sendVideo.setupConnection(remoteVideo);
+}
+
+async function addTrack() {
+    await sendVideo.addTrack();
 }
 
 function hangUp() {

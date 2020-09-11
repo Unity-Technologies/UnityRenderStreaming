@@ -28,8 +28,27 @@ export default class Signaling extends EventTarget {
     const connection = await res.json();
     this.connectionId = connection.connectionId;
 
+    this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
+  }
+
+  async loopGetOffer() {
+    let lastTimeRequest = Date.now() - 30000;
+
+    while (true) {
+      const res = await this.getOffer(lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const offers = data.offers;
+
+      offers.forEach(offer => {
+        this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
+      });
+
+      await this.sleep(this.interval);
+    }
   }
 
   async loopGetAnswer() {
@@ -151,22 +170,13 @@ export class WebSocketSignaling extends EventTarget {
         case "disconnect":
           break;
         case "offer":
-          if (msg.from === this.connectionId) {
-            return;
-          }
-          this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('offer', { detail: msg }));
           break;
         case "answer":
-          if (msg.from === this.connectionId) {
-            return;
-          }
-          this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('answer', { detail: msg }));
           break;
         case "candidate":
-          if (msg.from === this.connectionId) {
-            return;
-          }
-          this.dispatchEvent(new CustomEvent('candidate', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('candidate', { detail: msg }));
           break;
         default:
           break;
@@ -192,9 +202,9 @@ export class WebSocketSignaling extends EventTarget {
     this.websocket.send(sendJson);
   }
 
-  sendAnswer(sdp) {
-    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
-    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, data: data });
+  sendAnswer(target, sdp) {
+    const data = { 'sdp': sdp, 'connectionId': target };
+    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, to: target, data: data });
     console.log(sendJson);
     this.websocket.send(sendJson);
   }
