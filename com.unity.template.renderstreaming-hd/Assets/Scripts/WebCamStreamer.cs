@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 
 namespace Unity.RenderStreaming
 {
@@ -16,6 +16,18 @@ namespace Unity.RenderStreaming
 
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
+
+        public void ChangeBitrate(int bitrate)
+        {
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, Convert.ToUInt64(bitrate), null);
+        }
+
+        public void ChangeFramerate(int framerate)
+        {
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, null, Convert.ToUInt32(framerate));
+        }
 
         IEnumerator Start()
         {

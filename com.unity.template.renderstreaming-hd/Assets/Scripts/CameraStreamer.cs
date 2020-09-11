@@ -1,3 +1,4 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -11,6 +12,18 @@ namespace Unity.RenderStreaming
 
         private Camera m_camera;
         private VideoStreamTrack m_track;
+
+        public void ChangeBitrate(int bitrate)
+        {
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, Convert.ToUInt64(bitrate), null);
+        }
+
+        public void ChangeFramerate(int framerate)
+        {
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, null, Convert.ToUInt32(framerate));
+        }
 
         void Awake()
         {
