@@ -53,6 +53,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Rendering target raw image about receive")]
         private RawImage receiveImage;
 
+        [SerializeField, Tooltip("Add MediaTrack")]
+        private Button sendOfferButton;
+
 #pragma warning restore 0649
 
         private ISignaling m_signaling;
@@ -97,6 +100,19 @@ namespace Unity.RenderStreaming
         }
         public void Start()
         {
+            if (sendOfferButton != null)
+            {
+                sendOfferButton.onClick.AddListener(() =>
+                {
+                    if (string.IsNullOrEmpty(m_connectionId)|| !m_mapConnectionIdAndPeer.TryGetValue(m_connectionId, out var pc))
+                    {
+                        return;
+                    }
+
+                    pc.AddTransceiver(TrackKind.Video);
+                });
+            }
+
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
             m_receiveStream = new MediaStream();
 
@@ -118,7 +134,6 @@ namespace Unity.RenderStreaming
         {
             if (this.m_signaling == null)
             {
-
                 Type t = Type.GetType(signalingType);
                 object[] args = { urlSignaling, interval };
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
@@ -293,7 +308,7 @@ namespace Unity.RenderStreaming
 
             if (offerOp.IsError)
             {
-                Debug.LogError($"Network Error: {offerOp.Error}");
+                Debug.LogError($"Network Error: {offerOp.Error.message}");
                 yield break;
             }
 
@@ -303,7 +318,7 @@ namespace Unity.RenderStreaming
 
             if (setLocalSdp.IsError)
             {
-                Debug.LogError($"Network Error: {setLocalSdp.Error}");
+                Debug.LogError($"Network Error: {setLocalSdp.Error.message}");
                 yield break;
             }
 
@@ -328,7 +343,7 @@ namespace Unity.RenderStreaming
             }
             if (opRemoteSdp.IsError)
             {
-                Debug.LogError($"Network Error: {opRemoteSdp.Error}");
+                Debug.LogError($"Network Error: {opRemoteSdp.Error.message}");
                 return;
             }
         }

@@ -18,6 +18,7 @@ public class RenderStreamingEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("hardwareEncoderSupport"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("arrayButtonClickEvent"), true);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("receiveImage"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("sendOfferButton"));
             serializedObject.ApplyModifiedProperties();
         }
     }
