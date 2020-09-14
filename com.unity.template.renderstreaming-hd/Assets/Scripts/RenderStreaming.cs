@@ -302,7 +302,11 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            RTCOfferOptions option = default;
+            RTCOfferOptions option = new RTCOfferOptions
+            {
+                offerToReceiveAudio = true,
+                offerToReceiveVideo = true
+            };
             var offerOp = pc.CreateOffer(ref option);
             yield return offerOp;
 

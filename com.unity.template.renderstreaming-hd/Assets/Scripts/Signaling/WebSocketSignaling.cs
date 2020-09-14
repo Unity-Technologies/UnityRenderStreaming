@@ -168,52 +168,30 @@ namespace Unity.RenderStreaming.Signaling
                     }
                     else if (routedMessage.type == "offer")
                     {
-                        if (!string.IsNullOrEmpty(routedMessage.from))
-                        {
-                            DescData offer = new DescData();
-                            offer.connectionId = routedMessage.from;
-                            offer.sdp = msg.sdp;
-
-                            OnOffer?.Invoke(this, offer);
-                        }
-                        else
-                        {
-                            Debug.LogError("Signaling: Received message from unknown peer");
-                        }
+                        DescData offer = new DescData();
+                        offer.connectionId = routedMessage.from;
+                        offer.sdp = msg.sdp;
+                        OnOffer?.Invoke(this, offer);
                     }
                     else if (routedMessage.type == "answer")
                     {
-                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        DescData answer = new DescData 
                         {
-                            DescData answer = new DescData
-                            {
-                                connectionId = routedMessage.from,
-                                sdp = msg.sdp
-                            };
-                            OnAnswer?.Invoke(this, answer);
-                        }
-                        else
-                        {
-                            Debug.LogError("Signaling: Received message from unknown peer");
-                        }
+                            connectionId = routedMessage.from,
+                            sdp = msg.sdp
+                        };
+                        OnAnswer?.Invoke(this, answer);
                     }
                     else if (routedMessage.type == "candidate")
                     {
-                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        CandidateData candidate = new CandidateData
                         {
-                            CandidateData candidate = new CandidateData
-                            {
-                                connectionId = routedMessage.@from,
-                                candidate = msg.candidate,
-                                sdpMLineIndex = msg.sdpMLineIndex,
-                                sdpMid = msg.sdpMid
-                            };
-                            OnIceCandidate?.Invoke(this, candidate);
-                        }
-                        else
-                        {
-                            Debug.LogError("Signaling: Received message from unknown peer");
-                        }
+                            connectionId = routedMessage.@from,
+                            candidate = msg.candidate,
+                            sdpMLineIndex = msg.sdpMLineIndex,
+                            sdpMid = msg.sdpMid
+                        };
+                        OnIceCandidate?.Invoke(this, candidate);
                     }
                 }
             }
