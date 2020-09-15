@@ -51,12 +51,12 @@ export class SendVideo {
                 console.error('peerConnection alreay exist');
             }
             _this.prepareNewPeerConnection(false);
-            const offer = e.detail.data;
+            const offer = e.detail;
             const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
             await _this.pc.setRemoteDescription(desc);
             let answer = await _this.pc.createAnswer();
             await _this.pc.setLocalDescription(answer);
-            _this.signaling.sendAnswer(e.detail.from, answer.sdp);
+            _this.signaling.sendAnswer(answer.sdp);
         });
 
         this.signaling.addEventListener('answer', async (e) => {
@@ -64,13 +64,13 @@ export class SendVideo {
                 console.error('peerConnection NOT exist!');
                 return;
             }
-            const answer = e.detail.data;
+            const answer = e.detail;
             const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
             await _this.pc.setRemoteDescription(desc);
         });
 
         this.signaling.addEventListener('candidate', async (e) => {
-            const candidate = e.detail.data;
+            const candidate = e.detail;
             const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
             _this.pc.addIceCandidate(iceCandidate);
         });

@@ -141,13 +141,13 @@ export class VideoPlayer {
     };
 
     this.signaling.addEventListener('answer', async (e) => {
-      const answer = e.detail.data;
+      const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
       await _this.pc.setRemoteDescription(desc);
     });
 
     this.signaling.addEventListener('candidate', async (e) => {
-      const candidate = e.detail.data;
+      const candidate = e.detail;
       const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
       await _this.pc.addIceCandidate(iceCandidate);
     });

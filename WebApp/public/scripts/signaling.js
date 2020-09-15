@@ -170,13 +170,13 @@ export class WebSocketSignaling extends EventTarget {
         case "disconnect":
           break;
         case "offer":
-          this.dispatchEvent(new CustomEvent('offer', { detail: msg }));
+          this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
           break;
         case "answer":
-          this.dispatchEvent(new CustomEvent('answer', { detail: msg }));
+          this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
           break;
         case "candidate":
-          this.dispatchEvent(new CustomEvent('candidate', { detail: msg }));
+          this.dispatchEvent(new CustomEvent('candidate', { detail: msg.data }));
           break;
         default:
           break;
@@ -202,9 +202,9 @@ export class WebSocketSignaling extends EventTarget {
     this.websocket.send(sendJson);
   }
 
-  sendAnswer(target, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': target };
-    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, to: target, data: data });
+  sendAnswer(sdp) {
+    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
+    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, data: data });
     console.log(sendJson);
     this.websocket.send(sendJson);
   }

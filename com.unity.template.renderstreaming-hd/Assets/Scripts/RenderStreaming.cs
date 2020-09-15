@@ -109,21 +109,23 @@ namespace Unity.RenderStreaming
                         return;
                     }
 
-                    pc.AddTransceiver(TrackKind.Video);
+                    // ToDo: need update webrtc package to 2.2
+                    // pc.AddTransceiver(TrackKind.Video);
                 });
             }
 
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
             m_receiveStream = new MediaStream();
 
-            m_receiveStream.OnAddTrack = e =>
-            {
-                if (receiveImage != null && e.Track.Kind == TrackKind.Video)
-                {
-                    var videoTrack = (VideoStreamTrack)e.Track;
-                    receiveImage.texture = videoTrack.InitializeReceiver();
-                }
-            };
+            // ToDo: need update webrtc package to 2.2
+            // m_receiveStream.OnAddTrack = e =>
+            // {
+            //     if (receiveImage != null && e.Track.Kind == TrackKind.Video)
+            //     {
+            //         var videoTrack = (VideoStreamTrack)e.Track;
+            //        receiveImage.texture = videoTrack.InitializeReceiver();
+            //     }
+            // };
 
             m_conf = default;
             m_conf.iceServers = iceServers;
@@ -272,14 +274,14 @@ namespace Unity.RenderStreaming
             pc.SetConfiguration(ref m_conf);
             pc.OnIceCandidate = new DelegateOnIceCandidate(candidate =>
             {
-                signaling.SendCandidate(e.connectionId, candidate);
+                signaling.SendCandidate(connectionId, candidate);
             });
             pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
             {
                 if(state == RTCIceConnectionState.Disconnected)
                 {
                     pc.Close();
-                    m_mapConnectionIdAndPeer.Remove(e.connectionId);
+                    m_mapConnectionIdAndPeer.Remove(connectionId);
                 }
             });
 
