@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.WebRTC;
-using System.Text.RegularExpressions;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
@@ -68,6 +67,8 @@ namespace Unity.RenderStreaming
         private MediaStream m_receiveStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
+        private string m_connectionId;
+        private int m_negotiationneededCounter;
 
         public static RenderStreaming Instance { get; private set; }
 
@@ -101,7 +102,7 @@ namespace Unity.RenderStreaming
 
             m_receiveStream.OnAddTrack = e =>
             {
-                if (e.Track.Kind == TrackKind.Video)
+                if (receiveImage != null && e.Track.Kind == TrackKind.Video)
                 {
                     var videoTrack = (VideoStreamTrack)e.Track;
                     receiveImage.texture = videoTrack.InitializeReceiver();
@@ -122,7 +123,13 @@ namespace Unity.RenderStreaming
                 object[] args = { urlSignaling, interval };
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
                 this.m_signaling.OnStart += signaling => signaling.CreateConnection();
+                this.m_signaling.OnCreateConnection += (signaling, id) =>
+                {
+                    m_connectionId = id;
+                    PrepareNewPeerConnection(signaling, m_connectionId, true);
+                };
                 this.m_signaling.OnOffer += OnOffer;
+                this.m_signaling.OnAnswer += OnAnswer;
                 this.m_signaling.OnIceCandidate += OnIceCandidate;
             }
             this.m_signaling.Start();
@@ -169,43 +176,34 @@ namespace Unity.RenderStreaming
             {
                 this.m_signaling.Stop();
                 this.m_signaling = null;
+                this.m_negotiationneededCounter = 0;
             }
         }
 
         void OnOffer(ISignaling signaling, DescData e)
         {
-            RTCSessionDescription _desc;
-            _desc.type = RTCSdpType.Offer;
-            _desc.sdp = e.sdp;
             var connectionId = e.connectionId;
             if (m_mapConnectionIdAndPeer.ContainsKey(connectionId))
             {
+                Debug.LogError($"connection:{connectionId} peerConnection already exist");
+            }
+
+            var pc = PrepareNewPeerConnection(signaling, connectionId, false);
+
+            RTCSessionDescription _desc;
+            _desc.type = RTCSdpType.Offer;
+            _desc.sdp = e.sdp;
+
+            var opRemoteDesc = pc.SetRemoteDescription(ref _desc);
+            while (opRemoteDesc.MoveNext())
+            {
+            }
+
+            if (opRemoteDesc.IsError)
+            {
+                Debug.LogError($"Network Error: {opRemoteDesc.Error}");
                 return;
             }
-            var pc = new RTCPeerConnection();
-            m_mapConnectionIdAndPeer.Add(e.connectionId, pc);
-
-            pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
-            pc.SetConfiguration(ref m_conf);
-            pc.OnIceCandidate = new DelegateOnIceCandidate(candidate =>
-            {
-                signaling.SendCandidate(e.connectionId, candidate);
-            });
-            pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
-            {
-                if(state == RTCIceConnectionState.Disconnected)
-                {
-                    pc.Close();
-                    m_mapConnectionIdAndPeer.Remove(e.connectionId);
-                }
-            });
-
-            pc.OnTrack = trackEvent =>
-            {
-                m_receiveStream.AddTrack(trackEvent.Track);
-            };
-
-            pc.SetRemoteDescription(ref _desc);
 
             foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
             {
@@ -223,6 +221,7 @@ namespace Unity.RenderStreaming
             while (op.MoveNext())
             {
             }
+
             if (op.IsError)
             {
                 Debug.LogError($"Network Error: {op.Error}");
@@ -234,13 +233,104 @@ namespace Unity.RenderStreaming
             while (opLocalDesc.MoveNext())
             {
             }
+
             if (opLocalDesc.IsError)
             {
-                Debug.LogError($"Network Error: {opLocalDesc.Error}");
+                Debug.LogError($"Network Error: {opLocalDesc.Error.message}");
                 return;
             }
 
             signaling.SendAnswer(connectionId, desc);
+        }
+
+        RTCPeerConnection PrepareNewPeerConnection(ISignaling signaling, string connectionId, bool isOffer)
+        {
+            if (m_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
+            {
+                peer.Close();
+            }
+
+            var pc = new RTCPeerConnection();
+            m_mapConnectionIdAndPeer[connectionId] = pc;
+
+            pc.OnDataChannel = new DelegateOnDataChannel(channel => { OnDataChannel(pc, channel); });
+            pc.SetConfiguration(ref m_conf);
+            pc.OnIceCandidate = new DelegateOnIceCandidate(candidate =>
+            {
+                signaling.SendCandidate(e.connectionId, candidate);
+            });
+            pc.OnIceConnectionChange = new DelegateOnIceConnectionChange(state =>
+            {
+                if(state == RTCIceConnectionState.Disconnected)
+                {
+                    pc.Close();
+                    m_mapConnectionIdAndPeer.Remove(e.connectionId);
+                }
+            });
+
+            pc.OnTrack = trackEvent => { m_receiveStream.AddTrack(trackEvent.Track); };
+
+            pc.OnNegotiationNeeded = () => StartCoroutine(OnNegotiationNeeded(signaling, connectionId, isOffer));
+            return pc;
+        }
+
+        IEnumerator OnNegotiationNeeded(ISignaling signaling, string connectionId, bool isOffer)
+        {
+            if (!isOffer || m_negotiationneededCounter > 0)
+            {
+                yield break;
+            }
+
+            if (!m_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+            {
+                Debug.LogError($"connectionId: {connectionId}, did not created peerConnection");
+                yield break;
+            }
+
+            RTCOfferOptions option = default;
+            var offerOp = pc.CreateOffer(ref option);
+            yield return offerOp;
+
+            if (offerOp.IsError)
+            {
+                Debug.LogError($"Network Error: {offerOp.Error}");
+                yield break;
+            }
+
+            var desc = offerOp.Desc;
+            var setLocalSdp = pc.SetLocalDescription(ref desc);
+            yield return setLocalSdp;
+
+            if (setLocalSdp.IsError)
+            {
+                Debug.LogError($"Network Error: {setLocalSdp.Error}");
+                yield break;
+            }
+
+            signaling.SendOffer(connectionId, desc);
+            m_negotiationneededCounter++;
+        }
+
+        void OnAnswer(ISignaling signaling, DescData e)
+        {
+            if (!m_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
+            {
+                Debug.Log($"connectiondId:{e.connectionId}, peerConnection not exist");
+                return;
+            }
+
+            var desc = new RTCSessionDescription();
+            desc.type = RTCSdpType.Answer;
+            desc.sdp = e.sdp;
+            var opRemoteSdp = pc.SetRemoteDescription(ref desc);
+            while (opRemoteSdp.MoveNext())
+            {
+            }
+            if (opRemoteSdp.IsError)
+            {
+                Debug.LogError($"Network Error: {opRemoteSdp.Error}");
+                return;
+            }
         }
 
         void OnIceCandidate(ISignaling signaling, CandidateData e)
