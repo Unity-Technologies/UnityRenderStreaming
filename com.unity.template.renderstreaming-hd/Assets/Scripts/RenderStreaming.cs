@@ -7,6 +7,7 @@ using Unity.WebRTC;
 using System.Text.RegularExpressions;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
@@ -49,6 +50,10 @@ namespace Unity.RenderStreaming
 
         [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
+
+        [SerializeField, Tooltip("Rendering target raw image about receive")]
+        private RawImage receiveImage;
+
 #pragma warning restore 0649
 
         private ISignaling m_signaling;
@@ -60,6 +65,7 @@ namespace Unity.RenderStreaming
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
         private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
         private MediaStream m_audioStream;
+        private MediaStream m_receiveStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
 
@@ -91,6 +97,16 @@ namespace Unity.RenderStreaming
         public void Start()
         {
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
+            m_receiveStream = new MediaStream();
+
+            m_receiveStream.OnAddTrack = e =>
+            {
+                if (e.Track.Kind == TrackKind.Video)
+                {
+                    var videoTrack = (VideoStreamTrack)e.Track;
+                    receiveImage.texture = videoTrack.InitializeReceiver();
+                }
+            };
 
             m_conf = default;
             m_conf.iceServers = iceServers;
@@ -105,6 +121,7 @@ namespace Unity.RenderStreaming
                 Type t = Type.GetType(signalingType);
                 object[] args = { urlSignaling, interval };
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
+                this.m_signaling.OnStart += signaling => signaling.CreateConnection();
                 this.m_signaling.OnOffer += OnOffer;
                 this.m_signaling.OnIceCandidate += OnIceCandidate;
             }
@@ -183,7 +200,13 @@ namespace Unity.RenderStreaming
                 }
             });
 
+            pc.OnTrack = trackEvent =>
+            {
+                m_receiveStream.AddTrack(trackEvent.Track);
+            };
+
             pc.SetRemoteDescription(ref _desc);
+
             foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
             {
                 RTCRtpSender sender = pc.AddTrack(track);
@@ -227,7 +250,7 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            RTCIceCandidate​ _candidate = default;
+            RTCIceCandidate _candidate = default;
             _candidate.candidate = e.candidate;
             _candidate.sdpMLineIndex = e.sdpMLineIndex;
             _candidate.sdpMid = e.sdpMid;

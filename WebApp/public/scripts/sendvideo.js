@@ -105,10 +105,10 @@ export class SendVideo {
         // setup this.signaling
         await this.signaling.start();
 
-        const offer = await this.pc.createOffer();
+        this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
 
+        const offer = await this.pc.createOffer();
         // set local sdp
-        offer.sdp = offer.sdp.replace(/useinbandfec=1/, 'useinbandfec=1;stereo=1;maxaveragebitrate=1048576');
         const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
         await this.pc.setLocalDescription(desc);
         await this.signaling.sendOffer(offer.sdp);

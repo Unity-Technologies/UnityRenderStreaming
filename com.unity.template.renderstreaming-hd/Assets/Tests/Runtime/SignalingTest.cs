@@ -37,7 +37,7 @@ namespace Unity.RenderStreaming
         private Process m_ServerProcess;
         private RTCSessionDescription m_DescOffer;
         private RTCSessionDescription m_DescAnswer;
-        private RTCIceCandidate​ m_candidate;
+        private RTCIceCandidate m_candidate;
 
         private ISignaling signaling1;
         private ISignaling signaling2;
@@ -123,7 +123,7 @@ namespace Unity.RenderStreaming
             WebRTC.WebRTC.Initialize();
 
             RTCConfiguration config = default;
-            RTCIceCandidate​? candidate_ = null;
+            RTCIceCandidate? candidate_ = null;
             config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
 
             var peer1 = new RTCPeerConnection(ref config);

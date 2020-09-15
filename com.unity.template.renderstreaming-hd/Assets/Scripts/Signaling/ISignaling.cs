@@ -22,6 +22,6 @@ namespace Unity.RenderStreaming.Signaling
         void CreateConnection();
         void SendOffer(string connectionId, RTCSessionDescription answer);
         void SendAnswer(string connectionId, RTCSessionDescription answer);
-        void SendCandidate(string connectionId, RTCIceCandidate​ candidate);
+        void SendCandidate(string connectionId, RTCIceCandidate candidate);
     }
 }
