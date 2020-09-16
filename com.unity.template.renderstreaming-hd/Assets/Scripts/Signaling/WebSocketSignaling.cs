@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
@@ -34,10 +34,16 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            m_running = false;
-            m_webSocket?.Close();
+            if (m_running)
+            {
+                m_running = false;
+                m_webSocket?.Close();
+                m_signalingThread.Abort();
+            }
         }
 
+        public event OnStartHandler OnStart;
+        public event OnConnectHandler OnCreateConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -45,9 +51,19 @@ namespace Unity.RenderStreaming.Signaling
         #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
 
-        public void SendOffer()
+        public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
-            throw new NotImplementedException();
+            DescData data = new DescData();
+            data.connectionId = connectionId;
+            data.sdp = offer.sdp;
+            data.type = "offer";
+
+            RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
+            routedMessage.from = connectionId;
+            routedMessage.data = data;
+            routedMessage.type = "offer";
+
+            WSSend(routedMessage);
         }
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
@@ -79,6 +95,11 @@ namespace Unity.RenderStreaming.Signaling
             routedMessage.type = "candidate";
 
             WSSend(routedMessage);
+        }
+
+        public void CreateConnection()
+        {
+            this.WSSend("{\"type\":\"connect\"}");
         }
 
         private void WSManage()
@@ -136,8 +157,12 @@ namespace Unity.RenderStreaming.Signaling
 
                 if (!string.IsNullOrEmpty(routedMessage.type))
                 {
-
-                    if (routedMessage.type == "offer")
+                    if (routedMessage.type == "connect")
+                    {
+                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
+                        OnCreateConnection?.Invoke(this, connectionId);
+                    }
+                    else if (routedMessage.type == "offer")
                     {
                         if (!string.IsNullOrEmpty(routedMessage.from))
                         {
@@ -152,22 +177,39 @@ namespace Unity.RenderStreaming.Signaling
                             Debug.LogError("Signaling: Received message from unknown peer");
                         }
                     }
-                }
-                else if (!string.IsNullOrEmpty(msg.candidate))
-                {
-                    if (!string.IsNullOrEmpty(routedMessage.from))
+                    else if (routedMessage.type == "answer")
                     {
-                        CandidateData candidate = new CandidateData();
-                        candidate.connectionId = routedMessage.from;
-                        candidate.candidate = msg.candidate;
-                        candidate.sdpMLineIndex = msg.sdpMLineIndex;
-                        candidate.sdpMid = msg.sdpMid;
-
-                        OnIceCandidate?.Invoke(this, candidate);
+                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        {
+                            DescData answer = new DescData
+                            {
+                                connectionId = routedMessage.from,
+                                sdp = msg.sdp
+                            };
+                            OnAnswer?.Invoke(this, answer);
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Received message from unknown peer");
+                        }
                     }
-                    else
+                    else if (routedMessage.type == "candidate")
                     {
-                        Debug.LogError("Signaling: Received message from unknown peer");
+                        if (!string.IsNullOrEmpty(routedMessage.from))
+                        {
+                            CandidateData candidate = new CandidateData
+                            {
+                                connectionId = routedMessage.@from,
+                                candidate = msg.candidate,
+                                sdpMLineIndex = msg.sdpMLineIndex,
+                                sdpMid = msg.sdpMid
+                            };
+                            OnIceCandidate?.Invoke(this, candidate);
+                        }
+                        else
+                        {
+                            Debug.LogError("Signaling: Received message from unknown peer");
+                        }
                     }
                 }
             }
@@ -180,7 +222,7 @@ namespace Unity.RenderStreaming.Signaling
         private void WSConnected(object sender, EventArgs e)
         {
             Debug.Log("Signaling: WS connected.");
-            this.WSSend("{\"type\":\"connect\"}");
+            OnStart?.Invoke(this);
         }
 
 
@@ -191,7 +233,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSClosed(object sender, CloseEventArgs e)
         {
-            Debug.LogError($"Signaling: WS connection closed, code: {e.Code}");
+            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
 
             m_wsCloseEvent.Set();
             m_webSocket = null;

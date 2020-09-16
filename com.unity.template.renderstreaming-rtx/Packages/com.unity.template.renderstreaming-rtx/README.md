@@ -1,6 +1,6 @@
 # Unity Render Streaming Raytracing template
 
-<img src="https://img.shields.io/badge/unity-2019.3-green.svg?style=flat-square" alt="unity 2019.3">
+<img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4">
 
 ## Documentation
 

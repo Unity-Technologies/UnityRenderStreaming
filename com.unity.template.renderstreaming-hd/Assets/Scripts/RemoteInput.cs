@@ -115,7 +115,9 @@ namespace Unity.RenderStreaming
 
         public Action<int> ActionButtonClick;
 
-        static UnityEngine.Vector2Int m_prevMousePos;
+        private UnityEngine.Vector2Int m_prevMousePos;
+        private KeyboardState m_keyboardState = new KeyboardState();
+
 
         public RemoteInput(ref InputUser user)
         {
@@ -293,7 +295,8 @@ namespace Unity.RenderStreaming
                 case KeyboardEventType.KeyDown:
                     if (!repeat)
                     {
-                        InputSystem.QueueStateEvent(RemoteKeyboard, new KeyboardState((Key)keyCode));
+                        m_keyboardState.Set((Key)keyCode, true);
+                        InputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
                     }
                     if(character != 0)
                     {
@@ -301,7 +304,8 @@ namespace Unity.RenderStreaming
                     }
                     break;
                 case KeyboardEventType.KeyUp:
-                    InputSystem.QueueStateEvent(RemoteKeyboard, new KeyboardState());
+                    m_keyboardState.Set((Key)keyCode, false);
+                    InputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
                     break;
             }
         }
@@ -309,7 +313,7 @@ namespace Unity.RenderStreaming
         void ProcessMouseMoveEvent(short x, short y, byte button)
         {
             UnityEngine.Vector2Int pos = new UnityEngine.Vector2Int(x, y);
-            UnityEngine.Vector2Int delta = pos- m_prevMousePos;
+            UnityEngine.Vector2Int delta = pos - m_prevMousePos;
             InputSystem.QueueStateEvent(RemoteMouse, new MouseState {
                 position = pos,
                 delta = delta,

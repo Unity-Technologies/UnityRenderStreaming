@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -57,6 +58,7 @@ namespace Unity.RenderStreaming
         private readonly Dictionary<RTCDataChannel, RemoteInput> m_mapChannelAndRemoteInput = new Dictionary<RTCDataChannel, RemoteInput>();
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
+        private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
@@ -130,6 +132,20 @@ namespace Unity.RenderStreaming
             m_listVideoStreamTrack.Remove(track);
         }
 
+        public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
+        {
+            foreach (var sender in m_mapTrackAndSenderList[track])
+            {
+                RTCRtpSendParameters parameters = sender.GetParameters();
+                foreach (var encoding in parameters.Encodings)
+                {
+                    if(bitrate != null) encoding.maxBitrate = bitrate;
+                    if (framerate != null) encoding.maxFramerate = framerate;
+                }
+                sender.SetParameters(parameters);
+            }
+        }
+
         void OnDisable()
         {
             if (this.m_signaling != null)
@@ -166,17 +182,17 @@ namespace Unity.RenderStreaming
                     m_mapConnectionIdAndPeer.Remove(e.connectionId);
                 }
             });
-            //make video bit rate starts at 16000kbits, and 160000kbits at max.
-            string pattern = @"(a=fmtp:\d+ .*level-asymmetry-allowed=.*)\r\n";
-            _desc.sdp = Regex.Replace(_desc.sdp, pattern, "$1;x-google-start-bitrate=16000;x-google-max-bitrate=160000\r\n");
+
             pc.SetRemoteDescription(ref _desc);
-            foreach (var track in m_listVideoStreamTrack)
+            foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
             {
-                pc.AddTrack(track);
-            }
-            foreach(var track in m_audioStream.GetTracks())
-            {
-                pc.AddTrack(track);
+                RTCRtpSender sender = pc.AddTrack(track);
+                if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+                {
+                    list = new List<RTCRtpSender>();
+                    m_mapTrackAndSenderList.Add(track, list);
+                }
+                list.Add(sender);
             }
 
             RTCAnswerOptions options = default;
