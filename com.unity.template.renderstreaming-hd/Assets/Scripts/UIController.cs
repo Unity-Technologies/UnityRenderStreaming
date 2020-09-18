@@ -40,8 +40,12 @@ namespace Unity.RenderStreaming
         void Start()
         {
             m_rectTransform = GetComponent<RectTransform>();
-            canvasGroup.alpha = 0;
-            text.text = string.Empty;
+
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0;
+                text.text = string.Empty;
+            }
 
             if (sendOfferButton != null)
             {
@@ -51,6 +55,11 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
+            if (canvasGroup == null)
+            {
+                return;
+            }
+
             if (!m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
