@@ -16,7 +16,6 @@ namespace Unity.RenderStreaming.Signaling
         private Thread m_signalingThread;
         private AutoResetEvent m_wsCloseEvent;
         private WebSocket m_webSocket;
-        private string connectionId;
 
         public WebSocketSignaling(string url, float timeout)
         {
@@ -60,8 +59,7 @@ namespace Unity.RenderStreaming.Signaling
             data.type = "offer";
 
             RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
-            routedMessage.from = this.connectionId;
-            routedMessage.to = connectionId;
+            routedMessage.from = connectionId;
             routedMessage.data = data;
             routedMessage.type = "offer";
 
@@ -76,8 +74,7 @@ namespace Unity.RenderStreaming.Signaling
             data.type = "answer";
 
             RoutedMessage<DescData> routedMessage = new RoutedMessage<DescData>();
-            routedMessage.from = this.connectionId;
-            routedMessage.to = connectionId;
+            routedMessage.from = connectionId;
             routedMessage.data = data;
             routedMessage.type = "answer";
 
@@ -93,8 +90,7 @@ namespace Unity.RenderStreaming.Signaling
             data.sdpMid = candidate.sdpMid;
 
             RoutedMessage<CandidateData> routedMessage = new RoutedMessage<CandidateData>();
-            routedMessage.from = this.connectionId;
-            routedMessage.to = connectionId;
+            routedMessage.from = connectionId;
             routedMessage.data = data;
             routedMessage.type = "candidate";
 
@@ -163,7 +159,7 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
-                        connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
+                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
                         OnCreateConnection?.Invoke(this, connectionId);
                     }
                     else if (routedMessage.type == "offer")
@@ -175,7 +171,7 @@ namespace Unity.RenderStreaming.Signaling
                     }
                     else if (routedMessage.type == "answer")
                     {
-                        DescData answer = new DescData 
+                        DescData answer = new DescData
                         {
                             connectionId = routedMessage.from,
                             sdp = msg.sdp

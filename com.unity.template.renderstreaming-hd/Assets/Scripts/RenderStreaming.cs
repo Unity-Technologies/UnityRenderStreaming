@@ -53,9 +53,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Rendering target raw image about receive")]
         private RawImage receiveImage;
 
-        [SerializeField, Tooltip("Add MediaTrack")]
-        private Button sendOfferButton;
-
 #pragma warning restore 0649
 
         private ISignaling m_signaling;
@@ -71,7 +68,6 @@ namespace Unity.RenderStreaming
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
         private string m_connectionId;
-        private int m_negotiationneededCounter;
 
         public static RenderStreaming Instance { get; private set; }
 
@@ -100,20 +96,6 @@ namespace Unity.RenderStreaming
         }
         public void Start()
         {
-            if (sendOfferButton != null)
-            {
-                sendOfferButton.onClick.AddListener(() =>
-                {
-                    if (string.IsNullOrEmpty(m_connectionId)|| !m_mapConnectionIdAndPeer.TryGetValue(m_connectionId, out var pc))
-                    {
-                        return;
-                    }
-
-                    // ToDo: need update webrtc package to 2.2
-                    // pc.AddTransceiver(TrackKind.Video);
-                });
-            }
-
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
             m_receiveStream = new MediaStream();
 
@@ -143,7 +125,7 @@ namespace Unity.RenderStreaming
                 this.m_signaling.OnCreateConnection += (signaling, id) =>
                 {
                     m_connectionId = id;
-                    PrepareNewPeerConnection(signaling, m_connectionId, true);
+                    CreatePeerConnection(signaling, m_connectionId, true);
                 };
                 this.m_signaling.OnOffer += OnOffer;
                 this.m_signaling.OnAnswer += OnAnswer;
@@ -173,6 +155,18 @@ namespace Unity.RenderStreaming
             m_listVideoStreamTrack.Remove(track);
         }
 
+        public void AddTransceiver()
+        {
+            if (string.IsNullOrEmpty(m_connectionId) ||
+                !m_mapConnectionIdAndPeer.TryGetValue(m_connectionId, out var pc))
+            {
+                return;
+            }
+
+            // ToDo: need update webrtc package to 2.2
+            // pc.AddTransceiver(TrackKind.Video);
+        }
+
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
         {
             foreach (var sender in m_mapTrackAndSenderList[track])
@@ -193,7 +187,6 @@ namespace Unity.RenderStreaming
             {
                 this.m_signaling.Stop();
                 this.m_signaling = null;
-                this.m_negotiationneededCounter = 0;
             }
         }
 
@@ -205,7 +198,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"connection:{connectionId} peerConnection already exist");
             }
 
-            var pc = PrepareNewPeerConnection(signaling, connectionId, false);
+            var pc = CreatePeerConnection(signaling, connectionId, false);
 
             RTCSessionDescription _desc;
             _desc.type = RTCSdpType.Offer;
@@ -260,7 +253,7 @@ namespace Unity.RenderStreaming
             signaling.SendAnswer(connectionId, desc);
         }
 
-        RTCPeerConnection PrepareNewPeerConnection(ISignaling signaling, string connectionId, bool isOffer)
+        RTCPeerConnection CreatePeerConnection(ISignaling signaling, string connectionId, bool isOffer)
         {
             if (m_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
             {
@@ -293,7 +286,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator OnNegotiationNeeded(ISignaling signaling, string connectionId, bool isOffer)
         {
-            if (!isOffer || m_negotiationneededCounter > 0)
+            if (!isOffer)
             {
                 yield break;
             }
@@ -318,6 +311,12 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
+            if (pc.SignalingState != RTCSignalingState.Stable)
+            {
+                Debug.LogError($"peerConnection's signaling state is not stable.");
+                yield break;
+            }
+
             var desc = offerOp.Desc;
             var setLocalSdp = pc.SetLocalDescription(ref desc);
             yield return setLocalSdp;
@@ -329,7 +328,6 @@ namespace Unity.RenderStreaming
             }
 
             signaling.SendOffer(connectionId, desc);
-            m_negotiationneededCounter++;
         }
 
         void OnAnswer(ISignaling signaling, DescData e)

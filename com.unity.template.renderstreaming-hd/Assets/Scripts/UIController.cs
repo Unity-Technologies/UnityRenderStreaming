@@ -16,6 +16,7 @@ namespace Unity.RenderStreaming
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
                 new Keyframe(1f, 0f, 0f, 0f));
+        [SerializeField] private Button sendOfferButton;
 
         private float timeTransition = 0f;
         private Color transparentColor = new Color(0, 0, 0, 0);
@@ -41,6 +42,11 @@ namespace Unity.RenderStreaming
             m_rectTransform = GetComponent<RectTransform>();
             canvasGroup.alpha = 0;
             text.text = string.Empty;
+
+            if (sendOfferButton != null)
+            {
+                sendOfferButton.onClick.AddListener(() => RenderStreaming.Instance?.AddTransceiver());
+            }
         }
 
         void FixedUpdate()
