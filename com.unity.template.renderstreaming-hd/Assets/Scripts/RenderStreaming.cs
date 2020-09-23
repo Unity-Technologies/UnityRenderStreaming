@@ -50,9 +50,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
 
-        [SerializeField, Tooltip("Rendering target raw image about receive")]
-        private RawImage receiveImage;
-
 #pragma warning restore 0649
 
         private ISignaling m_signaling;
@@ -63,8 +60,8 @@ namespace Unity.RenderStreaming
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
         private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
+        private readonly List<MediaStream> m_listVideoReceiveStream = new List<MediaStream>();
         private MediaStream m_audioStream;
-        private MediaStream m_receiveStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
         private string m_connectionId;
@@ -97,18 +94,6 @@ namespace Unity.RenderStreaming
         public void Start()
         {
             m_audioStream = Unity.WebRTC.Audio.CaptureStream();
-            m_receiveStream = new MediaStream();
-
-            // ToDo: need update webrtc package to 2.2
-            // m_receiveStream.OnAddTrack = e =>
-            // {
-            //     if (receiveImage != null && e.Track.Kind == TrackKind.Video)
-            //     {
-            //         var videoTrack = (VideoStreamTrack)e.Track;
-            //        receiveImage.texture = videoTrack.InitializeReceiver();
-            //     }
-            // };
-
             m_conf = default;
             m_conf.iceServers = iceServers;
             StartCoroutine(WebRTC.WebRTC.Update());
@@ -153,6 +138,16 @@ namespace Unity.RenderStreaming
         public void RemoveVideoStreamTrack(VideoStreamTrack track)
         {
             m_listVideoStreamTrack.Remove(track);
+        }
+
+        public void AddVideoReceiveStream(MediaStream stream)
+        {
+            m_listVideoReceiveStream.Add(stream);
+        }
+
+        public void RemoveVideoReceiveStream(MediaStream stream)
+        {
+            m_listVideoReceiveStream.Remove(stream);
         }
 
         public void AddTransceiver()
@@ -278,7 +273,13 @@ namespace Unity.RenderStreaming
                 }
             });
 
-            pc.OnTrack = trackEvent => { m_receiveStream.AddTrack(trackEvent.Track); };
+            pc.OnTrack = trackEvent =>
+            {
+                foreach (var receiveStream in m_listVideoReceiveStream)
+                {
+                    receiveStream.AddTrack(trackEvent.Track);
+                }
+            };
 
             pc.OnNegotiationNeeded = () => StartCoroutine(OnNegotiationNeeded(signaling, connectionId, isOffer));
             return pc;

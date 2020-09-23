@@ -384,6 +384,7 @@ GameObject:
   - component: {fileID: 528948625}
   - component: {fileID: 528948624}
   - component: {fileID: 528948623}
+  - component: {fileID: 528948627}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -472,6 +473,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &528948627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528948622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e06fd32ea04af9b843af232d7e9db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sendOfferButton: {fileID: 662432479}
+  receiveImage: {fileID: 1363584101}
 --- !u!1 &576362883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,7 +1019,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1915034403}
   - component: {fileID: 1915034402}
-  - component: {fileID: 1915034401}
   m_Layer: 0
   m_Name: RenderStreaming
   m_TagString: Untagged
@@ -1012,46 +1026,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1915034401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915034400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cf609b6c80ea492288c74dd8f26ae97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 0}
-  canvasGroup: {fileID: 0}
-  pointer: {fileID: 0}
-  transitionCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.75
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  sendOfferButton: {fileID: 662432479}
 --- !u!114 &1915034402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1075,7 +1049,6 @@ MonoBehaviour:
   interval: 5
   hardwareEncoderSupport: 0
   arrayButtonClickEvent: []
-  receiveImage: {fileID: 1363584101}
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
