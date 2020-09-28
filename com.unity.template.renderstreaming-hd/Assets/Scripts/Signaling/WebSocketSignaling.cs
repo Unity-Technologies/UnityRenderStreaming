@@ -12,15 +12,17 @@ namespace Unity.RenderStreaming.Signaling
     {
         private string m_url;
         private float m_timeout;
+        private SynchronizationContext m_mainThreadContext;
         private bool m_running;
         private Thread m_signalingThread;
         private AutoResetEvent m_wsCloseEvent;
         private WebSocket m_webSocket;
 
-        public WebSocketSignaling(string url, float timeout)
+        public WebSocketSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
             m_url = url;
             m_timeout = timeout;
+            m_mainThreadContext = mainThreadContext;
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
@@ -160,14 +162,14 @@ namespace Unity.RenderStreaming.Signaling
                     if (routedMessage.type == "connect")
                     {
                         string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
-                        OnCreateConnection?.Invoke(this, connectionId);
+                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, connectionId), null);
                     }
                     else if (routedMessage.type == "offer")
                     {
                         DescData offer = new DescData();
                         offer.connectionId = routedMessage.from;
                         offer.sdp = msg.sdp;
-                        OnOffer?.Invoke(this, offer);
+                        m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
                     }
                     else if (routedMessage.type == "answer")
                     {
@@ -176,7 +178,7 @@ namespace Unity.RenderStreaming.Signaling
                             connectionId = routedMessage.from,
                             sdp = msg.sdp
                         };
-                        OnAnswer?.Invoke(this, answer);
+                        m_mainThreadContext.Post(d => OnAnswer?.Invoke(this, answer), null);
                     }
                     else if (routedMessage.type == "candidate")
                     {
@@ -187,7 +189,7 @@ namespace Unity.RenderStreaming.Signaling
                             sdpMLineIndex = msg.sdpMLineIndex,
                             sdpMid = msg.sdpMid
                         };
-                        OnIceCandidate?.Invoke(this, candidate);
+                        m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
                     }
                 }
             }
@@ -200,7 +202,7 @@ namespace Unity.RenderStreaming.Signaling
         private void WSConnected(object sender, EventArgs e)
         {
             Debug.Log("Signaling: WS connected.");
-            OnStart?.Invoke(this);
+            m_mainThreadContext.Post(d => OnStart?.Invoke(this), null);
         }
 
 

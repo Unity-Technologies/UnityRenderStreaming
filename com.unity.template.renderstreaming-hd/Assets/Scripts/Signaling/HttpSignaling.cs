@@ -11,6 +11,7 @@ namespace Unity.RenderStreaming.Signaling
     {
         private string m_url;
         private float m_timeout;
+        private SynchronizationContext m_mainThreadContext;
         private bool m_running;
         private Thread m_signalingThread;
 
@@ -19,10 +20,11 @@ namespace Unity.RenderStreaming.Signaling
         private long m_lastTimeGetCandidateRequest;
 
 
-        public HttpSignaling(string url, float timeout)
+        public HttpSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
             m_url = url;
             m_timeout = timeout;
+            m_mainThreadContext = mainThreadContext;
 
             if (m_url.StartsWith("https"))
             {
@@ -201,7 +203,7 @@ namespace Unity.RenderStreaming.Signaling
                 m_sessionId = resp.sessionId;
                 Debug.Log("Signaling: HTTP connected, sessionId : " + m_sessionId);
 
-                OnStart?.Invoke(this);
+                m_mainThreadContext.Post(d => OnStart?.Invoke(this), null);
                 return true;
             }
             else
@@ -261,8 +263,7 @@ namespace Unity.RenderStreaming.Signaling
             m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
                 .ToJsMilliseconds();
 
-            OnCreateConnection?.Invoke(this, data.connectionId);
-
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId), null);
             return true;
         }
 
@@ -285,7 +286,7 @@ namespace Unity.RenderStreaming.Signaling
 
             foreach (var offer in list.offers)
             {
-                OnOffer?.Invoke(this, offer);
+                m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
             }
 
             return true;
@@ -310,7 +311,7 @@ namespace Unity.RenderStreaming.Signaling
 
             foreach (var answer in list.answers)
             {
-                OnAnswer?.Invoke(this, answer);
+                m_mainThreadContext.Post(d => OnAnswer?.Invoke(this, answer), null);
             }
 
             return true;
@@ -337,7 +338,7 @@ namespace Unity.RenderStreaming.Signaling
                 foreach (var candidate in candidateContainer.candidates)
                 {
                     candidate.connectionId = candidateContainer.connectionId;
-                    OnIceCandidate?.Invoke(this, candidate);
+                    m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
                 }
             }
 
