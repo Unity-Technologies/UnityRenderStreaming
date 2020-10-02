@@ -14,12 +14,12 @@ namespace Unity.RenderStreaming
 
         void Start()
         {
-            m_receiveStream = new MediaStream();
             sendOfferButton.onClick.AddListener(() => RenderStreaming.Instance?.AddTransceiver());
         }
 
         void OnEnable()
         {
+            m_receiveStream = new MediaStream();
             RenderStreaming.Instance?.AddVideoReceiveStream(m_receiveStream);
             // ToDo: need update webrtc package to 2.2
             // m_receiveStream.OnAddTrack = e =>
@@ -36,6 +36,8 @@ namespace Unity.RenderStreaming
         {
             RenderStreaming.Instance?.RemoveVideoReceiveStream(m_receiveStream);
             m_receiveStream.OnAddTrack = null;
+            m_receiveStream.Dispose();
+            m_receiveStream = null;
         }
     }
 }
