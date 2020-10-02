@@ -28,8 +28,27 @@ export default class Signaling extends EventTarget {
     const connection = await res.json();
     this.connectionId = connection.connectionId;
 
+    this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
+  }
+
+  async loopGetOffer() {
+    let lastTimeRequest = Date.now() - 30000;
+
+    while (true) {
+      const res = await this.getOffer(lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const offers = data.offers;
+
+      offers.forEach(offer => {
+        this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
+      });
+
+      await this.sleep(this.interval);
+    }
   }
 
   async loopGetAnswer() {

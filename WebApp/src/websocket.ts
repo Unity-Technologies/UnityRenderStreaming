@@ -103,10 +103,15 @@ export default class WSSignaling {
         const newOffer = new Offer(message.sdp, Date.now());
         offers.set(connectionId, newOffer);
         connectionPair.set(connectionId, [ws, null]);
-        clients.forEach((_v, k) => k.send(JSON.stringify({from:connectionId, to:"", type:"offer", data:newOffer})));
+        clients.forEach((_v, k) => {
+            if (k == ws) {
+                return;
+            }
+            k.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+        });
     }
 
-    private onAnswer(ws: WebSocket, message: any){
+    private onAnswer(ws: WebSocket, message: any) {
         const connectionId = message.connectionId as string;
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
@@ -114,17 +119,22 @@ export default class WSSignaling {
         answers.set(connectionId, newAnswer);
 
         const pair = connectionPair.get(connectionId);
-        const otherSessionId = pair[0];
-        connectionPair.set(connectionId, [otherSessionId, ws]);
+        const otherSessionWs = pair[0];
+        connectionPair.set(connectionId, [otherSessionWs, ws]);
 
-        const mapCandidates = candidates.get(otherSessionId);
+        const mapCandidates = candidates.get(otherSessionWs);
         if (mapCandidates) {
           const arrayCandidates = mapCandidates.get(connectionId);
           for (const candidate of arrayCandidates) {
             candidate.datetime = Date.now();
           }
         }
-        clients.forEach((_v, k) => k.send(JSON.stringify({from:connectionId, to:"", type:"answer", data:newAnswer})));
+        clients.forEach((_v, k) => {
+            if (k == ws) {
+                return;
+            }
+            k.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }))
+        });
     }
 
     private onCandidate(ws: WebSocket, message: any){
@@ -142,7 +152,7 @@ export default class WSSignaling {
         arr.push(candidate);
 
         clients.forEach((_v, k) => {
-            if(k === ws){
+            if (k === ws) {
                 return;
             }
             k.send(JSON.stringify({from:connectionId, to:"", type:"candidate", data:candidate}));
