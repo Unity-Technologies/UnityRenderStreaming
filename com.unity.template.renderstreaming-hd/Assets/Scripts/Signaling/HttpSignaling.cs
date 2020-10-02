@@ -17,6 +17,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private string m_sessionId;
         private long m_lastTimeGetOfferRequest;
+        private long m_lastTimeGetAnswerRequest;
         private long m_lastTimeGetCandidateRequest;
 
 
@@ -95,6 +96,7 @@ namespace Unity.RenderStreaming.Signaling
         {
             // ignore messages arrived before 30 secs ago
             m_lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
+            m_lastTimeGetAnswerRequest = DateTime.UtcNow.Millisecond - 30000;
             m_lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
 
 
@@ -295,7 +297,7 @@ namespace Unity.RenderStreaming.Signaling
         private bool HTTPGetAnswers()
         {
             HttpWebRequest request =
-                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/answer?fromtime={m_lastTimeGetOfferRequest}");
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/answer?fromtime={m_lastTimeGetAnswerRequest}");
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
@@ -306,7 +308,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (list == null) return false;
 
-            m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
+            m_lastTimeGetAnswerRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
                 .ToJsMilliseconds();
 
             foreach (var answer in list.answers)

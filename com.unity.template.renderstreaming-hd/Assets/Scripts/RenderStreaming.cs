@@ -194,6 +194,7 @@ namespace Unity.RenderStreaming
             if (m_mapConnectionIdAndPeer.ContainsKey(connectionId))
             {
                 Debug.LogError($"connection:{connectionId} peerConnection already exist");
+                yield break;
             }
 
             var pc = CreatePeerConnection(signaling, connectionId, false);
