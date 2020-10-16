@@ -101,7 +101,7 @@ If you use UnityUI, press `Replace with InputSystemUIInputModule` in the `Standa
 
 ![Replace with InputSystemUIInputMoudle](images/input_standaloneinputmodule.png)
 
-You can contoll the UnityUI placed on the game scene fron browser.
+You can control the UnityUI placed on the game scene from browser.
 
 > [!NOTE]
 > If the Unity application is in Background, even if the `RunInBackground` checkbox is On, you can not control the UnityUI from browser. This issue will be fixed in `com.unity.inputsystem`.
