@@ -94,3 +94,15 @@ if(keyboard.wKey.isPressed)
    // ... 
 }
 ```
+
+## Using Unity UI
+
+If you use UnityUI, press `Replace with InputSystemUIInputModule` in the `StandaloneInputModule` that is attached to the same object as the `EventSystem` component.
+
+![Replace with InputSystemUIInputMoudle](images/input_standaloneinputmodule.png)
+
+You can control the UnityUI placed on the game scene from browser.
+
+> [!NOTE]
+> If the Unity application is in Background, even if the `RunInBackground` checkbox is On, you can not control the UnityUI from browser. This issue will be fixed in `com.unity.inputsystem`.
+
