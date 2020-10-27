@@ -4,6 +4,12 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2020-11-09
+
+### Changed
+
+- Upgrading WebRTC to `2.2.0-preview`
+
 ## [2.1.1] - 2020-09-11
 
 ### Added
@@ -13,21 +19,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgrading WebRTC to 2.1.1-preview
+- Upgrading WebRTC to `2.1.1-preview`
 
 ## [2.1.0] - 2020-08-28
 
 ### Changed
 
-- Upgrading WebRTC to 2.1.0-preview
-- Upgrading Unity version to 2019.4
+- Upgrading WebRTC to `2.1.0-preview`
+- Upgrading Unity version to `2019.4`
 
 ## [2.0.1] - 2020-05-14
 
 ### Changed
 
-- Upgrading input system to 1.0.0
-- Upgrading WebRTC to 2.0.2-preview
+- Upgrading input system to `1.0.0`
+- Upgrading WebRTC to `2.0.2-preview`
 
 ## [2.0.1] - 2020-05-01
 
@@ -46,8 +52,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgrading HDRP to 7.3.1
-- Upgrading input system to 1.0.0-preview.6
+- Upgrading HDRP to `7.3.1`
+- Upgrading input system to `1.0.0-preview.6`
 
 ## [1.2.2] - 2020-03-06
 
@@ -59,7 +65,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgrading WebRTC to 1.1.1-preview
+- Upgrading WebRTC to `1.1.1-preview`
 
 ## [1.2.0] - 2020-02-25
 
@@ -71,10 +77,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgrading Unity version to 2019.3
-- Upgrading HDRP to 7.1.7
-- Upgrading input system to 1.0.0-preview.1
-- Upgrading WebRTC to 1.1.0-preview
+- Upgrading Unity version to `2019.3`
+- Upgrading HDRP to `7.1.7`
+- Upgrading input system to `1.0.0-preview.1`
+- Upgrading WebRTC to `1.1.0-preview`
 
 ### Fixed
 
@@ -95,8 +101,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgrading input system to 0.9.4-preview
-- Upgrading HDRP to 5.16.1-preview
+- Upgrading input system to `0.9.4-preview`
+- Upgrading HDRP to `5.16.1-preview`
 - Adding keyboard event to reset camera position
 
 ### Fixed
