@@ -12,8 +12,26 @@
       "source": "builtin",
       "dependencies": {}
     },
-    "com.unity.code-analysis": {
-      "version": "0.1.2-preview",
+    "com.unity.ads": {
+      "version": "3.4.9",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.analytics": {
+      "version": "3.3.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.collab-proxy": {
+      "version": "1.2.16",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -21,7 +39,7 @@
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.0",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -56,6 +74,22 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.postprocessing": {
+      "version": "2.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.purchasing": {
+      "version": "2.1.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.render-pipelines.core": {
       "version": "7.3.1",
       "depth": 1,
@@ -65,34 +99,13 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.render-pipelines.high-definition": {
+    "com.unity.render-pipelines.universal": {
       "version": "7.3.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.render-pipelines.core": "7.3.1",
-        "com.unity.shadergraph": "7.3.1",
-        "com.unity.visualeffectgraph": "7.3.1",
-        "com.unity.render-pipelines.high-definition-config": "7.3.1"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.render-pipelines.high-definition-config": {
-      "version": "7.3.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.render-pipelines.core": "7.3.1"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.renderstreaming": {
-      "version": "2.1.1-preview",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.webrtc": "2.1.1-preview",
-        "com.unity.inputsystem": "1.0.0"
+        "com.unity.shadergraph": "7.3.1"
       },
       "url": "https://packages.unity.com"
     },
@@ -104,15 +117,6 @@
         "com.unity.render-pipelines.core": "7.3.1"
       },
       "url": "https://packages.unity.com"
-    },
-    "com.unity.template.renderstreaming-hd": {
-      "version": "file:com.unity.template.renderstreaming-hd",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.renderstreaming": "2.1.1-preview",
-        "com.unity.render-pipelines.high-definition": "7.3.1"
-      }
     },
     "com.unity.test-framework": {
       "version": "1.1.18",
@@ -126,12 +130,19 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "2.1.1",
+      "version": "2.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0"
       },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.timeline": {
+      "version": "1.2.10",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ugui": {
@@ -143,18 +154,9 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "com.unity.visualeffectgraph": {
-      "version": "7.3.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.shadergraph": "7.3.1"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.webrtc": {
-      "version": "2.1.1-preview",
-      "depth": 1,
+      "version": "2.2.0-preview",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.editorcoroutines": "1.0.0"
