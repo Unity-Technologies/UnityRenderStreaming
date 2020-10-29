@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Unity.WebRTC;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
@@ -13,6 +14,9 @@ namespace Unity.RenderStreaming
 
         [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex = 0;
+
+        [SerializeField, Tooltip("Rendering Camera View (optional)")]
+        private RawImage localImage;
 
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
@@ -48,14 +52,24 @@ namespace Unity.RenderStreaming
             m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y);
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
-            
+
             m_track = new VideoStreamTrack(gameObject.name, m_webCamTexture);
             RenderStreaming.Instance?.AddVideoStreamTrack(m_track);
+
+            if (localImage != null)
+            {
+                localImage.texture = m_webCamTexture;
+            }
         }
 
         void OnDisable()
         {
             RenderStreaming.Instance?.RemoveVideoStreamTrack(m_track);
+
+            if (localImage != null)
+            {
+                localImage.texture = null;
+            }
         }
     }
 }
