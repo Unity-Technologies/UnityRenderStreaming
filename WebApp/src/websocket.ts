@@ -43,6 +43,13 @@ export default class WSSignaling {
             clients.set(ws, new Set<string>());
 
             ws.onclose = (_event: CloseEvent) => {
+                let connectionIds = clients.get(ws);
+                connectionIds.forEach(connectionId => {
+                    connectionPair.delete(connectionId);
+                    offers.delete(connectionId);
+                    answers.delete(connectionId);
+                })
+                candidates.delete(ws);
                 clients.delete(ws);
             }
 
@@ -65,9 +72,6 @@ export default class WSSignaling {
                     case "connect":
                         this.onConnect(ws);
                         break;
-                    case "disconnect":
-                        this.onDisconnect(ws, msg.data);
-                        break;
                     case "offer":
                         this.onOffer(ws, msg.data);
                         break;
@@ -89,13 +93,6 @@ export default class WSSignaling {
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
         ws.send(JSON.stringify({type:"connect", connectionId:connectionId}));
-    }
-
-    private onDisconnect(ws: WebSocket, message: any){
-        const connectionIds = clients.get(ws);
-        const connectionId = message.connectionId as string;
-        connectionIds.delete(connectionId);
-        connectionPair.delete(connectionId);
     }
 
     private onOffer(ws: WebSocket, message: any){

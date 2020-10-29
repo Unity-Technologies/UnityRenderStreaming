@@ -108,7 +108,7 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if (e.candidate != null) {
-        _this.signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        _this.signaling.sendCandidate(_this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -152,23 +152,26 @@ export class VideoPlayer {
       await _this.pc.addIceCandidate(iceCandidate);
     });
 
+    this.signaling.addEventListener('connect', async (e) => {
+      _this.connectionId = e.detail;
+      // Add transceivers to receive multi stream.
+      // It can receive two video tracks and one audio track from Unity app.
+      // This operation is required to generate offer SDP correctly.
+      _this.pc.addTransceiver('video', { direction: 'recvonly' });
+      _this.pc.addTransceiver('video', { direction: 'recvonly' });
+      _this.pc.addTransceiver('audio', { direction: 'recvonly' });
+
+      // create offer
+      const offer = await _this.pc.createOffer(this.offerOptions);
+
+      // set local sdp
+      const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
+      await _this.pc.setLocalDescription(desc);
+      await _this.signaling.sendOffer(_this.connectionId, offer.sdp);
+    });
+
     // setup signaling
     await this.signaling.start();
-
-    // Add transceivers to receive multi stream.
-    // It can receive two video tracks and one audio track from Unity app.
-    // This operation is required to generate offer SDP correctly.
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('audio', { direction: 'recvonly' });
-
-    // create offer
-    const offer = await this.pc.createOffer(this.offerOptions);
-
-    // set local sdp
-    const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-    await this.pc.setLocalDescription(desc);
-    await this.signaling.sendOffer(offer.sdp);
   };
 
   resizeVideo() {

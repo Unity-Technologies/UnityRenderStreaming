@@ -70,7 +70,7 @@ router.get('/answer', (req: Request, res: Response) => {
   for (const connectionId of connectionIds) {
     const answer = answers.get(connectionId);
     if (answer.datetime > fromTime) {
-      arr.push({ connectionId, sdp: answer.sdp });
+      arr.push({ connectionId: connectionId, sdp: answer.sdp });
     }
   }
   res.json({ answers: arr });
@@ -97,7 +97,7 @@ router.get('/candidate', (req: Request, res: Response) => {
     if (arrayCandidates.length === 0) {
       continue;
     }
-    arr.push({ connectionId, candidates: arrayCandidates });
+    arr.push({ connectionId: connectionId, candidates: arrayCandidates });
   }
   res.json({ candidates: arr });
 });
@@ -124,7 +124,7 @@ router.put('/connection', (req: Request, res: Response) => {
 
 router.delete('/connection', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
-  const { connectionId } = req.body;
+  const connectionId = req.body.connectionId;
   const connectionIds = clients.get(sessionId);
   connectionIds.delete(connectionId);
   connectionPair.delete(connectionId);
@@ -133,7 +133,7 @@ router.delete('/connection', (req: Request, res: Response) => {
 
 router.post('/offer', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
-  const { connectionId } = req.body;
+  const connectionId = req.body.connectionId;
   offers.set(connectionId, new Offer(req.body.sdp, Date.now()));
   connectionPair.set(connectionId, [sessionId, null]);
   res.sendStatus(200);
@@ -141,7 +141,7 @@ router.post('/offer', (req: Request, res: Response) => {
 
 router.post('/answer', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
-  const { connectionId } = req.body;
+  const connectionId = req.body.connectionId;
   const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
   answers.set(connectionId, new Answer(req.body.sdp, Date.now()));
@@ -164,7 +164,7 @@ router.post('/answer', (req: Request, res: Response) => {
 
 router.post('/candidate', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
-  const { connectionId } = req.body;
+  const connectionId = req.body.connectionId;
 
   if (!candidates.has(sessionId)) {
     candidates.set(sessionId, new Map<string, Candidate[]>());

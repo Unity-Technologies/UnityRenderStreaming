@@ -9,6 +9,7 @@ export class SendVideo {
         this.remoteStram = new MediaStream();
         this.negotiationneededCounter = 0;
         this.isOffer = false;
+        this.connectionId = "";
     }
 
     static getConfiguration() {
@@ -45,18 +46,26 @@ export class SendVideo {
             this.signaling = new Signaling();
         }
 
+        this.signaling.addEventListener('connect', async(e) => {
+            _this.connectionId = e.detail;
+            _this.prepareNewPeerConnection(_this.connectionId, true);
+        });
+
         this.signaling.addEventListener('offer', async (e) => {
-            console.error(e);
-            if (_this.pc) {
-                console.error('peerConnection alreay exist');
+            if (_this.pc == null) {
+                console.error('peerConnection not exist yet');
+                return;
             }
-            _this.prepareNewPeerConnection(false);
             const offer = e.detail;
+            _this.prepareNewPeerConnection(offer.connectionId, false);
             const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
             await _this.pc.setRemoteDescription(desc);
+
+            this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
+
             let answer = await _this.pc.createAnswer();
             await _this.pc.setLocalDescription(answer);
-            _this.signaling.sendAnswer(answer.sdp);
+            _this.signaling.sendAnswer(offer.connectionId, answer.sdp);
         });
 
         this.signaling.addEventListener('answer', async (e) => {
@@ -76,15 +85,19 @@ export class SendVideo {
         });
 
         await this.signaling.start();
-        this.prepareNewPeerConnection(true);
     }
 
     async addTrack() {
         const _this = this;
+
+        if (_this.connectionId == null) {
+            return;
+        }
+
         this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
     }
 
-    prepareNewPeerConnection(isOffer) {
+    prepareNewPeerConnection(connectionId, isOffer) {
         const _this = this;
         this.isOffer = isOffer;
         // close current RTCPeerConnection
@@ -119,21 +132,29 @@ export class SendVideo {
 
         this.pc.onicecandidate = e => {
             if (e.candidate != null) {
-                _this.signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+                _this.signaling.sendCandidate(connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
             }
         };
 
         this.pc.onnegotiationneeded = async () => {
-            if (_this.isOffer) {
-                if (_this.negotiationneededCounter === 0) {
-                    let offer = await _this.pc.createOffer();
-                    console.log('createOffer() succsess in promise');
-                    await _this.pc.setLocalDescription(offer);
-                    console.log('setLocalDescription() succsess in promise');
-                    _this.signaling.sendOffer(offer.sdp);
-                    _this.negotiationneededCounter++;
-                }
+
+            if(!_this.isOffer)
+            {
+                return;
             }
+
+            let offer = await _this.pc.createOffer();
+            console.log('createOffer() succsess in promise');
+
+            if(_this.pc.signalingState != "stable")
+            {
+                console.error("peerconnection's signaling state is not stable.")
+                return;
+            }
+
+            await _this.pc.setLocalDescription(offer);
+            console.log('setLocalDescription() succsess in promise');
+            _this.signaling.sendOffer(connectionId, offer.sdp);
         };
     }
 
@@ -142,7 +163,7 @@ export class SendVideo {
             if (this.pc.iceConnectionState !== 'closed') {
                 this.pc.close();
                 this.pc = null;
-                negotiationneededCounter = 0;
+                this.connectionId = null;
                 console.log('sending close message');
                 this.signaling.stop();
                 return;
