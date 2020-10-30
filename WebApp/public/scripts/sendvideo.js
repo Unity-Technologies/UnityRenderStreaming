@@ -4,12 +4,11 @@ export class SendVideo {
     constructor() {
         const _this = this;
         this.config = SendVideo.getConfiguration();
-        this.pc = null;
         this.localStream = null;
-        this.remoteStram = new MediaStream();
-        this.negotiationneededCounter = 0;
+        this.remoteStream = null;
         this.isOffer = false;
-        this.connectionId = "";
+        this.connectionId = null;
+        this.connectionIdAndPeer = new Map();
     }
 
     static getConfiguration() {
@@ -32,9 +31,10 @@ export class SendVideo {
     async setupConnection(remoteVideo) {
         const _this = this;
         this.remoteVideo = remoteVideo;
-        this.remoteVideo.srcObject = this.remoteStram;
+        this.remoteStream = new MediaStream();
+        this.remoteVideo.srcObject = this.remoteStream;
 
-        this.remoteStram.onaddtrack = async (e) => await _this.remoteVideo.play();
+        this.remoteStream.onaddtrack = async (e) => await _this.remoteVideo.play();
 
         const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
         const createResponse = await fetch(protocolEndPoint);
@@ -48,127 +48,145 @@ export class SendVideo {
 
         this.signaling.addEventListener('connect', async(e) => {
             _this.connectionId = e.detail;
-            _this.prepareNewPeerConnection(_this.connectionId, true);
+            _this.createPeerConnection(_this.connectionId, true);
         });
 
         this.signaling.addEventListener('offer', async (e) => {
-            if (_this.pc == null) {
-                console.error('peerConnection not exist yet');
+            const offer = e.detail;
+
+            if (_this.connectionIdAndPeer.has(offer.connectionId)) {
+                console.error('peerConnection aleady exsist:', offer.connectionId);
                 return;
             }
-            const offer = e.detail;
-            _this.prepareNewPeerConnection(offer.connectionId, false);
+            const pc = _this.createPeerConnection(offer.connectionId, false);
             const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-            await _this.pc.setRemoteDescription(desc);
+            await pc.setRemoteDescription(desc);
 
-            this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
+            this.localStream.getTracks().forEach(track => pc.addTrack(track, _this.localStream));
 
-            let answer = await _this.pc.createAnswer();
-            await _this.pc.setLocalDescription(answer);
+            let answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
             _this.signaling.sendAnswer(offer.connectionId, answer.sdp);
         });
 
         this.signaling.addEventListener('answer', async (e) => {
-            if (!_this.pc) {
-                console.error('peerConnection NOT exist!');
+            const answer = e.detail;
+
+            if (!_this.connectionIdAndPeer.has(answer.connectionId)) {
+                console.error('peerConnection not exsist', answer.connectionId);
                 return;
             }
-            const answer = e.detail;
+
+            const pc = _this.connectionIdAndPeer.get(answer.connectionId);
             const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-            await _this.pc.setRemoteDescription(desc);
+            await pc.setRemoteDescription(desc);
         });
 
         this.signaling.addEventListener('candidate', async (e) => {
             const candidate = e.detail;
+
+            if (!_this.connectionIdAndPeer.has(candidate.connectionId)) {
+                console.error('peerConnection not exsist');
+                return;
+            }
+
+            const pc = _this.connectionIdAndPeer.get(candidate.connectionId);
             const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-            _this.pc.addIceCandidate(iceCandidate);
+            pc.addIceCandidate(iceCandidate);
         });
 
         await this.signaling.start();
     }
 
-    async addTrack() {
+    async call() {
         const _this = this;
 
-        if (_this.connectionId == null) {
+        if (!this.connectionIdAndPeer.has(this.connectionId)) {
+            console.error("peer connection not prepared")
             return;
         }
 
-        this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
+        const pc = this.connectionIdAndPeer.get(this.connectionId);
+        this.localStream.getTracks().forEach(track => pc.addTrack(track, _this.localStream));
     }
 
-    prepareNewPeerConnection(connectionId, isOffer) {
+    createPeerConnection(connectionId, isOffer) {
         const _this = this;
         this.isOffer = isOffer;
-        // close current RTCPeerConnection
-        if (this.pc) {
-            console.log('Close current PeerConnection');
-            this.pc.close();
-            this.pc = null;
+
+        if(this.connectionIdAndPeer.has(connectionId)){
+            const oldPc = this.connectionIdAndPeer.get(connectionId);
+            oldPc.close();
+            this.connectionIdAndPeer.delete(connectionId);
         }
 
         // Create peerConnection with proxy server and set up handlers
-        this.pc = new RTCPeerConnection(this.config);
+        const pc = new RTCPeerConnection(this.config);
+        this.connectionIdAndPeer.set(connectionId, pc);
 
-        this.pc.onsignalingstatechange = e => {
+        pc.onsignalingstatechange = e => {
             console.log('signalingState changed:', e);
         };
 
-        this.pc.oniceconnectionstatechange = e => {
+        pc.oniceconnectionstatechange = e => {
             console.log('iceConnectionState changed:', e);
-            console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
-            if (_this.pc.iceConnectionState === 'disconnected') {
-                _this.hangUp();
+            console.log('pc.iceConnectionState:' + pc.iceConnectionState);
+            if (pc.iceConnectionState === 'disconnected') {
+                pc.close();
+                _this.connectionIdAndPeer.delete(connectionId);
             }
         };
 
-        this.pc.onicegatheringstatechange = e => {
+        pc.onicegatheringstatechange = e => {
             console.log('iceGatheringState changed:', e);
         };
 
-        this.pc.ontrack = async (e) => {
-            _this.remoteStram.addTrack(e.track);
+        pc.ontrack = async (e) => {
+            _this.remoteStream.addTrack(e.track);
         };
 
-        this.pc.onicecandidate = e => {
+        pc.onicecandidate = e => {
             if (e.candidate != null) {
                 _this.signaling.sendCandidate(connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
             }
         };
 
-        this.pc.onnegotiationneeded = async () => {
+        pc.onnegotiationneeded = async () => {
 
             if(!_this.isOffer)
             {
                 return;
             }
 
-            let offer = await _this.pc.createOffer();
+            let offer = await pc.createOffer();
             console.log('createOffer() succsess in promise');
 
-            if(_this.pc.signalingState != "stable")
+            if(pc.signalingState != "stable")
             {
                 console.error("peerconnection's signaling state is not stable.")
                 return;
             }
 
-            await _this.pc.setLocalDescription(offer);
+            await pc.setLocalDescription(offer);
             console.log('setLocalDescription() succsess in promise');
             _this.signaling.sendOffer(connectionId, offer.sdp);
         };
+
+        return pc;
     }
 
     hangUp() {
-        if (this.pc) {
-            if (this.pc.iceConnectionState !== 'closed') {
-                this.pc.close();
-                this.pc = null;
-                this.connectionId = null;
-                console.log('sending close message');
-                this.signaling.stop();
-                return;
+
+        this.localStream.getTracks().forEach(track => track.stop());
+        this.remoteStream.getTracks().forEach(track => track.stop());
+
+        for(let pc in this.connectionIdAndPeer.values()) {
+            if (pc.iceConnectionState !== 'closed') {
+                pc.close();
             }
         }
+        this.signaling.stop();
+        this.connectionIdAndPeer.clear();
         console.log('peerConnection is closed.');
     }
 }

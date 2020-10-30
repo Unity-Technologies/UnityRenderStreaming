@@ -90,7 +90,7 @@ export default class Signaling extends EventTarget {
       const data = await res.json();
       const candidatesList = data.candidates.filter(v => v.connectionId = this.connectionId);
 
-      for (let candidateContainer of candidatesList.candidates) {
+      for (let candidateContainer of candidatesList) {
         for (let candidate of candidateContainer.candidates) {
           const candidateData = {
             'connectionId': candidateContainer.connectionId,
