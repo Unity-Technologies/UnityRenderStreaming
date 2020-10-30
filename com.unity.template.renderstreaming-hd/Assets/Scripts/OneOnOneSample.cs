@@ -225,6 +225,11 @@ class SendRecvVideo : IDisposable
             yield break;
         }
 
+        foreach (var track in m_localStream.GetTracks())
+        {
+            pc.AddTrack(track, m_localStream);
+        }
+
         RTCAnswerOptions options = default;
         var op = pc.CreateAnswer(ref options);
         yield return op;
@@ -352,12 +357,6 @@ class SendRecvVideo : IDisposable
         _candidate.sdpMid = e.sdpMid;
 
         pc.AddIceCandidate(ref _candidate);
-    }
-
-    [Serializable]
-    class Response
-    {
-        public bool useWebSocket;
     }
 
     public void Dispose()
