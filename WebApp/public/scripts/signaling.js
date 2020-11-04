@@ -57,7 +57,7 @@ export default class Signaling extends EventTarget {
   }
 
   async loopGetAnswer() {
-    // receive answer message from 30secs ago
+    // receive answer message from 20secs ago
     let lastTimeRequest = Date.now() - 20000;
 
     while (true) {
@@ -88,7 +88,7 @@ export default class Signaling extends EventTarget {
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
       const data = await res.json();
-      const candidatesList = data.candidates.filter(v => v.connectionId = this.connectionId);
+      const candidatesList = data.candidates.filter(v => v.connectionId == this.connectionId);
 
       for (let candidateContainer of candidatesList) {
         for (let candidate of candidateContainer.candidates) {
