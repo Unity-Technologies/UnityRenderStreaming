@@ -134,13 +134,14 @@ class SendRecvVideo : IDisposable
     public void SetUp(int width, int height, RawImage remoteImage)
     {
         m_remoteStream = new MediaStream();
-        m_remoteStream.OnAddTrack = e =>
-        {
-            if (e.Track is VideoStreamTrack track)
-            {
-                remoteImage.texture = track.InitializeReceiver(width, height);
-            }
-        };
+        // ToDo: need update webrtc package to 2.2
+        // m_remoteStream.OnAddTrack = e =>
+        // {
+        //     if (e.Track is VideoStreamTrack track)
+        //     {
+        //         remoteImage.texture = track.InitializeReceiver(width, height);
+        //     }
+        // };
 
         if (m_signalingUrl.StartsWith("ws") || m_signalingUrl.StartsWith("wss"))
         {
