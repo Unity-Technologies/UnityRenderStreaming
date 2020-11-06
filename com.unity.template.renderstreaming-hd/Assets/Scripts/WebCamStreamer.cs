@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
-    [RequireComponent(typeof(Camera))]
     public class WebCamStreamer : MonoBehaviour
     {
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
@@ -20,6 +19,7 @@ namespace Unity.RenderStreaming
 
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
+        private Coroutine m_startVideoCorutine;
 
         public void ChangeBitrate(int bitrate)
         {
@@ -33,7 +33,12 @@ namespace Unity.RenderStreaming
                 m_track, null, Convert.ToUInt32(framerate));
         }
 
-        IEnumerator Start()
+        void OnEnable()
+        {
+            m_startVideoCorutine = StartCoroutine(StartVideo());
+        }
+
+        IEnumerator StartVideo()
         {
             if (WebCamTexture.devices.Length == 0)
             {
@@ -65,6 +70,18 @@ namespace Unity.RenderStreaming
         void OnDisable()
         {
             RenderStreaming.Instance?.RemoveVideoStreamTrack(m_track);
+            m_track.Dispose();
+            m_track = null;
+
+            if (m_startVideoCorutine != null)
+            {
+                StopCoroutine(m_startVideoCorutine);
+            }
+
+            if (m_webCamTexture != null)
+            {
+                m_webCamTexture.Stop();
+            }
 
             if (localImage != null)
             {

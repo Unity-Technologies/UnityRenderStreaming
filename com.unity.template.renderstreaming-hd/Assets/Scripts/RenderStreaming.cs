@@ -83,6 +83,10 @@ namespace Unity.RenderStreaming
             m_defaultInput = new DefaultInput();
             EnhancedTouchSupport.Enable();
             m_mainThreadContext = SynchronizationContext.Current;
+
+            m_conf = default;
+            m_conf.iceServers = iceServers;
+            StartCoroutine(WebRTC.WebRTC.Update());
         }
 
         public void OnDestroy()
@@ -94,16 +98,10 @@ namespace Unity.RenderStreaming
             Unity.WebRTC.Audio.Stop();
             m_mainThreadContext = null;
         }
-        public void Start()
-        {
-            m_audioStream = Unity.WebRTC.Audio.CaptureStream();
-            m_conf = default;
-            m_conf.iceServers = iceServers;
-            StartCoroutine(WebRTC.WebRTC.Update());
-        }
 
         void OnEnable()
         {
+            m_audioStream = Unity.WebRTC.Audio.CaptureStream();
             if (this.m_signaling == null)
             {
                 Type t = Type.GetType(signalingType);
@@ -155,14 +153,10 @@ namespace Unity.RenderStreaming
 
         public void AddTransceiver()
         {
-            if (string.IsNullOrEmpty(m_connectionId) ||
-                !m_mapConnectionIdAndPeer.TryGetValue(m_connectionId, out var pc))
+            foreach (var pc in m_mapConnectionIdAndPeer.Values)
             {
-                return;
+                pc.AddTransceiver(TrackKind.Video);
             }
-
-            // ToDo: need update webrtc package to 2.2
-            // pc.AddTransceiver(TrackKind.Video);
         }
 
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
@@ -181,6 +175,15 @@ namespace Unity.RenderStreaming
 
         void OnDisable()
         {
+            m_audioStream?.Dispose();
+            m_audioStream = null;
+
+            foreach (var pc in m_mapConnectionIdAndPeer.Values)
+            {
+                pc.Close();
+            }
+            m_mapConnectionIdAndPeer.Clear();
+
             if (this.m_signaling != null)
             {
                 this.m_signaling.Stop();
@@ -294,6 +297,17 @@ namespace Unity.RenderStreaming
             {
                 Debug.LogError($"connectionId: {connectionId}, did not created peerConnection");
                 yield break;
+            }
+
+            foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
+            {
+                RTCRtpSender sender = pc.AddTrack(track);
+                if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+                {
+                    list = new List<RTCRtpSender>();
+                    m_mapTrackAndSenderList.Add(track, list);
+                }
+                list.Add(sender);
             }
 
             RTCOfferOptions option = new RTCOfferOptions
