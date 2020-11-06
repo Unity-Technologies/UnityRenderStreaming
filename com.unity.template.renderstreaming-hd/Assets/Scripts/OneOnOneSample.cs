@@ -18,12 +18,6 @@ namespace Unity.RenderStreaming
             hangUpButton.onClick.AddListener(HangUp);
         }
 
-        void OnDestroy()
-        {
-            HangUp();
-        }
-
-
         private void SetUp()
         {
             RenderStreaming.Instance.enabled = true;

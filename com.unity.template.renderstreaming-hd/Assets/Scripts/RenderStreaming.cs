@@ -155,7 +155,8 @@ namespace Unity.RenderStreaming
         {
             foreach (var pc in m_mapConnectionIdAndPeer.Values)
             {
-                pc.AddTransceiver(TrackKind.Video);
+                // ToDo: need update webrtc package to 2.2
+                // pc.AddTransceiver(TrackKind.Video);
             }
         }
 
