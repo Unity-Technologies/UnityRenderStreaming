@@ -142,6 +142,12 @@ export class SendVideo {
         };
 
         pc.ontrack = async (e) => {
+            const tracks = _this.remoteStream.getVideoTracks();
+            for (const track of tracks) {
+                if (track.kind == 'video') {
+                    _this.remoteStream.removeTrack(track);
+                }
+            }
             _this.remoteStream.addTrack(e.track);
         };
 
@@ -178,7 +184,9 @@ export class SendVideo {
     hangUp() {
 
         this.localStream.getTracks().forEach(track => track.stop());
+        this.localStream = null;
         this.remoteStream.getTracks().forEach(track => track.stop());
+        this.remoteStream = null;
 
         for(let pc in this.connectionIdAndPeer.values()) {
             if (pc.iceConnectionState !== 'closed') {
