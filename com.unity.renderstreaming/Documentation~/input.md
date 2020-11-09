@@ -106,3 +106,51 @@ You can control the UnityUI placed on the game scene from browser.
 > [!NOTE]
 > If the Unity application is in Background, even if the `RunInBackground` checkbox is On, you can not control the UnityUI from browser. This issue will be fixed in `com.unity.inputsystem`.
 
+
+
+### Workaround for using UnityUI on RunInBackground
+
+If use UnityUI in the background, follow the steps below.
+
+1. Update `com.unity.inputsystem` to `1.1.0-preview.2` on PackageManager.
+
+2. In Project Setting->Player->Other Setting, check `Allow 'unsafe' code`.
+
+3. Replace `EventSystem` in the Scene with the following component.
+
+```CSharp
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+
+public class CustomEventSystem : EventSystem
+{
+    protected override void Awake()
+    {
+        base.Awake();
+        unsafe
+        {
+            InputSystem.onDeviceCommand += InputSystemOnDeviceCommand;
+        }
+    }
+
+    private static unsafe long? InputSystemOnDeviceCommand(InputDevice device, InputDeviceCommand* command)
+    {
+        if (command->type != QueryCanRunInBackground.Type)
+        {
+            // return null is skip this evaluation
+            return null;
+        }
+
+        ((QueryCanRunInBackground*)command)->canRunInBackground = true;
+        return InputDeviceCommand.GenericSuccess;
+    }
+
+    protected override void OnApplicationFocus(bool hasFocus)
+    {
+        //Do not change focus flag on eventsystem
+    }
+}
+```
+
+4. (Optional) For UnityEditor, Open Window->Analysis->Input Debugger and turn on `Lock Input to Game View` in Options.
