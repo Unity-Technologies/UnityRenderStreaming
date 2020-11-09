@@ -24,7 +24,6 @@ pack_{{ project.name }}:
 
 # todo(kazuki): workaround renderstreaming-rtx template test error on Yamato.
 #
-{% if project.name == "renderstreaming-hd" %}
 {% for editor in editors %}
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -43,10 +42,6 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% endif %}
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
-  triggers:
-    branches:
-      only:
-        - "/.*/"
   artifacts:
     logs:
       paths:
@@ -58,7 +53,6 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% endfor %}
 {% endfor %}
 {% endfor %}
-{% endif %} # if project.name == "renderstreaming-hd"
 
 publish_{{ project.name }}:
   name: Publish {{ project.packagename }}
