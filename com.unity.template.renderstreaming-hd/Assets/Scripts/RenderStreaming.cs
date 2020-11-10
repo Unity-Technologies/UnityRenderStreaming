@@ -61,11 +61,10 @@ namespace Unity.RenderStreaming
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
         private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
-        private readonly List<MediaStream> m_listVideoReceiveStream = new List<MediaStream>();
+        private readonly List<ReceiveVideoViewer> m_listVideoReceiveViewer = new List<ReceiveVideoViewer>();
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
-        private string m_connectionId;
 
         public static RenderStreaming Instance { get; private set; }
 
@@ -105,18 +104,38 @@ namespace Unity.RenderStreaming
             if (this.m_signaling == null)
             {
                 Type t = Type.GetType(signalingType);
-                object[] args = { urlSignaling, interval, m_mainThreadContext };
+                object[] args = {urlSignaling, interval, m_mainThreadContext};
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
-                this.m_signaling.OnStart += signaling => signaling.CreateConnection();
-                this.m_signaling.OnCreateConnection += (signaling, id) =>
+                this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString());
+                this.m_signaling.OnCreateConnection += (signaling, id, exist) =>
                 {
-                    m_connectionId = id;
-                    CreatePeerConnection(signaling, m_connectionId, true);
+                    var pc = CreatePeerConnection(signaling, id, !exist);
+                    if (!exist)
+                    {
+                        return;
+                    }
+
+                    foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
+                    {
+                        RTCRtpSender sender = pc.AddTrack(track);
+                        if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+                        {
+                            list = new List<RTCRtpSender>();
+                            m_mapTrackAndSenderList.Add(track, list);
+                        }
+                        list.Add(sender);
+                    }
+
+                    for (int i = 0; i < m_listVideoReceiveViewer.Count; i++)
+                    {
+                        pc.AddTransceiver(TrackKind.Video);
+                    }
                 };
                 this.m_signaling.OnOffer += (signaling, data) => StartCoroutine(OnOffer(signaling, data));
                 this.m_signaling.OnAnswer += (signaling, data) => StartCoroutine(OnAnswer(signaling, data));
                 this.m_signaling.OnIceCandidate += OnIceCandidate;
             }
+
             this.m_signaling.Start();
         }
 
@@ -141,23 +160,24 @@ namespace Unity.RenderStreaming
             m_listVideoStreamTrack.Remove(track);
         }
 
-        public void AddVideoReceiveStream(MediaStream stream)
+        public void AddVideoReceiveStream(ReceiveVideoViewer viewer)
         {
-            m_listVideoReceiveStream.Add(stream);
+            m_listVideoReceiveViewer.Add(viewer);
         }
 
-        public void RemoveVideoReceiveStream(MediaStream stream)
+        public void RemoveVideoReceiveStream(ReceiveVideoViewer viewer)
         {
-            m_listVideoReceiveStream.Remove(stream);
+            m_listVideoReceiveViewer.Remove(viewer);
         }
 
-        public void AddTransceiver()
+        public void CreateConnection(string connectionId)
         {
-            foreach (var pc in m_mapConnectionIdAndPeer.Values)
-            {
-                // ToDo: need update webrtc package to 2.2
-                // pc.AddTransceiver(TrackKind.Video);
-            }
+            m_signaling?.CreateConnection(connectionId);
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            m_signaling?.CloseConnection(connectionId);
         }
 
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
@@ -195,13 +215,11 @@ namespace Unity.RenderStreaming
         IEnumerator OnOffer(ISignaling signaling, DescData e)
         {
             var connectionId = e.connectionId;
-            if (m_mapConnectionIdAndPeer.ContainsKey(connectionId))
+            RTCPeerConnection pc = null;
+            if (!m_mapConnectionIdAndPeer.TryGetValue(connectionId, out pc))
             {
-                Debug.LogError($"connection:{connectionId} peerConnection already exist");
-                yield break;
+                pc = CreatePeerConnection(signaling, connectionId, false);
             }
-
-            var pc = CreatePeerConnection(signaling, connectionId, false);
 
             RTCSessionDescription _desc;
             _desc.type = RTCSdpType.Offer;
@@ -277,9 +295,9 @@ namespace Unity.RenderStreaming
 
             pc.OnTrack = trackEvent =>
             {
-                foreach (var receiveStream in m_listVideoReceiveStream)
+                foreach (var videoViewer in m_listVideoReceiveViewer)
                 {
-                    receiveStream.AddTrack(trackEvent.Track);
+                    videoViewer.AddTrack(connectionId, trackEvent);
                 }
             };
 
@@ -298,17 +316,6 @@ namespace Unity.RenderStreaming
             {
                 Debug.LogError($"connectionId: {connectionId}, did not created peerConnection");
                 yield break;
-            }
-
-            foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
-            {
-                RTCRtpSender sender = pc.AddTrack(track);
-                if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
-                {
-                    list = new List<RTCRtpSender>();
-                    m_mapTrackAndSenderList.Add(track, list);
-                }
-                list.Add(sender);
             }
 
             RTCOfferOptions option = new RTCOfferOptions

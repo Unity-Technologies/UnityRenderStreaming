@@ -184,8 +184,8 @@ namespace Unity.RenderStreaming
             signaling1.Start();
             yield return new WaitUntil(() => startRaised1);
 
-            signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
-            signaling1.CreateConnection();
+            signaling1.OnCreateConnection += (s, connectionId, exist) => { connectionId1 = connectionId; };
+            signaling1.CreateConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
             Assert.IsNotEmpty(connectionId1);
         }
@@ -204,8 +204,8 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
-            signaling1.CreateConnection();
+            signaling1.OnCreateConnection += (s, connectionId, exist) => { connectionId1 = connectionId; };
+            signaling1.CreateConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
@@ -229,8 +229,8 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
-            signaling1.CreateConnection();
+            signaling1.OnCreateConnection += (s, connectionId, exist) => { connectionId1 = connectionId; };
+            signaling1.CreateConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
@@ -259,8 +259,8 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
-            signaling1.CreateConnection();
+            signaling1.OnCreateConnection += (s, connectionId, exist) => { connectionId1 = connectionId; };
+            signaling1.CreateConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };

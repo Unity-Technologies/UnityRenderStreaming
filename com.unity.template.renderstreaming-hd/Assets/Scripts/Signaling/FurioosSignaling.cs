@@ -42,14 +42,6 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
-        public string connectionId
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public void Start()
         {
             m_running = true;
@@ -110,9 +102,14 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection()
+        public void CreateConnection(string connectionId)
         {
             this.WSSend("{\"type\":\"connect\"}");
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            throw new NotImplementedException();
         }
 
         private void WSManage()

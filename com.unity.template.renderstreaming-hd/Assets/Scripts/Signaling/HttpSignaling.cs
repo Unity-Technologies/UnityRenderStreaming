@@ -87,9 +87,14 @@ namespace Unity.RenderStreaming.Signaling
             HTTPPost("signaling/candidate", data);
         }
 
-        public void CreateConnection()
+        public void CreateConnection(string connectionId)
         {
             HTTPConnect();
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            throw new NotImplementedException();
         }
 
         private void HTTPPooling()
@@ -265,7 +270,7 @@ namespace Unity.RenderStreaming.Signaling
             m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
                 .ToJsMilliseconds();
 
-            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId), null);
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExist), null);
             return true;
         }
 

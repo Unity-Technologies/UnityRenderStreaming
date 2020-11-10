@@ -99,9 +99,14 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection()
+        public void CreateConnection(string connectionId)
         {
-            this.WSSend("{\"type\":\"connect\"}");
+            this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\"}}");
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            this.WSSend($"{{\"type\":\"close\", \"connectionId\":\"{connectionId}\"}}");
         }
 
         private void WSManage()
@@ -161,8 +166,8 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
-                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
-                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, connectionId), null);
+                        SignalingMessage message = JsonUtility.FromJson<SignalingMessage>(content);
+                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, message.connectionId, message.peerExists), null);
                     }
                     else if (routedMessage.type == "offer")
                     {
