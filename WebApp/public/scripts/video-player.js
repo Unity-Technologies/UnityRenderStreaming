@@ -153,7 +153,7 @@ export class VideoPlayer {
     });
 
     this.signaling.addEventListener('connect', async (e) => {
-      _this.connectionId = e.detail;
+      _this.connectionId = e.detail.connectionId;
       // Add transceivers to receive multi stream.
       // It can receive two video tracks and one audio track from Unity app.
       // This operation is required to generate offer SDP correctly.
@@ -171,8 +171,21 @@ export class VideoPlayer {
     });
 
     // setup signaling
-    await this.signaling.start();
+    await this.signaling.start(this.uuid(), true);
   };
+
+  uuid() {
+    var uuid = "", i, random;
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+  
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += "-"
+      }
+      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+    }
+    return uuid;
+  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();

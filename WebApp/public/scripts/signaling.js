@@ -164,12 +164,12 @@ export class WebSocketSignaling extends EventTarget {
     }
   }
 
-  async start() {
+  async start(connectionId, isVideoPlayer) {
     this.websocket = new WebSocket(this.websocketUrl);
     this.connectionId = null;
 
     this.websocket.onopen = () => {
-      this.websocket.send(JSON.stringify({ type: "connect" }));
+      this.websocket.send(JSON.stringify({ type: "connect", 'connectionId':connectionId, 'isVideoPlayer': isVideoPlayer }));
     }
 
     this.websocket.onmessage = (event) => {
@@ -183,7 +183,11 @@ export class WebSocketSignaling extends EventTarget {
       switch (msg.type) {
         case "connect":
           this.connectionId = msg.connectionId;
-          this.dispatchEvent(new CustomEvent('connect', { detail: msg.connectionId }));
+          const connectData = {
+            'connectionId': msg.connectionId,
+            'peerExist': msg.peerExist
+          }
+          this.dispatchEvent(new CustomEvent('connect', { detail: connectData }));
           break;
         case "offer":
           const offerData = {

@@ -1,6 +1,5 @@
 import * as websocket from "ws";
 import { Server } from 'http';
-import { v4 as uuid } from 'uuid';
 import Offer from './class/offer';
 import Answer from './class/answer';
 import Candidate from './class/candidate';
@@ -20,6 +19,9 @@ const answers: Map<string, Answer> = new Map<string, Answer>();
 // [{sessionId:[{connectionId:Candidate},...]}]
 const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<WebSocket, Map<string, Candidate[]>>();
 
+// [{connectionId:[settion1, session2,...]}]
+const connection: Map<string, Set<WebSocket>> = new Map<string, Set<WebSocket>>();
+
 function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
     let connectionIds = null;
     if (!clients.has(settion)) {
@@ -33,10 +35,12 @@ function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
 export default class WSSignaling {
     server: Server;
     wss: websocket.Server;
+    useSessionList: boolean;
 
     constructor(server: Server) {
         this.server = server;
         this.wss = new websocket.Server({ server });
+        this.useSessionList = true;
 
         this.wss.on('connection', (ws: WebSocket) => {
 
@@ -48,6 +52,11 @@ export default class WSSignaling {
                     connectionPair.delete(connectionId);
                     offers.delete(connectionId);
                     answers.delete(connectionId);
+                    const list = connection.get(connectionId);
+                    list.delete(ws);
+                    if (list.size == 0) {
+                        connection.delete(connectionId);
+                    }
                 })
                 candidates.delete(ws);
                 clients.delete(ws);
@@ -70,7 +79,7 @@ export default class WSSignaling {
 
                 switch (msg.type) {
                     case "connect":
-                        this.onConnect(ws);
+                        this.onConnect(ws, msg);
                         break;
                     case "offer":
                         this.onOffer(ws, msg.data);
@@ -88,19 +97,31 @@ export default class WSSignaling {
         });
     }
 
-    private onConnect(ws: WebSocket){
-        const connectionId: string = uuid();
+    private onConnect(ws: WebSocket, message: any) {
+        let connectionId = message.connectionId;
+        this.useSessionList = !message.isVideoPlayer;
+
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
-        ws.send(JSON.stringify({type:"connect", connectionId:connectionId}));
+        const exist = connection.has(connectionId);
+        let sessionList = null
+        if (exist) {
+            sessionList = connection.get(connectionId);
+        } else {
+            sessionList = new Set<WebSocket>();
+            connection.set(connectionId, sessionList);
+        }
+        sessionList.add(ws);
+        ws.send(JSON.stringify({ type: "connect", connectionId:connectionId, peerExist: exist }));
     }
 
-    private onOffer(ws: WebSocket, message: any){
+    private onOffer(ws: WebSocket, message: any) {
         const connectionId = message.connectionId as string;
         const newOffer = new Offer(message.sdp, Date.now());
         offers.set(connectionId, newOffer);
         connectionPair.set(connectionId, [ws, null]);
-        clients.forEach((_v, k) => {
+        const sessionList = this.useSessionList ? connection.get(connectionId) : Array.from(clients.keys());
+        sessionList.forEach((k: WebSocket) => {
             if (k == ws) {
                 return;
             }
@@ -121,12 +142,13 @@ export default class WSSignaling {
 
         const mapCandidates = candidates.get(otherSessionWs);
         if (mapCandidates) {
-          const arrayCandidates = mapCandidates.get(connectionId);
-          for (const candidate of arrayCandidates) {
-            candidate.datetime = Date.now();
-          }
+            const arrayCandidates = mapCandidates.get(connectionId);
+            for (const candidate of arrayCandidates) {
+                candidate.datetime = Date.now();
+            }
         }
-        clients.forEach((_v, k) => {
+        const sessionList = this.useSessionList ? connection.get(connectionId) : Array.from(clients.keys());
+        sessionList.forEach((k: WebSocket) => {
             if (k == ws) {
                 return;
             }
@@ -134,25 +156,26 @@ export default class WSSignaling {
         });
     }
 
-    private onCandidate(ws: WebSocket, message: any){
+    private onCandidate(ws: WebSocket, message: any) {
         const connectionId = message.connectionId;
 
         if (!candidates.has(ws)) {
-          candidates.set(ws, new Map<string, Candidate[]>());
+            candidates.set(ws, new Map<string, Candidate[]>());
         }
         const map = candidates.get(ws);
         if (!map.has(connectionId)) {
-          map.set(connectionId, []);
+            map.set(connectionId, []);
         }
         const arr = map.get(connectionId);
         const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
         arr.push(candidate);
 
-        clients.forEach((_v, k) => {
+        const sessionList = this.useSessionList ? connection.get(connectionId) : Array.from(clients.keys());
+        sessionList.forEach((k: WebSocket) => {
             if (k === ws) {
                 return;
             }
-            k.send(JSON.stringify({from:connectionId, to:"", type:"candidate", data:candidate}));
+            k.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
         });
     }
 }
