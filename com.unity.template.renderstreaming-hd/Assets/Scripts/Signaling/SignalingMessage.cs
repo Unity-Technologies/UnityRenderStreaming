@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
         public string message;
         public string sessionId;
         public string connectionId;
-        public bool peerExists;
+        public bool peerExist;
         public string sdp;
         public string type;
         public string candidate;

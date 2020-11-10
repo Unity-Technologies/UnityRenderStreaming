@@ -109,7 +109,7 @@ namespace Unity.RenderStreaming
                 this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString());
                 this.m_signaling.OnCreateConnection += (signaling, id, exist) =>
                 {
-                    var pc = CreatePeerConnection(signaling, id, !exist);
+                    var pc = CreatePeerConnection(signaling, id, exist);
                     if (!exist)
                     {
                         return;
