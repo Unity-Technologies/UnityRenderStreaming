@@ -164,12 +164,12 @@ export class WebSocketSignaling extends EventTarget {
     }
   }
 
-  async start(connectionId, isVideoPlayer) {
+  async start(connectionId, broadcast) {
     this.websocket = new WebSocket(this.websocketUrl);
     this.connectionId = null;
 
     this.websocket.onopen = () => {
-      this.websocket.send(JSON.stringify({ type: "connect", 'connectionId':connectionId, 'isVideoPlayer': isVideoPlayer }));
+      this.websocket.send(JSON.stringify({ type: "connect", 'connectionId':connectionId, 'broadcast': broadcast }));
     }
 
     this.websocket.onmessage = (event) => {
