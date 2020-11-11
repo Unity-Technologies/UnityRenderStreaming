@@ -7,22 +7,28 @@ namespace Unity.RenderStreaming.Editor
     {
         [MenuItem("Edit/Render Streaming/Download web app")]
         static void DownloadWebAppFromMenu() {
-            var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
-            WebAppDownloader.DownloadWebApp(dstPath, null);
+            WebAppDownloader.GetPackageVersion("com.unity.renderstreaming", (version) => {
+                var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
+                WebAppDownloader.DownloadWebApp(version, dstPath, null);
+            });
         }
 
         [MenuItem("Edit/Render Streaming/Show web app documentation")]
         static void ShowWepAppDocumentation()
         {
-            var url = WebAppDownloader.GetURLDocumentation();
-            Application.OpenURL(url);
+            WebAppDownloader.GetPackageVersion("com.unity.renderstreaming", (version) => {
+                var url = WebAppDownloader.GetURLDocumentation(version);
+                Application.OpenURL(url);
+            });
         }
 
         [MenuItem("Edit/Render Streaming/Show web app source code")]
         static void ShowWepAppSourceCode()
         {
-            var url = WebAppDownloader.GetURLSourceCode();
-            Application.OpenURL(url);
+            WebAppDownloader.GetPackageVersion("com.unity.renderstreaming", (version) => {
+                var url = WebAppDownloader.GetURLSourceCode(version);
+                Application.OpenURL(url);
+            });
         }
     }
 }

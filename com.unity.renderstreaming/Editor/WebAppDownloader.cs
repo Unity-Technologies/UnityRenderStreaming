@@ -29,7 +29,7 @@ namespace Unity.RenderStreaming.Editor
 #endif
         }
 
-        public static string GetWebAppURL(string version = null)
+        public static string GetWebAppURL(string version)
         {
             if (version == null)
             {
@@ -40,33 +40,24 @@ namespace Unity.RenderStreaming.Editor
             return System.IO.Path.Combine(URLRoot, System.IO.Path.Combine(path, fileName));
         }
 
-        public static string GetURLDocumentation(string version = null)
+        public static string GetURLDocumentation(string version)
         {
-            if (version == null)
-            {
-                version = LatestKnownVersion;
-            }
-
             var pattern = @"\d+.\d+";
             var result = System.Text.RegularExpressions.Regex.Match(version, pattern);
             return string.Format(URLWebAppDocumentation, result.Value);
         }
 
-        public static string GetURLSourceCode(string version = null)
+        public static string GetURLSourceCode(string version)
         {
-            if (version == null)
-            {
-                version = LatestKnownVersion;
-            }
-
             var pattern = @"\d+.\d+.\d+";
             var result = System.Text.RegularExpressions.Regex.Match(version, pattern);
             return System.IO.Path.Combine(URLRoot, string.Format(PathWebAppSourceCode, result.Value));
         }
 
-        public static void DownloadWebApp(string dstPath, System.Action<bool> callback)
-        {
-            DownloadWebApp(null, dstPath, callback);
+        public static void DownloadCurrentVersionWebApp(string dstPath, System.Action<bool> callback) {
+            GetPackageVersion("com.unity.renderstreaming", (version) => {
+                DownloadWebApp(version, dstPath, callback);
+            });
         }
 
         public static void DownloadWebApp(string version, string dstPath, System.Action<bool> callback)
