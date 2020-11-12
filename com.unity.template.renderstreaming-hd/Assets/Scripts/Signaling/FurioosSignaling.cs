@@ -102,7 +102,7 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection(string connectionId)
+        public void CreateConnection(string connectionId, bool specified)
         {
             this.WSSend("{\"type\":\"connect\"}");
         }

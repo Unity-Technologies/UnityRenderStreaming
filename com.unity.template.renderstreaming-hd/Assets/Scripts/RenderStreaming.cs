@@ -106,7 +106,7 @@ namespace Unity.RenderStreaming
                 Type t = Type.GetType(signalingType);
                 object[] args = {urlSignaling, interval, m_mainThreadContext};
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
-                this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString());
+                this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString(), false);
                 this.m_signaling.OnCreateConnection += (signaling, id, exist) =>
                 {
                     var pc = CreatePeerConnection(signaling, id, exist);
@@ -165,9 +165,9 @@ namespace Unity.RenderStreaming
             m_listVideoReceiveViewer.Remove(viewer);
         }
 
-        public void CreateConnection(string connectionId)
+        public void CreateConnection(string connectionId, bool specified)
         {
-            m_signaling?.CreateConnection(connectionId);
+            m_signaling?.CreateConnection(connectionId, specified);
         }
 
         public void CloseConnection(string connectionId)

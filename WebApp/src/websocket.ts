@@ -22,7 +22,8 @@ const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<WebSocket, 
 // [{connectionId:[settion1, session2,...]}]
 const connection: Map<string, Set<WebSocket>> = new Map<string, Set<WebSocket>>();
 
-const broadcastIds: Map<string, boolean> = new Map<string, boolean>();
+// [{connectionId:SpecifiedFlag}]
+const specifiedConnection: Map<string, boolean> = new Map<string, boolean>();
 
 function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
     let connectionIds = null;
@@ -56,7 +57,7 @@ export default class WSSignaling {
                     list.delete(ws);
                     if (list.size == 0) {
                         connection.delete(connectionId);
-                        broadcastIds.delete(connectionId);
+                        specifiedConnection.delete(connectionId);
                     }
                 })
                 candidates.delete(ws);
@@ -100,7 +101,7 @@ export default class WSSignaling {
 
     private onConnect(ws: WebSocket, message: any) {
         let connectionId = message.connectionId;
-        broadcastIds.set(connectionId, message.broadcast);
+        specifiedConnection.set(connectionId, message.specified);
 
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
@@ -121,7 +122,7 @@ export default class WSSignaling {
         const newOffer = new Offer(message.sdp, Date.now());
         offers.set(connectionId, newOffer);
         connectionPair.set(connectionId, [ws, null]);
-        const sessionList = broadcastIds.get(connectionId) ? Array.from(clients.keys()) : connection.get(connectionId);
+        const sessionList = specifiedConnection.get(connectionId) ? connection.get(connectionId) : Array.from(clients.keys());
         sessionList.forEach((k: WebSocket) => {
             if (k == ws) {
                 return;
@@ -148,7 +149,7 @@ export default class WSSignaling {
                 candidate.datetime = Date.now();
             }
         }
-        const sessionList = broadcastIds.get(connectionId) ? Array.from(clients.keys()) : connection.get(connectionId);
+        const sessionList = specifiedConnection.get(connectionId) ? connection.get(connectionId) : Array.from(clients.keys());
         sessionList.forEach((k: WebSocket) => {
             if (k == ws) {
                 return;
@@ -171,7 +172,7 @@ export default class WSSignaling {
         const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
         arr.push(candidate);
 
-        const sessionList = broadcastIds.get(connectionId) ? Array.from(clients.keys()) : connection.get(connectionId);
+        const sessionList = specifiedConnection.get(connectionId) ? connection.get(connectionId) : Array.from(clients.keys());
         sessionList.forEach((k: WebSocket) => {
             if (k === ws) {
                 return;

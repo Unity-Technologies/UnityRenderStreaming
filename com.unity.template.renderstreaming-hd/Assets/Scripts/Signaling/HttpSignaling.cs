@@ -87,7 +87,7 @@ namespace Unity.RenderStreaming.Signaling
             HTTPPost("signaling/candidate", data);
         }
 
-        public void CreateConnection(string connectionId)
+        public void CreateConnection(string connectionId, bool specified)
         {
             HTTPConnect();
         }

@@ -164,12 +164,12 @@ export class WebSocketSignaling extends EventTarget {
     }
   }
 
-  async start(connectionId, broadcast) {
+  async start(connectionId, specified) {
     this.websocket = new WebSocket(this.websocketUrl);
     this.connectionId = null;
 
     this.websocket.onopen = () => {
-      this.websocket.send(JSON.stringify({ type: "connect", 'connectionId':connectionId, 'broadcast': broadcast }));
+      this.websocket.send(JSON.stringify({ type: "connect", 'connectionId':connectionId, 'specified': specified }));
     }
 
     this.websocket.onmessage = (event) => {

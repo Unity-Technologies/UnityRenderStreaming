@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming
                 }
             };
 
-            RenderStreaming.Instance?.CreateConnection(m_connectionId);
+            RenderStreaming.Instance?.CreateConnection(m_connectionId, true);
         }
 
         void OnDisable()

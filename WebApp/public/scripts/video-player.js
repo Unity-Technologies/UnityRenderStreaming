@@ -171,7 +171,7 @@ export class VideoPlayer {
     });
 
     // setup signaling
-    await this.signaling.start(this.uuid(), true);
+    await this.signaling.start(this.uuid(), false);
   };
 
   uuid() {

@@ -99,9 +99,9 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection(string connectionId)
+        public void CreateConnection(string connectionId, bool specified)
         {
-            this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\"}}");
+            this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\", \"specified\":\"{specified}\"}}");
         }
 
         public void CloseConnection(string connectionId)
