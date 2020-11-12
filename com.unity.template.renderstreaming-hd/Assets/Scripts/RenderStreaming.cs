@@ -125,11 +125,6 @@ namespace Unity.RenderStreaming
                         }
                         list.Add(sender);
                     }
-
-                    for (int i = 0; i < m_listVideoReceiveViewer.Count; i++)
-                    {
-                        pc.AddTransceiver(TrackKind.Video);
-                    }
                 };
                 this.m_signaling.OnOffer += (signaling, data) => StartCoroutine(OnOffer(signaling, data));
                 this.m_signaling.OnAnswer += (signaling, data) => StartCoroutine(OnAnswer(signaling, data));
@@ -248,11 +243,6 @@ namespace Unity.RenderStreaming
                     m_mapTrackAndSenderList.Add(track, list);
                 }
                 list.Add(sender);
-            }
-
-            for (int i = 0; i < m_listVideoReceiveViewer.Count; i++)
-            {
-                pc.AddTransceiver(TrackKind.Video);
             }
 
             RTCAnswerOptions options = default;
