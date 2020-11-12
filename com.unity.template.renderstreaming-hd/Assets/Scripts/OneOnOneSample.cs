@@ -16,20 +16,18 @@ namespace Unity.RenderStreaming
         {
             setUpButton.onClick.AddListener(SetUp);
             hangUpButton.onClick.AddListener(HangUp);
+            webCamStreamer.OnEnableComplete += () => receiveVideoViewer.enabled = true;
         }
 
         private void SetUp()
         {
-            RenderStreaming.Instance.enabled = true;
             webCamStreamer.enabled = true;
-            receiveVideoViewer.enabled = true;
         }
 
         private void HangUp()
         {
             webCamStreamer.enabled = false;
             receiveVideoViewer.enabled = false;
-            RenderStreaming.Instance.enabled = false;
         }
     }
 }

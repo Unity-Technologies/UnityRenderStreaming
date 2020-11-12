@@ -8,6 +8,8 @@ namespace Unity.RenderStreaming
 {
     public class WebCamStreamer : MonoBehaviour
     {
+        public delegate void OnEnableCompleteHandler();
+
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
@@ -20,6 +22,8 @@ namespace Unity.RenderStreaming
         private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
         private Coroutine m_startVideoCorutine;
+
+        public OnEnableCompleteHandler OnEnableComplete;
 
         public void ChangeBitrate(int bitrate)
         {
@@ -65,6 +69,8 @@ namespace Unity.RenderStreaming
             {
                 localImage.texture = m_webCamTexture;
             }
+
+            OnEnableComplete?.Invoke();
         }
 
         void OnDisable()

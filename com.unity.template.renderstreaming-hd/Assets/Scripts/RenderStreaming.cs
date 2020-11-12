@@ -178,6 +178,11 @@ namespace Unity.RenderStreaming
         public void CloseConnection(string connectionId)
         {
             m_signaling?.CloseConnection(connectionId);
+            if (m_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+            {
+                pc.Close();
+                m_mapConnectionIdAndPeer.Remove(connectionId);
+            }
         }
 
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
@@ -243,6 +248,11 @@ namespace Unity.RenderStreaming
                     m_mapTrackAndSenderList.Add(track, list);
                 }
                 list.Add(sender);
+            }
+
+            for (int i = 0; i < m_listVideoReceiveViewer.Count; i++)
+            {
+                pc.AddTransceiver(TrackKind.Video);
             }
 
             RTCAnswerOptions options = default;
