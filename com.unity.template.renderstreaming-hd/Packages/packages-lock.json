@@ -87,11 +87,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.renderstreaming": {
-      "version": "2.1.1-preview",
+      "version": "2.2.0-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.webrtc": "2.1.1-preview",
+        "com.unity.webrtc": "2.2.0-preview",
         "com.unity.inputsystem": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -153,7 +153,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.webrtc": {
-      "version": "2.1.1-preview",
+      "version": "2.2.0-preview",
       "depth": 1,
       "source": "registry",
       "dependencies": {

@@ -161,8 +161,7 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            // ToDo: need update webrtc package to 2.2
-            // pc.AddTransceiver(TrackKind.Video);
+            pc.AddTransceiver(TrackKind.Video);
         }
 
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
