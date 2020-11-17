@@ -21,7 +21,7 @@
 | *Credencial*                 | The credential to use when logging into the TURN server                                                                    |                                 |
 | *Credencial Type*            | This attribute specifies what kind of `credential` is to be used when connecting to the TURN server                        | Password                        |
 | **Interval**                 | Set the polling frequency (in seconds) to the signaling server <br>Valid only if you are using Http as the signaling protocol. | 5 (sec)                         |
-| **Hardware Encoder Support** | Enable the checkbox to make this video encoding replace values that use a [hardware encoder](../index.md#hardware-encoder) | Enabled                         |
+| **Hardware Encoder Support** | Enable the checkbox to make this video encoding replace values that use a [hardware encoder](index.md#hardware-encoder) | Enabled                         |
 | **Array Button Click Event** | Register browser button click events                                                                                       |                                 |
 | *Element Id*                 | Set an ID that is sent from browsers                                                                                       |                                 |
 | *Click*                      | Set button click event                                                                                                     |                                 |

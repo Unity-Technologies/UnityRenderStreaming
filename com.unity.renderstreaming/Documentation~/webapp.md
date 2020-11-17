@@ -47,7 +47,7 @@ Use the following command to start the server as http. Port 80 will be used.
 .\webserver
 ```
 
-This command will run the server as https. Port 443 will be used. A certificate (`server.cert`) and a key (`server.key`) must also be set up ([details](../en/https.md)).
+This command will run the server as https. Port 443 will be used. A certificate (`server.cert`) and a key (`server.key`) must also be set up ([details](https.md)).
 
 ```shell
 .\webserver -s -p 443
@@ -65,3 +65,7 @@ Use this command to display the help guide.
 ```shell
 .\webserver -h
 ```
+
+## How to custmize web application
+
+Please see the page [Customize Web Application](customize_webapp.md).

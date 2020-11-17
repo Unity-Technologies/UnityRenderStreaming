@@ -38,7 +38,7 @@ Web アプリケーションは メニューから **Edit / Render Streaming / D
 
 ![Menu download webapp](../images/menu_download_webapp.png)
 
-このファイルを実行するとコマンドプロンプトが表示されます。下記のログがコマンドプロンプトに表示されます。Web アプリケーションのアドレスもここに表示されています。コマンドオプションは [パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/webserver.html) を確認してください。
+このファイルを実行するとコマンドプロンプトが表示されます。下記のログがコマンドプロンプトに表示されます。Web アプリケーションのアドレスもここに表示されています。コマンドオプションは [パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@2.2/manual/webapp.html) を確認してください。
 
 ![Launch Web Server command](../images/launch_webserver_cmd.png)
 

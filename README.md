@@ -88,7 +88,7 @@ Then just build a standalone Windows version of your application, zip it and upl
 
 ## FAQ
 
-Read [this page](com.unity.renderstreaming/Documentation~/en/faq.md) and [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413/)
+Read [this page](com.unity.renderstreaming/Documentation~/faq.md) and [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413/)
 
 ## Contributors
 

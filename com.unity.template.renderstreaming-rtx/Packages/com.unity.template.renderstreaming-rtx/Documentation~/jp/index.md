@@ -2,7 +2,7 @@
 
 **Unity Render Streaming** は、ブラウザー上で Unity の高品位なレンダリングを実現するためのソリューションです。カーコンフィギュレーターや建築モデルをスマートデバイスで閲覧するニーズを想定しています。
 
-このパッケージは、HDRP のシーンに対して Unity Render Streaming の利用に必要な設定を加えたテンプレートパッケージです。すぐに試してみたい方は[チュートリアルドキュメント](tutorial.md)をご覧ください。より技術的な詳細は Unity Render Streaming の[パッケージドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)をご覧ください。
+このパッケージは、HDRP のシーンに対して Unity Render Streaming の利用に必要な設定を加えたテンプレートパッケージです。すぐに試してみたい方は[チュートリアルドキュメント](tutorial.md)をご覧ください。より技術的な詳細は Unity Render Streaming の[パッケージドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest)をご覧ください。
 
 ![Browser HDRP scene](../images/browser_hdrpscene.png)
 
@@ -10,7 +10,7 @@
 
 > [!NOTE]
 > 既存のプロジェクトに対してストリーミング機能を追加する場合は、テンプレートではなく、Package Manager から `Unity Render Streaming` パッケージをインストールしてください。
-> 詳細は[パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest/jp/index.html)を確認してください。
+> 詳細は[パッケージのドキュメント](https://docs.unity3d.com/Packages/com.unity.renderstreaming@latest)を確認してください。
 
 ## 動作環境
 
