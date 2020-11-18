@@ -213,12 +213,28 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
+            // ToDo: need webrtc package version 2.3
+            // foreach (var transceiver in pc.GetTransceivers()
+            //     .Where(x => x.Receiver.Track.Kind == TrackKind.Video)
+            //     .Select((x, index) => new {x, index})
+            //     .Take(m_listVideoStreamTrack.Count))
+            // {
+            //     RTCRtpSender sender = transceiver.x.Sender;
+            //     VideoStreamTrack track = m_listVideoStreamTrack[transceiver.index];
+            //     transceiver.x.Sender.ReplaceTrack(track);
+            //     transceiver.x.Direction = RTCRtpTransceiverDirection.SendOnly;
+            //
+            //     if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+            //     {
+            //         list = new List<RTCRtpSender>();
+            //         m_mapTrackAndSenderList.Add(track, list);
+            //     }
+            //
+            //     list.Add(sender);
+            // }
+
             foreach (var track in m_listVideoStreamTrack)
             {
-                // ToDO: need webrtc package version 2.3
-                // RTCRtpTransceiver transceiver = pc.AddTransceiver(track);
-                // transceiver.Direction = RTCRtpTransceiverDirection.SendOnly;
-                // RTCRtpSender sender = transceiver.Sender;
                 RTCRtpSender sender = pc.AddTrack(track);
                 if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
                 {
