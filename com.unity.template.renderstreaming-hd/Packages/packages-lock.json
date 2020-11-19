@@ -19,13 +19,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.editorcoroutines": {
-      "version": "1.0.0",
-      "depth": 2,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.ext.nunit": {
       "version": "1.0.0",
       "depth": 1,
@@ -87,11 +80,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.renderstreaming": {
-      "version": "2.2.0-preview",
+      "version": "2.2.1-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.webrtc": "2.2.0-preview",
+        "com.unity.webrtc": "2.2.1-preview",
         "com.unity.inputsystem": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -149,15 +142,6 @@
       "source": "registry",
       "dependencies": {
         "com.unity.shadergraph": "7.3.1"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.webrtc": {
-      "version": "2.2.0-preview",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.editorcoroutines": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },

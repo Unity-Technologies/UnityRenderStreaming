@@ -4,7 +4,21 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2020-11-09
+## [2.2.1] - 2020-11-19
+
+### Added
+
+- Added `ReceiveVideo` scene in the sample project
+- Added documentation which explains how to customize webapp
+
+### Changed
+
+- Upgrading WebRTC to `2.2.1-preview`
+
+### Fixed
+
+- Fixed `NullPointerException` occurred when `UIController` instance is not attached `SimpleCameraController` component
+- Fixed behavior of the editor menu
 
 ### Changed
 
