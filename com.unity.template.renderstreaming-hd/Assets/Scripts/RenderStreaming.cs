@@ -161,7 +161,9 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            pc.AddTransceiver(TrackKind.Video);
+            RTCRtpTransceiver transceiver = pc.AddTransceiver(TrackKind.Video);
+            // ToDO: need webrtc package version 2.3
+            // transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
         }
 
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
@@ -211,7 +213,38 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
-            foreach (var track in m_listVideoStreamTrack.Concat(m_audioStream.GetTracks()))
+            // ToDo: need webrtc package version 2.3
+            // foreach (var transceiver in pc.GetTransceivers()
+            //     .Where(x => x.Receiver.Track.Kind == TrackKind.Video)
+            //     .Select((x, index) => new {x, index})
+            //     .Take(m_listVideoStreamTrack.Count))
+            // {
+            //     RTCRtpSender sender = transceiver.x.Sender;
+            //     VideoStreamTrack track = m_listVideoStreamTrack[transceiver.index];
+            //     transceiver.x.Sender.ReplaceTrack(track);
+            //     transceiver.x.Direction = RTCRtpTransceiverDirection.SendOnly;
+            //
+            //     if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+            //     {
+            //         list = new List<RTCRtpSender>();
+            //         m_mapTrackAndSenderList.Add(track, list);
+            //     }
+            //
+            //     list.Add(sender);
+            // }
+
+            foreach (var track in m_listVideoStreamTrack)
+            {
+                RTCRtpSender sender = pc.AddTrack(track);
+                if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+                {
+                    list = new List<RTCRtpSender>();
+                    m_mapTrackAndSenderList.Add(track, list);
+                }
+                list.Add(sender);
+            }
+
+            foreach (var track in m_audioStream.GetTracks())
             {
                 RTCRtpSender sender = pc.AddTrack(track);
                 if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
