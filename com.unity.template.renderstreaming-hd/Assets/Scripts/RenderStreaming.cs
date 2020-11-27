@@ -61,7 +61,7 @@ namespace Unity.RenderStreaming
         private readonly List<SimpleCameraController> m_listController = new List<SimpleCameraController>();
         private readonly List<VideoStreamTrack> m_listVideoStreamTrack = new List<VideoStreamTrack>();
         private readonly Dictionary<MediaStreamTrack, List<RTCRtpSender>> m_mapTrackAndSenderList = new Dictionary<MediaStreamTrack, List<RTCRtpSender>>();
-        private readonly List<MediaStream> m_listVideoReceiveStream = new List<MediaStream>();
+        private readonly List<ReceiveVideoViewer> m_listVideoReceiveViewer = new List<ReceiveVideoViewer>();
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
@@ -143,14 +143,24 @@ namespace Unity.RenderStreaming
             m_listVideoStreamTrack.Remove(track);
         }
 
-        public void AddVideoReceiveStream(MediaStream stream)
+        public void AddVideoReceiveViewer(ReceiveVideoViewer viewer)
         {
-            m_listVideoReceiveStream.Add(stream);
+            m_listVideoReceiveViewer.Add(viewer);
         }
 
-        public void RemoveVideoReceiveStream(MediaStream stream)
+        public void RemoveVideoReceiveViewer(ReceiveVideoViewer viewer)
         {
-            m_listVideoReceiveStream.Remove(stream);
+            m_listVideoReceiveViewer.Remove(viewer);
+        }
+
+        public void OpenConnection(string connectionId)
+        {
+            m_signaling?.CreateConnection(connectionId);
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            //ToDo
         }
 
         public void AddTransceiver()
@@ -305,9 +315,9 @@ namespace Unity.RenderStreaming
 
             pc.OnTrack = trackEvent =>
             {
-                foreach (var receiveStream in m_listVideoReceiveStream)
+                foreach (var viewer in m_listVideoReceiveViewer)
                 {
-                    receiveStream.AddTrack(trackEvent.Track);
+                    viewer.AddTrack(connectionId, trackEvent);
                 }
             };
 

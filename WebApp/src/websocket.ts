@@ -133,6 +133,8 @@ export default class WSSignaling {
             const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
             if (otherSessionWs) {
                 otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+            } else {
+                ws.send(JSON.stringify({ type: "error", message: "this connection is not ready other session." }));
             }
             return;
         }

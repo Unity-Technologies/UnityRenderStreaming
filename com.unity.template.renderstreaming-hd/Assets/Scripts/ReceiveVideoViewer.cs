@@ -8,36 +8,57 @@ namespace Unity.RenderStreaming
     public class ReceiveVideoViewer : MonoBehaviour
     {
         [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
-        [SerializeField] private Button sendOfferButton;
+        [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage receiveImage;
 
         private MediaStream m_receiveStream;
+        private string m_connectionId;
 
-        void Start()
+        void Awake()
         {
-            sendOfferButton.onClick.AddListener(() => RenderStreaming.Instance?.AddTransceiver());
+            m_connectionId = Guid.NewGuid().ToString();
+            connectionIdInput.text = m_connectionId;
+            connectionIdInput.onValueChanged.AddListener(input => m_connectionId = input);
         }
 
         void OnEnable()
         {
             m_receiveStream = new MediaStream();
-            RenderStreaming.Instance?.AddVideoReceiveStream(m_receiveStream);
+            RenderStreaming.Instance?.AddVideoReceiveViewer(this);
             m_receiveStream.OnAddTrack = e =>
             {
                 if (receiveImage != null && e.Track.Kind == TrackKind.Video)
                 {
                     var videoTrack = (VideoStreamTrack)e.Track;
-                   receiveImage.texture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
+                    receiveImage.texture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
                 }
             };
+
+            RenderStreaming.Instance?.OpenConnection(m_connectionId);
         }
 
         void OnDisable()
         {
-            RenderStreaming.Instance?.RemoveVideoReceiveStream(m_receiveStream);
+            RenderStreaming.Instance?.CloseConnection(m_connectionId);
+            RenderStreaming.Instance?.RemoveVideoReceiveViewer(this);
             m_receiveStream.OnAddTrack = null;
             m_receiveStream.Dispose();
             m_receiveStream = null;
+
+            if (receiveImage != null)
+            {
+                receiveImage.texture = null;
+            }
+        }
+
+        public void AddTrack(string connectionId, RTCTrackEvent trackEvent)
+        {
+            if (connectionId != m_connectionId)
+            {
+                return;
+            }
+
+            m_receiveStream.AddTrack(trackEvent.Track);
         }
     }
 }
