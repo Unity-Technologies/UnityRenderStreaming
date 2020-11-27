@@ -19,7 +19,7 @@ namespace Unity.RenderStreaming.Signaling
         event OnAnswerHandler OnAnswer;
         event OnIceCandidateHandler OnIceCandidate;
 
-        void CreateConnection();
+        void CreateConnection(string connectionId);
         void SendOffer(string connectionId, RTCSessionDescription answer);
         void SendAnswer(string connectionId, RTCSessionDescription answer);
         void SendCandidate(string connectionId, RTCIceCandidate candidate);

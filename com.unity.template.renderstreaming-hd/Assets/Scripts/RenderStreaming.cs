@@ -109,7 +109,7 @@ namespace Unity.RenderStreaming
                 Type t = Type.GetType(signalingType);
                 object[] args = { urlSignaling, interval, m_mainThreadContext };
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
-                this.m_signaling.OnStart += signaling => signaling.CreateConnection();
+                this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString());
                 this.m_signaling.OnCreateConnection += (signaling, id) =>
                 {
                     m_connectionId = id;

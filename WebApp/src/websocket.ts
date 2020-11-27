@@ -131,7 +131,9 @@ export default class WSSignaling {
         if (this.isPrivate) {
             const pair = connectionPair.get(connectionId);
             const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-            otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+            if (otherSessionWs) {
+                otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+            }
             return;
         }
 

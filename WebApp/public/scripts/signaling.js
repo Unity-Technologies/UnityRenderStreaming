@@ -1,3 +1,5 @@
+import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
+
 export default class Signaling extends EventTarget {
 
   constructor() {
@@ -152,7 +154,8 @@ export class WebSocketSignaling extends EventTarget {
     this.connectionId = null;
 
     this.websocket.onopen = () => {
-      this.websocket.send(JSON.stringify({ type: "connect" }));
+      const id = uuid4();
+      this.websocket.send(JSON.stringify({ type: "connect", connectionId: id }));
     }
 
     this.websocket.onmessage = (event) => {
@@ -189,34 +192,35 @@ export class WebSocketSignaling extends EventTarget {
     while(this.connectionId == null){
       await sleep(100);
     }
+    return this.connectionId;
   }
 
   stop() {
     this.websocket.send(JSON.stringify({ type: "disconnect", from: this.connectionId }));
   }
 
-  sendOffer(sdp) {
-    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
-    const sendJson = JSON.stringify({ type: "offer", from: this.connectionId, data: data });
+  sendOffer(connectionId, sdp) {
+    const data = { 'sdp': sdp, 'connectionId': connectionId };
+    const sendJson = JSON.stringify({ type: "offer", from: connectionId, data: data });
     console.log(sendJson);
     this.websocket.send(sendJson);
   }
 
-  sendAnswer(sdp) {
-    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
-    const sendJson = JSON.stringify({ type: "answer", from: this.connectionId, data: data });
+  sendAnswer(connectionId, sdp) {
+    const data = { 'sdp': sdp, 'connectionId': connectionId };
+    const sendJson = JSON.stringify({ type: "answer", from: connectionId, data: data });
     console.log(sendJson);
     this.websocket.send(sendJson);
   }
 
-  sendCandidate(candidate, sdpMLineIndex, sdpMid) {
+  sendCandidate(connectionId, candidate, sdpMLineIndex, sdpMid) {
     const data = {
       'candidate': candidate,
       'sdpMLineIndex': sdpMLineIndex,
       'sdpMid': sdpMid,
-      'connectionId': this.connectionId
+      'connectionId': connectionId
     };
-    const sendJson = JSON.stringify({ type: "candidate", from: this.connectionId, data: data });
+    const sendJson = JSON.stringify({ type: "candidate", from: connectionId, data: data });
     console.log(sendJson);
     this.websocket.send(sendJson);
   }

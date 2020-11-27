@@ -99,9 +99,9 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection()
+        public void CreateConnection(string connectionId)
         {
-            this.WSSend("{\"type\":\"connect\"}");
+            this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\"}}");
         }
 
         private void WSManage()
@@ -164,6 +164,10 @@ namespace Unity.RenderStreaming.Signaling
                         string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
                         m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, connectionId), null);
                     }
+                    else if (routedMessage.type == "disconnect")
+                    {
+
+                    }
                     else if (routedMessage.type == "offer")
                     {
                         DescData offer = new DescData();
@@ -190,6 +194,10 @@ namespace Unity.RenderStreaming.Signaling
                             sdpMid = msg.sdpMid
                         };
                         m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
+                    }
+                    else if (routedMessage.type == "error")
+                    {
+                        Debug.LogError(msg.message);
                     }
                 }
             }
