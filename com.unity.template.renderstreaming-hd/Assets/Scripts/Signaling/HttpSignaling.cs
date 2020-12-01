@@ -89,13 +89,12 @@ namespace Unity.RenderStreaming.Signaling
 
         public void OpenConnection(string connectionId)
         {
-            HTTPConnect();
+            HTTPConnect(connectionId);
         }
 
         public void CloseConnection(string connectionId)
         {
-            //ToDo
-            throw new NotImplementedException();
+            HTTPDisonnect(connectionId);
         }
 
         private void HTTPPooling()
@@ -254,7 +253,7 @@ namespace Unity.RenderStreaming.Signaling
             return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
-        private bool HTTPConnect()
+        private bool HTTPConnect(string connectionId)
         {
             HttpWebRequest request =
                 (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
@@ -262,6 +261,13 @@ namespace Unity.RenderStreaming.Signaling
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
             request.KeepAlive = false;
+
+            using (Stream dataStream = request.GetRequestStream())
+            {
+                byte[] bytes = new System.Text.UTF8Encoding().GetBytes($"{{\"connectionId\":\"{connectionId}\"}}");
+                dataStream.Write(bytes, 0, bytes.Length);
+                dataStream.Close();
+            }
 
             HttpWebResponse response = HTTPGetResponse(request);
             CreateConnectionResData data = HTTPParseJsonResponse<CreateConnectionResData>(response);
@@ -273,6 +279,28 @@ namespace Unity.RenderStreaming.Signaling
 
             m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExists), null);
             return true;
+        }
+
+        private bool HTTPDisonnect(string connectionId)
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
+            request.Method = "Delete";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", m_sessionId);
+            request.KeepAlive = false;
+
+            using (Stream dataStream = request.GetRequestStream())
+            {
+                byte[] bytes = new System.Text.UTF8Encoding().GetBytes($"{{\"connectionId\":\"{connectionId}\"}}");
+                dataStream.Write(bytes, 0, bytes.Length);
+                dataStream.Close();
+            }
+
+            HttpWebResponse response = HTTPGetResponse(request);
+            CreateConnectionResData data = HTTPParseJsonResponse<CreateConnectionResData>(response);
+
+            return data != null;
         }
 
         private bool HTTPGetOffers()

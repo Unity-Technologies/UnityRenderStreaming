@@ -5,9 +5,13 @@ import * as fs from 'fs';
 import signaling from './signaling';
 
 import { log, LogLevel } from './log';
+import * as morgan from 'morgan';
 
 export const createServer = (config): express.Application => {
   const app: express.Application = express();
+  app.set('isPrivate', config.mode == "private");
+  // logging http access
+  app.use(morgan('combined'));
   // const signal = require('./signaling');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
