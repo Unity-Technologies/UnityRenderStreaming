@@ -28,15 +28,17 @@ namespace Unity.RenderStreaming.Signaling
     {
         private float m_timeout;
         private bool m_running;
+        private SynchronizationContext m_mainThreadContext;
         private Thread m_signalingThread;
         private AutoResetEvent m_wsCloseEvent;
         private WebSocket m_webSocket;
 
         public delegate void OnSignedInHandler(ISignaling sender);
 
-        public FurioosSignaling(string url, float timeout)
+        public FurioosSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
             m_timeout = timeout;
+            m_mainThreadContext = mainThreadContext;
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
@@ -196,7 +198,7 @@ namespace Unity.RenderStreaming.Signaling
                             offer.connectionId = routedMessage.from;
                             offer.sdp = msg.sdp;
 
-                            OnOffer?.Invoke(this, offer);
+                            m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
                         }
                         else
                         {
@@ -214,7 +216,7 @@ namespace Unity.RenderStreaming.Signaling
                         candidate.sdpMLineIndex = msg.sdpMLineIndex;
                         candidate.sdpMid = msg.sdpMid;
 
-                        OnIceCandidate?.Invoke(this, candidate);
+                        m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
                     }
                     else
                     {

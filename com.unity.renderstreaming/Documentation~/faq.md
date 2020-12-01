@@ -15,7 +15,7 @@ Also, **iOS Safari** does not support WebSocket signaling if the server uses a s
 
 ### Unity's initial startup fails
 
-Confirm you're using a `Graphics API` and compare [requirements](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/en/overview.html) of `com.unity.webrtc`.
+Confirm you're using a `Graphics API` and compare [requirements](https://docs.unity3d.com/Packages/com.unity.webrtc@2.2/overview.html) of `com.unity.webrtc`.
 If you use the hardware encoder, Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
 
 ### Web server fails to run 

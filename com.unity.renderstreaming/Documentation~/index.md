@@ -23,7 +23,7 @@ This package enables streaming sounds generated on Unity. And it can cast to mul
 
 ### Remote control
 
-It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Browser input process](en/input.md) page.
+It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Browser input process](input.md) page.
 
 ## Requirements
 
@@ -38,13 +38,12 @@ This version of Render Streaming is compatible with the following versions of th
 | Windows x64 | DirectX11    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
 | Windows x64 | DirectX12    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
 | Windows x64 | OpenGL       |                                                                                                                          |                    |
-| Windows x64 | Vulkan       |                                                                                                                          |                    | 
+| Windows x64 | Vulkan       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
 | Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
-| Linux x64   | Vulkan       |                                                 	                                                                        |                    |
-| MacOS       | Metal        |                                                 	                                                                        | :white_check_mark: |
-
-> [!WARNING]
-> In the current version, The combination of Linux and HDRP is not supported. Need to select`OpenGL` in "Graphics API" and use `Legacy` rendering pipeline.
+| Linux x64   | Vulkan       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: |
+| MacOS       | Metal        | :white_check_mark:                              	                                                                        | :white_check_mark: |
+| iOS         | Metal        |                                                 	                                                                        |                    |
+| Android     | Vulkan       |                                                 	                                                                        |                    |
 
 > [!NOTE]
 > Supporting OpenGL API on MacOS is not planned.
@@ -81,6 +80,10 @@ Then just build a standalone Windows version of your application, zip it and upl
 
 Currently, there are three samples:
 
+- HDRP sample
+- URP sample
+- Legacy pipeline sample
+
 ### HDRP sample
 
 Importing this sample will automatically install and setup our HDRP sample assets along with the [HDRP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest) *(com.unity.render-pipelines.high-definition)* package.
@@ -92,7 +95,3 @@ Importing this sample will automatically install and setup our URP sample assets
 ### Legacy pipeline sample
 
 This is the simplest sample with legacy pipeline.
-
-## Other Languages
-
-- [Japanese](./jp/index.md)

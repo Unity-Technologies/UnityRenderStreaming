@@ -58,17 +58,6 @@ export class VideoPlayer {
       this.pc = null;
     }
 
-    // RTCDataChannel don't work on iOS safari
-    // https://github.com/webrtc/samples/issues/1123
-    if (
-      navigator.userAgent.match(/iPad/i) ||
-      navigator.userAgent.match(/iPhone/i) ||
-      navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i)
-    ) {
-      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop());
-    }
-
     // Decide Signaling Protocol
     const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
     const createResponse = await fetch(protocolEndPoint);

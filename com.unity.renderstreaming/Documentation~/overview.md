@@ -48,7 +48,7 @@ The Render Steraming package includes the following.
 
 ### WebRTC Package
 
-This provides the WebRTC C# API. See the [WebRTC package documentation](https://docs.unity3d.com/Packages/com.unity.webrtc@latest/manual/en/index.html) for details on the API.
+This provides the WebRTC C# API. See the [WebRTC package documentation](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) for details on the API.
 
 ![WebRTC package manager](images/webrtc_package_manager.png)
 

@@ -54,7 +54,7 @@ promote_dry_run:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% for editor in test_editors %}
+{% for editor in editors %}
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
@@ -81,7 +81,7 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-{% for editor in test_editors %}
+{% for editor in editors %}
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}

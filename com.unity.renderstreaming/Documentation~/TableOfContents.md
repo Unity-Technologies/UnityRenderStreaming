@@ -7,5 +7,6 @@
     * [Configure Self-Signed Credentials for https](https.md)
     * [Setting for TURN Server](turnserver.md)
     * [About Signaling Protocol](signalingprotocol.md)
+    * [Customize Web Application](customize_webapp.md)
 * [Components Settings](components.md)
 * [FAQ](faq.md)

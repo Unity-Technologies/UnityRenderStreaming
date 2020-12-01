@@ -25,9 +25,11 @@ namespace Unity.RenderStreaming
         private Keyboard m_keyboard;
         private Mouse m_mouse;
         private Touchscreen m_screen;
+        private bool m_isSetInput = false;
 
         public void SetInput(IInput input)
         {
+            m_isSetInput = true;
             m_mouse = input.RemoteMouse;
             m_keyboard = input.RemoteKeyboard;
             m_screen = input.RemoteTouchscreen;
@@ -45,6 +47,9 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
+            if (!m_isSetInput)
+                return;
+
             if (!m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
@@ -55,8 +60,8 @@ namespace Unity.RenderStreaming
                 }
             }
 
-            bool pointerFromMouse
-                =  HighlightPointerFromMouse(m_mouse, new Vector2Int(Screen.width, Screen.height));
+            bool pointerFromMouse = HighlightPointerFromMouse(
+                m_mouse, new Vector2Int(Screen.width, Screen.height));
             if (pointerFromMouse)
                 return;
 
@@ -82,14 +87,14 @@ namespace Unity.RenderStreaming
         }
 
 //----------------------------------------------------------------------------------------------------------------------
-        bool HighlightPointerFromMouse(Mouse m, Vector2Int screenSize)
+        bool HighlightPointerFromMouse(Mouse mouse, Vector2Int screenSize)
         {
-            if (!Screen.safeArea.Contains(m.position.ReadValue()))
+            if (!Screen.safeArea.Contains(mouse.position.ReadValue()))
                 return false;
 
-            if (!m.leftButton.isPressed && !m.rightButton.isPressed)
+            if (!mouse.leftButton.isPressed && !mouse.rightButton.isPressed)
                 return false;
-            Vector2 mousePos = m.position.ReadValue();
+            Vector2 mousePos = mouse.position.ReadValue();
             Vector2 pos = mousePos / screenSize * new Vector2(m_rectTransform.rect.width, m_rectTransform.rect.height);
 
             pointer.rectTransform.anchoredPosition = pos;

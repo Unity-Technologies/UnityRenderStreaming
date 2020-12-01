@@ -37,8 +37,9 @@ namespace Unity.RenderStreaming
         private Process m_ServerProcess;
         private RTCSessionDescription m_DescOffer;
         private RTCSessionDescription m_DescAnswer;
-        private RTCIceCandidate​ m_candidate;
+        private RTCIceCandidate m_candidate;
 
+        private SynchronizationContext m_Context;
         private ISignaling signaling1;
         private ISignaling signaling2;
 
@@ -104,15 +105,15 @@ namespace Unity.RenderStreaming
             m_ServerProcess.Kill();
         }
 
-        ISignaling CreateSignaling(Type type)
+        ISignaling CreateSignaling(Type type, SynchronizationContext mainThread)
         {
             if (type == typeof(WebSocketSignaling))
             {
-                return new WebSocketSignaling("ws://localhost", 0.1f);
+                return new WebSocketSignaling("ws://localhost", 0.1f, mainThread);
             }
             if (type == typeof(HttpSignaling))
             {
-                return new HttpSignaling("http://localhost", 0.1f);
+                return new HttpSignaling("http://localhost", 0.1f, mainThread);
             }
             throw new ArgumentException();
         }
@@ -123,7 +124,7 @@ namespace Unity.RenderStreaming
             WebRTC.WebRTC.Initialize();
 
             RTCConfiguration config = default;
-            RTCIceCandidate​? candidate_ = null;
+            RTCIceCandidate? candidate_ = null;
             config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
 
             var peer1 = new RTCPeerConnection(ref config);
@@ -158,8 +159,9 @@ namespace Unity.RenderStreaming
             peer1.Close();
             peer2.Close();
 
-            signaling1 = CreateSignaling(m_SignalingType);
-            signaling2 = CreateSignaling(m_SignalingType);
+            m_Context = SynchronizationContext.Current;
+            signaling1 = CreateSignaling(m_SignalingType, m_Context);
+            signaling2 = CreateSignaling(m_SignalingType, m_Context);
         }
 
         [TearDown]
@@ -169,50 +171,51 @@ namespace Unity.RenderStreaming
 
             signaling1.Stop();
             signaling2.Stop();
+            m_Context = null;
         }
 
-        [Test]
-        public void OnConnect()
+        [UnityTest]
+        public IEnumerator OnConnect()
         {
             bool startRaised1 = false;
             string connectionId1 = null;
 
-            signaling1.Start();
             signaling1.OnStart += s => { startRaised1 = true; };
-            Assert.True(Wait(() => startRaised1));
+            signaling1.Start();
+            yield return new WaitUntil(() => startRaised1);
 
             signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
             signaling1.CreateConnection();
-            Assert.True(Wait(() => !string.IsNullOrEmpty(connectionId1)));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
             Assert.IsNotEmpty(connectionId1);
         }
 
-        [Test]
-        public void OnOffer()
+        [UnityTest]
+        public IEnumerator OnOffer()
         {
             bool startRaised1 = false;
             bool startRaised2 = false;
             bool offerRaised = false;
             string connectionId1 = null;
 
-            signaling1.Start();
-            signaling2.Start();
             signaling1.OnStart += s => { startRaised1 = true; };
             signaling2.OnStart += s => { startRaised2 = true; };
-            Assert.True(Wait(() => startRaised1 && startRaised2));
+            signaling1.Start();
+            signaling2.Start();
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
 
             signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
             signaling1.CreateConnection();
-            Assert.True(Wait(() => !string.IsNullOrEmpty(connectionId1)));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
-            Assert.True(Wait(() => offerRaised));
+            yield return new WaitUntil(() => offerRaised);
         }
 
 
-        [Test]
-        public void OnAnswer()
+        [UnityTest]
+        public IEnumerator OnAnswer()
         {
             bool startRaised1 = false;
             bool startRaised2 = false;
@@ -220,27 +223,27 @@ namespace Unity.RenderStreaming
             bool answerRaised = false;
             string connectionId1 = null;
 
-            signaling1.Start();
-            signaling2.Start();
             signaling1.OnStart += s => { startRaised1 = true; };
             signaling2.OnStart += s => { startRaised2 = true; };
-            Assert.True(Wait(() => startRaised1 && startRaised2));
+            signaling1.Start();
+            signaling2.Start();
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
 
             signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
             signaling1.CreateConnection();
-            Assert.True(Wait(() => !string.IsNullOrEmpty(connectionId1)));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
-            Assert.True(Wait(() => offerRaised));
+            yield return new WaitUntil(() => offerRaised);
 
             signaling1.OnAnswer += (s, e) => { answerRaised = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
-            Assert.True(Wait(() => answerRaised));
+            yield return new WaitUntil(() => answerRaised);
         }
 
-        [Test]
-        public void OnCandidate()
+        [UnityTest]
+        public IEnumerator OnCandidate()
         {
             bool startRaised1 = false;
             bool startRaised2 = false;
@@ -250,31 +253,31 @@ namespace Unity.RenderStreaming
             bool candidateRaised2 = false;
             string connectionId1 = null;
 
-            signaling1.Start();
-            signaling2.Start();
             signaling1.OnStart += s => { startRaised1 = true; };
             signaling2.OnStart += s => { startRaised2 = true; };
-            Assert.True(Wait(() => startRaised1 && startRaised2));
+            signaling1.Start();
+            signaling2.Start();
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
 
             signaling1.OnCreateConnection += (s, connectionId) => { connectionId1 = connectionId; };
             signaling1.CreateConnection();
-            Assert.True(Wait(() => !string.IsNullOrEmpty(connectionId1)));
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
-            Assert.True(Wait(() => offerRaised));
+            yield return new WaitUntil(() => offerRaised);
 
             signaling1.OnAnswer += (s, e) => { answerRaised = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
-            Assert.True(Wait(() => answerRaised));
+            yield return new WaitUntil(() => answerRaised);
 
             signaling2.OnIceCandidate += (s, e) => { candidateRaised1 = true; };
             signaling1.SendCandidate(connectionId1, m_candidate);
-            Assert.True(Wait(() => candidateRaised1));
+            yield return new WaitUntil(() => candidateRaised1);
 
             signaling1.OnIceCandidate += (s, e) => { candidateRaised2 = true; };
             signaling2.SendCandidate(connectionId1, m_candidate);
-            Assert.True(Wait(() => candidateRaised2));
+            yield return new WaitUntil(() => candidateRaised2);
         }
     }
 }
