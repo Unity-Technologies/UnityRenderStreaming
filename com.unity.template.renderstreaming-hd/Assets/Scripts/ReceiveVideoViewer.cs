@@ -33,6 +33,14 @@ namespace Unity.RenderStreaming
                     receiveImage.texture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
                 }
             };
+            m_receiveStream.OnRemoveTrack = e =>
+            {
+                if (receiveImage != null && e.Track.Kind == TrackKind.Video)
+                {
+                    receiveImage.texture = null;
+                    e.Track.Dispose();
+                }
+            };
 
             RenderStreaming.Instance?.OpenConnection(m_connectionId);
         }
@@ -59,6 +67,16 @@ namespace Unity.RenderStreaming
             }
 
             m_receiveStream.AddTrack(trackEvent.Track);
+        }
+
+        public void RemoveTrack(string connectionId, MediaStreamTrack track)
+        {
+            if (connectionId != m_connectionId)
+            {
+                return;
+            }
+
+            m_receiveStream.RemoveTrack(track);
         }
     }
 }

@@ -77,7 +77,6 @@ namespace Unity.RenderStreaming
         private MediaStream m_audioStream;
         private DefaultInput m_defaultInput;
         private RTCConfiguration m_conf;
-        private string m_connectionId;
 
         public static RenderStreaming Instance { get; private set; }
 
@@ -123,28 +122,8 @@ namespace Unity.RenderStreaming
                 object[] args = {urlSignaling, interval, m_mainThreadContext};
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
                 this.m_signaling.OnStart += signaling => signaling.OpenConnection(Guid.NewGuid().ToString());
-                this.m_signaling.OnCreateConnection += (signaling, id, peerExists) =>
-                {
-                    m_connectionId = id;
-                    var pc = CreatePeerConnection(signaling, m_connectionId, peerExists);
-
-                    if (!peerExists)
-                    {
-                        return;
-                    }
-
-                    AddTracks(pc);
-                };
-                this.m_signaling.OnDestroyConnection += (signaling, id) =>
-                {
-                    if (m_mapConnectionIdAndPeer.TryGetValue(id, out var pc))
-                    {
-                        m_mapPeerAndChannelDictionary.Remove(pc);
-                        pc.Dispose();
-                    }
-
-                    m_mapConnectionIdAndPeer.Remove(id);
-                };
+                this.m_signaling.OnCreateConnection += OnCreateConnection;
+                this.m_signaling.OnDestroyConnection += OnDestroyConnection;
                 this.m_signaling.OnOffer += (signaling, data) => StartCoroutine(OnOffer(signaling, data));
                 this.m_signaling.OnAnswer += (signaling, data) => StartCoroutine(OnAnswer(signaling, data));
                 this.m_signaling.OnIceCandidate += OnIceCandidate;
@@ -194,19 +173,6 @@ namespace Unity.RenderStreaming
             m_signaling?.CloseConnection(connectionId);
         }
 
-        public void AddTransceiver()
-        {
-            if (string.IsNullOrEmpty(m_connectionId) ||
-                !m_mapConnectionIdAndPeer.TryGetValue(m_connectionId, out var pc))
-            {
-                return;
-            }
-
-            RTCRtpTransceiver transceiver = pc.AddTransceiver(TrackKind.Video);
-            // ToDO: need webrtc package version 2.3
-            // transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
-        }
-
         public void ChangeVideoParameters(VideoStreamTrack track, ulong? bitrate, uint? framerate)
         {
             foreach (var sender in m_mapTrackAndSenderList[track])
@@ -231,54 +197,31 @@ namespace Unity.RenderStreaming
             }
         }
 
-        IEnumerator OnOffer(ISignaling signaling, DescData e)
+        void OnCreateConnection(ISignaling signaling, string connectionId, bool peerExists)
         {
-            var connectionId = e.connectionId;
-            RTCPeerConnection pc = null;
-            if (!m_mapConnectionIdAndPeer.TryGetValue(connectionId, out pc))
+            var pc = CreatePeerConnection(signaling, connectionId, peerExists);
+
+            if (!peerExists)
             {
-                pc = CreatePeerConnection(signaling, connectionId, false);
+                return;
             }
 
-            RTCSessionDescription _desc;
-            _desc.type = RTCSdpType.Offer;
-            _desc.sdp = e.sdp;
-
-            var opRemoteDesc = pc.SetRemoteDescription(ref _desc);
-            yield return opRemoteDesc;
-
-            if (opRemoteDesc.IsError)
-            {
-                Debug.LogError($"Network Error: {opRemoteDesc.Error.message}");
-                yield break;
-            }
-
-            AddTracks(pc);
-
-            RTCAnswerOptions options = default;
-            var op = pc.CreateAnswer(ref options);
-            yield return op;
-
-            if (op.IsError)
-            {
-                Debug.LogError($"Network Error: {op.Error.message}");
-                yield break;
-            }
-
-            var desc = op.Desc;
-            var opLocalDesc = pc.SetLocalDescription(ref desc);
-            yield return opLocalDesc;
-
-            if (opLocalDesc.IsError)
-            {
-                Debug.LogError($"Network Error: {opLocalDesc.Error.message}");
-                yield break;
-            }
-
-            signaling.SendAnswer(connectionId, desc);
+            AddTracks(connectionId, pc);
         }
 
-        private void AddTracks(RTCPeerConnection pc)
+        void OnDestroyConnection(ISignaling signaling, string connectionId)
+        {
+            if (m_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+            {
+                RemoveTracks(connectionId, pc);
+                m_mapPeerAndChannelDictionary.Remove(pc);
+                pc.Dispose();
+            }
+
+            m_mapConnectionIdAndPeer.Remove(connectionId);
+        }
+
+        void AddTracks(string connectionId, RTCPeerConnection pc)
         {
             // ToDo: need webrtc package version 2.3
             // foreach (var transceiver in pc.GetTransceivers()
@@ -323,6 +266,72 @@ namespace Unity.RenderStreaming
 
                 list.Add(sender);
             }
+        }
+
+        void RemoveTracks(string id, RTCPeerConnection pc)
+        {
+            foreach (var sender in pc.GetSenders())
+            {
+                if (m_mapTrackAndSenderList.TryGetValue(sender.Track, out var list))
+                {
+                    list.Remove(sender);
+                }
+            }
+
+            foreach (var receiver in pc.GetReceivers())
+            {
+                foreach (var viewer in m_listVideoReceiveViewer)
+                {
+                    viewer.RemoveTrack(id, receiver.Track);
+                }
+            }
+        }
+
+        IEnumerator OnOffer(ISignaling signaling, DescData e)
+        {
+            var connectionId = e.connectionId;
+            RTCPeerConnection pc = null;
+            if (!m_mapConnectionIdAndPeer.TryGetValue(connectionId, out pc))
+            {
+                pc = CreatePeerConnection(signaling, connectionId, false);
+            }
+
+            RTCSessionDescription _desc;
+            _desc.type = RTCSdpType.Offer;
+            _desc.sdp = e.sdp;
+
+            var opRemoteDesc = pc.SetRemoteDescription(ref _desc);
+            yield return opRemoteDesc;
+
+            if (opRemoteDesc.IsError)
+            {
+                Debug.LogError($"Network Error: {opRemoteDesc.Error.message}");
+                yield break;
+            }
+
+            AddTracks(connectionId, pc);
+
+            RTCAnswerOptions options = default;
+            var op = pc.CreateAnswer(ref options);
+            yield return op;
+
+            if (op.IsError)
+            {
+                Debug.LogError($"Network Error: {op.Error.message}");
+                yield break;
+            }
+
+            var desc = op.Desc;
+            var opLocalDesc = pc.SetLocalDescription(ref desc);
+            yield return opLocalDesc;
+
+            if (opLocalDesc.IsError)
+            {
+                Debug.LogError($"Network Error: {opLocalDesc.Error.message}");
+                yield break;
+            }
+
+            signaling.SendAnswer(connectionId, desc);
         }
 
         RTCPeerConnection CreatePeerConnection(ISignaling signaling, string connectionId, bool isOffer)
