@@ -225,6 +225,7 @@ namespace Unity.RenderStreaming.Signaling
             request.Method = "DELETE";
             request.ContentType = "application/json";
             request.KeepAlive = false;
+            request.Headers.Add("Session-Id", m_sessionId);
 
             Debug.Log($"Signaling: Removing HTTP connection from {m_url}");
 
@@ -274,9 +275,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (data == null) return false;
 
-            m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
-                .ToJsMilliseconds();
-
+            Debug.Log("Signaling: HTTP create connection, connectionId : " + connectionId);
             m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExists), null);
             return true;
         }
@@ -297,10 +296,8 @@ namespace Unity.RenderStreaming.Signaling
                 dataStream.Close();
             }
 
-            HttpWebResponse response = HTTPGetResponse(request);
-            CreateConnectionResData data = HTTPParseJsonResponse<CreateConnectionResData>(response);
-
-            return data != null;
+            Debug.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
+            return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
         private bool HTTPGetOffers()
