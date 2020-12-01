@@ -48,7 +48,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
-
+        public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -87,9 +87,15 @@ namespace Unity.RenderStreaming.Signaling
             HTTPPost("signaling/candidate", data);
         }
 
-        public void CreateConnection(string connectionId)
+        public void OpenConnection(string connectionId)
         {
             HTTPConnect();
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            //ToDo
+            throw new NotImplementedException();
         }
 
         private void HTTPPooling()

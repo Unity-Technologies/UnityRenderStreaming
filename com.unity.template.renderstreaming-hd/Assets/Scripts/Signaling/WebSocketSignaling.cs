@@ -46,6 +46,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
+        public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -99,9 +100,14 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection(string connectionId)
+        public void OpenConnection(string connectionId)
         {
             this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\"}}");
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            this.WSSend($"{{\"type\":\"disconnect\", \"connectionId\":\"{connectionId}\"}}");
         }
 
         private void WSManage()
@@ -161,11 +167,13 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
                         m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, msg.connectionId, msg.peerExists), null);
                     }
                     else if (routedMessage.type == "disconnect")
                     {
-
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
+                        m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, msg.connectionId), null);
                     }
                     else if (routedMessage.type == "offer")
                     {

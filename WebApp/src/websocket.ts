@@ -76,7 +76,7 @@ export default class WSSignaling {
                         this.onConnect(ws, msg.connectionId);
                         break;
                     case "disconnect":
-                        this.onDisconnect(ws, msg.data);
+                        this.onDisconnect(ws, msg.connectionId);
                         break;
                     case "offer":
                         this.onOffer(ws, msg.data);
@@ -120,9 +120,8 @@ export default class WSSignaling {
         ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, peerExists: peerExists }));
     }
 
-    private onDisconnect(ws: WebSocket, message: any) {
+    private onDisconnect(ws: WebSocket, connectionId: string) {
         const connectionIds = clients.get(ws);
-        const connectionId = message.connectionId as string;
         connectionIds.delete(connectionId);
 
         if (connectionPair.has(connectionId)) {

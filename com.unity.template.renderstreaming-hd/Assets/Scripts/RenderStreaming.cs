@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming
                 Type t = Type.GetType(signalingType);
                 object[] args = {urlSignaling, interval, m_mainThreadContext};
                 this.m_signaling = (ISignaling)Activator.CreateInstance(t, args);
-                this.m_signaling.OnStart += signaling => signaling.CreateConnection(Guid.NewGuid().ToString());
+                this.m_signaling.OnStart += signaling => signaling.OpenConnection(Guid.NewGuid().ToString());
                 this.m_signaling.OnCreateConnection += (signaling, id, peerExists) =>
                 {
                     m_connectionId = id;
@@ -134,6 +134,16 @@ namespace Unity.RenderStreaming
                     }
 
                     AddTracks(pc);
+                };
+                this.m_signaling.OnDestroyConnection += (signaling, id) =>
+                {
+                    if (m_mapConnectionIdAndPeer.TryGetValue(id, out var pc))
+                    {
+                        m_mapPeerAndChannelDictionary.Remove(pc);
+                        pc.Dispose();
+                    }
+
+                    m_mapConnectionIdAndPeer.Remove(id);
                 };
                 this.m_signaling.OnOffer += (signaling, data) => StartCoroutine(OnOffer(signaling, data));
                 this.m_signaling.OnAnswer += (signaling, data) => StartCoroutine(OnAnswer(signaling, data));
@@ -176,11 +186,12 @@ namespace Unity.RenderStreaming
 
         public void OpenConnection(string connectionId)
         {
-            m_signaling?.CreateConnection(connectionId);
+            m_signaling?.OpenConnection(connectionId);
         }
 
         public void CloseConnection(string connectionId)
         {
+            m_signaling?.CloseConnection(connectionId);
         }
 
         public void AddTransceiver()
