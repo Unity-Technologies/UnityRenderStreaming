@@ -95,6 +95,7 @@ export default class WSSignaling {
     }
 
     private onConnect(ws: WebSocket, connectionId: string) {
+        let peerExists = false;
         if (this.isPrivate) {
             if (connectionPair.has(connectionId)) {
                 const pair = connectionPair.get(connectionId);
@@ -104,8 +105,10 @@ export default class WSSignaling {
                     return;
                 } else if (pair[0] != null) {
                     connectionPair.set(connectionId, [pair[0], ws]);
+                    peerExists = true;
                 } else if (pair[1] != null) {
                     connectionPair.set(connectionId, [ws, pair[1]]);
+                    peerExists = true;
                 }
             } else {
                 connectionPair.set(connectionId, [ws, null]);
@@ -114,7 +117,7 @@ export default class WSSignaling {
 
         const connectionIds = getOrCreateConnectionIds(ws);
         connectionIds.add(connectionId);
-        ws.send(JSON.stringify({ type: "connect", connectionId: connectionId }));
+        ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, peerExists: peerExists }));
     }
 
     private onDisconnect(ws: WebSocket, message: any) {

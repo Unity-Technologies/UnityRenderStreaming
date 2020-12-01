@@ -161,8 +161,7 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
-                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
-                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, connectionId), null);
+                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, msg.connectionId, msg.peerExists), null);
                     }
                     else if (routedMessage.type == "disconnect")
                     {

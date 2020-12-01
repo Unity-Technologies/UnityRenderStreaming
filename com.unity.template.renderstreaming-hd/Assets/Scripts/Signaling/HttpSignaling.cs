@@ -265,7 +265,7 @@ namespace Unity.RenderStreaming.Signaling
             m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
                 .ToJsMilliseconds();
 
-            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId), null);
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExists), null);
             return true;
         }
 
