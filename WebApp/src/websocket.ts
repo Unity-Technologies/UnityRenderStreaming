@@ -44,7 +44,16 @@ export default class WSSignaling {
             clients.set(ws, new Set<string>());
 
             ws.onclose = (_event: CloseEvent) => {
+
+                const connectionIds = clients.get(ws);
+                connectionIds.forEach(connectionId => {
+                    connectionPair.delete(connectionId);
+                    offers.delete(connectionId);
+                    answers.delete(connectionId);
+                });
+
                 clients.delete(ws);
+                candidates.delete(ws);
             }
 
             ws.onmessage = (event: MessageEvent) => {
