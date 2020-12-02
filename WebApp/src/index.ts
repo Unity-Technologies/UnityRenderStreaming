@@ -14,6 +14,7 @@ export interface Options {
   certfile?: string;
   websocket?: boolean;
   mode?: string;
+  logging?: string;
 }
 
 export class RenderStreaming {
@@ -29,6 +30,7 @@ export class RenderStreaming {
           .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
           .option('-w, --websocket', 'Enable Websocket Signaling', process.env.WEBSOCKET || false)
           .option('-m, --mode <type>', 'Choose Communication mode public or private (default public)', process.env.MODE || 'public')
+          .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.(default dev)', process.env.LOGGING || 'dev')
           .parse(argv);
         return {
           port: program.port,
@@ -37,6 +39,7 @@ export class RenderStreaming {
           certfile: program.certfile,
           websocket: program.websocket,
           mode: program.mode,
+          logging: program.logging,
         };
       }
     };
