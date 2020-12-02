@@ -20,212 +20,212 @@ const answers: Map<string, Answer> = new Map<string, Answer>();
 const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<WebSocket, Map<string, Candidate[]>>();
 
 function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
-    let connectionIds = null;
-    if (!clients.has(settion)) {
-        connectionIds = new Set<string>();
-        clients.set(settion, connectionIds);
-    }
-    connectionIds = clients.get(settion);
-    return connectionIds;
+  let connectionIds = null;
+  if (!clients.has(settion)) {
+    connectionIds = new Set<string>();
+    clients.set(settion, connectionIds);
+  }
+  connectionIds = clients.get(settion);
+  return connectionIds;
 }
 
 export default class WSSignaling {
-    server: Server;
-    wss: websocket.Server;
-    isPrivate: boolean;
+  server: Server;
+  wss: websocket.Server;
+  isPrivate: boolean;
 
-    constructor(server: Server, mode: string) {
-        this.server = server;
-        this.wss = new websocket.Server({ server });
-        this.isPrivate = mode == "private";
+  constructor(server: Server, mode: string) {
+    this.server = server;
+    this.wss = new websocket.Server({ server });
+    this.isPrivate = mode == "private";
 
-        this.wss.on('connection', (ws: WebSocket) => {
+    this.wss.on('connection', (ws: WebSocket) => {
 
-            clients.set(ws, new Set<string>());
+      clients.set(ws, new Set<string>());
 
-            ws.onclose = (_event: CloseEvent) => {
+      ws.onclose = (_event: CloseEvent) => {
 
-                const connectionIds = clients.get(ws);
-                connectionIds.forEach(connectionId => {
-                    connectionPair.delete(connectionId);
-                    offers.delete(connectionId);
-                    answers.delete(connectionId);
-                });
-
-                clients.delete(ws);
-                candidates.delete(ws);
-            }
-
-            ws.onmessage = (event: MessageEvent) => {
-
-                // JSON Schema expectation
-                // type: connect, disconnect, offer, answer, candidate
-                // from: from connection id
-                // to: to connection id
-                // data: any message data structure
-
-                const msg = JSON.parse(event.data);
-                if (!msg || !this) {
-                    return;
-                }
-
-                console.log(msg);
-
-                switch (msg.type) {
-                    case "connect":
-                        this.onConnect(ws, msg.connectionId);
-                        break;
-                    case "disconnect":
-                        this.onDisconnect(ws, msg.connectionId);
-                        break;
-                    case "offer":
-                        this.onOffer(ws, msg.data);
-                        break;
-                    case "answer":
-                        this.onAnswer(ws, msg.data);
-                        break;
-                    case "candidate":
-                        this.onCandidate(ws, msg.data);
-                        break;
-                    default:
-                        break;
-                }
-            };
-        });
-    }
-
-    private onConnect(ws: WebSocket, connectionId: string) {
-        let peerExists = false;
-        if (this.isPrivate) {
-            if (connectionPair.has(connectionId)) {
-                const pair = connectionPair.get(connectionId);
-
-                if (pair[0] != null && pair[1] != null) {
-                    ws.send(JSON.stringify({ type: "error", message: "this connection is full." }));
-                    return;
-                } else if (pair[0] != null) {
-                    connectionPair.set(connectionId, [pair[0], ws]);
-                    peerExists = true;
-                } else if (pair[1] != null) {
-                    connectionPair.set(connectionId, [ws, pair[1]]);
-                    peerExists = true;
-                }
-            } else {
-                connectionPair.set(connectionId, [ws, null]);
-            }
-        }
-
-        const connectionIds = getOrCreateConnectionIds(ws);
-        connectionIds.add(connectionId);
-        ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, peerExists: peerExists }));
-    }
-
-    private onDisconnect(ws: WebSocket, connectionId: string) {
         const connectionIds = clients.get(ws);
-        connectionIds.delete(connectionId);
+        connectionIds.forEach(connectionId => {
+          connectionPair.delete(connectionId);
+          offers.delete(connectionId);
+          answers.delete(connectionId);
+        });
 
-        if (connectionPair.has(connectionId)) {
-            const pair = connectionPair.get(connectionId);
-            const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-            if (otherSessionWs) {
-                otherSessionWs.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
-            }
-        }
-        connectionPair.delete(connectionId);
-    }
+        clients.delete(ws);
+        candidates.delete(ws);
+      }
 
-    private onOffer(ws: WebSocket, message: any) {
-        const connectionId = message.connectionId as string;
-        const newOffer = new Offer(message.sdp, Date.now());
-        offers.set(connectionId, newOffer);
+      ws.onmessage = (event: MessageEvent) => {
 
-        if (this.isPrivate) {
-            const pair = connectionPair.get(connectionId);
-            const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-            if (otherSessionWs) {
-                otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
-            } else {
-                ws.send(JSON.stringify({ type: "error", message: "this connection is not ready other session." }));
-            }
-            return;
+        // JSON Schema expectation
+        // type: connect, disconnect, offer, answer, candidate
+        // from: from connection id
+        // to: to connection id
+        // data: any message data structure
+
+        const msg = JSON.parse(event.data);
+        if (!msg || !this) {
+          return;
         }
 
+        console.log(msg);
+
+        switch (msg.type) {
+          case "connect":
+            this.onConnect(ws, msg.connectionId);
+            break;
+          case "disconnect":
+            this.onDisconnect(ws, msg.connectionId);
+            break;
+          case "offer":
+            this.onOffer(ws, msg.data);
+            break;
+          case "answer":
+            this.onAnswer(ws, msg.data);
+            break;
+          case "candidate":
+            this.onCandidate(ws, msg.data);
+            break;
+          default:
+            break;
+        }
+      };
+    });
+  }
+
+  private onConnect(ws: WebSocket, connectionId: string) {
+    let peerExists = false;
+    if (this.isPrivate) {
+      if (connectionPair.has(connectionId)) {
+        const pair = connectionPair.get(connectionId);
+
+        if (pair[0] != null && pair[1] != null) {
+          ws.send(JSON.stringify({ type: "error", message: "this connection is full." }));
+          return;
+        } else if (pair[0] != null) {
+          connectionPair.set(connectionId, [pair[0], ws]);
+          peerExists = true;
+        } else if (pair[1] != null) {
+          connectionPair.set(connectionId, [ws, pair[1]]);
+          peerExists = true;
+        }
+      } else {
         connectionPair.set(connectionId, [ws, null]);
-        clients.forEach((_v, k) => {
-            if (k == ws) {
-                return;
-            }
-            k.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
-        });
+      }
     }
 
-    private onAnswer(ws: WebSocket, message: any) {
-        const connectionId = message.connectionId as string;
-        const connectionIds = getOrCreateConnectionIds(ws);
-        connectionIds.add(connectionId);
-        const newAnswer = new Answer(message.sdp, Date.now());
-        answers.set(connectionId, newAnswer);
+    const connectionIds = getOrCreateConnectionIds(ws);
+    connectionIds.add(connectionId);
+    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, peerExists: peerExists }));
+  }
 
-        let otherSessionWs = null;
+  private onDisconnect(ws: WebSocket, connectionId: string) {
+    const connectionIds = clients.get(ws);
+    connectionIds.delete(connectionId);
 
-        if (this.isPrivate) {
-            const pair = connectionPair.get(connectionId);
-            otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-        } else {
-            const pair = connectionPair.get(connectionId);
-            otherSessionWs = pair[0];
-            connectionPair.set(connectionId, [otherSessionWs, ws]);
-        }
+    if (connectionPair.has(connectionId)) {
+      const pair = connectionPair.get(connectionId);
+      const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+      if (otherSessionWs) {
+        otherSessionWs.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
+      }
+    }
+    connectionPair.delete(connectionId);
+  }
 
-        const mapCandidates = candidates.get(otherSessionWs);
-        if (mapCandidates) {
-            const arrayCandidates = mapCandidates.get(connectionId);
-            for (const candidate of arrayCandidates) {
-                candidate.datetime = Date.now();
-            }
-        }
+  private onOffer(ws: WebSocket, message: any) {
+    const connectionId = message.connectionId as string;
+    const newOffer = new Offer(message.sdp, Date.now());
+    offers.set(connectionId, newOffer);
 
-        if (this.isPrivate) {
-            otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
-            return;
-        }
-
-        clients.forEach((_v, k) => {
-            if (k == ws) {
-                return;
-            }
-            k.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
-        });
+    if (this.isPrivate) {
+      const pair = connectionPair.get(connectionId);
+      const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+      if (otherSessionWs) {
+        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+      } else {
+        ws.send(JSON.stringify({ type: "error", message: "this connection is not ready other session." }));
+      }
+      return;
     }
 
-    private onCandidate(ws: WebSocket, message: any) {
-        const connectionId = message.connectionId;
+    connectionPair.set(connectionId, [ws, null]);
+    clients.forEach((_v, k) => {
+      if (k == ws) {
+        return;
+      }
+      k.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+    });
+  }
 
-        if (!candidates.has(ws)) {
-            candidates.set(ws, new Map<string, Candidate[]>());
-        }
-        const map = candidates.get(ws);
-        if (!map.has(connectionId)) {
-            map.set(connectionId, []);
-        }
-        const arr = map.get(connectionId);
-        const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
-        arr.push(candidate);
+  private onAnswer(ws: WebSocket, message: any) {
+    const connectionId = message.connectionId as string;
+    const connectionIds = getOrCreateConnectionIds(ws);
+    connectionIds.add(connectionId);
+    const newAnswer = new Answer(message.sdp, Date.now());
+    answers.set(connectionId, newAnswer);
 
-        if (this.isPrivate) {
-            const pair = connectionPair.get(connectionId);
-            const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-            if (otherSessionWs) {
-                otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
-            }
-            return;
-        }
+    let otherSessionWs = null;
 
-        clients.forEach((_v, k) => {
-            if (k === ws) {
-                return;
-            }
-            k.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
-        });
+    if (this.isPrivate) {
+      const pair = connectionPair.get(connectionId);
+      otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+    } else {
+      const pair = connectionPair.get(connectionId);
+      otherSessionWs = pair[0];
+      connectionPair.set(connectionId, [otherSessionWs, ws]);
     }
+
+    const mapCandidates = candidates.get(otherSessionWs);
+    if (mapCandidates) {
+      const arrayCandidates = mapCandidates.get(connectionId);
+      for (const candidate of arrayCandidates) {
+        candidate.datetime = Date.now();
+      }
+    }
+
+    if (this.isPrivate) {
+      otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
+      return;
+    }
+
+    clients.forEach((_v, k) => {
+      if (k == ws) {
+        return;
+      }
+      k.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
+    });
+  }
+
+  private onCandidate(ws: WebSocket, message: any) {
+    const connectionId = message.connectionId;
+
+    if (!candidates.has(ws)) {
+      candidates.set(ws, new Map<string, Candidate[]>());
+    }
+    const map = candidates.get(ws);
+    if (!map.has(connectionId)) {
+      map.set(connectionId, []);
+    }
+    const arr = map.get(connectionId);
+    const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
+    arr.push(candidate);
+
+    if (this.isPrivate) {
+      const pair = connectionPair.get(connectionId);
+      const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+      if (otherSessionWs) {
+        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+      }
+      return;
+    }
+
+    clients.forEach((_v, k) => {
+      if (k === ws) {
+        return;
+      }
+      k.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+    });
+  }
 }
