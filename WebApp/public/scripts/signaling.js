@@ -26,13 +26,16 @@ export default class Signaling extends EventTarget {
     const session = await createResponse.json();
     this.sessionId = session.sessionId;
 
-    const res = await this.createConnection();
+    const id = uuid4();
+    const res = await this.createConnection(id);
     const connection = await res.json();
-    this.connectionId = connection.connectionId;
 
     this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
+
+    this.connectionId = connection.connectionId;
+    return this.connectionId;
   }
 
   async loopGetOffer() {
@@ -100,30 +103,31 @@ export default class Signaling extends EventTarget {
     this.sessionId = null;
   }
 
-  async createConnection() {
-    return await fetch(this.url('connection'), { method: 'PUT', headers: this.headers() });
+  async createConnection(connectionId) {
+    const data = { 'connectionId': connectionId };
+    return await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
   };
-  async deleteConnection() {
-    const data = { 'connectionId': this.connectionId };
+  async deleteConnection(connectionId) {
+    const data = { 'connectionId': connectionId };
     return await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
   };
 
-  async sendOffer(sdp) {
-    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
+  async sendOffer(connectionId, sdp) {
+    const data = { 'sdp': sdp, 'connectionId': connectionId };
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
-  async sendAnswer(sdp) {
-    const data = { 'sdp': sdp, 'connectionId': this.connectionId };
+  async sendAnswer(connectionId, sdp) {
+    const data = { 'sdp': sdp, 'connectionId': connectionId };
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
-  async sendCandidate(candidate, sdpMid, sdpMLineIndex) {
+  async sendCandidate(connectionId, candidate, sdpMid, sdpMLineIndex) {
     const data = {
       'candidate': candidate,
       'sdpMLineIndex': sdpMLineIndex,
       'sdpMid': sdpMid,
-      'connectionId': this.connectionId
+      'connectionId': connectionId
     };
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
