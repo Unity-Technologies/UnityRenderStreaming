@@ -106,9 +106,6 @@ export default class WSSignaling {
         } else if (pair[0] != null) {
           connectionPair.set(connectionId, [pair[0], ws]);
           peerExists = true;
-        } else if (pair[1] != null) {
-          connectionPair.set(connectionId, [ws, pair[1]]);
-          peerExists = true;
         }
       } else {
         connectionPair.set(connectionId, [ws, null]);
