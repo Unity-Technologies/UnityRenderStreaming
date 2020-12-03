@@ -204,6 +204,7 @@ namespace Unity.RenderStreaming.Signaling
                     }
                     else if (routedMessage.type == "error")
                     {
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
                         Debug.LogError(msg.message);
                     }
                 }
