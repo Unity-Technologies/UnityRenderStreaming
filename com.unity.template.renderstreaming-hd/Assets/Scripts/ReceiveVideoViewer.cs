@@ -52,7 +52,7 @@ namespace Unity.RenderStreaming
 
         public void AddTrack(string connectionId, RTCTrackEvent trackEvent)
         {
-            if (connectionId != this.connectionId)
+            if (!string.IsNullOrEmpty(this.connectionId) && connectionId != this.connectionId)
             {
                 return;
             }
@@ -62,7 +62,7 @@ namespace Unity.RenderStreaming
 
         public void RemoveTrack(string connectionId, MediaStreamTrack track)
         {
-            if (connectionId != this.connectionId)
+            if (!string.IsNullOrEmpty(this.connectionId) && connectionId != this.connectionId)
             {
                 return;
             }
