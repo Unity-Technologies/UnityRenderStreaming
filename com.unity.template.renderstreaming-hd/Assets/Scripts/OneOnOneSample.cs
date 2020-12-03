@@ -8,7 +8,8 @@ namespace Unity.RenderStreaming
 #pragma warning disable 0649
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
-        [SerializeField] private WebCamStreamer webCamStreamer;
+        [SerializeField] private InputField connectionIdInput;
+        [SerializeField] private VideoStreamBase videoStream;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
 #pragma warning restore 0649
 
@@ -16,17 +17,19 @@ namespace Unity.RenderStreaming
         {
             setUpButton.onClick.AddListener(SetUp);
             hangUpButton.onClick.AddListener(HangUp);
-            webCamStreamer.OnEnableComplete += () => receiveVideoViewer.enabled = true;
+            connectionIdInput.onValueChanged.AddListener(input => receiveVideoViewer.ChangeConnectionId(input));
+            connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
+            videoStream.OnEnableComplete += () => receiveVideoViewer.enabled = true;
         }
 
         private void SetUp()
         {
-            webCamStreamer.enabled = true;
+            videoStream.enabled = true;
         }
 
         private void HangUp()
         {
-            webCamStreamer.enabled = false;
+            videoStream.enabled = false;
             receiveVideoViewer.enabled = false;
         }
     }

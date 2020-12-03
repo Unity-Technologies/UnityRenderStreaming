@@ -1474,7 +1474,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setUpButton: {fileID: 346362251}
   hangUpButton: {fileID: 2128695120}
-  webCamStreamer: {fileID: 1915034404}
+  connectionIdInput: {fileID: 185332756}
+  videoStream: {fileID: 1915034404}
   receiveVideoViewer: {fileID: 1915034405}
 --- !u!114 &1915034402
 MonoBehaviour:
@@ -1488,8 +1489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045786cf504bd7347842d6948241cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urlSignaling: wss://localhost:443
-  signalingType: Unity.RenderStreaming.Signaling.WebSocketSignaling
+  urlSignaling: https://localhost:443
+  signalingType: Unity.RenderStreaming.Signaling.HttpSignaling
   iceServers:
   - credential: 
     credentialType: 0
@@ -1531,8 +1532,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  deviceIndex: 0
   localImage: {fileID: 1363584101}
+  deviceIndex: 0
 --- !u!114 &1915034405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1546,7 +1547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  connectionIdInput: {fileID: 185332756}
+  connecttionId: 
   receiveImage: {fileID: 1221238573}
 --- !u!1 &2128695118
 GameObject:

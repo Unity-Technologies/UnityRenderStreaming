@@ -1,5 +1,4 @@
-﻿using System;
-using Unity.WebRTC;
+﻿using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,18 +7,10 @@ namespace Unity.RenderStreaming
     public class ReceiveVideoViewer : MonoBehaviour
     {
         [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
-        [SerializeField] private InputField connectionIdInput;
+        [SerializeField] private string connectionId;
         [SerializeField] private RawImage receiveImage;
 
         private MediaStream m_receiveStream;
-        private string m_connectionId;
-
-        void Awake()
-        {
-            m_connectionId = Guid.NewGuid().ToString();
-            connectionIdInput.text = m_connectionId;
-            connectionIdInput.onValueChanged.AddListener(input => m_connectionId = input);
-        }
 
         void OnEnable()
         {
@@ -42,12 +33,12 @@ namespace Unity.RenderStreaming
                 }
             };
 
-            RenderStreaming.Instance?.OpenConnection(m_connectionId);
+            RenderStreaming.Instance?.OpenConnection(connectionId);
         }
 
         void OnDisable()
         {
-            RenderStreaming.Instance?.CloseConnection(m_connectionId);
+            RenderStreaming.Instance?.CloseConnection(connectionId);
             RenderStreaming.Instance?.RemoveVideoReceiveViewer(this);
             m_receiveStream.OnAddTrack = null;
             m_receiveStream.Dispose();
@@ -61,7 +52,7 @@ namespace Unity.RenderStreaming
 
         public void AddTrack(string connectionId, RTCTrackEvent trackEvent)
         {
-            if (connectionId != m_connectionId)
+            if (connectionId != this.connectionId)
             {
                 return;
             }
@@ -71,12 +62,17 @@ namespace Unity.RenderStreaming
 
         public void RemoveTrack(string connectionId, MediaStreamTrack track)
         {
-            if (connectionId != m_connectionId)
+            if (connectionId != this.connectionId)
             {
                 return;
             }
 
             m_receiveStream.RemoveTrack(track);
+        }
+
+        public void ChangeConnectionId(string connectionId)
+        {
+            this.connectionId = connectionId;
         }
     }
 }
