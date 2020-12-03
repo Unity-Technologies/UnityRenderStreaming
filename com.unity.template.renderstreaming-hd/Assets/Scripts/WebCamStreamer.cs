@@ -1,41 +1,16 @@
-using System;
 using System.Collections;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
-    public class WebCamStreamer : MonoBehaviour
+    public class WebCamStreamer : VideoStreamBase
     {
-        public delegate void OnEnableCompleteHandler();
-
-        [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
-        private Vector2Int streamingSize = new Vector2Int(1280, 720);
-
         [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex = 0;
 
-        [SerializeField, Tooltip("Rendering Camera View (optional)")]
-        private RawImage localImage;
-
-        private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
         private Coroutine m_startVideoCorutine;
-
-        public OnEnableCompleteHandler OnEnableComplete;
-
-        public void ChangeBitrate(int bitrate)
-        {
-            RenderStreaming.Instance?.ChangeVideoParameters(
-                m_track, Convert.ToUInt64(bitrate), null);
-        }
-
-        public void ChangeFramerate(int framerate)
-        {
-            RenderStreaming.Instance?.ChangeVideoParameters(
-                m_track, null, Convert.ToUInt32(framerate));
-        }
 
         void OnEnable()
         {
