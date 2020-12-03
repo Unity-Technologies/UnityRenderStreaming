@@ -147,7 +147,7 @@ router.put('/connection', (req: Request, res: Response) => {
       const pair = connectionPair.get(connectionId);
 
       if (pair[0] != null && pair[1] != null) {
-        const err = new Error('this connection is full.');
+        const err = new Error(`${connectionId}: This connection id is already used.`);
         console.log(err);
         res.status(400).send({ error: err });
         return;
