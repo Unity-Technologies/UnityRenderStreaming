@@ -154,9 +154,6 @@ router.put('/connection', (req: Request, res: Response) => {
       } else if (pair[0] != null) {
         connectionPair.set(connectionId, [pair[0], sessionId]);
         peerExists = true;
-      } else if (pair[1] != null) {
-        connectionPair.set(connectionId, [sessionId, pair[1]]);
-        peerExists = true;
       }
     } else {
       connectionPair.set(connectionId, [sessionId, null]);
@@ -182,7 +179,16 @@ router.post('/offer', (req: Request, res: Response) => {
   const { connectionId } = req.body;
   offers.set(connectionId, new Offer(req.body.sdp, Date.now()));
 
-  if (!res.app.get('isPrivate')) {
+  if (res.app.get('isPrivate')) {
+    const pair = connectionPair.get(connectionId);
+    const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
+    if (otherSessionId) {
+      const err = new Error(`${connectionId}: This connection id is not ready other session.`);
+      console.log(err);
+      res.status(400).send({ error: err });
+      return;
+    }
+  } else {
     connectionPair.set(connectionId, [sessionId, null]);
   }
   res.sendStatus(200);

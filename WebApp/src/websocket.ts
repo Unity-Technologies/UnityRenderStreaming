@@ -101,7 +101,7 @@ export default class WSSignaling {
         const pair = connectionPair.get(connectionId);
 
         if (pair[0] != null && pair[1] != null) {
-          ws.send(JSON.stringify({ type: "error", message: "this connection is full." }));
+          ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is already used.` }));
           return;
         } else if (pair[0] != null) {
           connectionPair.set(connectionId, [pair[0], ws]);
@@ -142,7 +142,7 @@ export default class WSSignaling {
       if (otherSessionWs) {
         otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
       } else {
-        ws.send(JSON.stringify({ type: "error", message: "this connection is not ready other session." }));
+        ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is not ready other session.` }));
       }
       return;
     }
