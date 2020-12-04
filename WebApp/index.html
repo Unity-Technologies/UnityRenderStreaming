@@ -17,24 +17,20 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Unity Video Sender</title>
+    <title>1 on 1 Sample</title>
 </head>
 
 <body>
-Send to Unity<br />
+1 on 1 Sample<br />
 <button type="button" id="startVideoButton">Start Video</button>
 <button type="button" id="setUpButton">Set Up</button>
-<button type="button" id="addTrackButton">AddTrack</button>
 <button type="button" id="hangUpButton">Hang Up</button>
 <div>
-    <video id="local_video" autoplay muted=true style="width: 160px; height: 120px; border: 1px solid black;"></video>
-    <video id="remote_video" autoplay style="width: 160px; height: 120px; border: 1px solid black;"></video>
+    <video id="local_video" autoplay muted=true style="width: 320px; height: 240px; border: 1px solid black;"></video>
+    <video id="remote_video" autoplay style="width: 320px; height: 240px; border: 1px solid black;"></video>
 </div>
-<p>SDP to send:<br />
-    <textarea id="text_for_send_sdp" rows="5" cols="60" readonly="readonly">SDP to send</textarea>
-</p>
-<p>SDP to receive:<br />
-    <textarea id="text_for_receive_sdp" rows="5" cols="60"></textarea>
+<p>ConnectionID:<br />
+    <textarea id="text_for_connection_id"></textarea>
 </p>
 
 <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>

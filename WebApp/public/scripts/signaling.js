@@ -27,8 +27,7 @@ export default class Signaling extends EventTarget {
     this.sessionId = session.sessionId;
 
     const id = uuid4();
-    const res = await this.createConnection(id);
-    const connection = await res.json();
+    const connection = await this.createConnection(id);
 
     this.loopGetOffer();
     this.loopGetAnswer();
@@ -105,11 +104,17 @@ export default class Signaling extends EventTarget {
 
   async createConnection(connectionId) {
     const data = { 'connectionId': connectionId };
-    return await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
+    const res = await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
+    const json = await res.json();
+    this.dispatchEvent(new CustomEvent('connect', {detail: json}));
+    return json;
   };
   async deleteConnection(connectionId) {
     const data = { 'connectionId': connectionId };
-    return await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
+    const res = await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
+    const json = await res.json();
+    this.dispatchEvent(new CustomEvent('disconnect', {detail: json}));
+    return json;
   };
 
   async sendOffer(connectionId, sdp) {
@@ -173,8 +178,10 @@ export class WebSocketSignaling extends EventTarget {
       switch (msg.type) {
         case "connect":
           this.connectionId = msg.connectionId;
+          this.dispatchEvent(new CustomEvent('connect', { detail: msg }));
           break;
         case "disconnect":
+          this.dispatchEvent(new CustomEvent('disconnect', { detail: msg }));
           break;
         case "offer":
           this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
@@ -202,6 +209,18 @@ export class WebSocketSignaling extends EventTarget {
   stop() {
     this.websocket.send(JSON.stringify({ type: "disconnect", from: this.connectionId }));
   }
+
+  createConnection(connectionId) {
+    const sendJson = JSON.stringify({ type: "connect", connectionId: connectionId });
+    console.log(sendJson);
+    this.websocket.send(sendJson);
+  };
+
+  deleteConnection(connectionId) {
+    const sendJson = JSON.stringify({ type: "disconnect", connectionId: connectionId });
+    console.log(sendJson);
+    this.websocket.send(sendJson);
+  };
 
   sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
