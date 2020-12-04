@@ -182,7 +182,7 @@ router.post('/offer', (req: Request, res: Response) => {
   if (res.app.get('isPrivate')) {
     const pair = connectionPair.get(connectionId);
     const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
-    if (otherSessionId) {
+    if (otherSessionId == null) {
       const err = new Error(`${connectionId}: This connection id is not ready other session.`);
       console.log(err);
       res.status(400).send({ error: err });
