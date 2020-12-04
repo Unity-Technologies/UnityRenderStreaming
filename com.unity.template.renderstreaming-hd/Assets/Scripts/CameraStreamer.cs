@@ -7,6 +7,7 @@ namespace Unity.RenderStreaming
     public class CameraStreamer : VideoStreamBase
     {
         private Camera m_camera;
+        public override Texture SendTexture => m_camera.targetTexture;
 
         void Awake()
         {
@@ -19,23 +20,12 @@ namespace Unity.RenderStreaming
             m_track = m_camera.CaptureStreamTrack(streamingSize.x, streamingSize.y, 1000000);
             RenderStreaming.Instance?.AddVideoStreamTrack(m_track);
 
-            if (localImage != null)
-            {
-                localImage.texture = m_camera.targetTexture;
-            }
-
             OnEnableComplete?.Invoke();
         }
 
         void OnDisable()
         {
             RenderStreaming.Instance?.RemoveVideoStreamTrack(m_track);
-
-
-            if (localImage != null)
-            {
-                localImage.texture = null;
-            }
         }
     }
 }

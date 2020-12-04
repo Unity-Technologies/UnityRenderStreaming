@@ -1,6 +1,5 @@
 ﻿using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
@@ -8,9 +7,11 @@ namespace Unity.RenderStreaming
     {
         [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
         [SerializeField] private string connectionId;
-        [SerializeField] private RawImage receiveImage;
 
         private MediaStream m_receiveStream;
+        private Texture m_receiveTexture;
+
+        public Texture ReceiveTexture => m_receiveTexture;
 
         void OnEnable()
         {
@@ -18,17 +19,17 @@ namespace Unity.RenderStreaming
             RenderStreaming.Instance?.AddVideoReceiveViewer(this);
             m_receiveStream.OnAddTrack = e =>
             {
-                if (receiveImage != null && e.Track.Kind == TrackKind.Video)
+                if (e.Track.Kind == TrackKind.Video)
                 {
                     var videoTrack = (VideoStreamTrack)e.Track;
-                    receiveImage.texture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
+                    m_receiveTexture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
                 }
             };
             m_receiveStream.OnRemoveTrack = e =>
             {
-                if (receiveImage != null && e.Track.Kind == TrackKind.Video)
+                if (e.Track.Kind == TrackKind.Video)
                 {
-                    receiveImage.texture = null;
+                    m_receiveTexture = null;
                     e.Track.Dispose();
                 }
             };
@@ -43,11 +44,7 @@ namespace Unity.RenderStreaming
             m_receiveStream.OnAddTrack = null;
             m_receiveStream.Dispose();
             m_receiveStream = null;
-
-            if (receiveImage != null)
-            {
-                receiveImage.texture = null;
-            }
+            m_receiveTexture = null;
         }
 
         public void AddTrack(string connectionId, RTCTrackEvent trackEvent)

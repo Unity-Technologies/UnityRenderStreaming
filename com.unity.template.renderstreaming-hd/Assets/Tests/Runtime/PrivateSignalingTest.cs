@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
-    [Ignore("todo: need to upgrade com.unity.renderstreaming version 2.2")]
+//    [Ignore("todo: need to upgrade com.unity.renderstreaming version 2.2")]
     public class PrivateSignalingTest : IPrebuildSetup
     {
         static bool Wait(Func<bool> condition, int millisecondsTimeout = 1000, int millisecondsInterval = 100)
@@ -72,7 +72,7 @@ namespace Unity.RenderStreaming
             //#endif
         }
 
-        [OneTimeSetUp]
+//        [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             // todo: download webapp for signaling test
@@ -104,7 +104,7 @@ namespace Unity.RenderStreaming
             Assert.True(success);
         }
 
-        [OneTimeTearDown]
+//        [OneTimeTearDown]
         public void OneTimeTearDown()
         {
             m_ServerProcess.Kill();

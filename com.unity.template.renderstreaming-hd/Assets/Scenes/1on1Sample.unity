@@ -1475,6 +1475,8 @@ MonoBehaviour:
   setUpButton: {fileID: 346362251}
   hangUpButton: {fileID: 2128695120}
   connectionIdInput: {fileID: 185332756}
+  localVideoImage: {fileID: 1363584101}
+  remoteVideoImage: {fileID: 1221238573}
   videoStream: {fileID: 1915034404}
   receiveVideoViewer: {fileID: 1915034405}
 --- !u!114 &1915034402
@@ -1532,7 +1534,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  localImage: {fileID: 1363584101}
   deviceIndex: 0
 --- !u!114 &1915034405
 MonoBehaviour:
@@ -1547,8 +1548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  connecttionId: 
-  receiveImage: {fileID: 1221238573}
+  connectionId: 
 --- !u!1 &2128695118
 GameObject:
   m_ObjectHideFlags: 0

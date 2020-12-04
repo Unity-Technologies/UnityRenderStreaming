@@ -12,6 +12,8 @@ namespace Unity.RenderStreaming
         private WebCamTexture m_webCamTexture;
         private Coroutine m_startVideoCorutine;
 
+        public override Texture SendTexture => m_webCamTexture;
+
         void OnEnable()
         {
             m_startVideoCorutine = StartCoroutine(StartVideo());
@@ -40,11 +42,6 @@ namespace Unity.RenderStreaming
             m_track = new VideoStreamTrack(gameObject.name, m_webCamTexture);
             RenderStreaming.Instance?.AddVideoStreamTrack(m_track);
 
-            if (localImage != null)
-            {
-                localImage.texture = m_webCamTexture;
-            }
-
             OnEnableComplete?.Invoke();
         }
 
@@ -62,11 +59,6 @@ namespace Unity.RenderStreaming
             if (m_webCamTexture != null)
             {
                 m_webCamTexture.Stop();
-            }
-
-            if (localImage != null)
-            {
-                localImage.texture = null;
             }
         }
     }

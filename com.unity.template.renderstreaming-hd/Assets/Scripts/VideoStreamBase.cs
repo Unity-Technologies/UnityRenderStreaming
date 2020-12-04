@@ -1,7 +1,6 @@
 ﻿using System;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
@@ -14,10 +13,8 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         protected Vector2Int streamingSize = new Vector2Int(1280, 720);
 
-        [SerializeField, Tooltip("Rendering Camera View (optional)")]
-        protected RawImage localImage;
-
         protected VideoStreamTrack m_track;
+        public virtual Texture SendTexture { get; }
 
         public void ChangeBitrate(int bitrate)
         {

@@ -9,6 +9,8 @@ namespace Unity.RenderStreaming
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
         [SerializeField] private InputField connectionIdInput;
+        [SerializeField] private RawImage localVideoImage;
+        [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private VideoStreamBase videoStream;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
 #pragma warning restore 0649
@@ -19,7 +21,11 @@ namespace Unity.RenderStreaming
             hangUpButton.onClick.AddListener(HangUp);
             connectionIdInput.onValueChanged.AddListener(input => receiveVideoViewer.ChangeConnectionId(input));
             connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
-            videoStream.OnEnableComplete += () => receiveVideoViewer.enabled = true;
+            videoStream.OnEnableComplete += () => {
+                receiveVideoViewer.enabled = true;
+                localVideoImage.texture = videoStream.SendTexture;
+                remoteVideoImage.texture = receiveVideoViewer.ReceiveTexture;
+            };
         }
 
         private void SetUp()
@@ -31,6 +37,8 @@ namespace Unity.RenderStreaming
         {
             videoStream.enabled = false;
             receiveVideoViewer.enabled = false;
+            localVideoImage.texture = null;
+            remoteVideoImage.texture = null;
         }
     }
 }
