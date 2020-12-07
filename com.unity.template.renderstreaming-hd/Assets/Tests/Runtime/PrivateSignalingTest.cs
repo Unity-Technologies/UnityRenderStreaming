@@ -108,6 +108,9 @@ namespace Unity.RenderStreaming
         public void OneTimeTearDown()
         {
             m_ServerProcess.Kill();
+            m_ServerProcess.WaitForExit();
+            m_ServerProcess.Dispose();
+            m_ServerProcess = null;
         }
 
         ISignaling CreateSignaling(Type type, SynchronizationContext mainThread)
@@ -175,9 +178,6 @@ namespace Unity.RenderStreaming
         public void TearDown()
         {
             WebRTC.WebRTC.Dispose();
-
-            signaling1.Stop();
-            signaling2.Stop();
             m_Context = null;
         }
 
@@ -222,6 +222,8 @@ namespace Unity.RenderStreaming
 
             signaling1.CloseConnection(receiveConnectionId1);
             signaling2.CloseConnection(receiveConnectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
 
@@ -262,6 +264,8 @@ namespace Unity.RenderStreaming
 
             signaling1.CloseConnection(connectionId1);
             signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
 
@@ -299,6 +303,8 @@ namespace Unity.RenderStreaming
 
             signaling1.CloseConnection(connectionId1);
             signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
 
@@ -345,6 +351,8 @@ namespace Unity.RenderStreaming
 
             signaling1.CloseConnection(connectionId1);
             signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
     }

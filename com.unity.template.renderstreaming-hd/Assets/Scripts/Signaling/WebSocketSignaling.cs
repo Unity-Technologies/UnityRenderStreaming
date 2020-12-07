@@ -40,7 +40,8 @@ namespace Unity.RenderStreaming.Signaling
             {
                 m_running = false;
                 m_webSocket?.Close();
-                m_signalingThread.Abort();
+                m_signalingThread.Join();
+                m_signalingThread = null;
             }
         }
 

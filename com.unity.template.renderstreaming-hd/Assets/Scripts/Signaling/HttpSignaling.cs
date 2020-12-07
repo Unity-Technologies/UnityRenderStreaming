@@ -43,7 +43,12 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            m_running = false;
+            if (m_running)
+            {
+                m_running = false;
+                m_signalingThread?.Join();
+                m_signalingThread = null;
+            }
         }
 
         public event OnStartHandler OnStart;
