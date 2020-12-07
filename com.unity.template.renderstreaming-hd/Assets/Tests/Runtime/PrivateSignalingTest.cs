@@ -219,6 +219,10 @@ namespace Unity.RenderStreaming
             yield return new WaitUntil(() => !string.IsNullOrEmpty(receiveConnectionId2));
             Assert.AreEqual(connectionId, receiveConnectionId2);
             Assert.IsTrue(receivePeerExists2);
+
+            signaling1.CloseConnection(receiveConnectionId1);
+            signaling2.CloseConnection(receiveConnectionId2);
+            yield return new WaitForSeconds(1);
         }
 
         [UnityTest]
@@ -255,6 +259,10 @@ namespace Unity.RenderStreaming
 
             signaling1.SendOffer(connectionId, m_DescOffer);
             yield return new WaitUntil(() => offerRaised2);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            yield return new WaitForSeconds(1);
         }
 
 
@@ -288,6 +296,10 @@ namespace Unity.RenderStreaming
             signaling1.OnAnswer += (s, e) => { answerRaised = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
             yield return new WaitUntil(() => answerRaised);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            yield return new WaitForSeconds(1);
         }
 
         [UnityTest]
@@ -330,6 +342,10 @@ namespace Unity.RenderStreaming
             signaling1.OnIceCandidate += (s, e) => { candidateRaised2 = true; };
             signaling2.SendCandidate(connectionId1, m_candidate);
             yield return new WaitUntil(() => candidateRaised2);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            yield return new WaitForSeconds(1);
         }
     }
 }
