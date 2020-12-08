@@ -15,7 +15,6 @@ namespace Unity.RenderStreaming
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
-    [Ignore("todo: need to upgrade com.unity.renderstreaming version 2.2")]
     public class PrivateSignalingTest : IPrebuildSetup
     {
         static bool Wait(Func<bool> condition, int millisecondsTimeout = 1000, int millisecondsInterval = 100)
