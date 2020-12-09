@@ -22,6 +22,11 @@
      "displayName": "LegacyRP",
      "description": "LegacyRP Unity Render Streaming Sample",
      "path": "Samples~/LegacyRP"
+   }, 
+   {
+     "displayName": "Common",
+     "description": "RenderStreaming Common Sample (does not depend on render pipeline)",
+     "path": "Samples~/Common"
    }
    
  ]

@@ -16,6 +16,10 @@ samples:
     project_path: RenderStreamingSampleSrc~/RS_LegacyRPSampleSrc
     unitypackage_path: com.unity.renderstreaming/Samples~/LegacyRP/Editor/RenderStreamingLegacyRPSimple.unitypackage
     imported_unitypackage_path: Assets/Samples/LegacyRP/Editor/RenderStreamingLegacyRPSimple.unitypackage
+  - name: Common
+    project_path: RenderStreamingSampleSrc~/RS_CommonSampleSrc
+    unitypackage_path: com.unity.renderstreaming/Samples~/Common/Editor/RenderStreamingCommonSimple.unitypackage
+    imported_unitypackage_path: Assets/Samples/Common/Editor/RenderStreamingCommonSimple.unitypackage
 
 project_path: EmptyProjectForTest~
 

@@ -1,0 +1,5 @@
+{
+	"displayName":"Common Sample",
+	"description": "Renderstreaming common sample that does not depend on the rendering pipeline",
+	"createSeparatePackage": false
+}
