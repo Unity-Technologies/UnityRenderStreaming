@@ -17,23 +17,6 @@ namespace Unity.RenderStreaming
     [TestFixture(typeof(HttpSignaling))]
     public class PrivateSignalingTest : IPrebuildSetup
     {
-        static bool Wait(Func<bool> condition, int millisecondsTimeout = 1000, int millisecondsInterval = 100)
-        {
-            if (millisecondsTimeout < millisecondsInterval)
-            {
-                throw new ArgumentException();
-            }
-
-            int time = 0;
-            while (!condition() && millisecondsTimeout > time)
-            {
-                Thread.Sleep(millisecondsInterval);
-                time += millisecondsInterval;
-            }
-
-            return millisecondsTimeout > time;
-        }
-
         private readonly Type m_SignalingType;
         private Process m_ServerProcess;
         private RTCSessionDescription m_DescOffer;
@@ -53,32 +36,29 @@ namespace Unity.RenderStreaming
             m_SignalingType = type;
         }
 
-        //        // todo:(kazuki) need to upgrade com.unity.renderstreaming version 2.2
-        //        // this is override method for IPrebuildSetup
         public void Setup()
         {
-            //#if UNITY_EDITOR
-            //            string dir = System.IO.Directory.GetCurrentDirectory();
-            //            string fileName = Editor.WebAppDownloader.GetFileName();
-            //            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
-            //            {
-            //                // already exists.
-            //                return;
-            //            }
-            //            bool downloadRaised = false;
-            //            Editor.WebAppDownloader.DownloadCurrentVersionWebApp(dir, success => { downloadRaised = true; });
-            //            Wait(() => downloadRaised, 10000);
-            //#endif
+#if UNITY_EDITOR
+            string dir = System.IO.Directory.GetCurrentDirectory();
+            string fileName = Editor.WebAppDownloader.GetFileName();
+            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
+            {
+                // already exists.
+                return;
+            }
+            bool downloadRaised = false;
+            Editor.WebAppDownloader.DownloadCurrentVersionWebApp(dir, success => { downloadRaised = true; });
+            TestUtility.Wait(() => downloadRaised, 10000);
+#endif
         }
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // todo: download webapp for signaling test
             m_ServerProcess = new Process();
 
             string dir = System.IO.Directory.GetCurrentDirectory();
-            string filename = System.IO.Path.Combine(dir, "webserver.exe");
+            string filename = System.IO.Path.Combine(dir, TestUtility.GetFileName());
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {

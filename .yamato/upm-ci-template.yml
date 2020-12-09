@@ -22,8 +22,6 @@ pack_{{ project.name }}:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     {% endfor %}
 
-# todo(kazuki): workaround renderstreaming-rtx template test error on Yamato.
-#
 {% for editor in editors %}
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -42,6 +40,12 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% endif %}
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
   artifacts:
     logs:
       paths:
