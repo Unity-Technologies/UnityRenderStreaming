@@ -33,10 +33,9 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     flavor: {{ platform.flavor}}
   commands:
     {% if platform.name == "win" %}
-    - mkdir upm-ci~\templates\ProjectData~\WebApp
-    - xcopy WebApp upm-ci~\templates\ProjectData~\WebApp /s/e/i
+    - xcopy "WebApp\bin~\*" "upm-ci~\templates\ProjectData~" /s/e/i
     {% else %}
-    - cp -r WebApp upm-ci~/templates/ProjectData~/
+    - cp -r WebApp/bin~/* upm-ci~/templates/ProjectData~/
     {% endif %}
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
