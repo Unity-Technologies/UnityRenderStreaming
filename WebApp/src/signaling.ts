@@ -140,7 +140,10 @@ router.delete('', (req: Request, res: Response) => {
 router.put('/connection', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
-
+  if(connectionId == null) {
+    res.status(400).send({ error: new Error(`connectionId is required`) });
+    return;
+  }
   let peerExists = false;
   if (req.app.get('isPrivate')) {
     if (connectionPair.has(connectionId)) {
