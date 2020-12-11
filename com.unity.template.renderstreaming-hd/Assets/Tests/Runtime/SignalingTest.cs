@@ -39,8 +39,8 @@ namespace Unity.RenderStreaming
         {
 #if UNITY_EDITOR
             string dir = System.IO.Directory.GetCurrentDirectory();
-            string fileName = Editor.WebAppDownloader.GetFileName();
-            if (System.IO.File.Exists(System.IO.Path.Combine(dir, fileName)))
+            string fileName = System.IO.Path.Combine(dir, Editor.WebAppDownloader.GetFileName());
+            if (System.IO.File.Exists(fileName) || System.IO.File.Exists(TestUtility.GetWebAppLocationFromEnv()))
             {
                 // already exists.
                 return;
@@ -57,13 +57,20 @@ namespace Unity.RenderStreaming
         {
             m_ServerProcess = new Process();
 
-            string dir = System.IO.Directory.GetCurrentDirectory();
-            string filename = System.IO.Path.Combine(dir, TestUtility.GetFileName());
+            string fileName = TestUtility.GetWebAppLocationFromEnv();
 
+            if (string.IsNullOrEmpty(fileName))
+            {
+                Debug.Log($"webapp file not found in {fileName}");
+                string dir = System.IO.Directory.GetCurrentDirectory();
+                fileName = System.IO.Path.Combine(dir, TestUtility.GetFileName());
+            }
+
+            Assert.IsTrue(System.IO.File.Exists(fileName), $"webapp file not found in {fileName}");
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = filename,
+                FileName = fileName,
                 UseShellExecute = false
             };
 

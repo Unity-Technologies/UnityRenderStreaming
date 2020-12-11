@@ -32,13 +32,16 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    {% if platform.name == "win" %}
-    - xcopy "WebApp\bin~\*" "upm-ci~\templates\ProjectData~" /s/e/i
-    {% else %}
-    - cp -r WebApp/bin~/* upm-ci~/templates/ProjectData~/
-    {% endif %}
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+    {% if platform.name == "win" %}
+    - | 
+      for /f "DELIMS=" %%A IN ('dir /b /s "Webapp\bin~\*"') do set WEBAPP_PATH=%%A
+      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+    {% else %}
+    - | 
+      export WEBAPP_PATH=`find $(pwd)/WebApp/bin~/*`
+      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+    {% endif %}
   triggers:
     branches:
       only:

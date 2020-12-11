@@ -44,5 +44,26 @@ namespace Unity.RenderStreaming
 
             return millisecondsTimeout > time;
         }
+
+        public static string GetWebAppLocationFromEnv()
+        {
+            var path = Environment.GetEnvironmentVariable("WEBAPP_PATH");
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                return path;
+            }
+
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "-webapp-path")
+                {
+                    return args[i + 1];
+                }
+            }
+
+            return null;
+        }
     }
 }
