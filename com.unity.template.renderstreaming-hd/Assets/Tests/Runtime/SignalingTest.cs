@@ -14,6 +14,7 @@ namespace Unity.RenderStreaming
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
+    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     public class SignalingTest : IPrebuildSetup
     {
         private readonly Type m_SignalingType;
