@@ -38,6 +38,20 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                              | 1280, 720                       |
 
+## `WebCamStreamer` Component
+
+This component streams the `WebCamTexture` rendering results. Please refer [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) pages.
+
+![WebCam Streamer inspector](images/webcamstreamer_inspector.png)
+
+### Properties
+
+| Parameter                   | Description                                                                       | Default                        |
+| ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
+| **Streaming Size**           | Size of the frame buffer used for streaming                              | 1280, 720                       |
+| **Device Index**           | Index of `WebCamTexutre.devices` to use                              | 0                       |
+
+
 ## `AudioStreamer` Component
 
 This component streams the `AudioListener` component's audio rendering results. 
