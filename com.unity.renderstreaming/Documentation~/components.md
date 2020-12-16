@@ -59,3 +59,17 @@ This component streams the `AudioListener` component's audio rendering results.
 ### Properties
 
 None
+
+## `ReceiveVideoViewer` Component
+
+This component receives a videostream and exposes a texture that rendered the receiving frame buffer. 
+
+![Receive Video Viewer inspector](images/receivevideoviewer_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
+| **Connection Id**            | ID of receiving videostream                                         | Empty                           |
+| **ReceiveTexture**           | Receiving videostream frame buffer set this texture propetry.       | getter only                     |
