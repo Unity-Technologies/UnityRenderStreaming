@@ -24,8 +24,8 @@ namespace Unity.RenderStreaming
             videoStream.OnEnableComplete += () => {
                 receiveVideoViewer.enabled = true;
                 localVideoImage.texture = videoStream.SendTexture;
-                remoteVideoImage.texture = receiveVideoViewer.ReceiveTexture;
             };
+            receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
         }
 
         private void SetUp()

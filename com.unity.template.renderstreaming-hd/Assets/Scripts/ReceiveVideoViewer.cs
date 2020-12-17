@@ -5,6 +5,9 @@ namespace Unity.RenderStreaming
 {
     public class ReceiveVideoViewer : MonoBehaviour
     {
+        public delegate void OnUpdateReceiveTextureHandler(Texture receiveTexture);
+        public OnUpdateReceiveTextureHandler OnUpdateReceiveTexture;
+
         [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
         [SerializeField] private string connectionId;
 
@@ -23,12 +26,14 @@ namespace Unity.RenderStreaming
                 {
                     var videoTrack = (VideoStreamTrack)e.Track;
                     m_receiveTexture = videoTrack.InitializeReceiver(streamingSize.x, streamingSize.y);
+                    OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
                 }
             };
             m_receiveStream.OnRemoveTrack = e =>
             {
                 if (e.Track.Kind == TrackKind.Video)
                 {
+                    OnUpdateReceiveTexture?.Invoke(null);
                     m_receiveTexture = null;
                     e.Track.Dispose();
                 }
@@ -47,14 +52,14 @@ namespace Unity.RenderStreaming
             m_receiveTexture = null;
         }
 
-        public void AddTrack(string connectionId, RTCTrackEvent trackEvent)
+        public void AddTrack(string connectionId, MediaStreamTrack track)
         {
             if (!string.IsNullOrEmpty(this.connectionId) && connectionId != this.connectionId)
             {
                 return;
             }
 
-            m_receiveStream.AddTrack(trackEvent.Track);
+            m_receiveStream.AddTrack(track);
         }
 
         public void RemoveTrack(string connectionId, MediaStreamTrack track)
