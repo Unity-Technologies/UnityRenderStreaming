@@ -38,6 +38,8 @@ After downloading, run it from the command line.
 | -k —keyfile \<path\>  | Designate the private key file to use with https   | server.key  |
 | -c —certfile \<path\> | Designate the certification file to use with https | server.cert |
 | -w --websocket        | Use Websocket as signaling protocol                |             |
+| -m —-mode \<type\>    | Choose Communication mode public or private        | public      |
+| -l —logging \<type\>  | Choose http logging type (use morgan library)      | dev         |
 
 ### Command Examples
 
@@ -58,6 +60,15 @@ The command will run in the mode that uses WebSocket as the signaling protocol.
 ```shell
 .\webserver -w
 ```
+
+The command will run in private mode. 
+
+```shell
+.\webserver -m private
+```
+> [!NOTE]
+> In private mode, Signaling only using same `ConnectionId` between peers.
+
 
 When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming component in Unity to https as well.
 Use this command to display the help guide. 
