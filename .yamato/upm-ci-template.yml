@@ -36,11 +36,11 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% if platform.name == "win" %}
     - | 
       for /f "DELIMS=" %%A IN ('dir /b /s "Webapp\bin~\*"') do set WEBAPP_PATH=%%A
-      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
     - | 
       export WEBAPP_PATH=`find $(pwd)/WebApp/bin~/*`
-      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }}
+      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% endif %}
   triggers:
     branches:
