@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
@@ -15,7 +16,7 @@ namespace Unity.RenderStreaming
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
     [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
-    public class SignalingTest : IPrebuildSetup
+    public class PrivateSignalingTest : IPrebuildSetup
     {
         private readonly Type m_SignalingType;
         private Process m_ServerProcess;
@@ -27,11 +28,11 @@ namespace Unity.RenderStreaming
         private ISignaling signaling1;
         private ISignaling signaling2;
 
-        public SignalingTest()
+        public PrivateSignalingTest()
         {
         }
 
-        public SignalingTest(Type type)
+        public PrivateSignalingTest(Type type)
         {
             m_SignalingType = type;
         }
@@ -75,10 +76,15 @@ namespace Unity.RenderStreaming
                 UseShellExecute = false
             };
 
+            string arguments = "-m private";
+
             if (m_SignalingType == typeof(WebSocketSignaling))
             {
-                startInfo.Arguments = "-w";
+                arguments += " -w";
             }
+
+            startInfo.Arguments = arguments;
+
             m_ServerProcess.StartInfo = startInfo;
             m_ServerProcess.OutputDataReceived += (sender, e) =>
             {
@@ -92,6 +98,9 @@ namespace Unity.RenderStreaming
         public void OneTimeTearDown()
         {
             m_ServerProcess.Kill();
+            m_ServerProcess.WaitForExit();
+            m_ServerProcess.Dispose();
+            m_ServerProcess = null;
         }
 
         ISignaling CreateSignaling(Type type, SynchronizationContext mainThread)
@@ -100,10 +109,12 @@ namespace Unity.RenderStreaming
             {
                 return new WebSocketSignaling("ws://localhost", 0.1f, mainThread);
             }
+
             if (type == typeof(HttpSignaling))
             {
                 return new HttpSignaling("http://localhost", 0.1f, mainThread);
             }
+
             throw new ArgumentException();
         }
 
@@ -114,7 +125,7 @@ namespace Unity.RenderStreaming
 
             RTCConfiguration config = default;
             RTCIceCandidate? candidate_ = null;
-            config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
+            config.iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}};
 
             var peer1 = new RTCPeerConnection(ref config);
             var peer2 = new RTCPeerConnection(ref config);
@@ -157,26 +168,53 @@ namespace Unity.RenderStreaming
         public void TearDown()
         {
             WebRTC.WebRTC.Dispose();
-
-            signaling1.Stop();
-            signaling2.Stop();
             m_Context = null;
         }
 
         [UnityTest]
-        public IEnumerator OnConnect()
+        public IEnumerator CheckPeerExists()
         {
             bool startRaised1 = false;
-            string connectionId1 = null;
+            bool startRaised2 = false;
 
             signaling1.OnStart += s => { startRaised1 = true; };
             signaling1.Start();
-            yield return new WaitUntil(() => startRaised1);
+            signaling2.OnStart += s => { startRaised2 = true; };
+            signaling2.Start();
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists) => { connectionId1 = connectionId; };
-            signaling1.OpenConnection(Guid.NewGuid().ToString());
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
-            Assert.IsNotEmpty(connectionId1);
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
+
+            const string connectionId = "12345";
+            string receiveConnectionId1 = null;
+            string receiveConnectionId2 = null;
+            bool receivePeerExists1 = false;
+            bool receivePeerExists2 = false;
+
+            signaling1.OnCreateConnection += (s, id, peerExists) =>
+            {
+                receiveConnectionId1 = id;
+                receivePeerExists1 = peerExists;
+            };
+            signaling1.OpenConnection(connectionId);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receiveConnectionId1));
+            Assert.AreEqual(connectionId, receiveConnectionId1);
+            Assert.IsFalse(receivePeerExists1);
+
+            signaling2.OnCreateConnection += (s, id, peerExists) =>
+            {
+                receiveConnectionId2 = id;
+                receivePeerExists2 = peerExists;
+            };
+            signaling2.OpenConnection(connectionId);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receiveConnectionId2));
+            Assert.AreEqual(connectionId, receiveConnectionId2);
+            Assert.IsTrue(receivePeerExists2);
+
+            signaling1.CloseConnection(receiveConnectionId1);
+            signaling2.CloseConnection(receiveConnectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
+            yield return new WaitForSeconds(1);
         }
 
         [UnityTest]
@@ -184,7 +222,8 @@ namespace Unity.RenderStreaming
         {
             bool startRaised1 = false;
             bool startRaised2 = false;
-            bool offerRaised = false;
+            bool offerRaised2 = false;
+            const string connectionId = "12345";
             string connectionId1 = null;
             string connectionId2 = null;
 
@@ -194,15 +233,30 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists) => { connectionId1 = connectionId; };
-            signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
-            signaling2.OpenConnection(Guid.NewGuid().ToString());
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OpenConnection(connectionId);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
-            signaling2.OnOffer += (s, e) => { offerRaised = true; };
-            signaling1.SendOffer(connectionId1, m_DescOffer);
-            yield return new WaitUntil(() => offerRaised);
+            signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
+
+            LogAssert.Expect(LogType.Error, new Regex("."));
+            signaling1.SendOffer(connectionId, m_DescOffer);
+            yield return new WaitForSeconds(5);
+            // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
+            Assert.IsFalse(offerRaised2);
+
+            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OpenConnection(connectionId);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId2));
+
+            signaling1.SendOffer(connectionId, m_DescOffer);
+            yield return new WaitUntil(() => offerRaised2);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
+            yield return new WaitForSeconds(1);
         }
 
 
@@ -213,6 +267,7 @@ namespace Unity.RenderStreaming
             bool startRaised2 = false;
             bool offerRaised = false;
             bool answerRaised = false;
+            const string connectionId = "12345";
             string connectionId1 = null;
             string connectionId2 = null;
 
@@ -222,10 +277,10 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists) => { connectionId1 = connectionId; };
-            signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
-            signaling2.OpenConnection(Guid.NewGuid().ToString());
+            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OpenConnection(connectionId);
+            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
@@ -235,6 +290,12 @@ namespace Unity.RenderStreaming
             signaling1.OnAnswer += (s, e) => { answerRaised = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
             yield return new WaitUntil(() => answerRaised);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
+            yield return new WaitForSeconds(1);
         }
 
         [UnityTest]
@@ -246,6 +307,7 @@ namespace Unity.RenderStreaming
             bool answerRaised = false;
             bool candidateRaised1 = false;
             bool candidateRaised2 = false;
+            const string connectionId = "12345";
             string connectionId1 = null;
             string connectionId2 = null;
 
@@ -255,10 +317,10 @@ namespace Unity.RenderStreaming
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists) => { connectionId1 = connectionId; };
-            signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
-            signaling2.OpenConnection(Guid.NewGuid().ToString());
+            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OpenConnection(connectionId);
+            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
@@ -276,6 +338,12 @@ namespace Unity.RenderStreaming
             signaling1.OnIceCandidate += (s, e) => { candidateRaised2 = true; };
             signaling2.SendCandidate(connectionId1, m_candidate);
             yield return new WaitUntil(() => candidateRaised2);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
+            yield return new WaitForSeconds(1);
         }
     }
 }

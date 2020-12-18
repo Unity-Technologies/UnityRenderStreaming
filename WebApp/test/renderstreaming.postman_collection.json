@@ -77,7 +77,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "{\r\n\t\"connectionId\": \"b808d31f-e22b-4ee8-85fb-4c4b587f8065\"\r\n}"
 				},
 				"url": {
 					"raw": "http://{{url}}/signaling/connection",
@@ -255,7 +255,7 @@
 			]
 		},
 		{
-			"name": "\b/signaling/candidate",
+			"name": "/signaling/candidate",
 			"event": [
 				{
 					"listen": "test",

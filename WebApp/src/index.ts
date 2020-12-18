@@ -13,6 +13,8 @@ export interface Options {
   keyfile?: string;
   certfile?: string;
   websocket?: boolean;
+  mode?: string;
+  logging?: string;
 }
 
 export class RenderStreaming {
@@ -27,6 +29,8 @@ export class RenderStreaming {
           .option('-k, --keyfile <path>', 'https key file (default server.key)', process.env.KEYFILE || 'server.key')
           .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
           .option('-w, --websocket', 'Enable Websocket Signaling', process.env.WEBSOCKET || false)
+          .option('-m, --mode <type>', 'Choose Communication mode public or private (default public)', process.env.MODE || 'public')
+          .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.(default dev)', process.env.LOGGING || 'dev')
           .parse(argv);
         return {
           port: program.port,
@@ -34,6 +38,8 @@ export class RenderStreaming {
           keyfile: program.keyfile,
           certfile: program.certfile,
           websocket: program.websocket,
+          mode: program.mode,
+          logging: program.logging,
         };
       }
     };
@@ -74,8 +80,10 @@ export class RenderStreaming {
     if (this.options.websocket) {
       console.log(`start websocket signaling server ws://${this.getIPAddress()[0]}`)
       //Start Websocket Signaling server
-      new WSSignaling(this.server);
+      new WSSignaling(this.server, this.options.mode);
     }
+
+    console.log(`start as ${this.options.mode} mode`);
   }
 
   getIPAddress(): string[] {

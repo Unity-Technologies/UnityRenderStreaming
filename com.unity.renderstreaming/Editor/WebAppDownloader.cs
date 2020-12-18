@@ -37,7 +37,7 @@ namespace Unity.RenderStreaming.Editor
             }
             string path = string.Format("releases/download/{0}", version);
             string fileName = GetFileName();
-            return System.IO.Path.Combine(URLRoot, System.IO.Path.Combine(path, fileName));
+            return $"{URLRoot}/{path}/{fileName}";
         }
 
         public static string GetURLDocumentation(string version)

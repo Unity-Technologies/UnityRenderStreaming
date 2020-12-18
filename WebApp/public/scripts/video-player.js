@@ -15,6 +15,7 @@ export class VideoPlayer {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
     };
+    this.connectionId = null;
 
     // main video
     this.localStream = new MediaStream();
@@ -97,7 +98,7 @@ export class VideoPlayer {
     };
     this.pc.onicecandidate = function (e) {
       if (e.candidate != null) {
-        _this.signaling.sendCandidate(e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        _this.signaling.sendCandidate(_this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
     // Create data channel with proxy server and set up handlers
@@ -142,7 +143,7 @@ export class VideoPlayer {
     });
 
     // setup signaling
-    await this.signaling.start();
+    this.connectionId = await this.signaling.start();
 
     // Add transceivers to receive multi stream.
     // It can receive two video tracks and one audio track from Unity app.
@@ -157,7 +158,7 @@ export class VideoPlayer {
     // set local sdp
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
-    await this.signaling.sendOffer(offer.sdp);
+    await this.signaling.sendOffer(this.connectionId, offer.sdp);
   };
 
   resizeVideo() {
