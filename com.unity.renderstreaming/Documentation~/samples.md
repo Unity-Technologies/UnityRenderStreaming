@@ -41,6 +41,8 @@ Please see [Components settings](components.md) page for details.
 
 ### 1on1 Sample Scene
 
+![1on1 Sample](images/renderstreaming_1on1sample.png)
+
 This is a sample of bidirectional video send/receive.
 
 This sample is intended for use in [WebApplication](webapp.md) in Private mode. (It does not work in Public mode.)
