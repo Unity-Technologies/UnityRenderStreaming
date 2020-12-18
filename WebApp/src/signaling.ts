@@ -14,11 +14,11 @@ const clients: Map<string, Set<string>> = new Map<string, Set<string>>();
 // [{connectionId:[sessionId1, sessionId2]}]
 const connectionPair: Map<string, [string, string]> = new Map<string, [string, string]>(); // key = connectionId
 
-// [{connectionId:Offer}]
-const offers: Map<string, Offer> = new Map<string, Offer>();
+// [{sessionId:[{connectionId:Offer},...]}]
+const offers: Map<string, Map<string, Offer>> = new Map<string, Map<string, Offer>>();
 
-// [{connectionId:Answer}]
-const answers: Map<string, Answer> = new Map<string, Answer>();
+// [{sessionId:[{connectionId:Answer},...]}]
+const answers: Map<string, Map<string, Answer>> = new Map<string, Map<string, Answer>>();
 
 // [{sessionId:[{connectionId:Candidate},...]}]
 const candidates: Map<string, Map<string, Candidate[]>> = new Map<string, Map<string, Candidate[]>>(); // key = sessionId
@@ -49,27 +49,26 @@ router.use((req: Request, res: Response, next) => {
 router.get('/offer', (req: Request, res: Response) => {
   // get `fromtime` parameter from request query
   const fromTime: number = req.query.fromtime ? Number(req.query.fromtime) : 0;
+  const sessionId: string = req.header('session-id');
 
-  let arrayOffers = Array.from(offers);
-
-  if (req.app.get('isPrivate')) {
-    const sessionId: string = req.header('session-id');
-    const connectionIds = Array.from(clients.get(sessionId));
-
-    const arr = [];
-    for (const connectionId of connectionIds) {
-      if (offers.has(connectionId)) {
-        arr.push([connectionId, offers.get(connectionId)]);
-      }
+  const response = [];
+  offers.forEach((offerMap, keySessionId) => {
+    if (keySessionId == sessionId) {
+      return;
     }
-    arrayOffers = arr;
-  }
 
-  if (fromTime > 0) {
-    arrayOffers = arrayOffers.filter((v) => v[1].datetime > fromTime);
-  }
-  const obj = arrayOffers.map((v) => ({ connectionId: v[0], sdp: v[1].sdp }));
-  res.json({ offers: obj });
+    offerMap.forEach((offer, keyConnectionId) => {
+      if (req.app.get('isPrivate') && !clients.get(sessionId).has(keyConnectionId)) {
+        return;
+      }
+
+      if (fromTime > 0 && offer.datetime > fromTime) {
+        response.push({ connectionId: keyConnectionId, sdp: offer.sdp });
+      }
+    });
+  });
+
+  res.json({ offers: response });
 });
 
 router.get('/answer', (req: Request, res: Response) => {
@@ -77,17 +76,21 @@ router.get('/answer', (req: Request, res: Response) => {
   const fromTime: number = req.query.fromtime ? Number(req.query.fromtime) : 0;
 
   const sessionId: string = req.header('session-id');
-  let connectionIds = Array.from(clients.get(sessionId));
-  connectionIds = connectionIds.filter((v) => answers.has(v));
+  const connectionIds = clients.get(sessionId);
 
-  const arr = [];
-  for (const connectionId of connectionIds) {
-    const answer = answers.get(connectionId);
-    if (answer.datetime > fromTime) {
-      arr.push({ connectionId, sdp: answer.sdp });
+  const response = [];
+  answers.forEach((answerMap, keySessionId) => {
+    if (keySessionId == sessionId) {
+      return;
     }
-  }
-  res.json({ answers: arr });
+    answerMap.forEach((answer, keyConnectionId) => {
+      if (connectionIds.has(keyConnectionId) && fromTime > 0 && answer.datetime > fromTime) {
+        response.push({ connectionId: keyConnectionId, sdp: answer.sdp });
+      }
+    });
+  });
+
+  res.json({ answers: response });
 });
 
 router.get('/candidate', (req: Request, res: Response) => {
@@ -180,7 +183,12 @@ router.delete('/connection', (req: Request, res: Response) => {
 router.post('/offer', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
-  offers.set(connectionId, new Offer(req.body.sdp, Date.now()));
+
+  if (!offers.has(sessionId)) {
+    offers.set(sessionId, new Map<string, Offer>());
+  }
+  const map = offers.get(sessionId);
+  map.set(connectionId, new Offer(req.body.sdp, Date.now()));
 
   if (res.app.get('isPrivate')) {
     const pair = connectionPair.get(connectionId);
@@ -194,6 +202,7 @@ router.post('/offer', (req: Request, res: Response) => {
   } else {
     connectionPair.set(connectionId, [sessionId, null]);
   }
+
   res.sendStatus(200);
 });
 
@@ -202,7 +211,12 @@ router.post('/answer', (req: Request, res: Response) => {
   const { connectionId } = req.body;
   const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
-  answers.set(connectionId, new Answer(req.body.sdp, Date.now()));
+
+  if (!answers.has(sessionId)) {
+    answers.set(sessionId, new Map<string, Answer>());
+  }
+  const map = answers.get(sessionId);
+  map.set(connectionId, new Answer(req.body.sdp, Date.now()));
 
   // add connectionPair
   const pair = connectionPair.get(connectionId);
