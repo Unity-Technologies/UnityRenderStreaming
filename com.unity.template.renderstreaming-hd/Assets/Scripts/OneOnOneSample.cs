@@ -17,6 +17,9 @@ namespace Unity.RenderStreaming
 
         void Awake()
         {
+            setUpButton.interactable = true;
+            hangUpButton.interactable = false;
+            connectionIdInput.interactable = true;
             setUpButton.onClick.AddListener(SetUp);
             hangUpButton.onClick.AddListener(HangUp);
             connectionIdInput.onValueChanged.AddListener(input => receiveVideoViewer.ChangeConnectionId(input));
@@ -30,6 +33,9 @@ namespace Unity.RenderStreaming
 
         private void SetUp()
         {
+            setUpButton.interactable = false;
+            hangUpButton.interactable = true;
+            connectionIdInput.interactable = false;
             videoStream.enabled = true;
         }
 
@@ -39,6 +45,10 @@ namespace Unity.RenderStreaming
             receiveVideoViewer.enabled = false;
             localVideoImage.texture = null;
             remoteVideoImage.texture = null;
+            setUpButton.interactable = true;
+            hangUpButton.interactable = false;
+            connectionIdInput.interactable = true;
+            connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
         }
     }
 }
