@@ -58,8 +58,10 @@ export default class WSSignaling {
 
       ws.onmessage = (event: MessageEvent) => {
 
-        // JSON Schema expectation
-        // type: connect, disconnect, offer, answer, candidate
+        // type: connect, disconnect JSON Schema
+        // connectionId: connect or disconnect connectionId
+
+        // type: offer, answer, candidate JSON Schema
         // from: from connection id
         // to: to connection id
         // data: any message data structure
