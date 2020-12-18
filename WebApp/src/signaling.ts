@@ -62,7 +62,11 @@ router.get('/offer', (req: Request, res: Response) => {
         return;
       }
 
-      if (fromTime > 0 && offer.datetime > fromTime) {
+      if (fromTime > 0) {
+        if (offer.datetime > fromTime) {
+          response.push({ connectionId: keyConnectionId, sdp: offer.sdp });
+        }
+      } else {
         response.push({ connectionId: keyConnectionId, sdp: offer.sdp });
       }
     });
@@ -84,7 +88,14 @@ router.get('/answer', (req: Request, res: Response) => {
       return;
     }
     answerMap.forEach((answer, keyConnectionId) => {
-      if (connectionIds.has(keyConnectionId) && fromTime > 0 && answer.datetime > fromTime) {
+      if (!connectionIds.has(keyConnectionId)) {
+        return;
+      }
+      if (fromTime > 0) {
+        if (answer.datetime > fromTime) {
+          response.push({ connectionId: keyConnectionId, sdp: answer.sdp });
+        }
+      } else {
         response.push({ connectionId: keyConnectionId, sdp: answer.sdp });
       }
     });
