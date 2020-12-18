@@ -13,6 +13,7 @@ platforms:
     run_editor_tests_command:  run_editor_tests.cmd
     import_unity_package_command: import_unity_package.cmd
     unity_path: .Editor\Unity.exe
+    packed_webapp_name: webserver.exe
     test_params:
 # todo(kazuki) : this comment is workaround for avoiding template test error on Yamato.
 # "PackageTestSuite.PackageValidationTests.PackageHasTests" unittest is failed 
@@ -33,6 +34,7 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh    
     unity_path: .Editor/Unity.app/Contents/MacOS/Unity
+    packed_webapp_name: webserver_mac
   - name: linux
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu-18.04:latest
@@ -41,6 +43,7 @@ platforms:
     run_editor_tests_command:  ./run_editor_tests.sh
     import_unity_package_command: ./import_unity_package.sh
     unity_path: .Editor/Unity
+    packed_webapp_name: webserver
 projects:
   - name: renderstreaming-hd
     packagename: com.unity.template.renderstreaming-hd
