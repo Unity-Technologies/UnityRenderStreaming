@@ -43,12 +43,17 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            m_running = false;
+            if (m_running)
+            {
+                m_running = false;
+                m_signalingThread?.Join();
+                m_signalingThread = null;
+            }
         }
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
-
+        public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -87,9 +92,14 @@ namespace Unity.RenderStreaming.Signaling
             HTTPPost("signaling/candidate", data);
         }
 
-        public void CreateConnection()
+        public void OpenConnection(string connectionId)
         {
-            HTTPConnect();
+            HTTPConnect(connectionId);
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            HTTPDisonnect(connectionId);
         }
 
         private void HTTPPooling()
@@ -220,6 +230,7 @@ namespace Unity.RenderStreaming.Signaling
             request.Method = "DELETE";
             request.ContentType = "application/json";
             request.KeepAlive = false;
+            request.Headers.Add("Session-Id", m_sessionId);
 
             Debug.Log($"Signaling: Removing HTTP connection from {m_url}");
 
@@ -248,7 +259,7 @@ namespace Unity.RenderStreaming.Signaling
             return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
-        private bool HTTPConnect()
+        private bool HTTPConnect(string connectionId)
         {
             HttpWebRequest request =
                 (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
@@ -257,16 +268,41 @@ namespace Unity.RenderStreaming.Signaling
             request.Headers.Add("Session-Id", m_sessionId);
             request.KeepAlive = false;
 
+            using (Stream dataStream = request.GetRequestStream())
+            {
+                byte[] bytes = new System.Text.UTF8Encoding().GetBytes($"{{\"connectionId\":\"{connectionId}\"}}");
+                dataStream.Write(bytes, 0, bytes.Length);
+                dataStream.Close();
+            }
+
             HttpWebResponse response = HTTPGetResponse(request);
             CreateConnectionResData data = HTTPParseJsonResponse<CreateConnectionResData>(response);
 
             if (data == null) return false;
 
-            m_lastTimeGetOfferRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
-                .ToJsMilliseconds();
-
-            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId), null);
+            Debug.Log("Signaling: HTTP create connection, connectionId : " + connectionId);
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExists), null);
             return true;
+        }
+
+        private bool HTTPDisonnect(string connectionId)
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
+            request.Method = "Delete";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", m_sessionId);
+            request.KeepAlive = false;
+
+            using (Stream dataStream = request.GetRequestStream())
+            {
+                byte[] bytes = new System.Text.UTF8Encoding().GetBytes($"{{\"connectionId\":\"{connectionId}\"}}");
+                dataStream.Write(bytes, 0, bytes.Length);
+                dataStream.Close();
+            }
+
+            Debug.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
+            return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
 
         private bool HTTPGetOffers()

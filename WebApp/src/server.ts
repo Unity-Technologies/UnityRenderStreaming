@@ -5,13 +5,19 @@ import * as fs from 'fs';
 import signaling from './signaling';
 
 import { log, LogLevel } from './log';
+import * as morgan from 'morgan';
 
 export const createServer = (config): express.Application => {
   const app: express.Application = express();
+  app.set('isPrivate', config.mode == "private");
+  // logging http access
+  if (config.logging != "none") {
+    app.use(morgan(config.logging));
+  }
   // const signal = require('./signaling');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-  app.get('/protocol', (req, res) => res.json({useWebSocket: config.websocket}));
+  app.get('/protocol', (req, res) => res.json({ useWebSocket: config.websocket }));
   app.use('/signaling', signaling);
   app.use(express.static(path.join(__dirname, '/../public/stylesheets')));
   app.use(express.static(path.join(__dirname, '/../public/scripts')));

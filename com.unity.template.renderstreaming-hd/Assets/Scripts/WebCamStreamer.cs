@@ -1,35 +1,25 @@
-using System;
 using System.Collections;
 using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    [RequireComponent(typeof(Camera))]
-    public class WebCamStreamer : MonoBehaviour
+    public class WebCamStreamer : VideoStreamBase
     {
-        [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
-        private Vector2Int streamingSize = new Vector2Int(1280, 720);
-
         [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex = 0;
 
-        private VideoStreamTrack m_track;
         private WebCamTexture m_webCamTexture;
+        private Coroutine m_startVideoCorutine;
 
-        public void ChangeBitrate(int bitrate)
+        public override Texture SendTexture => m_webCamTexture;
+
+        void OnEnable()
         {
-            RenderStreaming.Instance?.ChangeVideoParameters(
-                m_track, Convert.ToUInt64(bitrate), null);
+            m_startVideoCorutine = StartCoroutine(StartVideo());
         }
 
-        public void ChangeFramerate(int framerate)
-        {
-            RenderStreaming.Instance?.ChangeVideoParameters(
-                m_track, null, Convert.ToUInt32(framerate));
-        }
-
-        IEnumerator Start()
+        IEnumerator StartVideo()
         {
             if (WebCamTexture.devices.Length == 0)
             {
@@ -48,14 +38,28 @@ namespace Unity.RenderStreaming
             m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y);
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
-            
+
             m_track = new VideoStreamTrack(gameObject.name, m_webCamTexture);
             RenderStreaming.Instance?.AddVideoStreamTrack(m_track);
+
+            OnEnableComplete?.Invoke();
         }
 
         void OnDisable()
         {
             RenderStreaming.Instance?.RemoveVideoStreamTrack(m_track);
+            m_track.Dispose();
+            m_track = null;
+
+            if (m_startVideoCorutine != null)
+            {
+                StopCoroutine(m_startVideoCorutine);
+            }
+
+            if (m_webCamTexture != null)
+            {
+                m_webCamTexture.Stop();
+            }
         }
     }
 }

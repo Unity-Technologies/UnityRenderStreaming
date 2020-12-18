@@ -50,7 +50,7 @@ test_{{ platform.name }}:
       only:
       - "/.*/"
       except:
-      - "master"    
+      - "master"
   artifacts:
     logs:
       paths:

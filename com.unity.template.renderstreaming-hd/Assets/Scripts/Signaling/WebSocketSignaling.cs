@@ -40,12 +40,14 @@ namespace Unity.RenderStreaming.Signaling
             {
                 m_running = false;
                 m_webSocket?.Close();
-                m_signalingThread.Abort();
+                m_signalingThread.Join();
+                m_signalingThread = null;
             }
         }
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
+        public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
         // this event is never used in this class
@@ -99,9 +101,14 @@ namespace Unity.RenderStreaming.Signaling
             WSSend(routedMessage);
         }
 
-        public void CreateConnection()
+        public void OpenConnection(string connectionId)
         {
-            this.WSSend("{\"type\":\"connect\"}");
+            this.WSSend($"{{\"type\":\"connect\", \"connectionId\":\"{connectionId}\"}}");
+        }
+
+        public void CloseConnection(string connectionId)
+        {
+            this.WSSend($"{{\"type\":\"disconnect\", \"connectionId\":\"{connectionId}\"}}");
         }
 
         private void WSManage()
@@ -161,8 +168,13 @@ namespace Unity.RenderStreaming.Signaling
                 {
                     if (routedMessage.type == "connect")
                     {
-                        string connectionId = JsonUtility.FromJson<SignalingMessage>(content).connectionId;
-                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, connectionId), null);
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
+                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, msg.connectionId, msg.peerExists), null);
+                    }
+                    else if (routedMessage.type == "disconnect")
+                    {
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
+                        m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, msg.connectionId), null);
                     }
                     else if (routedMessage.type == "offer")
                     {
@@ -190,6 +202,11 @@ namespace Unity.RenderStreaming.Signaling
                             sdpMid = msg.sdpMid
                         };
                         m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
+                    }
+                    else if (routedMessage.type == "error")
+                    {
+                        msg = JsonUtility.FromJson<SignalingMessage>(content);
+                        Debug.LogError(msg.message);
                     }
                 }
             }
