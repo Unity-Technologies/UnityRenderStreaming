@@ -37,8 +37,6 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | Parameter                    | Description                                                         | Default                         |
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
-| **OnEnableComplete**         | Invoked when the OnEnable process completes                         | -                               |
-| **SendTexture**              | The original texture to send to videostream                         | getter only                     |
 
 ## `WebCamStreamer` Component
 
@@ -51,8 +49,6 @@ This component streams the `WebCamTexture` rendering results. Please refer [WebC
 | Parameter                    | Description                                                         | Default                         |
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
-| **OnEnableComplete**         | Invoked when the OnEnable process completes                         | -                               |
-| **SendTexture**              | The original texture to send to videostream                         | getter only                     |
 | **Device Index**             | Index of `WebCamTexutre.devices` to use                             | 0                               |
 
 ## `AudioStreamer` Component
@@ -75,4 +71,3 @@ This component receives a videostream and exposes a texture that rendered the re
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
 | **Connection Id**            | ID of receiving videostream                                         | Empty                           |
-| **ReceiveTexture**           | Receiving videostream frame buffer set this texture propetry.       | getter only                     |
