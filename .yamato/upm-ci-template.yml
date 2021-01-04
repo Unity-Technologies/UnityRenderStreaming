@@ -35,11 +35,11 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     {% if platform.name == "win" %}
     - | 
-      for /f "DELIMS=" %%A IN ('dir /b /s "Webapp\bin~\*"') do set WEBAPP_PATH=%%A
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
       upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
     - | 
-      export WEBAPP_PATH=`find $(pwd)/WebApp/bin~/*`
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
       upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% endif %}
   triggers:
