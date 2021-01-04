@@ -22,10 +22,10 @@ The samples included in this can be used independently of rendering pipeline.
 
 ![ReceiveVideo Sample](images/renderstreaming_receivevideosample.png)
 
-This is a sample for receiving WebRTC VideoMediaStream. 
+This is a sample for receiving VideoTrack of MediaStream. 
 Click `SendOfferButton` to create a new `PeerConnection` and send the Offer to server.
 You can also use any `ConnectionId`. In that case, enter the `ConnectionId` in the `InputField`.
-This scene uses `ReceiveVideoViewer` component to receive a VideoMediaStream.
+This scene uses `ReceiveVideoViewer` component to receive a VideoTrack of MediaStream.
 Please see [Components settings](components.md) page for details.
 
 > [!NOTE]
