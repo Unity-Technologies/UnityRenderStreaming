@@ -78,20 +78,4 @@ Then just build a standalone Windows version of your application, zip it and upl
 
 ## Samples
 
-Currently, there are three samples:
-
-- HDRP sample
-- URP sample
-- Legacy pipeline sample
-
-### HDRP sample
-
-Importing this sample will automatically install and setup our HDRP sample assets along with the [HDRP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest) *(com.unity.render-pipelines.high-definition)* package.
-
-### URP sample
-
-Importing this sample will automatically install and setup our URP sample assets along with the [URP](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) *(com.unity.render-pipelines.universal)* package.
-
-### Legacy pipeline sample
-
-This is the simplest sample with legacy pipeline.
+Please check [this page](samples.md).

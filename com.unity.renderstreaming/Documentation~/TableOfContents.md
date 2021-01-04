@@ -2,6 +2,7 @@
 * Getting Started
     * [Overview](overview.md)
     * [Tutorial](tutorial.md)
+    * [About Samples](samples.md)
 * [Web Application](webapp.md)
     * [Browser Input Process](input.md)
     * [Configure Self-Signed Credentials for https](https.md)
