@@ -34,9 +34,22 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 
 ### Properties
 
-| Parameter                   | Description                                                                       | Default                        |
-| ---------------------------- | -------------------------------------------------------------------        | ------------------------------- |
-| **Streaming Size**           | Size of the frame buffer used for streaming                              | 1280, 720                       |
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
+
+## `WebCamStreamer` Component
+
+This component streams the `WebCamTexture` rendering results. Please refer [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) pages.
+
+![WebCam Streamer inspector](images/webcamstreamer_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
+| **Device Index**             | Index of `WebCamTexutre.devices` to use                             | 0                               |
 
 ## `AudioStreamer` Component
 
@@ -45,3 +58,16 @@ This component streams the `AudioListener` component's audio rendering results.
 ### Properties
 
 None
+
+## `ReceiveVideoViewer` Component
+
+This component receives a videostream and exposes a texture that rendered the receiving frame buffer. 
+
+![Receive Video Viewer inspector](images/receivevideoviewer_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
+| **Connection Id**            | ID of receiving videostream                                         | Empty                           |
