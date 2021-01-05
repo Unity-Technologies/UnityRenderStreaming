@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Template.RenderStreaming.Runtime",
+    "name": "Unity.RenderStreaming.Runtime",
     "references": [
         "Unity.InputSystem",
         "Unity.WebRTC",

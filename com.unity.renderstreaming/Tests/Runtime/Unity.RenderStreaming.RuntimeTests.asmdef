@@ -1,0 +1,28 @@
+﻿{
+  "name": "Unity.RenderStreaming.RuntimeTests",
+  "references": [
+    "GUID:27619889b8ba8c24980f49ee34dbb44a",
+    "GUID:0acc523941302664db1f4e527237feb3",
+    "GUID:40a5acf76f04c4c8ebb69605e4b0d5c7",
+    "GUID:f12aafacab75a87499e7e45c873ffab8",
+    "GUID:7e479a0c97f111c48b6a279fad867f28"
+  ],
+  "includePlatforms": [
+    "Editor",
+    "LinuxStandalone64",
+    "macOSStandalone",
+    "WindowsStandalone64"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
