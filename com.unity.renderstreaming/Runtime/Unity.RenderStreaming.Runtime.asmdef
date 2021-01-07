@@ -3,7 +3,9 @@
     "references": [
         "Unity.InputSystem",
         "Unity.WebRTC",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor",
@@ -17,6 +19,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "URS_USE_HDRP_RUNTIME"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "URS_USE_URP_RUNTIME"
+        }
+    ],
     "noEngineReferences": false
 }

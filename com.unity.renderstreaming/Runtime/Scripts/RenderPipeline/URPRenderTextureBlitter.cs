@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering.LWRP;
+﻿#if URS_USE_URP_RUNTIME
+using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class URPRenderTextureBlitter : MonoBehaviour
@@ -11,7 +11,7 @@ public class URPRenderTextureBlitter : MonoBehaviour
     private void OnEnable() {
         m_cam = GetComponent<Camera>();
 
-        //Render nothing 
+        //Render nothing
         m_cam.clearFlags = CameraClearFlags.Nothing;
         m_cam.cullingMask = 0;
         UnityEngine.Rendering.RenderPipelineManager.endCameraRendering += OnEndCameraRendering;
@@ -34,3 +34,4 @@ public class URPRenderTextureBlitter : MonoBehaviour
 
 
 }
+#endif

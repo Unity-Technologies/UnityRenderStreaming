@@ -1,4 +1,4 @@
-﻿using System;
+﻿#if !URS_USE_HDRP_RUNTIME && !URS_USE_URP_RUNTIME
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
@@ -32,3 +32,4 @@ public class LegacyRPRenderTextureBlitter : MonoBehaviour
         }
     }
 }
+#endif
