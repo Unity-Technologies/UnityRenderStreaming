@@ -23,7 +23,7 @@ public class HDRPPostProcessor : AssetPostprocessor
         {
             string curAssetPath = importedAssets[i];
 
-            if (curAssetPath == "Assets/RenderPipeline/HDRP/HDRenderPipelineAsset.asset")
+            if (curAssetPath.EndsWith("HDRenderPipelineAsset.asset"))
             {
                 HDRenderPipelineAsset pipelineAsset =
                     AssetDatabase.LoadAssetAtPath<HDRenderPipelineAsset>(curAssetPath);

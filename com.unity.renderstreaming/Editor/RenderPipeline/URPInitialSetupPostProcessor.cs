@@ -18,7 +18,7 @@ public class URPInitialSetupPostProcessor : AssetPostprocessor
         {
             string curAssetPath = importedAssets[i];
 
-            if (curAssetPath == "Assets/RenderPipeline/URP/UniversalRenderPipelineAsset.asset")
+            if (curAssetPath.EndsWith("UniversalRenderPipelineAsset.asset"))
             {
                 UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =
                     AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>(
