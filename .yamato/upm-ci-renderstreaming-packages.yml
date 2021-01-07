@@ -22,15 +22,24 @@ pack_{{ package.name }}:
 
 {% for editor in editors %}
 {% for platform in platforms %}
-test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.packagename }} {{ editor.version }} on {{ platform.name }}
+{% for param in platform.test_params %}
+test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }}
+    {% if platform.name == "win" %}
+    - | 
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    {% else %}
+    - | 
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    {% endif %}
   triggers:
     branches:
       only:
@@ -43,6 +52,9 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+{% endfor %}
 {% endfor %}
 {% endfor %}
 
