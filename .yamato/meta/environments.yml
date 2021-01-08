@@ -21,17 +21,31 @@ platforms:
       - backend: mono
         platform: standalone
       - backend: il2cpp
-        platform: standalone    
+        platform: standalone
   - name: mac
     type: Unity::VM::osx
     image: package-ci/mac:stable
     flavor: m1.mac
     packed_webapp_name: webserver_mac
+    test_params:
+      - backend: mono
+        platform: playmode
+      - backend: mono
+        platform: standalone
+      - backend: il2cpp
+        platform: standalone
   - name: linux
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu-18.04:latest
     flavor: b1.large
     packed_webapp_name: webserver
+    test_params:
+      - backend: mono
+        platform: playmode
+      - backend: mono
+        platform: standalone
+      - backend: il2cpp
+        platform: standalone
 projects:
   - name: renderstreaming-hd
     packagename: com.unity.template.renderstreaming-hd

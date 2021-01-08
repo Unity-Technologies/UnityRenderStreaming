@@ -57,8 +57,6 @@ test_{{ platform.name }}:
         - "WebApp/output.log"
         - "WebApp/coverage/**/*"
   dependencies:
-    {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-    {% endfor %}
 {% endfor %}
 {% endfor %}
