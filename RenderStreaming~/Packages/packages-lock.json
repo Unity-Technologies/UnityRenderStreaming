@@ -12,6 +12,13 @@
       "source": "builtin",
       "dependencies": {}
     },
+    "com.unity.editorcoroutines": {
+      "version": "1.0.0",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.0",
       "depth": 1,
@@ -34,6 +41,22 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.renderstreaming": {
+      "version": "file:com.unity.renderstreaming",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.webrtc": "2.2.1-preview",
+        "com.unity.inputsystem": "1.0.0"
+      }
     },
     "com.unity.test-framework": {
       "version": "1.1.18",
@@ -63,6 +86,15 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "com.unity.webrtc": {
+      "version": "2.2.1-preview",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.editorcoroutines": "1.0.0"
+      },
+      "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
