@@ -3,21 +3,20 @@ using UnityEngine; //Debug
 using UnityEditor; //AssetPostProcessor
 using UnityEngine.Rendering; //GraphicsSettings
 
-public class URPInitialSetupPostProcessor : AssetPostprocessor
+public class URPInitialSetupPostProcessor
 {
-    static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
-        string[] movedAssets, string[] movedFromAssetPaths)
+    [InitializeOnLoadMethod]
+    static void OnLoad()
     {
         if (null != GraphicsSettings.renderPipelineAsset)
         {
             return;
         }
 
-        int numImportedAssets = importedAssets.Length;
-        for (int i = 0; i < numImportedAssets; ++i)
-        {
-            string curAssetPath = importedAssets[i];
+        var allAssetPaths = AssetDatabase.GetAllAssetPaths();
 
+        foreach (var curAssetPath in allAssetPaths)
+        {
             if (curAssetPath.EndsWith("UniversalRenderPipelineAsset.asset"))
             {
                 UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =

@@ -8,27 +8,25 @@ using UnityEngine.Rendering.HighDefinition; //HDRenderPipelineAsset
 using UnityEngine.Experimental.Rendering.HDPipeline;    //HDRenderPipelineAsset
 #endif
 
-public class HDRPPostProcessor : AssetPostprocessor
+public class HDRPPostProcessor
 {
-    static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
-        string[] movedAssets, string[] movedFromAssetPaths)
+    [InitializeOnLoadMethod]
+    static void OnLoad()
     {
         if (null != GraphicsSettings.renderPipelineAsset)
         {
             return;
         }
 
-        int numImportedAssets = importedAssets.Length;
-        for (int i = 0; i < numImportedAssets; ++i)
-        {
-            string curAssetPath = importedAssets[i];
+        var allAssetPaths = AssetDatabase.GetAllAssetPaths();
 
+        foreach (var curAssetPath in allAssetPaths)
+        {
             if (curAssetPath.EndsWith("HDRenderPipelineAsset.asset"))
             {
                 HDRenderPipelineAsset pipelineAsset =
                     AssetDatabase.LoadAssetAtPath<HDRenderPipelineAsset>(curAssetPath);
                 GraphicsSettings.renderPipelineAsset = pipelineAsset;
-
                 PlayerSettings.colorSpace = ColorSpace.Linear;
             }
         }
