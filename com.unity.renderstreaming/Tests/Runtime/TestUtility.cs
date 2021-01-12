@@ -9,6 +9,7 @@ namespace Unity.RenderStreaming
         const string FileNameWebAppForMac = "webserver_mac";
         const string FileNameWebAppForLinux = "webserver";
         const string FileNameWebAppForWin = "webserver.exe";
+        public const int PortNumber = 8081;
 
         public static string GetFileName()
         {

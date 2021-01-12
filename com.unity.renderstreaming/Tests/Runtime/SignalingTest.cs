@@ -75,15 +75,17 @@ namespace Unity.RenderStreaming
                 UseShellExecute = false
             };
 
+            string arguments = $"-p {TestUtility.PortNumber}";
+
             if (m_SignalingType == typeof(WebSocketSignaling))
             {
-                startInfo.Arguments = "-w";
+                arguments += " -w";
             }
+
+            startInfo.Arguments = arguments;
+
             m_ServerProcess.StartInfo = startInfo;
-            m_ServerProcess.OutputDataReceived += (sender, e) =>
-            {
-                Debug.Log(e.Data);
-            };
+            m_ServerProcess.OutputDataReceived += (sender, e) => { Debug.Log(e.Data); };
             bool success = m_ServerProcess.Start();
             Assert.True(success);
         }
@@ -98,12 +100,14 @@ namespace Unity.RenderStreaming
         {
             if (type == typeof(WebSocketSignaling))
             {
-                return new WebSocketSignaling("ws://localhost", 0.1f, mainThread);
+                return new WebSocketSignaling($"ws://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
+
             if (type == typeof(HttpSignaling))
             {
-                return new HttpSignaling("http://localhost", 0.1f, mainThread);
+                return new HttpSignaling($"http://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
+
             throw new ArgumentException();
         }
 
@@ -114,7 +118,7 @@ namespace Unity.RenderStreaming
 
             RTCConfiguration config = default;
             RTCIceCandidate? candidate_ = null;
-            config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
+            config.iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}};
 
             var peer1 = new RTCPeerConnection(ref config);
             var peer2 = new RTCPeerConnection(ref config);
@@ -198,7 +202,8 @@ namespace Unity.RenderStreaming
             signaling1.OpenConnection(Guid.NewGuid().ToString());
             signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
             signaling2.OpenConnection(Guid.NewGuid().ToString());
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
@@ -226,7 +231,8 @@ namespace Unity.RenderStreaming
             signaling1.OpenConnection(Guid.NewGuid().ToString());
             signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
             signaling2.OpenConnection(Guid.NewGuid().ToString());
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
@@ -259,7 +265,8 @@ namespace Unity.RenderStreaming
             signaling1.OpenConnection(Guid.NewGuid().ToString());
             signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
             signaling2.OpenConnection(Guid.NewGuid().ToString());
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);

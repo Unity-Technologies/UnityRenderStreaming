@@ -76,7 +76,7 @@ namespace Unity.RenderStreaming
                 UseShellExecute = false
             };
 
-            string arguments = "-m private";
+            string arguments = $"-m private -p {TestUtility.PortNumber}";
 
             if (m_SignalingType == typeof(WebSocketSignaling))
             {
@@ -107,12 +107,12 @@ namespace Unity.RenderStreaming
         {
             if (type == typeof(WebSocketSignaling))
             {
-                return new WebSocketSignaling("ws://localhost", 0.1f, mainThread);
+                return new WebSocketSignaling($"ws://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
 
             if (type == typeof(HttpSignaling))
             {
-                return new HttpSignaling("http://localhost", 0.1f, mainThread);
+                return new HttpSignaling($"http://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
 
             throw new ArgumentException();
