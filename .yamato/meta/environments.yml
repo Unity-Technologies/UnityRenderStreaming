@@ -23,8 +23,8 @@ platforms:
       - backend: il2cpp
         platform: standalone
   - name: mac
-    type: Unity::VM::osx
-    image: package-ci/mac:stable
+    type: Unity::metal::macmini
+    image: slough-ops/macos-10.14-xcode
     flavor: m1.mac
     packed_webapp_name: webserver_mac
     test_params:
