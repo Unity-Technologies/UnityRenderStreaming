@@ -125,7 +125,7 @@ namespace Unity.RenderStreaming
             WebRTC.WebRTC.Initialize();
 
             RTCConfiguration config = default;
-            RTCIceCandidate? candidate_ = null;
+            RTCIceCandidate candidate_ = null;
             config.iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}};
 
             var peer1 = new RTCPeerConnection(ref config);
@@ -154,7 +154,7 @@ namespace Unity.RenderStreaming
             yield return op6;
 
             yield return new WaitUntil(() => candidate_ != null);
-            m_candidate = candidate_.Value;
+            m_candidate = candidate_;
 
             stream.Dispose();
             peer1.Close();

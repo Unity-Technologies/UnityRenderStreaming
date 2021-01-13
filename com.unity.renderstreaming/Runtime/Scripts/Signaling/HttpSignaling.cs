@@ -85,9 +85,9 @@ namespace Unity.RenderStreaming.Signaling
         {
             CandidateData data = new CandidateData();
             data.connectionId = connectionId;
-            data.candidate = candidate.candidate;
-            data.sdpMLineIndex = candidate.sdpMLineIndex;
-            data.sdpMid = candidate.sdpMid;
+            data.candidate = candidate.Candidate;
+            data.sdpMLineIndex = candidate.SdpMLineIndex.GetValueOrDefault(0);
+            data.sdpMid = candidate.SdpMid;
 
             HTTPPost("signaling/candidate", data);
         }
