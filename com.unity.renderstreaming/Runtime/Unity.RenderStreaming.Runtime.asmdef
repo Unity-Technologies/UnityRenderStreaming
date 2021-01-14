@@ -1,12 +1,17 @@
 {
-    "name": "Unity.RenderStreaming.Editor",
+    "name": "Unity.RenderStreaming.Runtime",
     "references": [
-        "GUID:40a5acf76f04c4c8ebb69605e4b0d5c7",
-        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
-        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+        "Unity.InputSystem",
+        "Unity.WebRTC",
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -18,12 +23,12 @@
         {
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
-            "define": "URS_USE_HDRP_EDITOR"
+            "define": "URS_USE_HDRP_RUNTIME"
         },
         {
             "name": "com.unity.render-pipelines.universal",
             "expression": "",
-            "define": "URS_USE_URS_EDITOR"
+            "define": "URS_USE_URP_RUNTIME"
         }
     ],
     "noEngineReferences": false
