@@ -24,6 +24,7 @@ pack_{{ project.name }}:
 
 {% for editor in editors %}
 {% for platform in platforms %}
+{% if platform.name == "win" -%}
 {% for param in platform.test_params %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -33,15 +34,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    {% if platform.name == "win" %}
-    - | 
-      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-    {% else %}
-    - | 
-      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-    {% endif %}
+    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
   triggers:
     branches:
       only:
@@ -54,9 +47,34 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 {% endfor %}
+{% else -%}
+{% for param in platform.test_params %}
+{% if project.name != "renderstreaming-rtx" -%}
+test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+{% endif -%}
+{% endfor %}
+{% endif -%}
 {% endfor %}
 {% endfor %}
 
