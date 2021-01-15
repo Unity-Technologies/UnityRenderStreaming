@@ -238,9 +238,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             CandidateData data = new CandidateData
             {
                 connectionId = connectionId,
-                candidate = candidate.candidate,
-                sdpMid = candidate.sdpMid,
-                sdpMLineIndex = candidate.sdpMLineIndex
+                candidate = candidate.Candidate,
+                sdpMid = candidate.SdpMid,
+                sdpMLineIndex = candidate.SdpMLineIndex.GetValueOrDefault()
             };
             manager.Candidate(this, ref data);
         }
