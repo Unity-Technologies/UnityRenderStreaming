@@ -36,6 +36,8 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Start()
         {
+            if (m_running)
+                throw new InvalidOperationException("This object is already started.");
             m_running = true;
             m_signalingThread = new Thread(HTTPPooling);
             m_signalingThread.Start();

@@ -188,6 +188,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void TearDown()
         {
             WebRTC.WebRTC.Dispose();
+            signaling1.Stop();
+            signaling2.Stop();
             m_Context = null;
         }
 
