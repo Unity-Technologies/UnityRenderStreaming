@@ -34,6 +34,12 @@ namespace Unity.RenderStreaming.Signaling
             }
         }
 
+        ~HttpSignaling()
+        {
+            if(m_running)
+                Stop();
+        }
+
         public void Start()
         {
             if (m_running)

@@ -26,6 +26,12 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
+        ~WebSocketSignaling()
+        {
+            if (m_running)
+                Stop();
+        }
+
         public void Start()
         {
             if (m_running)
