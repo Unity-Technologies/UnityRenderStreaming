@@ -8,21 +8,11 @@
     "com.unity.webrtc": "2.3.1-preview",
     "com.unity.inputsystem": "1.0.0"
   },
- "samples": [ {
-     "displayName": "HDRP",
-     "description": "HDRP Unity Render Streaming Sample",
-     "path": "Samples~/HDRP"
-   }, 
-   {
-     "displayName": "URP",
-     "description": "URP Unity Render Streaming Sample",
-     "path": "Samples~/URP"
-   }, 
-   {
-     "displayName": "LegacyRP",
-     "description": "LegacyRP Unity Render Streaming Sample",
-     "path": "Samples~/LegacyRP"
-   }
-   
- ]
+  "samples": [
+    {
+      "displayName": "Example",
+      "description": "RenderStreaming sample",
+      "path": "Samples~/Example"
+    }
+  ]
 }

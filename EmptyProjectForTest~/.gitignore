@@ -1,8 +1,0 @@
-#Project should be empty, so we ignore imported assets/samples
-Assets/RenderPipeline**
-Assets/Samples**
-Assets/Scenes**
-Assets/Scripts**
-Assets/Tests**
-Packages**
-
