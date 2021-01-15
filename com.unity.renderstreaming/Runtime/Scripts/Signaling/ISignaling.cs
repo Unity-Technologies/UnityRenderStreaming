@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming.Signaling
 
         void OpenConnection(string connectionId);
         void CloseConnection(string connectionId);
-        void SendOffer(string connectionId, RTCSessionDescription answer);
+        void SendOffer(string connectionId, RTCSessionDescription offer);
         void SendAnswer(string connectionId, RTCSessionDescription answer);
         void SendCandidate(string connectionId, RTCIceCandidate candidate);
     }
