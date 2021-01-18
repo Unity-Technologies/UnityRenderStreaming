@@ -1,20 +1,22 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.RuntimeTest
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
+    [TestFixture(typeof(MockSignaling))]
     [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
     [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     public class PrivateSignalingTest : IPrebuildSetup
@@ -40,6 +42,10 @@ namespace Unity.RenderStreaming
 
         public void Setup()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                return;
+            }
 #if UNITY_EDITOR
             string dir = System.IO.Directory.GetCurrentDirectory();
             string fileName = System.IO.Path.Combine(dir, Editor.WebAppDownloader.GetFileName());
@@ -58,6 +64,11 @@ namespace Unity.RenderStreaming
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                MockSignaling.Reset(true);
+                return;
+            }
             m_ServerProcess = new Process();
 
             string fileName = TestUtility.GetWebAppLocationFromEnv();
@@ -98,6 +109,10 @@ namespace Unity.RenderStreaming
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                return;
+            }
             m_ServerProcess.Kill();
             m_ServerProcess.WaitForExit();
             m_ServerProcess.Dispose();
@@ -116,6 +131,10 @@ namespace Unity.RenderStreaming
                 return new HttpSignaling($"http://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
 
+            if (type == typeof(MockSignaling))
+            {
+                return new MockSignaling();
+            }
             throw new ArgumentException();
         }
 
@@ -169,6 +188,8 @@ namespace Unity.RenderStreaming
         public void TearDown()
         {
             WebRTC.WebRTC.Dispose();
+            signaling1.Stop();
+            signaling2.Stop();
             m_Context = null;
         }
 

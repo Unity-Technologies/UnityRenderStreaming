@@ -26,8 +26,16 @@ namespace Unity.RenderStreaming.Signaling
             m_wsCloseEvent = new AutoResetEvent(false);
         }
 
+        ~WebSocketSignaling()
+        {
+            if (m_running)
+                Stop();
+        }
+
         public void Start()
         {
+            if (m_running)
+                throw new InvalidOperationException("This object is already started.");
             m_running = true;
             m_signalingThread = new Thread(WSManage);
             m_signalingThread.Start();

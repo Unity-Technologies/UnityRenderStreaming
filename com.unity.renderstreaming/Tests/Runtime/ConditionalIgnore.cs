@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.RuntimeTest
 {
     public class ConditionalIgnore
     {

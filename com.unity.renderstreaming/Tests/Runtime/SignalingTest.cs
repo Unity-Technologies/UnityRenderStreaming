@@ -4,16 +4,18 @@ using System.Threading;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
+using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.RuntimeTest
 {
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
+    [TestFixture(typeof(MockSignaling))]
     [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
     [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     public class SignalingTest : IPrebuildSetup
@@ -39,6 +41,10 @@ namespace Unity.RenderStreaming
 
         public void Setup()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                return;
+            }
 #if UNITY_EDITOR
             string dir = System.IO.Directory.GetCurrentDirectory();
             string fileName = System.IO.Path.Combine(dir, Editor.WebAppDownloader.GetFileName());
@@ -57,10 +63,14 @@ namespace Unity.RenderStreaming
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                MockSignaling.Reset(false);
+                return;
+            }
             m_ServerProcess = new Process();
 
             string fileName = TestUtility.GetWebAppLocationFromEnv();
-
             if (string.IsNullOrEmpty(fileName))
             {
                 Debug.Log($"webapp file not found in {fileName}");
@@ -94,6 +104,10 @@ namespace Unity.RenderStreaming
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            if (m_SignalingType == typeof(MockSignaling))
+            {
+                return;
+            }
             m_ServerProcess.Kill();
         }
 
@@ -109,6 +123,10 @@ namespace Unity.RenderStreaming
                 return new HttpSignaling($"http://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
             }
 
+            if (type == typeof(MockSignaling))
+            {
+                return new MockSignaling();
+            }
             throw new ArgumentException();
         }
 

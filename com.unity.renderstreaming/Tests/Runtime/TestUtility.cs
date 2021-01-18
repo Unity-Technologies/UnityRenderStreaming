@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using UnityEngine;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.RuntimeTest
 {
     public class TestUtility
     {

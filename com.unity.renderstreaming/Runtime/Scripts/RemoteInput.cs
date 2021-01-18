@@ -56,7 +56,6 @@ namespace Unity.RenderStreaming
     {
         private static readonly Dictionary<RemoteInput, uint> s_mapRemoteInputAndInputUserId;
         private static readonly List<RemoteInput> s_listRemoteInput;
-        private static readonly InputUser[] s_listUser;
 
         static RemoteInputReceiver()
         {
@@ -64,7 +63,7 @@ namespace Unity.RenderStreaming
             s_listRemoteInput = new List<RemoteInput>();
         }
 
-        public static void Dispose()
+        internal static void Dispose()
         {
             s_mapRemoteInputAndInputUserId.Clear();
             s_listRemoteInput.Clear();
@@ -89,9 +88,17 @@ namespace Unity.RenderStreaming
             return remoteInput;
         }
 
-        public static void Delete(RemoteInput remoteInput)
+        internal static void Delete(RemoteInput remoteInput)
         {
-            uint userId = s_mapRemoteInputAndInputUserId[remoteInput];
+            if (remoteInput == null)
+            {
+                throw new ArgumentException("The instance of argument is null");
+            }
+            bool found = s_mapRemoteInputAndInputUserId.TryGetValue(remoteInput, out uint userId);
+            if (!found)
+            {
+                throw new ArgumentException("The instance of argument is not found");
+            }
             InputUser user = InputUser.all.First(_user => _user.id == userId);
             var arrayDeviceId = user.pairedDevices.Select(device => device.deviceId).ToArray();
             user.UnpairDevicesAndRemoveUser();
@@ -104,7 +111,7 @@ namespace Unity.RenderStreaming
         }
     }
 
-    public class RemoteInput : IInput
+    public class RemoteInput : IInput, IDisposable
     {
         private GamepadState m_gamepadState;
 
@@ -117,9 +124,9 @@ namespace Unity.RenderStreaming
 
         private UnityEngine.Vector2Int m_prevMousePos;
         private KeyboardState m_keyboardState = new KeyboardState();
+        private bool disposed;
 
-
-        public RemoteInput(ref InputUser user)
+        internal RemoteInput(ref InputUser user)
         {
             RemoteMouse = user.pairedDevices.FirstOrDefault(device => device is Mouse) as Mouse;
             RemoteKeyboard = user.pairedDevices.FirstOrDefault(device => device is Keyboard) as Keyboard;
@@ -127,10 +134,32 @@ namespace Unity.RenderStreaming
             RemoteGamepad = user.pairedDevices.FirstOrDefault(device => device is Gamepad) as Gamepad;
         }
 
+        ~RemoteInput()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (this.disposed)
+            {
+                return;
+            }
+            RemoteInputReceiver.Delete(this);
+
+            this.disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
 //---------------------------------------------------------------------------------------------------------------------
 
         public void ProcessInput(byte[] bytes)
         {
+            if (bytes == null)
+                throw new ArgumentNullException();
+            if(bytes.Length == 0)
+                throw new ArgumentException("byte length is zero");
+
             switch ((EventType)bytes[0])
             {
                 case EventType.Keyboard:
