@@ -14,6 +14,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
+    [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class RenderStreamingInternalTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
