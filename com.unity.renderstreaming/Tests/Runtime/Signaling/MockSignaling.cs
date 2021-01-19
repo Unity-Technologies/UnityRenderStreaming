@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
@@ -10,55 +13,64 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
     {
         interface IMockSignalingManager
         {
-            void Add(MockSignaling signaling);
-            void Remove(MockSignaling signaling);
-            void OpenConnection(MockSignaling signaling, string connectionId);
-            void CloseConnection(MockSignaling signaling, string connectionId);
-            void Offer(MockSignaling owner, ref DescData data);
-            void Answer(MockSignaling owner, ref DescData data);
-            void Candidate(MockSignaling owner, ref CandidateData data);
+            Task Add(MockSignaling signaling);
+            Task Remove(MockSignaling signaling);
+            Task OpenConnection(MockSignaling signaling, string connectionId);
+            Task CloseConnection(MockSignaling signaling, string connectionId);
+            Task Offer(MockSignaling owner, DescData data);
+            Task Answer(MockSignaling owner, DescData data);
+            Task Candidate(MockSignaling owner, CandidateData data);
         }
 
         class MockPublicSignalingManager : IMockSignalingManager
         {
             private List<MockSignaling> list = new List<MockSignaling>();
+            private const int MillisecondsDelay = 10;
 
-            public void Add(MockSignaling signaling)
+            public async Task Add(MockSignaling signaling)
             {
+                await Task.Delay(MillisecondsDelay);
                 list.Add(signaling);
+                signaling.OnStart?.Invoke(signaling);
             }
-            public void Remove(MockSignaling signaling)
+            public async Task Remove(MockSignaling signaling)
             {
+                await Task.Delay(MillisecondsDelay);
                 list.Remove(signaling);
             }
 
-            public void OpenConnection(MockSignaling signaling, string connectionId)
+            public async Task OpenConnection(MockSignaling signaling, string connectionId)
             {
+                await Task.Delay(MillisecondsDelay);
                 signaling.OnCreateConnection?.Invoke(signaling, connectionId, false);
             }
 
-            public void CloseConnection(MockSignaling signaling, string connectionId)
+            public async Task CloseConnection(MockSignaling signaling, string connectionId)
             {
+                await Task.Delay(MillisecondsDelay);
                 signaling.OnDestroyConnection?.Invoke(signaling, connectionId);
             }
-            public void Offer(MockSignaling owner, ref DescData data)
+            public async Task Offer(MockSignaling owner, DescData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in list.Where(e => e != owner))
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
                 }
             }
 
-            public void Answer(MockSignaling owner, ref DescData data)
+            public async Task Answer(MockSignaling owner, DescData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in list.Where(e => e != owner))
                 {
                     signaling.OnAnswer?.Invoke(signaling, data);
                 }
             }
 
-            public void Candidate(MockSignaling owner, ref CandidateData data)
+            public async Task Candidate(MockSignaling owner, CandidateData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in list.Where(e => e != owner))
                 {
                     signaling.OnIceCandidate?.Invoke(signaling, data);
@@ -69,15 +81,21 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
         class MockPrivateSignalingManager : IMockSignalingManager
         {
             private Dictionary<string, List<MockSignaling>> connectionIds = new Dictionary<string, List<MockSignaling>>();
+            private const int MillisecondsDelay = 10;
 
-            public void Add(MockSignaling signaling)
+            public async Task Add(MockSignaling signaling)
             {
+                await Task.Delay(MillisecondsDelay);
+                signaling.OnStart?.Invoke(signaling);
             }
-            public void Remove(MockSignaling signaling)
+            public async Task Remove(MockSignaling signaling)
             {
+                await Task.Delay(MillisecondsDelay);
             }
-            public void OpenConnection(MockSignaling signaling, string connectionId)
+
+            public async Task OpenConnection(MockSignaling signaling, string connectionId)
             {
+                await Task.Delay(MillisecondsDelay);
                 bool peerExists = connectionIds.TryGetValue(connectionId, out var list);
                 if(!peerExists)
                 {
@@ -88,8 +106,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists);
             }
 
-            public void CloseConnection(MockSignaling signaling, string connectionId)
+            public async Task CloseConnection(MockSignaling signaling, string connectionId)
             {
+                await Task.Delay(MillisecondsDelay);
                 bool peerExists = connectionIds.TryGetValue(connectionId, out var list);
                 if (!peerExists || !list.Contains(signaling))
                 {
@@ -117,8 +136,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 return list;
             }
 
-            public void Offer(MockSignaling owner, ref DescData data)
+            public async Task Offer(MockSignaling owner, DescData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
@@ -131,8 +151,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 }
             }
 
-            public void Answer(MockSignaling owner, ref DescData data)
+            public async Task Answer(MockSignaling owner, DescData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
@@ -145,8 +166,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 }
             }
 
-            public void Candidate(MockSignaling owner, ref CandidateData data)
+            public async Task Candidate(MockSignaling owner, CandidateData data)
             {
+                await Task.Delay(MillisecondsDelay);
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
@@ -179,14 +201,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             manager = new MockPublicSignalingManager();
         }
 
-        public MockSignaling()
-        {
-        }
-
         public void Start()
         {
             manager.Add(this);
-            this.OnStart?.Invoke(this);
         }
 
         public void Stop()
@@ -219,7 +236,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 type = "offer",
                 sdp = offer.sdp
             };
-            manager.Offer(this, ref data);
+            manager.Offer(this, data);
         }
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
@@ -230,7 +247,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 type = "answer",
                 sdp = answer.sdp
             };
-            manager.Answer(this, ref data);
+            manager.Answer(this, data);
         }
 
         public void SendCandidate(string connectionId, RTCIceCandidate candidate)
@@ -242,7 +259,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 sdpMid = candidate.SdpMid,
                 sdpMLineIndex = candidate.SdpMLineIndex.GetValueOrDefault()
             };
-            manager.Candidate(this, ref data);
+            manager.Candidate(this, data);
         }
     }
 }
