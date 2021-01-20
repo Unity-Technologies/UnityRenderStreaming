@@ -317,10 +317,14 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onGotOffer += _ => { target1.SendAnswer(connectionId); };
+
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+
+            // send offer automatically after adding a track
             target2.AddTrack(connectionId, track);
 
             yield return new WaitUntil(() => isAddReceiver1);
@@ -338,6 +342,62 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
             track.Dispose();
             UnityEngine.Object.Destroy(camObj);
+        }
+
+        [UnityTest, Timeout(1000)]
+        public IEnumerator OnAddReceiverPublicMode()
+        {
+            MockSignaling.Reset(false);
+
+            var dependencies1 = CreateDependencies();
+            var dependencies2 = CreateDependencies();
+            var target1 = new RenderStreamingInternal(ref dependencies1);
+            var target2 = new RenderStreamingInternal(ref dependencies2);
+
+            bool isStarted1 = false;
+            bool isStarted2 = false;
+            target1.onStart += () => { isStarted1 = true; };
+            target2.onStart += () => { isStarted2 = true; };
+            yield return new WaitUntil(() => isStarted1 && isStarted2);
+
+            bool isCreatedConnection1 = false;
+            bool isOnGotOffer2 = false;
+            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            target2.onGotOffer += _ => { isOnGotOffer2 = true; };
+
+            var connectionId = "12345";
+
+            // target1 is receiver in public mode
+            target1.OpenConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection1);
+
+            target1.SendOffer(connectionId);
+
+            // target2 is sender in private mode
+            yield return new WaitUntil(() => isOnGotOffer2);
+
+            var camObj = new GameObject("Camera");
+            var camera = camObj.AddComponent<Camera>();
+            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+            target2.AddTrack(connectionId, track);
+            target2.SendAnswer(connectionId);
+
+            bool isAddReceiver1 = false;
+            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+
+            yield return new WaitUntil(() => isAddReceiver1);
+
+            target1.CloseConnection(connectionId);
+            target2.CloseConnection(connectionId);
+
+            bool isDeletedConnection1 = false;
+            bool isDeletedConnection2 = false;
+            target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
+            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+
+            target1.Dispose();
+            target2.Dispose();
         }
 
         [UnityTest, Timeout(1000)]
@@ -373,7 +433,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddChannel1 = false;
             target1.onAddChannel += (_, channel) => { isAddChannel1 = true; };
+            target1.onGotOffer += _ => { target1.SendAnswer(connectionId); };
 
+            // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
 
             yield return new WaitUntil(() => isAddChannel1);
