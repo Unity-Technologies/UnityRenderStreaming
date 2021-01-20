@@ -198,10 +198,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
 
-            Assert.That(() => target.AddTrack(null, null), Throws.TypeOf<ArgumentException>());
-            Assert.That(() => target.AddTrack(connectionId, null), Throws.TypeOf<ArgumentException>());
-            Assert.That(() => target.RemoveTrack(null, null), Throws.TypeOf<ArgumentException>());
-            Assert.That(() => target.RemoveTrack(connectionId, null), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => target.AddTrack(null, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.AddTrack(connectionId, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.RemoveTrack(null, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.RemoveTrack(connectionId, null), Throws.TypeOf<InvalidOperationException>());
             target.CloseConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };

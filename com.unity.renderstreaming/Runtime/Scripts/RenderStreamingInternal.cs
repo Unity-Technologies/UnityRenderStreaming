@@ -59,13 +59,17 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public event Action<string> onGotAnswer;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public event Action<string> onConnect;
 
         /// <summary>
         /// 
         /// </summary>
         public event Action<string> onDisconnect;
-
 
         /// <summary>
         /// 
@@ -153,8 +157,6 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void OpenConnection(string connectionId)
         {
-            if (string.IsNullOrEmpty(connectionId))
-                throw new ArgumentException("Argument of connectionId is null or empty.");
             _signaling.OpenConnection(connectionId);
         }
 
@@ -164,8 +166,6 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void CloseConnection(string connectionId)
         {
-            if (string.IsNullOrEmpty(connectionId))
-                throw new ArgumentException("Argument of connectionId is null or empty.");
             _signaling.CloseConnection(connectionId);
         }
 
@@ -176,18 +176,7 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public void AddTrack(string connectionId, MediaStreamTrack track)
         {
-            if (string.IsNullOrEmpty(connectionId))
-                throw new ArgumentException("Argument of connectionId is null or empty.");
-            if (track == null)
-                throw new ArgumentException("Argument of track is null or empty.");
-
-            var pc = _mapConnectionIdAndPeer[connectionId];
-            if (pc.SignalingState != RTCSignalingState.Stable)
-            {
-                // todo:: RestartICE
-                //throw new InvalidOperationException($"peerConnection's signaling state is not stable. {pc.SignalingState}");
-            }
-            pc.AddTrack(track);
+            _mapConnectionIdAndPeer[connectionId].AddTrack(track);
         }
 
         /// <summary>
@@ -197,11 +186,6 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public void RemoveTrack(string connectionId, MediaStreamTrack track)
         {
-            if (string.IsNullOrEmpty(connectionId))
-                throw new ArgumentException("Argument of connectionId is null or empty.");
-            if (track == null)
-                throw new ArgumentException("Argument of track is null or empty.");
-
             var sender = GetSenders(connectionId).First(s => s.Track == track);
             _mapConnectionIdAndPeer[connectionId].RemoveTrack(sender);
         }
@@ -214,15 +198,6 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public RTCDataChannel CreateChannel(string connectionId, string name)
         {
-            if (string.IsNullOrEmpty(connectionId))
-                throw new ArgumentException("Arguments of connectionId is null or empty.");
-
-            var pc = _mapConnectionIdAndPeer[connectionId];
-            if (pc.SignalingState != RTCSignalingState.Stable)
-            {
-                // todo:: RestartICE
-                // throw new InvalidOperationException($"peerConnection's signaling state is not stable. {pc.SignalingState}");
-            }
             RTCDataChannelInit conf = new RTCDataChannelInit();
             return _mapConnectionIdAndPeer[connectionId].CreateDataChannel(name, conf);
         }
@@ -255,11 +230,7 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
-            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
-            {
-                throw new ArgumentException();
-            }
-            _startCoroutine(SendOfferCoroutine(connectionId, pc));
+            _startCoroutine(SendOfferCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
         }
 
         /// <summary>
@@ -268,17 +239,11 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendAnswer(string connectionId)
         {
-            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
-            {
-                throw new ArgumentException();
-            }
-            _startCoroutine(SendAnswerCoroutine(connectionId, pc));
+            _startCoroutine(SendAnswerCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
         }
 
         void OnStart(ISignaling signaling)
         {
-            // this connection is for public mode
-            //signaling.OpenConnection(Guid.NewGuid().ToString());
             onStart?.Invoke();
         }
 
@@ -323,12 +288,6 @@ namespace Unity.RenderStreaming
 
         void DeletePeerConnection(string connectionId)
         {
-            if (_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
-            {
-                //RemoveTracks(connectionId, pc);
-                // m_mapPeerAndChannelDictionary.Remove(pc);
-                pc.Dispose();
-            }
             _mapConnectionIdAndPeer.Remove(connectionId);
         }
 
@@ -336,43 +295,6 @@ namespace Unity.RenderStreaming
         {
             _mapConnectionIdAndChannel.Add(connectionId, channel);
             onAddChannel?.Invoke(connectionId, channel);
-
-            //if (!m_mapPeerAndChannelDictionary.TryGetValue(pc, out var channels))
-            //{
-            //    channels = new DataChannelDictionary();
-            //    m_mapPeerAndChannelDictionary.Add(pc, channels);
-            //}
-
-            //channels.Add(channel.Id, channel);
-
-            //if (channel.Label != "data")
-            //{
-            //    return;
-            //}
-
-            //RemoteInput input = RemoteInputReceiver.Create();
-            //input.ActionButtonClick = OnButtonClick;
-
-            //// device.current must be changed after creating devices
-            //m_defaultInput.MakeCurrent();
-
-            //m_mapChannelAndRemoteInput.Add(channel, input);
-            //channel.OnMessage = bytes => m_mapChannelAndRemoteInput[channel].ProcessInput(bytes);
-            //channel.OnClose = () => OnCloseChannel(channel);
-
-            //// find controller that not assigned remote input
-            //SimpleCameraController controller = m_listController
-            //    .FirstOrDefault(_controller => !m_remoteInputAndCameraController.ContainsValue(_controller));
-
-            //if (controller != null)
-            //{
-            //    controller.SetInput(input);
-            //    m_remoteInputAndCameraController.Add(input, controller);
-
-            //    byte index = (byte)m_listController.IndexOf(controller);
-            //    byte[] bytes = { (byte)UnityEventType.SwitchVideo, index };
-            //    channel.Send(bytes);
-            //}
         }
 
         void OnIceConnectionChange(string connectionId, RTCIceConnectionState state)
@@ -383,8 +305,7 @@ namespace Unity.RenderStreaming
                     onConnect?.Invoke(connectionId);
                     break;
                 case RTCIceConnectionState.Disconnected:
-                    _mapConnectionIdAndPeer[connectionId].Close();
-                    _mapConnectionIdAndPeer.Remove(connectionId);
+                    DeletePeerConnection(connectionId);
                     onDisconnect?.Invoke(connectionId);
                     break;
             }
@@ -392,7 +313,6 @@ namespace Unity.RenderStreaming
 
         void OnNegotiationNeeded(string connectionId, bool isOffer)
         {
-            Debug.Log("OnNegotiationNeeded");
             if (!isOffer)
             {
                 return;
@@ -402,8 +322,6 @@ namespace Unity.RenderStreaming
 
         IEnumerator SendOfferCoroutine(string connectionId, RTCPeerConnection pc)
         {
-            Debug.Log("SendOffer");
-
             RTCOfferOptions option = new RTCOfferOptions { offerToReceiveAudio = true, offerToReceiveVideo = true };
             var offerOp = pc.CreateOffer(ref option);
             yield return offerOp;
@@ -432,30 +350,29 @@ namespace Unity.RenderStreaming
             Debug.Log("SendOffer end");
         }
 
-        void OnAnswer(ISignaling m_signaling, DescData e)
-        {
-            _startCoroutine(OnAnswerCoroutine(e));
-        }
-
-        IEnumerator OnAnswerCoroutine(DescData e)
+        void OnAnswer(ISignaling signaling, DescData e)
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
             {
                 Debug.Log($"connectionId:{e.connectionId}, peerConnection not exist");
-                yield break;
+                return;
             }
+            _startCoroutine(GotAnswerCoroutine(e.connectionId, pc, e.sdp));
+        }
 
+        IEnumerator GotAnswerCoroutine(string connectionId, RTCPeerConnection pc, string sdp)
+        {
             var desc = new RTCSessionDescription();
             desc.type = RTCSdpType.Answer;
-            desc.sdp = e.sdp;
+            desc.sdp = sdp;
             var opRemoteSdp = pc.SetRemoteDescription(ref desc);
             yield return opRemoteSdp;
 
             if (opRemoteSdp.IsError)
             {
                 Debug.LogError($"Network Error: {opRemoteSdp.Error.message}");
-                yield break;
             }
+            onGotAnswer?.Invoke(connectionId);
         }
 
         void OnIceCandidate(ISignaling m_signaling, CandidateData e)
@@ -498,32 +415,11 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opRemoteDesc.Error.message}");
                 yield break;
             }
-            Debug.Log("onGotOffer");
             onGotOffer?.Invoke(connectionId);
         }
 
         IEnumerator SendAnswerCoroutine(string connectionId, RTCPeerConnection pc)
         {
-            //RTCSessionDescription _desc;
-            //_desc.type = RTCSdpType.Offer;
-            //_desc.sdp = sdp;
-
-            //var opRemoteDesc = pc.SetRemoteDescription(ref _desc);
-            //yield return opRemoteDesc;
-
-            //if (opRemoteDesc.IsError)
-            //{
-            //    Debug.LogError($"Network Error: {opRemoteDesc.Error.message}");
-            //    yield break;
-            //}
-
-            // TODO:: make callback
-            //foreach (var track in m_listTrackForPublicMode)
-            //{
-            //    Debug.Log("track");
-            //    pc.AddTrack(track);
-            //}
-
             RTCAnswerOptions options = default;
             var op = pc.CreateAnswer(ref options);
             yield return op;

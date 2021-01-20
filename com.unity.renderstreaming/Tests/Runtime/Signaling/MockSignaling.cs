@@ -220,16 +220,22 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public void OpenConnection(string connectionId)
         {
+            if(string.IsNullOrEmpty(connectionId))
+                throw new ArgumentException("connectionId is null or empty.");
             manager.OpenConnection(this, connectionId);
         }
 
         public void CloseConnection(string connectionId)
         {
+            if (string.IsNullOrEmpty(connectionId))
+                throw new ArgumentException("connectionId is null or empty.");
             manager.CloseConnection(this, connectionId);
         }
 
         public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
+            if (string.IsNullOrEmpty(connectionId))
+                throw new ArgumentException("connectionId is null or empty.");
             DescData data = new DescData
             {
                 connectionId = connectionId,
@@ -241,6 +247,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
         {
+            if (string.IsNullOrEmpty(connectionId))
+                throw new ArgumentException("connectionId is null or empty.");
             DescData data = new DescData
             {
                 connectionId = connectionId,
@@ -252,6 +260,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public void SendCandidate(string connectionId, RTCIceCandidate candidate)
         {
+            if (string.IsNullOrEmpty(connectionId))
+                throw new ArgumentException("connectionId is null or empty.");
             CandidateData data = new CandidateData
             {
                 connectionId = connectionId,
