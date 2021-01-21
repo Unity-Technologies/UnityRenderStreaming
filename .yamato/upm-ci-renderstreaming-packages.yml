@@ -10,10 +10,11 @@ pack_{{ package.name }}:
   name: Pack {{ package.packagename }}
   agent:
     type: Unity::VM
-    image: renderstreaming/win10:latest
+    image: package-ci/ubuntu:stable
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
     - upm-ci package pack --package-path {{ package.packagename }}
   artifacts:
     {{ package.name }}_package:  
@@ -37,8 +38,8 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
     - | 
-      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
     {% endif %}
   triggers:
     branches:
