@@ -8,6 +8,101 @@ using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
 {
+    public interface IRenderStreamingHandler
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+
+        event Action onStart;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string> onCreatedConnection;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string> onFoundConnection;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string> onDeletedConnection;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string, string> onGotOffer;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string, string> onGotAnswer;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string> onConnect;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string> onDisconnect;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string, RTCRtpReceiver> onAddReceiver;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event Action<string, RTCDataChannel> onAddChannel;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        void OpenConnection(string connectionId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        void CloseConnection(string connectionId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        RTCDataChannel CreateChannel(string connectionId, string name);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        void SendOffer(string connectionId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        void SendAnswer(string connectionId);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="track"></param>
+        RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="track"></param>
+        void RemoveTrack(string connectionId, MediaStreamTrack track);
+
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -34,7 +129,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    internal class RenderStreamingInternal : IDisposable
+    internal class RenderStreamingInternal : IDisposable, IRenderStreamingHandler
     {
         /// <summary>
         /// 
@@ -49,17 +144,22 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public event Action<string> onFoundConnection;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public event Action<string> onDeletedConnection;
 
         /// <summary>
         /// 
         /// </summary>
-        public event Action<string> onGotOffer;
+        public event Action<string, string> onGotOffer;
 
         /// <summary>
         /// 
         /// </summary>
-        public event Action<string> onGotAnswer;
+        public event Action<string, string> onGotAnswer;
 
         /// <summary>
         /// 
@@ -174,9 +274,14 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public void AddTrack(string connectionId, MediaStreamTrack track)
+        public RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track)
         {
-            _mapConnectionIdAndPeer[connectionId].AddTrack(track);
+            // todo:: replace RTCPeerConnection.AddTransceiver(MediaStreamTrack track, RTCRtpTransceiverInit init)
+            RTCRtpSender sender = _mapConnectionIdAndPeer[connectionId].AddTrack(track);
+
+            // todo:: The comparison of RTCRtpSender has bug
+            //return _mapConnectionIdAndPeer[connectionId].GetTransceivers().First(t => t.Sender == sender);
+            return _mapConnectionIdAndPeer[connectionId].GetTransceivers().Last();
         }
 
         /// <summary>
@@ -251,7 +356,10 @@ namespace Unity.RenderStreaming
         {
             CreatePeerConnection(connectionId, peerExists);
 
-            onCreatedConnection?.Invoke(connectionId);
+            if(peerExists)
+                onFoundConnection?.Invoke(connectionId);
+            else
+                onCreatedConnection?.Invoke(connectionId);
         }
 
         void OnDestroyConnection(ISignaling signaling, string connectionId)
@@ -347,7 +455,6 @@ namespace Unity.RenderStreaming
                 yield break;
             }
             _signaling.SendOffer(connectionId, desc);
-            Debug.Log("SendOffer end");
         }
 
         void OnAnswer(ISignaling signaling, DescData e)
@@ -372,7 +479,7 @@ namespace Unity.RenderStreaming
             {
                 Debug.LogError($"Network Error: {opRemoteSdp.Error.message}");
             }
-            onGotAnswer?.Invoke(connectionId);
+            onGotAnswer?.Invoke(connectionId, sdp);
         }
 
         void OnIceCandidate(ISignaling m_signaling, CandidateData e)
@@ -415,7 +522,7 @@ namespace Unity.RenderStreaming
                 Debug.LogError($"Network Error: {opRemoteDesc.Error.message}");
                 yield break;
             }
-            onGotOffer?.Invoke(connectionId);
+            onGotOffer?.Invoke(connectionId, sdp);
         }
 
         IEnumerator SendAnswerCoroutine(string connectionId, RTCPeerConnection pc)

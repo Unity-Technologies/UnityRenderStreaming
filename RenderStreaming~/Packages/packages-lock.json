@@ -54,7 +54,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "2.2.1-preview",
+        "com.unity.webrtc": "2.3.1-preview",
         "com.unity.inputsystem": "1.0.0"
       }
     },
@@ -88,13 +88,30 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.2.1-preview",
+      "version": "2.3.1-preview",
       "depth": 1,
       "source": "registry",
       "dependencies": {
+        "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.editorcoroutines": "1.0.0"
       },
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
+    },
+    "nuget.castle-core": {
+      "version": "1.0.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "nuget.moq": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "nuget.castle-core": "1.0.1"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
