@@ -64,7 +64,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.renderstreaming": {
-      "version": "../../../com.unity.renderstreaming",
+      "version": "file:../../../com.unity.renderstreaming",
       "depth": 0,
       "source": "local",
       "dependencies": {
