@@ -145,6 +145,21 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void Subscribe()
+        {
+            var test = new MonoBehaviourTest<CreatedConnectionHandlerTest>();
+            Assert.That(m_provider.Subscribe(test.component), Is.True);
+
+            // return false if it is already registered.
+            Assert.That(m_provider.Subscribe(test.component), Is.False);
+
+            Assert.That(m_provider.Unsubscribe(test.component), Is.True);
+
+            // return false if it is not found.
+            Assert.That(m_provider.Unsubscribe(test.component), Is.False);
+        }
+
+        [Test]
         public void OnCreatedConnection()
         {
             var connectionId = "12345";

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Unity.RenderStreaming
 {
-    public class SignalingEventProvider
+    internal class SignalingEventProvider
     {
         private List<WeakReference<GameObject>> m_list = new List<WeakReference<GameObject>>();
 
@@ -23,16 +23,6 @@ namespace Unity.RenderStreaming
             handler.onAddReceiver += OnAddReceiver;
         }
 
-        private WeakReference<GameObject> Find(GameObject obj)
-        {
-            return m_list.Find(r =>
-            {
-                if (!r.TryGetTarget(out var _obj))
-                    return false;
-                return obj == _obj;
-            });
-        }
-
         public bool Subscribe(Component comp)
         {
             if (Find(comp.gameObject) != null)
@@ -41,11 +31,24 @@ namespace Unity.RenderStreaming
             return true;
         }
 
-        public void Unsubscribe(Component comp)
+        public bool Unsubscribe(Component comp)
         {
             var a = Find(comp.gameObject);
-            if(a != null)
-                m_list.Remove(a);
+            if (a == null)
+                return false;
+
+            m_list.Remove(a);
+            return true;
+        }
+
+        private WeakReference<GameObject> Find(GameObject obj)
+        {
+            return m_list.Find(r =>
+            {
+                if (!r.TryGetTarget(out var _obj))
+                    return false;
+                return obj == _obj;
+            });
         }
 
         private void ExecuteEventToAllTargets<T>(
@@ -60,7 +63,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected virtual void OnCreatedConnection(string connectionId)
+        private void OnCreatedConnection(string connectionId)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -69,7 +72,7 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.createdConnectionHandler);
         }
 
-        protected virtual void OnFoundConnection(string connectionId)
+        private void OnFoundConnection(string connectionId)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -78,7 +81,7 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.foundConnectionHandler);
         }
 
-        protected virtual void OnDeletedConnection(string connectionId)
+        private void OnDeletedConnection(string connectionId)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -87,7 +90,7 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.deletedConnectionHandler);
         }
 
-        protected virtual void OnGotOffer(string connectionId, string sdp)
+        private void OnGotOffer(string connectionId, string sdp)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -97,7 +100,7 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.offerHandler);
         }
 
-        protected virtual void OnGotAnswer(string connectionId, string sdp)
+        private void OnGotAnswer(string connectionId, string sdp)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -107,19 +110,25 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.answerHandler);
         }
 
-        protected virtual void OnConnect(string connectionId)
+        private void OnConnect(string connectionId)
         {
-            var data = new SignalingEventData(EventSystem.current) {connectionId = connectionId};
+            var data = new SignalingEventData(EventSystem.current)
+            {
+                connectionId = connectionId
+            };
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.connectHandler);
         }
 
-        protected virtual void OnDisconnect(string connectionId)
+        private void OnDisconnect(string connectionId)
         {
-            var data = new SignalingEventData(EventSystem.current) {connectionId = connectionId};
+            var data = new SignalingEventData(EventSystem.current)
+            {
+                connectionId = connectionId
+            };
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.disconnectHandler);
         }
 
-        protected virtual void OnAddChannel(string connectionId, RTCDataChannel channel)
+        private void OnAddChannel(string connectionId, RTCDataChannel channel)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
@@ -129,7 +138,7 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.addChannelHandler);
         }
 
-        protected virtual void OnAddReceiver(string connectionId, RTCRtpReceiver receiver)
+        private void OnAddReceiver(string connectionId, RTCRtpReceiver receiver)
         {
             var data = new SignalingEventData(EventSystem.current)
             {

@@ -3,7 +3,9 @@ using UnityEngine.EventSystems;
 
 namespace Unity.RenderStreaming
 {
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class SignalingEventData : BaseEventData
     {
         /// <summary>
