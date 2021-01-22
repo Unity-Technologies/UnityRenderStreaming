@@ -50,7 +50,7 @@ test_projects:
   - name: HDRPTests
     path: TestProjects/HDRPTests
   - name: URPTests
-    packagename: TestProjects/URPTests
+    path: TestProjects/URPTests
 template_projects:
   - name: renderstreaming-hd
     packagename: com.unity.template.renderstreaming-hd
