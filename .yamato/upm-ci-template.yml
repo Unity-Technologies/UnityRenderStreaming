@@ -2,7 +2,7 @@
 {% metadata_file .yamato/meta/environments.yml %}
 
 ---
-{% for project in projects %}
+{% for project in template_projects %}
 pack_{{ project.name }}:
   name: Pack {{ project.packagename }}
   agent:  
