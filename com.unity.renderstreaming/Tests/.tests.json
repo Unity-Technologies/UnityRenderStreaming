@@ -1,3 +1,6 @@
 {
-	"createSeparatePackage": false
+  "createSeparatePackage": true,
+   "dependencies": {
+    "nuget.moq": "1.0.0"
+  }
 }
