@@ -65,15 +65,18 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    {% if platform.name != "win" %}
+    - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
+    {% endif %}
     - upm-ci project pack --project-path {{ project.path }}
     {% if platform.name == "win" %}
     - | 
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci project test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
     - | 
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci project test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
     {% endif %}
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 

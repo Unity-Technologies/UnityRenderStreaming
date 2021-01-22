@@ -4,6 +4,7 @@
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.2",
     "com.unity.render-pipelines.high-definition": "7.3.1",
+    "com.unity.renderstreaming": "../../../com.unity.renderstreaming",
     "com.unity.test-framework": "1.1.18",
     "com.unity.textmeshpro": "2.1.1",
     "com.unity.timeline": "1.2.17",
