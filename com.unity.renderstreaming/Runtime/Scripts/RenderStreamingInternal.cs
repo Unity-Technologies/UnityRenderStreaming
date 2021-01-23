@@ -34,7 +34,8 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    internal class RenderStreamingInternal : IDisposable, IRenderStreamingHandler
+    internal class RenderStreamingInternal : IDisposable,
+        IRenderStreamingHandler, IRenderStreamingDelegate
     {
         /// <summary>
         /// 

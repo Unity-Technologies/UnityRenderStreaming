@@ -10,7 +10,7 @@ namespace Unity.RenderStreaming
     {
         private List<WeakReference<GameObject>> m_list = new List<WeakReference<GameObject>>();
 
-        public SignalingEventProvider(IRenderStreamingHandler handler)
+        public SignalingEventProvider(IRenderStreamingDelegate handler)
         {
             handler.onCreatedConnection += OnCreatedConnection;
             handler.onFoundConnection += OnFoundConnection;

@@ -3,7 +3,7 @@ using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
 {
-    public interface IRenderStreamingHandler
+    public interface IRenderStreamingDelegate
     {
         /// <summary>
         /// 
@@ -54,7 +54,10 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         event Action<string, RTCDataChannel> onAddChannel;
+    }
 
+    public interface IRenderStreamingHandler
+    {
         /// <summary>
         /// 
         /// </summary>

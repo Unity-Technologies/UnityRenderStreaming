@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using Moq;
 using NUnit.Framework;
 using Unity.WebRTC;
 using UnityEngine.EventSystems;
@@ -117,11 +117,66 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    /// <summary>
+    /// note:: Moq is not supported IL2CPP platform,
+    /// this class should be replaced Moq `Raise` method.
+    /// </summary>
+    class MockDelegate : IRenderStreamingDelegate
+    {
+        public event Action onStart;
+        public event Action<string> onCreatedConnection;
+        public event Action<string> onFoundConnection;
+        public event Action<string> onDeletedConnection;
+        public event Action<string, string> onGotOffer;
+        public event Action<string, string> onGotAnswer;
+        public event Action<string> onConnect;
+        public event Action<string> onDisconnect;
+        public event Action<string, RTCRtpReceiver> onAddReceiver;
+        public event Action<string, RTCDataChannel> onAddChannel;
+
+        public void RaiseOnCreatedConnection(string connectionId)
+        {
+            onCreatedConnection?.Invoke(connectionId);
+        }
+        public void RaiseOnFoundConnection(string connectionId)
+        {
+            onFoundConnection?.Invoke(connectionId);
+        }
+        public void RaiseOnDeletedConnection(string connectionId)
+        {
+            onDeletedConnection?.Invoke(connectionId);
+        }
+        public void RaiseOnGotOffer(string connectionId, string sdp)
+        {
+            onGotOffer?.Invoke(connectionId, sdp);
+        }
+        public void RaiseOnGotAnswer(string connectionId, string sdp)
+        {
+            onGotAnswer?.Invoke(connectionId, sdp);
+        }
+        public void RaiseOnConnect(string connectionId)
+        {
+            onConnect?.Invoke(connectionId);
+        }
+        public void RaiseOnDisconnect(string connectionId)
+        {
+            onDisconnect?.Invoke(connectionId);
+        }
+        public void RaiseOnAddReceiver(string connectionId, RTCRtpReceiver receiver)
+        {
+            onAddReceiver?.Invoke(connectionId, receiver);
+        }
+        public void RaiseOnAddChannel(string connectionId, RTCDataChannel channel)
+        {
+            onAddChannel?.Invoke(connectionId, channel);
+        }
+    }
+
     public class SignalingEventProviderTest
     {
         private EventSystem m_eventSystem;
         private SignalingEventProvider m_provider;
-        private Mock<IRenderStreamingHandler> m_handler;
+        private MockDelegate _mDelegate;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -140,8 +195,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         [SetUp]
         public void SetUp()
         {
-            m_handler = new Mock<IRenderStreamingHandler>();
-            m_provider = new SignalingEventProvider(m_handler.Object);
+            _mDelegate = new MockDelegate();
+            m_provider = new SignalingEventProvider(_mDelegate);
         }
 
         [Test]
@@ -165,7 +220,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var connectionId = "12345";
             var test = new MonoBehaviourTest<CreatedConnectionHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onCreatedConnection += null, connectionId);
+            _mDelegate.RaiseOnCreatedConnection(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);
@@ -177,7 +232,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var connectionId = "12345";
             var test = new MonoBehaviourTest<FoundConnectionHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onFoundConnection += null, connectionId);
+            _mDelegate.RaiseOnFoundConnection(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);
@@ -189,7 +244,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var connectionId = "12345";
             var test = new MonoBehaviourTest<DeletedConnectionHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onDeletedConnection += null, connectionId);
+            _mDelegate.RaiseOnDeletedConnection(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);
@@ -200,7 +255,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var connectionId = "12345";
             var test = new MonoBehaviourTest<ConnectHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onConnect += null, connectionId);
+            _mDelegate.RaiseOnConnect(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);
@@ -211,7 +266,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var connectionId = "12345";
             var test = new MonoBehaviourTest<DisconnectHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onDisconnect += null, connectionId);
+            _mDelegate.RaiseOnDisconnect(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);
@@ -224,7 +279,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sdp = "this is sdp";
             var test = new MonoBehaviourTest<OfferHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onGotOffer += null, connectionId, sdp);
+            _mDelegate.RaiseOnGotOffer(connectionId, sdp);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             Assert.That(test.component.Data.sdp, Is.EqualTo(sdp));
@@ -238,7 +293,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sdp = "this is sdp";
             var test = new MonoBehaviourTest<AnswerHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onGotAnswer += null, connectionId, sdp);
+            _mDelegate.RaiseOnGotAnswer(connectionId, sdp);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             Assert.That(test.component.Data.sdp, Is.EqualTo(sdp));
@@ -252,7 +307,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // todo:: create a receiver instance
             var test = new MonoBehaviourTest<AddReceiverHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onAddReceiver += null, connectionId, null);
+            _mDelegate.RaiseOnAddReceiver(connectionId, null);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             Assert.That(test.component.Data.receiver, Is.Null);
@@ -267,7 +322,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var channel = peer.CreateDataChannel("test");
             var test = new MonoBehaviourTest<AddChannelHandlerTest>();
             m_provider.Subscribe(test.component);
-            m_handler.Raise(x => x.onAddChannel += null, connectionId, channel);
+            _mDelegate.RaiseOnAddChannel(connectionId, channel);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             Assert.That(test.component.Data.channel, Is.EqualTo(channel));
