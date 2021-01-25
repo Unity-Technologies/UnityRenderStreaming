@@ -23,6 +23,8 @@ pack_{{ package.name }}:
 
 {% for editor in editors %}
 {% for platform in platforms %}
+{% if target.name != "macos" -%}
+
 {% for param in platform.test_params %}
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -88,6 +90,48 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 
 {% endfor %}
 {% endfor %}
+
+{% else -%}
+
+{% for param in platform.test_params %}
+test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  variables:
+      TEMPLATE_FILE: BuildScripts~/template/remote.sh.template
+      PACKAGE_DIR: UnityRenderStreaming
+      TEST_PROJECT_DIR: UnityRenderStreaming/RenderStreaming~
+      TEST_RESULT_DIR: upm-ci~/test-results/
+      WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
+      WEBAPP_NAME: {{ platform.packed_webapp_name }}
+      TEST_TARGET: {{ target.name }}
+      TEST_PLATFORM: {{ param.platform }}
+      SCRIPTING_BACKEND: {{ param.backend }}  
+      EDITOR_VERSION: {{ editor.version }}
+      EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
+  commands:
+    - find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
+    - BuildScripts~/test_package_mac.sh
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"  
+  artifacts:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+{% endfor %}
+
+{% endif -%}
 {% endfor %}
 
 {% for editor in editors %}
