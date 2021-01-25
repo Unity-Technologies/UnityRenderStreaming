@@ -112,7 +112,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 bool peerExists = connectionIds.TryGetValue(connectionId, out var list);
                 if (!peerExists || !list.Contains(signaling))
                 {
-                    Debug.LogWarning($"{connectionId} This connection id is not used.");
+                    Debug.LogError($"{connectionId} This connection id is not used.");
                 }
                 list.Remove(signaling);
                 if (list.Count == 0)
@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
-                    Debug.LogWarning($"{data.connectionId} This connection id is not ready other session.");
+                    Debug.LogError($"{data.connectionId} This connection id is not ready other session.");
                     return;
                 }
                 foreach (var signaling in list)
@@ -157,7 +157,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
-                    Debug.LogWarning($"{data.connectionId} This connection id is not ready other session.");
+                    Debug.LogError($"{data.connectionId} This connection id is not ready other session.");
                     return;
                 }
                 foreach (var signaling in list)
@@ -172,7 +172,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
-                    Debug.LogWarning($"{data.connectionId} This connection id is not ready other session.");
+                    Debug.LogError($"{data.connectionId} This connection id is not ready other session.");
                     return;
                 }
                 foreach (var signaling in list.Where(e => e != owner))
