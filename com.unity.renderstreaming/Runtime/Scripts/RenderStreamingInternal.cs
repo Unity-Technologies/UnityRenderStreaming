@@ -302,6 +302,7 @@ namespace Unity.RenderStreaming
 
         void DeletePeerConnection(string connectionId)
         {
+            _mapConnectionIdAndPeer[connectionId].Dispose();
             _mapConnectionIdAndPeer.Remove(connectionId);
         }
 

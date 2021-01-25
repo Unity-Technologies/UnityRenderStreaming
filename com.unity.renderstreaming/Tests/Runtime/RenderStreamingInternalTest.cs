@@ -319,7 +319,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
 
-
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
@@ -388,7 +387,6 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             yield return new WaitUntil(() => isAddReceiver1);
 
-            track.Dispose();
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
 
@@ -400,7 +398,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             target1.Dispose();
             target2.Dispose();
-
+            track.Dispose();
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
