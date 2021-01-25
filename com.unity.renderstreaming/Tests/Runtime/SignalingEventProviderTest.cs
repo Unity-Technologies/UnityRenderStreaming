@@ -172,6 +172,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
     public class SignalingEventProviderTest
     {
         private EventSystem m_eventSystem;
