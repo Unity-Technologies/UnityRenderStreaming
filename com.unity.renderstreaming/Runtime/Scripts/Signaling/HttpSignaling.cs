@@ -309,8 +309,13 @@ namespace Unity.RenderStreaming.Signaling
                 dataStream.Close();
             }
 
+            var data = HTTPParseTextResponse(HTTPGetResponse(request));
+
+            if (data == null) return false;
+
             Debug.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
-            return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
+            m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, connectionId), null);
+            return true;
         }
 
         private bool HTTPGetOffers()

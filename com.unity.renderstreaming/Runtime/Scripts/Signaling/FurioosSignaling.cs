@@ -63,19 +63,16 @@ namespace Unity.RenderStreaming.Signaling
         }
 
         //todo: not implemented
+#pragma warning disable 0067
         public event OnStartHandler OnStart;
-
         public event OnSignedInHandler OnSignedIn;
-
-        //todo: not implemented
         public event OnConnectHandler OnCreateConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
-        #pragma warning disable 0067
         // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
-        #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
+#pragma warning restore 0067
         public void SendOffer(string connectionId, RTCSessionDescription offer)
         {
             throw new NotImplementedException();
