@@ -24,7 +24,7 @@ platforms:
         platform: standalone
   - name: mac
     type: Unity::metal::macmini
-    image: slough-ops/macos-10.14-xcode
+    image: package-ci/mac:stable
     flavor: m1.mac
     packed_webapp_name: webserver_mac
     test_params:
