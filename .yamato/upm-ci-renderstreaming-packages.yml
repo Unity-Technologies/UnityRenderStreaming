@@ -23,8 +23,7 @@ pack_{{ package.name }}:
 
 {% for editor in editors %}
 {% for platform in platforms %}
-{% if target.name != "macos" -%}
-
+{% if platform.name != "mac" -%}
 {% for param in platform.test_params %}
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -90,9 +89,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 
 {% endfor %}
 {% endfor %}
-
 {% else -%}
-
 {% for param in platform.test_params %}
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -107,7 +104,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
-      TEST_TARGET: {{ target.name }}
+      TEST_TARGET: {{ platform.name }}
       TEST_PLATFORM: {{ param.platform }}
       SCRIPTING_BACKEND: {{ param.backend }}  
       EDITOR_VERSION: {{ editor.version }}
@@ -130,7 +127,6 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 {% endfor %}
-
 {% endif -%}
 {% endfor %}
 
