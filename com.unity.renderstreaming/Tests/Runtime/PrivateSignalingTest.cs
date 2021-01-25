@@ -193,6 +193,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             m_Context = null;
         }
 
+        [Retry(3)]
         [UnityTest]
         public IEnumerator CheckPeerExists()
         {
@@ -239,6 +240,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitForSeconds(1);
         }
 
+        [Retry(3)]
         [UnityTest]
         public IEnumerator OnOffer()
         {
@@ -281,7 +283,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitForSeconds(1);
         }
 
-
+        [Retry(3)]
         [UnityTest]
         public IEnumerator OnAnswer()
         {
@@ -320,6 +322,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitForSeconds(1);
         }
 
+        [Retry(3)]
         [UnityTest]
         public IEnumerator OnCandidate()
         {
