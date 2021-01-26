@@ -57,7 +57,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator Construct(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator ConstructMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -97,7 +97,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OpenConnection(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -124,7 +124,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OpenConnectionThrowException(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -143,7 +143,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -254,7 +254,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator CreateChannel(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -284,7 +284,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -344,7 +344,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.Destroy(camObj);
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
@@ -402,7 +402,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddChannelPrivateMode()
         {
             MockSignaling.Reset(true);
