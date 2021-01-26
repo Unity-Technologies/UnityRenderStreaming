@@ -316,10 +316,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddReceiver1 = false;
-            bool isGotAnser2 = false;
+            bool isGotAnswer2 = false;
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
-            target2.onGotAnswer += (_, sdp) => { isGotAnser2 = true; };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
@@ -329,7 +329,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var transceiver = target2.AddTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
 
-            yield return new WaitUntil(() => isAddReceiver1 && isGotAnser2);
+            yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
 
             target1.DeleteConnection(connectionId);
             target2.DeleteConnection(connectionId);
