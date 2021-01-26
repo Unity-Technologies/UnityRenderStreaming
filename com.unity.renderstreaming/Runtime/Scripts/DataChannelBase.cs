@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class DataChannelBase : MonoBehaviour, IDataChannel
     {
         [SerializeField]
