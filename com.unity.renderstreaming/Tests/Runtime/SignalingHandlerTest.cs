@@ -143,6 +143,34 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.test.component.AddComponent(channel);
             container.Dispose();
         }
+
+        [UnityTest, Timeout(1000)]
+        public IEnumerator ReceiveStream()
+        {
+            string connectionId = "12345";
+            var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
+            var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
+
+            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            bool isStartedStream1 = false;
+            streamer.OnStartedStream += _ => isStartedStream1 = true;
+
+            container1.test.component.AddComponent(streamer);
+
+            var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
+            bool isStartedStream2 = false;
+            receiver.OnStartedStream += _ => isStartedStream2 = true;
+            container2.test.component.AddComponent(receiver);
+            container2.test.component.CreateConnection(connectionId);
+
+            yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
+
+            Assert.That(receiver.Track, Is.Not.Null);
+            Assert.That(receiver.Receiver, Is.Not.Null);
+
+            container1.Dispose();
+            container2.Dispose();
+        }
     }
 
     [UnityPlatform(exclude = new[] {
