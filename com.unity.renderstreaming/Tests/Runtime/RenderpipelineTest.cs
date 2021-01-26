@@ -9,7 +9,9 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void Test()
         {
             GameObject obj = new GameObject();
+            obj.AddComponent<Camera>();
             obj.AddComponent<RenderTextureBlitter>();
+            Object.DestroyImmediate(obj);
         }
     }
 }
