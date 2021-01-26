@@ -316,8 +316,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddReceiver1 = false;
+            bool isGotAnswer2 = false;
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
@@ -327,7 +329,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var transceiver = target2.AddTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
 
-            yield return new WaitUntil(() => isAddReceiver1);
+            yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
@@ -376,16 +378,18 @@ namespace Unity.RenderStreaming.RuntimeTest
             // target2 is sender in public mode
             yield return new WaitUntil(() => isOnGotOffer2);
 
+            bool isAddReceiver1 = false;
+            bool isGotAnswer1 = false;
+            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
+
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             target2.AddTrack(connectionId, track);
             target2.SendAnswer(connectionId);
 
-            bool isAddReceiver1 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
-
-            yield return new WaitUntil(() => isAddReceiver1);
+            yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
@@ -434,13 +438,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
+            bool isGotAnswer2 = false;
             target1.onAddChannel += (_, channel) => { isAddChannel1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
 
-            yield return new WaitUntil(() => isAddChannel1);
+            yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
