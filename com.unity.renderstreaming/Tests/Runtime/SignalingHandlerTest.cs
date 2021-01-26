@@ -188,7 +188,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var channel = container.test.gameObject.AddComponent<InputChannelTest>();
 
-            // reflection for testing
             channel.SetLocal(true);
             channel.SetLabel("test");
 
@@ -258,7 +257,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStartedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
 
-            // reflection for testing
             channel2.SetLocal(true);
             channel2.SetLabel("test");
 
@@ -295,7 +293,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStartedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
 
-            // reflection for testing
             channel2.SetLocal(true);
             channel2.SetLabel("test");
 
