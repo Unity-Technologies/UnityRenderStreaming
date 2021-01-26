@@ -1,12 +1,11 @@
-﻿using NUnit.Framework;                      //Timeout, Assert
+using NUnit.Framework;                      //Timeout, Assert
 using System.Collections;                   //IEnumerator
-using UnityEngine;                          //Debug
 using UnityEngine.TestTools;                //UnityTest
 using Unity.RenderStreaming.Editor;         //RequestJobManager
 using UnityEditor.PackageManager.Requests;  //ListRequest, AddRequest, etc
 using UnityEditor.PackageManager;           //PackageCollection
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.EditorTest
 {
 public class RequestJobTest
 {

@@ -271,6 +271,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId2));
 
+            Assert.That(connectionId1, Is.EqualTo(connectionId));
+            Assert.That(connectionId2, Is.EqualTo(connectionId));
+
             signaling1.SendOffer(connectionId, m_DescOffer);
             yield return new WaitUntil(() => offerRaised2);
 
@@ -280,7 +283,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
-
 
         [UnityTest]
         public IEnumerator OnAnswer()
@@ -319,6 +321,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Stop();
             yield return new WaitForSeconds(1);
         }
+
 
         [UnityTest]
         public IEnumerator OnCandidate()

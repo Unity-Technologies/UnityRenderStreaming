@@ -208,8 +208,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool startRaised1 = false;
             bool startRaised2 = false;
             bool offerRaised = false;
+            bool peerExists1 = false;
+            bool peerExists2 = false;
             string connectionId1 = null;
             string connectionId2 = null;
+            const string _connectionId = "12345";
 
             signaling1.OnStart += s => { startRaised1 = true; };
             signaling2.OnStart += s => { startRaised2 = true; };
@@ -217,18 +220,28 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists) => { connectionId1 = connectionId; };
-            signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists) => { connectionId2 = connectionId; };
-            signaling2.OpenConnection(Guid.NewGuid().ToString());
+            signaling1.OnCreateConnection += (s, connectionId, peerExists) => {
+                connectionId1 = connectionId;
+                peerExists1 = peerExists;
+            };
+            signaling1.OpenConnection(_connectionId);
+
+            signaling2.OnCreateConnection += (s, connectionId, peerExists) => {
+                connectionId2 = connectionId;
+                peerExists2 = peerExists;
+            };
+            signaling2.OpenConnection(_connectionId);
             yield return new WaitUntil(() =>
                 !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
+            Assert.That(connectionId1, Is.EqualTo(_connectionId));
+            Assert.That(connectionId2, Is.EqualTo(_connectionId));
+            Assert.That(peerExists1, Is.False);
+            Assert.That(peerExists2, Is.False);
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
             yield return new WaitUntil(() => offerRaised);
         }
-
 
         [UnityTest]
         public IEnumerator OnAnswer()

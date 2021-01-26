@@ -303,7 +303,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
+            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 
@@ -317,15 +317,15 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
-            target1.onGotOffer += _ => { target1.SendAnswer(connectionId); };
-
+            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
-            // send offer automatically after adding a track
-            target2.AddTrack(connectionId, track);
+            // send offer automatically after adding a Track
+            var transceiver = target2.AddTrack(connectionId, track);
+            Assert.That(transceiver, Is.Not.Null);
 
             yield return new WaitUntil(() => isAddReceiver1);
 
@@ -363,7 +363,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isOnGotOffer2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onGotOffer += _ => { isOnGotOffer2 = true; };
+            target2.onGotOffer += (_, sdp) => { isOnGotOffer2 = true; };
 
             var connectionId = "12345";
 
@@ -373,7 +373,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             target1.SendOffer(connectionId);
 
-            // target2 is sender in private mode
+            // target2 is sender in public mode
             yield return new WaitUntil(() => isOnGotOffer2);
 
             var camObj = new GameObject("Camera");
@@ -398,6 +398,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             target1.Dispose();
             target2.Dispose();
+            track.Dispose();
+            UnityEngine.Object.DestroyImmediate(camObj);
         }
 
         [UnityTest, Timeout(1000)]
@@ -419,7 +421,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
+            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 
@@ -433,7 +435,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddChannel1 = false;
             target1.onAddChannel += (_, channel) => { isAddChannel1 = true; };
-            target1.onGotOffer += _ => { target1.SendAnswer(connectionId); };
+            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
 
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
