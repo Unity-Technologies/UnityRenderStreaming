@@ -134,6 +134,11 @@ namespace Unity.RenderStreaming.RuntimeTest
         public event Action<string, RTCRtpReceiver> onAddReceiver;
         public event Action<string, RTCDataChannel> onAddChannel;
 
+        public void RaiseOnStart()
+        {
+            onStart?.Invoke();
+        }
+
         public void RaiseOnCreatedConnection(string connectionId)
         {
             onCreatedConnection?.Invoke(connectionId);

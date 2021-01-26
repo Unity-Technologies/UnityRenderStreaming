@@ -25,6 +25,26 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    class InputChannelTest : DataChannelBase
+    {
+        public void SetLocal(bool isLocal)
+        {
+            Type myClass = typeof(InputChannelTest);
+            FieldInfo fieldLocal = myClass.GetField("local",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLocal.SetValue(this, true);
+        }
+
+
+        public void SetLabel(string label)
+        {
+            Type myClass = typeof(InputChannelTest);
+            FieldInfo fieldLabel = myClass.GetField("label",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLabel.SetValue(this, label);
+        }
+    }
+
     class StreamSourceTest : StreamSourceBase
     {
         private Camera m_camera;
@@ -39,45 +59,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     class StreamReceiverTest : StreamReceiverBase
     {
     }
-
-    class BrowserInputChannelTest : BrowserInputChannel
-    {
-        public void SetLocal(bool isLocal)
-        {
-            Type myClass = typeof(BrowserInputChannel);
-            FieldInfo fieldLocal = myClass.GetField("local",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLocal.SetValue(this, true);
-        }
-
-        public void SetLabel(string label)
-        {
-            Type myClass = typeof(BrowserInputChannel);
-            FieldInfo fieldLabel = myClass.GetField("label",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLabel.SetValue(this, label);
-        }
-    }
-
-    class InputChannelTest : InputChannel
-    {
-        public void SetLocal(bool isLocal)
-        {
-            Type myClass = typeof(BrowserInputChannel);
-            FieldInfo fieldLocal = myClass.GetField("local",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLocal.SetValue(this, true);
-        }
-
-        public void SetLabel(string label)
-        {
-            Type myClass = typeof(BrowserInputChannel);
-            FieldInfo fieldLabel = myClass.GetField("label",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLabel.SetValue(this, label);
-        }
-    }
-
 
     class TestContainer<T> : IDisposable where T : SignalingHandlerBase, IMonoBehaviourTest
     {
@@ -152,7 +133,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void AddDataChannel()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            var channel = container.test.gameObject.AddComponent<InputChannelTest>();
             channel.SetLabel("test");
             channel.SetLocal(true);
 
@@ -205,7 +186,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            var channel = container.test.gameObject.AddComponent<InputChannelTest>();
 
             // reflection for testing
             channel.SetLocal(true);
@@ -267,13 +248,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var channel1 = container1.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            var channel1 = container1.test.gameObject.AddComponent<InputChannelTest>();
             bool isStartedChannel1 = false;
             channel1.OnStartedChannel += _ => isStartedChannel1 = true;
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
 
-            var channel2 = container2.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            var channel2 = container2.test.gameObject.AddComponent<InputChannelTest>();
             bool isStartedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
 
