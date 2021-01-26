@@ -130,7 +130,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void AddDataChannel()
+        public void AddInputChannel()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
             var channel = container.test.gameObject.AddComponent<InputChannelTest>();
@@ -182,7 +182,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [UnityTest, Timeout(1000)]
-        public IEnumerator BrowserInputChannel()
+        public IEnumerator AddInputChannel()
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
@@ -207,7 +207,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [UnityTest, Timeout(1000)]
-        public IEnumerator ReceiverStream()
+        public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
@@ -235,42 +235,6 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
-
-            container1.Dispose();
-            container2.Dispose();
-        }
-
-        [UnityTest, Timeout(1000)]
-        public IEnumerator ReceiveBrowserInputChannel()
-        {
-            string connectionId = "12345";
-            var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
-            var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
-
-            var channel1 = container1.test.gameObject.AddComponent<InputChannelTest>();
-            bool isStartedChannel1 = false;
-            channel1.OnStartedChannel += _ => isStartedChannel1 = true;
-            container1.test.component.AddComponent(channel1);
-            container1.test.component.CreateConnection(connectionId);
-
-            var channel2 = container2.test.gameObject.AddComponent<InputChannelTest>();
-            bool isStartedChannel2 = false;
-            channel2.OnStartedChannel += _ => isStartedChannel2 = true;
-
-            channel2.SetLocal(true);
-            channel2.SetLabel("test");
-
-            Assert.That(channel2.Channel, Is.Null);
-            Assert.That(channel2.IsLocal, Is.True);
-            Assert.That(channel2.Label, Is.EqualTo("test"));
-
-            container2.test.component.AddComponent(channel2);
-            container2.test.component.CreateConnection(connectionId);
-            yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
-
-            Assert.That(channel1.Channel, Is.Not.Null);
-            Assert.That(channel1.IsLocal, Is.False);
-            Assert.That(channel1.Label, Is.EqualTo("test"));
 
             container1.Dispose();
             container2.Dispose();
