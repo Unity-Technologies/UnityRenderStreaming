@@ -94,6 +94,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.name }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -123,6 +124,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
+
 {% endfor %}
 {% else -%}
 {% for param in platform.test_params %}
@@ -155,6 +157,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.name }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -162,21 +165,21 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
+  variables:
+    TEMPLATE_FILE: BuildScripts~/template/remote.sh.template
+    PACKAGE_DIR: UnityRenderStreaming
+    TEST_PROJECT_DIR: UnityRenderStreaming/{{ project.path }}
+    TEST_RESULT_DIR: upm-ci~/test-results/
+    WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
+    WEBAPP_NAME: {{ platform.packed_webapp_name }}
+    TEST_TARGET: {{ platform.name }}
+    TEST_PLATFORM: {{ param.platform }}
+    SCRIPTING_BACKEND: {{ param.backend }}  
+    EDITOR_VERSION: {{ editor.version }}
+    EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
-    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    {% if platform.name != "win" %}
     - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
-    {% endif %}
-    - upm-ci project pack --project-path {{ project.path }}
-    {% if platform.name == "win" %}
-    - | 
-      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-    {% else %}
-    - | 
-      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
-    {% endif %}
+    - BuildScripts~/test_package_mac.sh
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
@@ -184,6 +187,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
+
 {% endfor %}
 {% endif -%}
 {% endfor %}
