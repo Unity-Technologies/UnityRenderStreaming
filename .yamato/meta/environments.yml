@@ -46,8 +46,13 @@ platforms:
         platform: standalone
       - backend: il2cpp
         platform: standalone
-projects:
+test_projects:
+  - name: HDRPTests
+    path: TestProjects/HDRPTests
+  - name: URPTests
+    path: TestProjects/URPTests
+template_projects:
   - name: renderstreaming-hd
     packagename: com.unity.template.renderstreaming-hd
   - name: renderstreaming-rtx
-    packagename: com.unity.template.renderstreaming-rtx    
+    packagename: com.unity.template.renderstreaming-rtx

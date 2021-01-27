@@ -46,7 +46,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       only:
       - "/.*/"
       except:
-      - "master"  
+      - "master"
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
@@ -55,8 +55,52 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+
+{% for project in test_projects %}
+test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ project.name }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+    {% if platform.name != "win" %}
+    - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
+    {% endif %}
+    - upm-ci project pack --project-path {{ project.path }}
+    {% if platform.name == "win" %}
+    - | 
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    {% else %}
+    - | 
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+    {% endif %}
+  artifacts:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+{% endfor %}
+
 {% endfor %}
 {% endfor %}
+{% endfor %}
+
+{% for editor in editors %}
+trigger_renderpipeline_test_{{ package.name }}_{{ editor.version }}:
+  name : Trigger all RenderPipeline test {{ package.packagename }} {{ editor.version }}
+  dependencies:
+    {% for platform in platforms %}
+    {% for param in platform.test_params %}
+    {% for project in test_projects %}
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+    {% endfor %}
 {% endfor %}
 
 publish_dry_run_{{ package.name }}:

@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
-    [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+    [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer })]
     [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class RenderStreamingInternalTest
     {
@@ -57,7 +57,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator Construct(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator ConstructMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -97,7 +97,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OpenConnection(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -124,7 +124,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OpenConnectionThrowException(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -143,7 +143,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -254,7 +254,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator CreateChannel(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -284,7 +284,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -316,8 +316,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddReceiver1 = false;
+            bool isGotAnswer2 = false;
             target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
@@ -327,7 +329,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var transceiver = target2.AddTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
 
-            yield return new WaitUntil(() => isAddReceiver1);
+            yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
@@ -344,7 +346,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.Destroy(camObj);
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
@@ -376,16 +378,18 @@ namespace Unity.RenderStreaming.RuntimeTest
             // target2 is sender in public mode
             yield return new WaitUntil(() => isOnGotOffer2);
 
+            bool isAddReceiver1 = false;
+            bool isGotAnswer1 = false;
+            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
+
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             target2.AddTrack(connectionId, track);
             target2.SendAnswer(connectionId);
 
-            bool isAddReceiver1 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
-
-            yield return new WaitUntil(() => isAddReceiver1);
+            yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);
@@ -402,7 +406,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddChannelPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -434,13 +438,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
+            bool isGotAnswer2 = false;
             target1.onAddChannel += (_, channel) => { isAddChannel1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
 
-            yield return new WaitUntil(() => isAddChannel1);
+            yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
 
             target1.CloseConnection(connectionId);
             target2.CloseConnection(connectionId);

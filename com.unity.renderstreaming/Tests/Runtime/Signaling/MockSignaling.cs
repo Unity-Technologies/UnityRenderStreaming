@@ -172,7 +172,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 var list = FindList(owner, data.connectionId);
                 if (list == null)
                 {
-                    Debug.LogError($"{data.connectionId} This connection id is not ready other session.");
+                    Debug.LogWarning($"{data.connectionId} This connection id is not ready other session.");
                     return;
                 }
                 foreach (var signaling in list.Where(e => e != owner))
