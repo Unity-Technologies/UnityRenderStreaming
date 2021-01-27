@@ -30,18 +30,16 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
-  variables:
-    {% if platform.name == "win" %}
-      WEBAPP_PATH: '%YAMATO_WORK_DIR%\unity\UnityRenderStreaming\Webapp\bin~\{{ platform.packed_webapp_name }}'
-    {% else %}
-      WEBAPP_PATH: ${YAMATO_WORK_DIR}/unity/UnityRenderStreaming/WebApp/bin~/{{ platform.packed_webapp_name }}
-    {% endif %}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     {% if platform.name == "win" %}
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    - | 
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+    - | 
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
     {% endif %}
   triggers:
     branches:
@@ -65,12 +63,6 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
-  variables:
-    {% if platform.name == "win" %}
-      WEBAPP_PATH: '%YAMATO_WORK_DIR%\unity\UnityRenderStreaming\Webapp\bin~\{{ platform.packed_webapp_name }}'
-    {% else %}
-      WEBAPP_PATH: ${YAMATO_WORK_DIR}/unity/UnityRenderStreaming/WebApp/bin~/{{ platform.packed_webapp_name }}
-    {% endif %}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     {% if platform.name != "win" %}
@@ -78,9 +70,13 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     {% endif %}
     - upm-ci project pack --project-path {{ project.path }}
     {% if platform.name == "win" %}
-    - upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    - | 
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
     {% else %}
-    - upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+    - | 
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
+      upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
     {% endif %}
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
