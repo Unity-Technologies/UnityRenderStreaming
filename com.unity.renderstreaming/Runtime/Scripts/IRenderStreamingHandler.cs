@@ -62,13 +62,13 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
-        void OpenConnection(string connectionId);
+        void CreateConnection(string connectionId);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
-        void CloseConnection(string connectionId);
+        void DeleteConnection(string connectionId);
 
         /// <summary>
         /// 

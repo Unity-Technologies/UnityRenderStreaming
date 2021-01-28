@@ -161,7 +161,7 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
-        public void OpenConnection(string connectionId)
+        public void CreateConnection(string connectionId)
         {
             _signaling.OpenConnection(connectionId);
         }
@@ -170,7 +170,7 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
-        public void CloseConnection(string connectionId)
+        public void DeleteConnection(string connectionId)
         {
             _signaling.CloseConnection(connectionId);
         }
@@ -271,7 +271,6 @@ namespace Unity.RenderStreaming
         void OnDestroyConnection(ISignaling signaling, string connectionId)
         {
             DeletePeerConnection(connectionId);
-
             onDeletedConnection?.Invoke(connectionId);
         }
 
@@ -320,7 +319,6 @@ namespace Unity.RenderStreaming
                     onConnect?.Invoke(connectionId);
                     break;
                 case RTCIceConnectionState.Disconnected:
-                    DeletePeerConnection(connectionId);
                     onDisconnect?.Invoke(connectionId);
                     break;
             }

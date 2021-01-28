@@ -109,12 +109,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
 
-            target.OpenConnection("12345");
+            target.CreateConnection("12345");
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
 
-            target.CloseConnection("12345");
+            target.DeleteConnection("12345");
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
@@ -136,8 +136,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
 
-            Assert.That(() => target.OpenConnection(null), Throws.TypeOf<ArgumentException>());
-            Assert.That(() => target.OpenConnection(string.Empty), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => target.CreateConnection(null), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => target.CreateConnection(string.Empty), Throws.TypeOf<ArgumentException>());
             target.Dispose();
         }
 
@@ -156,9 +156,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStarted);
 
             var connectionId = "12345";
-            target.OpenConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
+            target.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection);
 
             var camObj = new GameObject("Camera");
@@ -168,9 +168,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.AddTrack(connectionId, track);
             target.RemoveTrack(connectionId, track);
 
-            target.CloseConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
+            target.DeleteConnection(connectionId);
             yield return new WaitUntil(() => isDeletedConnection);
 
             target.Dispose();
@@ -193,7 +193,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStarted);
 
             var connectionId = "12345";
-            target.OpenConnection(connectionId);
+            target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
@@ -202,7 +202,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(() => target.AddTrack(connectionId, null), Throws.TypeOf<ArgumentNullException>());
             Assert.That(() => target.RemoveTrack(null, null), Throws.TypeOf<ArgumentNullException>());
             Assert.That(() => target.RemoveTrack(connectionId, null), Throws.TypeOf<InvalidOperationException>());
-            target.CloseConnection(connectionId);
+            target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
@@ -225,7 +225,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStarted);
 
             var connectionId = "12345";
-            target.OpenConnection(connectionId);
+            target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
@@ -240,7 +240,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
             target.AddTrack(connectionId, track2);
 
-            target.CloseConnection(connectionId);
+            target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
@@ -266,7 +266,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStarted);
 
             var connectionId = "12345";
-            target.OpenConnection(connectionId);
+            target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
@@ -275,7 +275,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var channel = target.CreateChannel(connectionId, channelName);
             Assert.That(channel.Label, Is.EqualTo(channelName));
 
-            target.CloseConnection(connectionId);
+            target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
@@ -307,12 +307,12 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var connectionId = "12345";
 
-            // target1 is receiver in private mode
-            target1.OpenConnection(connectionId);
+            // target1 is Receiver in private mode
+            target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
 
             // target2 is sender in private mode
-            target2.OpenConnection(connectionId);
+            target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddReceiver1 = false;
@@ -331,8 +331,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
 
-            target1.CloseConnection(connectionId);
-            target2.CloseConnection(connectionId);
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
 
             bool isDeletedConnection1 = false;
             bool isDeletedConnection2 = false;
@@ -369,13 +369,13 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var connectionId = "12345";
 
-            // target1 is receiver in public mode
-            target1.OpenConnection(connectionId);
+            // target1 is Receiver in public mode
+            target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
 
             target1.SendOffer(connectionId);
 
-            // target2 is sender in public mode
+            // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
 
             bool isAddReceiver1 = false;
@@ -391,8 +391,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
 
-            target1.CloseConnection(connectionId);
-            target2.CloseConnection(connectionId);
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
 
             bool isDeletedConnection1 = false;
             bool isDeletedConnection2 = false;
@@ -429,12 +429,12 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var connectionId = "12345";
 
-            // target1 is receiver in private mode
-            target1.OpenConnection(connectionId);
+            // target1 is Receiver in private mode
+            target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
 
             // target2 is sender in private mode
-            target2.OpenConnection(connectionId);
+            target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
@@ -448,8 +448,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
 
-            target1.CloseConnection(connectionId);
-            target2.CloseConnection(connectionId);
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
 
             bool isDeletedConnection1 = false;
             bool isDeletedConnection2 = false;
