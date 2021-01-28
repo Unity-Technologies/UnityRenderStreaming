@@ -1,8 +1,6 @@
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
-using Unity.WebRTC;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
@@ -143,117 +141,6 @@ namespace Unity.RenderStreaming
         public virtual void QueueEvent(InputEventPtr eventPtr)
         {
             InputSystem.QueueEvent(eventPtr);
-        }
-    }
-
-    class Receiver : InputManager
-    {
-        public override event Action<InputRemoting.Message> onMessage;
-        public new event Action<InputDevice, InputDeviceChange> onDeviceChange;
-        public new event Action<string, InputControlLayoutChange> onLayoutChange;
-
-        private RTCDataChannel _channel;
-
-        public Receiver(RTCDataChannel channel)
-        {
-            _channel = channel ?? throw new ArgumentNullException("channel is null");
-            _channel.OnMessage += OnMessage;
-        }
-
-        private void OnMessage(byte[] bytes)
-        {
-            InputRemoting.Message.Deserialize(bytes, out var message);
-            onMessage?.Invoke(message);
-        }
-
-        public override InputDevice AddDevice(string layout, string name = null, string variants = null)
-        {
-            var device = base.AddDevice(layout, name, variants);
-            onDeviceChange?.Invoke(device, InputDeviceChange.Added);
-            return device;
-        }
-
-        public override void RemoveDevice(InputDevice device)
-        {
-            base.RemoveDevice(device);
-            onDeviceChange?.Invoke(device, InputDeviceChange.Removed);
-        }
-
-        public override void RegisterLayout(string json, string name = null, InputDeviceMatcher? matches = null)
-        {
-            base.RegisterLayout(json, name, matches);
-            onLayoutChange?.Invoke(name, InputControlLayoutChange.Added);
-        }
-
-        public override void RemoveLayout(string name)
-        {
-            base.RemoveLayout(name);
-            onLayoutChange?.Invoke(name, InputControlLayoutChange.Removed);
-        }
-
-    }
-
-    class Sender : InputManager
-    {
-        public override event Action<InputEventPtr, InputDevice> onEvent;
-        public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
-        public override event Action<string, InputControlLayoutChange> onLayoutChange;
-
-        public Sender()
-        {
-            InputSystem.onEvent += OnEvent;
-            InputSystem.onDeviceChange += OnDeviceChange;
-            InputSystem.onLayoutChange += OnLayoutChange;
-        }
-
-        ~Sender()
-        {
-            InputSystem.onEvent -= OnEvent;
-            InputSystem.onDeviceChange -= OnDeviceChange;
-            InputSystem.onLayoutChange -= OnLayoutChange;
-        }
-
-        private void OnEvent(InputEventPtr ptr, InputDevice device)
-        {
-            onEvent?.Invoke(ptr, device);
-        }
-        private void OnDeviceChange(InputDevice device, InputDeviceChange change)
-        {
-            onDeviceChange?.Invoke(device, change);
-        }
-        private void OnLayoutChange(string name, InputControlLayoutChange change)
-        {
-            onLayoutChange?.Invoke(name, change);
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    class Observer : IObserver<InputRemoting.Message>
-    {
-        private RTCDataChannel _channel;
-        private bool _isOpen;
-        public Observer(RTCDataChannel channel)
-        {
-            _channel = channel ?? throw new ArgumentNullException("channel is null");
-            _channel.OnOpen += () => { _isOpen = true; };
-            _channel.OnClose += () => { _isOpen = false; };
-            _isOpen = _channel.ReadyState == RTCDataChannelState.Open;
-        }
-        public void OnNext(InputRemoting.Message value)
-        {
-            if (!_isOpen)
-                return;
-            byte[] bytes = value.Serialize();
-            _channel.Send(bytes);
-        }
-
-        public void OnCompleted()
-        {
-        }
-        public void OnError(Exception error)
-        {
         }
     }
 }
