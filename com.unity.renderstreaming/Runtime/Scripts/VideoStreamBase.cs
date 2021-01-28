@@ -1,41 +1,31 @@
+﻿using System;
 using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public abstract class VideoStreamBase : StreamSourceBase
+    public abstract class VideoStreamBase : MonoBehaviour
     {
-        /// <summary>
-        /// 
-        /// </summary>
+        public delegate void OnEnableCompleteHandler();
+
+        public OnEnableCompleteHandler OnEnableComplete;
+
         [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
         protected Vector2Int streamingSize = new Vector2Int(1280, 720);
 
-        /// <summary>
-        /// 
-        /// </summary>
+        protected VideoStreamTrack m_track;
         public virtual Texture SendTexture { get; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="bitrate"></param>
-        /// <param name="framerate"></param>
-        public void ChangeVideoParameters(string connectionId, ulong? bitrate, uint? framerate)
+        public void ChangeBitrate(int bitrate)
         {
-            if (!Senders.TryGetValue(connectionId, out var sender))
-                return;
-            RTCRtpSendParameters parameters = sender.GetParameters();
-            foreach (var encoding in parameters.encodings)
-            {
-                if (bitrate != null) encoding.maxBitrate = bitrate;
-                if (framerate != null) encoding.maxFramerate = framerate;
-            }
-            sender.SetParameters(parameters);
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, Convert.ToUInt64(bitrate), null);
+        }
+
+        public void ChangeFramerate(int framerate)
+        {
+            RenderStreaming.Instance?.ChangeVideoParameters(
+                m_track, null, Convert.ToUInt32(framerate));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,21 +10,18 @@ namespace Unity.RenderStreaming
         [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
-        [SerializeField] private SingleConnection connection;
 #pragma warning restore 0649
-
-        private string connectionId;
 
         void Awake()
         {
             sendOfferButton.onClick.AddListener(SendOffer);
-            connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
+            connectionIdInput.onValueChanged.AddListener(input => receiveVideoViewer.ChangeConnectionId(input));
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
         }
 
         private void SendOffer()
         {
-            connection.CreateConnection(connectionId, true);
+            receiveVideoViewer.enabled = true;
         }
     }
 }

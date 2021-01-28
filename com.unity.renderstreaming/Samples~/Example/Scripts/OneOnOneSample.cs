@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
@@ -13,22 +13,18 @@ namespace Unity.RenderStreaming
         [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private VideoStreamBase videoStream;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
-        [SerializeField] private SingleConnection singleConnection;
 #pragma warning restore 0649
-
-        private string connectionId;
 
         void Awake()
         {
             setUpButton.interactable = true;
-            hangUpButton.interactable = true;
+            hangUpButton.interactable = false;
             connectionIdInput.interactable = true;
             setUpButton.onClick.AddListener(SetUp);
             hangUpButton.onClick.AddListener(HangUp);
-            connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
+            connectionIdInput.onValueChanged.AddListener(input => receiveVideoViewer.ChangeConnectionId(input));
             connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
-            videoStream.OnStartedStream += connectionId =>
-            {
+            videoStream.OnEnableComplete += () => {
                 receiveVideoViewer.enabled = true;
                 localVideoImage.texture = videoStream.SendTexture;
             };
@@ -40,14 +36,13 @@ namespace Unity.RenderStreaming
             setUpButton.interactable = false;
             hangUpButton.interactable = true;
             connectionIdInput.interactable = false;
-
-            singleConnection.CreateConnection(connectionId);
+            videoStream.enabled = true;
         }
 
         private void HangUp()
         {
-            singleConnection.DeleteConnection(connectionId);
-
+            videoStream.enabled = false;
+            receiveVideoViewer.enabled = false;
             localVideoImage.texture = null;
             remoteVideoImage.texture = null;
             setUpButton.interactable = true;
