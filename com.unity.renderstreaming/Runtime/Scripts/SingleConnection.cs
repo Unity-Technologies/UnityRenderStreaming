@@ -25,6 +25,7 @@ namespace Unity.RenderStreaming
             streams.Remove(component);
         }
 
+        //todo(kazuki):: sendOffer flag is for workaround
         public void CreateConnection(string connectionId, bool sendOffer)
         {
             this.sendOffer = sendOffer;
