@@ -93,7 +93,6 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
@@ -156,7 +155,6 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
 
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
