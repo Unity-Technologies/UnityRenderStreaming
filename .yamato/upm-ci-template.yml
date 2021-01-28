@@ -80,9 +80,9 @@ trigger_template_test_{{ project.name }}_{{ editor.version }}:
     {% endfor %}
     {% else -%}
     {% for param in platform.test_params %}
-    {% if project.name != "renderstreaming-rtx" -%}
+    {% if project.name != "renderstreaming-rtx" %}
     - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-    {% endif -%}
+    {% endif %}
     {% endfor %}
     {% endif -%}
     {% endfor %}
@@ -111,7 +111,7 @@ publish_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
@@ -138,7 +138,7 @@ publish_dryrun_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
