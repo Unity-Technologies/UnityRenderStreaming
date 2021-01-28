@@ -1,0 +1,71 @@
+#!/bin/bash
+# This is a template file to execute remote machine.
+
+# python version is random on each VM
+export PATH=$PATH:/usr/local/bin:/Users/bokken/Library/Python/3.7/bin:/Users/bokken/Library/Python/3.8/bin
+export ARTIFACT_DIR=${PWD}/test-results
+
+# TEST_TARGET = `ios` or `macos`
+# TEST_PLATFORM = `editmode` or `playmode` or `standalone`
+# SCRIPTING_BACKEND = `il2cpp` or `mono`
+additional_component_arg="-c editor"
+platform=Editor
+architecture=x64
+suite=playmode
+
+if [ ${TEST_PLATFORM} = "standalone" ]; then
+  if [ ${TEST_TARGET} = "ios" ]; then
+    additional_component_arg="-c editor -c iOS"
+    architecture=arm64
+    platform=iOS
+  elif [ ${TEST_TARGET} = "iossimulator" ]; then
+    additional_component_arg="-c editor -c iOS"
+    platform=iOS
+  elif [ ${TEST_TARGET} = "macos" ]; then
+    platform=StandaloneOSX
+    if [ ${SCRIPTING_BACKEND} = "il2cpp" ]; then
+      additional_component_arg="-c editor -c StandaloneSupport-IL2CPP"
+    else
+      additional_component_arg="-c editor -c StandaloneSupport-Mono"
+    fi
+  fi
+fi
+
+if [ ${TEST_PLATFORM} = "editmode" ]; then
+  suite=editor
+fi
+
+# install unity-downloader-cli
+pip3 install unity-downloader-cli                                                     \
+  --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple \
+  --upgrade                                                                           \
+  --user
+
+# install utr
+curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-standalone/utr \
+  --output utr
+chmod +x ./utr
+
+# download unity editor
+unity-downloader-cli          \
+  -u ${EDITOR_VERSION}        \
+  ${additional_component_arg} \
+  --wait                      \
+  --published
+
+export WEBAPP_PATH=${HOME}/${WEBAPP_DIR}/${WEBAPP_NAME}
+
+# run utr
+./utr                                                       \
+  --suite=${suite}                                          \
+  --platform=${platform}                                    \
+  --scripting-backend=${SCRIPTING_BACKEND}                  \
+  --testproject=${HOME}/${TEST_PROJECT_DIR}                 \
+  --editor-location=${HOME}/.Editor                         \
+  --artifacts_path=${ARTIFACT_DIR}                          \
+  --architecture=${architecture}                            \
+  ${EXTRA_UTR_ARG}
+result=$?
+
+# return exit-code
+exit $result

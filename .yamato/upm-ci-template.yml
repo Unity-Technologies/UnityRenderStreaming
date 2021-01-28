@@ -17,12 +17,9 @@ pack_{{ project.name }}:
     packages:
       paths:
         - "upm-ci~/**/*"
-  dependencies:
-    {% for platform in platforms %}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-    {% endfor %}
 
 {% for editor in editors %}
+
 {% for platform in platforms %}
 {% if platform.name == "win" -%}
 {% for param in platform.test_params %}
@@ -35,18 +32,13 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
 {% else -%}
 {% for param in platform.test_params %}
@@ -60,22 +52,35 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endif -%}
 {% endfor %}
 {% endif -%}
 {% endfor %}
+
+trigger_template_test_{{ project.name }}_{{ editor.version }}:
+  name : Trigger all Template test {{ project.packagename }} {{ editor.version }}
+  dependencies:
+    {% for platform in platforms %}
+    {% if platform.name == "win" -%}
+    {% for param in platform.test_params %}
+    - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% else -%}
+    {% for param in platform.test_params %}
+    {% if project.name != "renderstreaming-rtx" %}
+    - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    {% endif %}
+    {% endfor %}
+    {% endif -%}
+    {% endfor %}
+
 {% endfor %}
 
 publish_{{ project.name }}:
@@ -100,13 +105,9 @@ publish_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
-    {% for platform in platforms %}
-    {% for param in platform.test_params %}
-    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
-    {% endfor %}
+    - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
 
 publish_dryrun_{{ project.name }}:
@@ -131,12 +132,8 @@ publish_dryrun_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
-    {% for platform in platforms %}
-    {% for param in platform.test_params %}
-    - .yamato/upm-ci-template.yml#test_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
-    {% endfor %}
-    {% endfor %}    
 {% endfor %}

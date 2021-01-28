@@ -45,12 +45,6 @@ test_{{ platform.name }}:
     flavor: {{ platform.flavor }}
   commands:
     - {{ platform.test_command }}
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
   artifacts:
     logs:
       paths:
@@ -59,4 +53,18 @@ test_{{ platform.name }}:
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
+
+trigger_webapp_test_{{ project.name }}:
+  name : Trigger all WebApp test {{ project.packagename }}
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+      except:
+      - "master"
+  dependencies:
+    {% for platform in platforms %}
+    - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+    {% endfor %}
+
 {% endfor %}
