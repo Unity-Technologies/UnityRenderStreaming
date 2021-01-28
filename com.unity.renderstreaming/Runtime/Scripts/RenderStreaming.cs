@@ -282,7 +282,7 @@ namespace Unity.RenderStreaming
             {
                 foreach (var viewer in m_listVideoReceiveViewer)
                 {
-//                    viewer.RemoveTrack(id, receiver.Track);
+                    viewer.RemoveTrack(id, receiver.Track);
                 }
             }
         }
@@ -363,7 +363,7 @@ namespace Unity.RenderStreaming
             {
                 foreach (var viewer in m_listVideoReceiveViewer)
                 {
-//                    viewer.AddTrack(connectionId, trackEvent.Track);
+                    viewer.AddTrack(connectionId, trackEvent.Track);
                 }
             };
 
