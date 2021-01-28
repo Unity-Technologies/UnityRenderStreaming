@@ -151,7 +151,10 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream2 = false;
+            bool isStoppedStream2 = false;
+
             receiver.OnStartedStream += _ => isStartedStream2 = true;
+            receiver.OnStoppedStream += _ => isStoppedStream2 = true;
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId);
 
@@ -159,6 +162,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedStream2);
 
             container1.Dispose();
             container2.Dispose();
@@ -191,6 +199,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Senders, Is.Not.Empty);
 
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => streamer.Senders.Count == 0);
             container.Dispose();
         }
 
@@ -216,6 +226,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(channel.Channel, Is.Not.Null);
             Assert.That(channel.Channel.Label, Is.EqualTo("test"));
 
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => channel.Channel == null);
             container.Dispose();
         }
 
@@ -271,13 +283,19 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var channel1 = container1.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel1 = false;
+            bool isStoppedChannel1 = false;
+
             channel1.OnStartedChannel += _ => isStartedChannel1 = true;
+            channel1.OnStoppedChannel += _ => isStoppedChannel1 = true;
+
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
 
             var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel2 = false;
+            bool isStoppedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
+            channel2.OnStoppedChannel += _ => isStoppedChannel2 = true;
 
             channel2.SetLocal(true);
             channel2.SetLabel("test");
@@ -287,12 +305,17 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(channel2.Label, Is.EqualTo("test"));
 
             container2.test.component.AddComponent(channel2);
-            container2.test.component.CreateConnection(connectionId);
+            container2.test.component.CreateConnection(connectionId, true);
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
 
             Assert.That(channel1.Channel, Is.Not.Null);
             Assert.That(channel1.IsLocal, Is.False);
             Assert.That(channel1.Label, Is.EqualTo("test"));
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
 
             container1.Dispose();
             container2.Dispose();

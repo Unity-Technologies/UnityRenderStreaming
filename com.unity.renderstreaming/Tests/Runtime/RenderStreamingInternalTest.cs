@@ -445,6 +445,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
 
+            // send offer manually 
+            target2.SendOffer(connectionId);
+
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
 
             target1.DeleteConnection(connectionId);

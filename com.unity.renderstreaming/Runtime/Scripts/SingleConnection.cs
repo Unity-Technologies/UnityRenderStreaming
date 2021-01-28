@@ -65,12 +65,6 @@ namespace Unity.RenderStreaming
                 return;
 
             // Send offer explicitly when the media source is nothing
-            if (!streams.OfType<IStreamSource>().Any() &&
-                !streams.OfType<IDataChannel>().Any(c => c.IsLocal))
-            {
-                SendOffer(connectionId);
-            }
-            else
             {
                 foreach (var source in streams.OfType<IStreamSource>())
                 {
