@@ -25,26 +25,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class InputChannelTest : DataChannelBase
-    {
-        public void SetLocal(bool isLocal)
-        {
-            Type myClass = typeof(InputChannelTest);
-            FieldInfo fieldLocal = myClass.GetField("local",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLocal.SetValue(this, true);
-        }
-
-
-        public void SetLabel(string label)
-        {
-            Type myClass = typeof(InputChannelTest);
-            FieldInfo fieldLabel = myClass.GetField("label",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLabel.SetValue(this, label);
-        }
-    }
-
     class StreamSourceTest : StreamSourceBase
     {
         private Camera m_camera;
@@ -59,6 +39,45 @@ namespace Unity.RenderStreaming.RuntimeTest
     class StreamReceiverTest : StreamReceiverBase
     {
     }
+
+    class BrowserInputChannelTest : BrowserInputChannelReceiver
+    {
+        public void SetLocal(bool isLocal)
+        {
+            Type myClass = typeof(BrowserInputChannelReceiver);
+            FieldInfo fieldLocal = myClass.GetField("local",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLocal.SetValue(this, true);
+        }
+
+        public void SetLabel(string label)
+        {
+            Type myClass = typeof(BrowserInputChannelReceiver);
+            FieldInfo fieldLabel = myClass.GetField("label",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLabel.SetValue(this, label);
+        }
+    }
+
+    class InputChannelTest : InputChannel
+    {
+        public void SetLocal(bool isLocal)
+        {
+            Type myClass = typeof(BrowserInputChannelReceiver);
+            FieldInfo fieldLocal = myClass.GetField("local",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLocal.SetValue(this, true);
+        }
+
+        public void SetLabel(string label)
+        {
+            Type myClass = typeof(BrowserInputChannelReceiver);
+            FieldInfo fieldLabel = myClass.GetField("label",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLabel.SetValue(this, label);
+        }
+    }
+
 
     class TestContainer<T> : IDisposable where T : SignalingHandlerBase, IMonoBehaviourTest
     {
@@ -272,6 +291,43 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedStream0 && isStoppedStream1);
+
+            container1.Dispose();
+            container2.Dispose();
+        }
+
+        [UnityTest, Timeout(1000)]
+        public IEnumerator ReceiveBrowserInputChannel()
+        {
+            string connectionId = "12345";
+            var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
+            var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
+
+            var channel1 = container1.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            bool isStartedChannel1 = false;
+            channel1.OnStartedChannel += _ => isStartedChannel1 = true;
+            container1.test.component.AddComponent(channel1);
+            container1.test.component.CreateConnection(connectionId);
+
+            var channel2 = container2.test.gameObject.AddComponent<BrowserInputChannelTest>();
+            bool isStartedChannel2 = false;
+            channel2.OnStartedChannel += _ => isStartedChannel2 = true;
+
+            // reflection for testing
+            channel2.SetLocal(true);
+            channel2.SetLabel("test");
+
+            Assert.That(channel2.Channel, Is.Null);
+            Assert.That(channel2.IsLocal, Is.True);
+            Assert.That(channel2.Label, Is.EqualTo("test"));
+
+            container2.test.component.AddComponent(channel2);
+            container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
+
+            Assert.That(channel1.Channel, Is.Not.Null);
+            Assert.That(channel1.IsLocal, Is.False);
+            Assert.That(channel1.Label, Is.EqualTo("test"));
 
             container1.Dispose();
             container2.Dispose();

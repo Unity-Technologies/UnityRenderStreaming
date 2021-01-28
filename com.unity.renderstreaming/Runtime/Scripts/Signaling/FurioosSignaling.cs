@@ -62,7 +62,7 @@ namespace Unity.RenderStreaming.Signaling
             m_webSocket?.Close();
         }
 
-        //todo: not implemented
+        //todo(kazuki):: remove warning CS0067
 #pragma warning disable 0067
         public event OnStartHandler OnStart;
         public event OnSignedInHandler OnSignedIn;

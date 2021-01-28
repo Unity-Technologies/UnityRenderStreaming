@@ -230,14 +230,14 @@ namespace Unity.RenderStreaming
             //     .Take(m_listVideoStreamTrack.Count))
             // {
             //     RTCRtpSender sender = transceiver.x.Sender;
-            //     VideoStreamTrack track = m_listVideoStreamTrack[transceiver.index];
-            //     transceiver.x.Sender.ReplaceTrack(track);
+            //     VideoStreamTrack Track = m_listVideoStreamTrack[transceiver.index];
+            //     transceiver.x.Sender.ReplaceTrack(Track);
             //     transceiver.x.Direction = RTCRtpTransceiverDirection.SendOnly;
             //
-            //     if (!m_mapTrackAndSenderList.TryGetValue(track, out List<RTCRtpSender> list))
+            //     if (!m_mapTrackAndSenderList.TryGetValue(Track, out List<RTCRtpSender> list))
             //     {
             //         list = new List<RTCRtpSender>();
-            //         m_mapTrackAndSenderList.Add(track, list);
+            //         m_mapTrackAndSenderList.Add(Track, list);
             //     }
             //
             //     list.Add(sender);
@@ -282,7 +282,7 @@ namespace Unity.RenderStreaming
             {
                 foreach (var viewer in m_listVideoReceiveViewer)
                 {
-                    viewer.RemoveTrack(id, receiver.Track);
+//                    viewer.RemoveTrack(id, receiver.Track);
                 }
             }
         }
@@ -363,7 +363,7 @@ namespace Unity.RenderStreaming
             {
                 foreach (var viewer in m_listVideoReceiveViewer)
                 {
-                    viewer.AddTrack(connectionId, trackEvent.Track);
+//                    viewer.AddTrack(connectionId, trackEvent.Track);
                 }
             };
 
