@@ -95,8 +95,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         public void Dispose()
         {
-            instance.Dispose();
             test.component.StopAllCoroutines();
+            instance.Dispose();
             UnityEngine.Object.Destroy(test.gameObject);
         }
     }
@@ -234,7 +234,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(5000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -243,7 +243,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
             bool isStartedStream0 = false;
+            bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
+            streamer.OnStoppedStream += _ => isStoppedStream0 = true;
 
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
@@ -251,7 +253,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream1 = false;
+            bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
+            receiver.OnStoppedStream += _ => isStoppedStream1 = true;
 
             Assert.That(receiver.Track, Is.Null);
             Assert.That(receiver.Receiver, Is.Null);
@@ -263,6 +267,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedStream0 && isStoppedStream1);
 
             container1.Dispose();
             container2.Dispose();
