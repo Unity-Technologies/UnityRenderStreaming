@@ -239,9 +239,7 @@ publish_dry_run_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     {% for editor in editors %}
-    {% for platform in platforms %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_package_test_{{ package.name }}_{{ editor.version }}
     {% endfor %}
 
 publish_{{ package.name }}:
@@ -264,8 +262,6 @@ publish_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     {% for editor in editors %}
-    {% for platform in platforms %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_package_test_{{ package.name }}_{{ editor.version }}
     {% endfor %}
 {% endfor %}
