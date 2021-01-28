@@ -66,12 +66,6 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 
 trigger_template_test_{{ project.name }}_{{ editor.version }}:
   name : Trigger all Template test {{ project.packagename }} {{ editor.version }}
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
   dependencies:
     {% for platform in platforms %}
     {% if platform.name == "win" -%}
