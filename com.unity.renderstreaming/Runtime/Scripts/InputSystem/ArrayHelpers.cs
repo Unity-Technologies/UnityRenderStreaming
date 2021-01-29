@@ -1,3 +1,5 @@
+// note:: This script is using code snippets in InputSystem.
+// https://github.com/Unity-Technologies/InputSystem/blob/develop/Packages/com.unity.inputsystem/InputSystem/Utilities/ArrayHelpers.cs
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;

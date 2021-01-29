@@ -1,9 +1,9 @@
+// note:: This script is using code snippets in InputSystem.
+// https://github.com/Unity-Technologies/InputSystem/blob/develop/Packages/com.unity.inputsystem/InputSystem/Devices/Remote/InputRemoting.cs
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Collections.LowLevel.Unsafe;
