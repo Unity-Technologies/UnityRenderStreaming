@@ -32,6 +32,11 @@ namespace Unity.RenderStreaming
             fieldInfoParticipantId.SetValue(device, value);
         }
 
+        public static int GetParticipantId(this InputDevice device)
+        {
+            return (int)fieldInfoParticipantId.GetValue(device);
+        }
+
         public static void SetDescription(this InputDevice device, InputDeviceDescription value)
         {
             fieldInfoDescription.SetValue(device, value);
