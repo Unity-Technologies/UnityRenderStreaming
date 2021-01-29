@@ -60,7 +60,7 @@ namespace Unity.RenderStreaming
         {
             if (!_isOpen)
                 return;
-            byte[] bytes = value.Serialize();
+            byte[] bytes = MessageSerializer.Serialize(ref value);
             _channel.Send(bytes);
         }
 

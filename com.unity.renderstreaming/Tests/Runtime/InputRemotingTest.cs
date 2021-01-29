@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Unity.WebRTC;
 using UnityEngine.InputSystem;
 using System.Linq;
 using UnityEngine.InputSystem.Layouts;
@@ -7,7 +6,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    class InputRemotingMessageTest
+    class MessageSerializerTest
     {
         [Test]
         public void Serialize()
@@ -16,12 +15,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 participantId = 1, type = InputRemoting.MessageType.NewEvents, data = new byte[] {1, 2, 3, 4, 5},
             };
-            var bytes = message1.Serialize();
+            
+            var bytes = MessageSerializer.Serialize(ref message1);
 
             Assert.That(bytes, Is.Not.Null);
             Assert.That(bytes, Has.Length.GreaterThan(0));
 
-            InputRemoting.Message.Deserialize(bytes, out var message2);
+            MessageSerializer.Deserialize(bytes, out var message2);
             Assert.That(message2.participantId, Is.EqualTo(message1.participantId));
             Assert.That(message2.type, Is.EqualTo(message1.type));
             Assert.That(message2.data, Is.EqualTo(message1.data));

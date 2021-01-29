@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming
 
         private void OnMessage(byte[] bytes)
         {
-            InputRemoting.Message.Deserialize(bytes, out var message);
+            MessageSerializer.Deserialize(bytes, out var message);
             onMessage?.Invoke(message);
         }
 

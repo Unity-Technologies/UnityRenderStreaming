@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming
         /// A message exchanged between two InputRemoting instances.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct Message
+        public struct Message
         {
             /// <summary>
             /// For messages coming in, numeric ID of the sender of the message. For messages
@@ -83,30 +83,6 @@ namespace Unity.RenderStreaming
             public int participantId;
             public MessageType type;
             public byte[] data;
-
-            public byte[] Serialize()
-            {
-                var stream = new MemoryStream();
-                var writer = new BinaryWriter(stream);
-
-                writer.Write(this.participantId);
-                writer.Write((int)this.type);
-                writer.Write(this.data.Length);
-                writer.Write(this.data);
-
-                return stream.ToArray();
-            }
-
-            public static void Deserialize(byte[] bytes, out Message message)
-            {
-                var reader = new BinaryReader(new MemoryStream(bytes));
-
-                message = default;
-                message.participantId = reader.ReadInt32();
-                message.type = (MessageType)reader.ReadInt32();
-                int length = reader.ReadInt32();
-                message.data = reader.ReadBytes(length);
-            }
         }
 
         public bool sending
