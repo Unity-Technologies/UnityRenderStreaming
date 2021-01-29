@@ -305,7 +305,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(channel2.Label, Is.EqualTo("test"));
 
             container2.test.component.AddComponent(channel2);
-            container2.test.component.CreateConnection(connectionId, true);
+            container2.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
 
             Assert.That(channel1.Channel, Is.Not.Null);
