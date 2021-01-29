@@ -156,7 +156,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiver.OnStartedStream += _ => isStartedStream2 = true;
             receiver.OnStoppedStream += _ => isStoppedStream2 = true;
             container2.test.component.AddComponent(receiver);
-            container2.test.component.CreateConnection(connectionId);
+            container2.test.component.CreateConnection(connectionId, true);
 
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
 

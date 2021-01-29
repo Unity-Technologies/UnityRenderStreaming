@@ -14,7 +14,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
-    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class RenderStreamingInternalTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
