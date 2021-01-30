@@ -18,7 +18,9 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             InputRemoting.Message message1 = new InputRemoting.Message
             {
-                participantId = 1, type = InputRemoting.MessageType.NewEvents, data = new byte[] {1, 2, 3, 4, 5},
+                participantId = 1,
+                type = InputRemoting.MessageType.NewEvents,
+                data = new byte[] {1, 2, 3, 4, 5},
             };
             
             var bytes = MessageSerializer.Serialize(ref message1);
@@ -81,9 +83,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             }
         }
 
-        private MonoBehaviourTest<MyMonoBehaviourTest> test;
-        private RenderStreamingInternal target1, target2;
-        private RTCDataChannel channel1, channel2;
+        private MonoBehaviourTest<MyMonoBehaviourTest> _test;
+        private RenderStreamingInternal _target1, _target2;
+        private RTCDataChannel _channel1, _channel2;
         private string connectionId = "12345";
 
         private RenderStreamingDependencies CreateDependencies()
@@ -96,7 +98,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } },
                 },
                 encoderType = EncoderType.Software,
-                startCoroutine = test.component.StartCoroutine
+                startCoroutine = _test.component.StartCoroutine
             };
         }
 
@@ -104,43 +106,43 @@ namespace Unity.RenderStreaming.RuntimeTest
         public IEnumerator UnitySetUp()
         {
             MockSignaling.Reset(true);
-            test = new MonoBehaviourTest<MyMonoBehaviourTest>();
+            _test = new MonoBehaviourTest<MyMonoBehaviourTest>();
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            target1 = new RenderStreamingInternal(ref dependencies1);
-            target2 = new RenderStreamingInternal(ref dependencies2);
+            _target1 = new RenderStreamingInternal(ref dependencies1);
+            _target2 = new RenderStreamingInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
-            target1.onStart += () => { isStarted1 = true; };
-            target2.onStart += () => { isStarted2 = true; };
+            _target1.onStart += () => { isStarted1 = true; };
+            _target2.onStart += () => { isStarted2 = true; };
             yield return new WaitUntil(() => isStarted1 && isStarted2);
 
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
-            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            _target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            _target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
 
-            // target1 is Receiver in private mode
-            target1.CreateConnection(connectionId);
+            // _target1 is Receiver in private mode
+            _target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
 
-            // target2 is sender in private mode
-            target2.CreateConnection(connectionId);
+            // _target2 is sender in private mode
+            _target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
             bool isGotAnswer2 = false;
-            target1.onAddChannel += (_, channel) => { isAddChannel1 = true; channel1 = channel; };
-            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
-            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
+            _target1.onAddChannel += (_, channel) => { isAddChannel1 = true; _channel1 = channel; };
+            _target1.onGotOffer += (_, sdp) => { _target1.SendAnswer(connectionId); };
+            _target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
-            channel2 = target2.CreateChannel(connectionId, "test");
+            _channel2 = _target2.CreateChannel(connectionId, "_test");
 
             // send offer manually 
-            target2.SendOffer(connectionId);
+            _target2.SendOffer(connectionId);
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
         }
@@ -148,20 +150,20 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityTearDown]
         public IEnumerator UnityTearDown()
         {
-            target1.DeleteConnection(connectionId);
-            target2.DeleteConnection(connectionId);
+            _target1.DeleteConnection(connectionId);
+            _target2.DeleteConnection(connectionId);
 
             bool isDeletedConnection1 = false;
             bool isDeletedConnection2 = false;
-            target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
-            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            _target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
+            _target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
 
-            channel1.Dispose();
-            channel2.Dispose();
+            _channel1.Dispose();
+            _channel2.Dispose();
 
-            test.component.StopAllCoroutines();
-            UnityEngine.Object.Destroy(test.gameObject);
+            _test.component.StopAllCoroutines();
+            UnityEngine.Object.Destroy(_test.gameObject);
         }
 
         [Test]
@@ -169,7 +171,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             var sender = new Sender();
             var senderInput = new InputRemoting(sender);
-            var senderDisposer = senderInput.Subscribe(new Observer(channel1));
+            var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
             senderInput.StartSending();
             senderInput.StopSending();
             senderDisposer.Dispose();
@@ -178,7 +180,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void Receiver()
         {
-            var receiver = new Receiver(channel1);
+            var receiver = new Receiver(_channel1);
             var receiverInput = new InputRemoting(receiver);
             var receiverDisposer = receiverInput.Subscribe(receiverInput);
             receiverInput.StartSending();
@@ -186,5 +188,36 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
+        [UnityTest]
+        public IEnumerator AddDevice()
+        {
+            var sender = new Sender();
+            var senderInput = new InputRemoting(sender);
+            var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
+
+            var receiver = new Receiver(_channel1);
+            var receiverInput = new InputRemoting(receiver);
+            var receiverDisposer = receiverInput.Subscribe(receiverInput);
+
+            InputDevice device = null;
+            InputDeviceChange change = default;
+            receiver.onDeviceChange += (_device, _change) => {
+                device = _device;
+                change = _change;
+            };
+
+            receiverInput.StartSending();
+            senderInput.StartSending();
+
+            yield return new WaitUntil(() => device != null);
+
+            Assert.That(device, Is.Not.Null);
+            Assert.That(change, Is.EqualTo(InputDeviceChange.Added));
+
+            senderInput.StopSending();
+            receiverInput.StopSending();
+            senderDisposer.Dispose();
+            receiverDisposer.Dispose();
+        }
     }
 }

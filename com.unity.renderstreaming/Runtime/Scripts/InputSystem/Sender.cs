@@ -1,9 +1,11 @@
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
+using System.Linq;
 using Unity.WebRTC;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.Utilities;
 
 // namespace Unity.WebRTC.InputSystem
 namespace Unity.RenderStreaming
@@ -28,6 +30,17 @@ namespace Unity.RenderStreaming
             InputSystem.onLayoutChange -= OnLayoutChange;
         }
 
+        public override ReadOnlyArray<InputDevice> devices
+        {
+            get
+            {
+                // note:: InputRemoting class rejects remote devices when sending device information to the remote peer.
+                // Avoid to get assert "Device being sent to remotes should be a local device, not a remote one"
+                var localDevices = InputSystem.devices.Where(device => !device.remote);
+                return new ReadOnlyArray<InputDevice>(localDevices.ToArray());
+            }
+        }
+
         private void OnEvent(InputEventPtr ptr, InputDevice device)
         {
             onEvent?.Invoke(ptr, device);
@@ -43,7 +56,7 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     class Observer : IObserver<InputRemoting.Message>
     {
