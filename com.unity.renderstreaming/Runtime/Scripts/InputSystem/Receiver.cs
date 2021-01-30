@@ -1,6 +1,7 @@
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.WebRTC;
 using UnityEngine.InputSystem;
@@ -17,6 +18,7 @@ namespace Unity.RenderStreaming
         public new event Action<string, InputControlLayoutChange> onLayoutChange;
 
         private RTCDataChannel _channel;
+        List<InputDevice> _remoteDevices = new List<InputDevice>();
 
         public Receiver(RTCDataChannel channel)
         {
@@ -30,18 +32,44 @@ namespace Unity.RenderStreaming
             onMessage?.Invoke(message);
         }
 
+
         public override ReadOnlyArray<InputDevice> devices
         {
             get
             {
+                // note:: InputRemoting class rejects remote devices when sending device information to the remote peer.
+                // Avoid to get assert "Device being sent to remotes should be a local device, not a remote one"
                 return new ReadOnlyArray<InputDevice>();
+            }
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public ReadOnlyArray<InputDevice> remoteDevices
+        {
+            get
+            {
+                return new ReadOnlyArray<InputDevice>(_remoteDevices.ToArray());
+
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RemoveAllDevices()
+        {
+            while (_remoteDevices.Count > 0)
+            {
+                RemoveDevice(_remoteDevices[0]);
             }
         }
 
         public override InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
             var device = base.AddDevice(layout, name, variants);
+            _remoteDevices.Add(device);
             onDeviceChange?.Invoke(device, InputDeviceChange.Added);
             return device;
         }
@@ -49,6 +77,7 @@ namespace Unity.RenderStreaming
         public override void RemoveDevice(InputDevice device)
         {
             base.RemoveDevice(device);
+            _remoteDevices.Remove(device);
             onDeviceChange?.Invoke(device, InputDeviceChange.Removed);
         }
 

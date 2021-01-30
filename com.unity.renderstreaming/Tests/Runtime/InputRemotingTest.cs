@@ -188,14 +188,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(1000)]
         public IEnumerator AddDevice()
         {
             var sender = new Sender();
             var senderInput = new InputRemoting(sender);
             var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
 
-            var receiver = new Receiver(_channel1);
+            var receiver = new Receiver(_channel2);
             var receiverInput = new InputRemoting(receiver);
             var receiverDisposer = receiverInput.Subscribe(receiverInput);
 
@@ -213,9 +213,15 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(device, Is.Not.Null);
             Assert.That(change, Is.EqualTo(InputDeviceChange.Added));
+            Assert.That(receiver.remoteDevices, Is.Not.Empty);
+            Assert.That(receiver.remoteDevices, Has.All.Matches<InputDevice>(d => d.remote));
 
             senderInput.StopSending();
             receiverInput.StopSending();
+
+            receiver.RemoveAllDevices();
+            Assert.That(receiver.remoteDevices, Is.Empty);
+
             senderDisposer.Dispose();
             receiverDisposer.Dispose();
         }
