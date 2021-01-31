@@ -40,7 +40,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void SetDescription()
         {
-            var device = InputSystem.devices.First();
+            var device = InputSystem.AddDevice<Mouse>();
             InputDeviceDescription empty;
             InputDeviceDescription origin = device.description;
             Assert.That(device.description, Is.Not.EqualTo(empty));
@@ -52,7 +52,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void SetParticipantId()
         {
-            var device = InputSystem.devices.First();
+            var device = InputSystem.AddDevice<Mouse>();
             int participantId = 0;
             int origin = device.GetParticipantId();
             device.SetParticipantId(participantId);
@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void SetDeviceFlags()
         {
-            var device = InputSystem.devices.First();
+            var device = InputSystem.AddDevice<Mouse>();
             int deviceFlags = 0;
             int origin = device.GetDeviceFlags();
             device.SetDeviceFlags(deviceFlags);
