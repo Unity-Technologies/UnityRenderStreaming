@@ -151,7 +151,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
-        - "upm-ci~/test-results/**/*"
+        - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -181,7 +181,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
-        - "upm-ci~/test-results/**/*"
+        - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
