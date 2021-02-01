@@ -22,7 +22,7 @@ platforms:
         platform: standalone
       - backend: il2cpp
         platform: standalone
-  - name: mac
+  - name: macos
     type: Unity::metal::macmini
     image: package-ci/mac:stable
     flavor: m1.mac

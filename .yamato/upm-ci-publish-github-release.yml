@@ -3,7 +3,7 @@
 
 platforms:
   - name: win
-  - name: mac
+  - name: macos
 packages:
   - name: renderstreaming
 ---
