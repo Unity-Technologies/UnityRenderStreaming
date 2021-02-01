@@ -43,7 +43,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var device = InputSystem.AddDevice<Mouse>();
             InputDeviceDescription empty;
             InputDeviceDescription origin = device.description;
-            Assert.That(device.description, Is.Not.EqualTo(empty));
             device.SetDescription(empty);
             Assert.That(device.description, Is.EqualTo(empty));
             device.SetDescription(origin);
