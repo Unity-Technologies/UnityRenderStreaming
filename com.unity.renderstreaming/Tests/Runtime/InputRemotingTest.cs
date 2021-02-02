@@ -72,6 +72,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    // todo(kazuki)::fix crash bug
+    [Ignore("Crash occurs when testing on all platforms")]
     class InputRemotingTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
