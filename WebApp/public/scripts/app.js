@@ -46,7 +46,7 @@ function onClickPlayButton() {
 
   setupVideoPlayer([elementVideo, elementVideoThumb]).then(value => videoPlayer = value);
 
-  // add green button
+  // add blue button
   const elementBlueButton = document.createElement('button');
   elementBlueButton.id = "blueButton";
   elementBlueButton.innerHTML = "Light on";
