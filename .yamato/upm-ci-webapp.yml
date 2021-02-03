@@ -5,7 +5,7 @@ platforms:
     flavor: b1.xlarge
     pack_command: pack_webapp.cmd
     test_command: test_webapp.cmd
-  - name: mac
+  - name: macos
     type: Unity::VM::osx
     image: package-ci/mac:stable
     flavor: m1.mac

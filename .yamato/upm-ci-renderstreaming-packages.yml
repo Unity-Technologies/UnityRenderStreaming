@@ -67,7 +67,7 @@ test_{{ package.name }}_ios_{{ editor.version }}:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_ios_{{ editor.version }}
 
 {% for platform in platforms %}
-{% if platform.name != "mac" -%}
+{% if platform.name != "macos" -%}
 {% for param in platform.test_params %}
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -151,7 +151,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
-        - "upm-ci~/test-results/**/*"
+        - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -181,7 +181,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   artifacts:
     {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
-        - "upm-ci~/test-results/**/*"
+        - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
