@@ -25,26 +25,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class InputChannelTest : DataChannelBase
-    {
-        public void SetLocal(bool isLocal)
-        {
-            Type myClass = typeof(InputChannelTest);
-            FieldInfo fieldLocal = myClass.GetField("local",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLocal.SetValue(this, true);
-        }
-
-
-        public void SetLabel(string label)
-        {
-            Type myClass = typeof(InputChannelTest);
-            FieldInfo fieldLabel = myClass.GetField("label",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLabel.SetValue(this, label);
-        }
-    }
-
     class StreamSourceTest : StreamSourceBase
     {
         private Camera m_camera;
@@ -58,6 +38,25 @@ namespace Unity.RenderStreaming.RuntimeTest
 
     class StreamReceiverTest : StreamReceiverBase
     {
+    }
+
+    class DataChannelTest : DataChannelBase
+    {
+        public void SetLocal(bool isLocal)
+        {
+            Type myClass = typeof(DataChannelBase);
+            FieldInfo fieldLocal = myClass.GetField("local",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLocal.SetValue(this, true);
+        }
+
+        public void SetLabel(string label)
+        {
+            Type myClass = typeof(DataChannelBase);
+            FieldInfo fieldLabel = myClass.GetField("label",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            fieldLabel.SetValue(this, label);
+        }
     }
 
     class TestContainer<T> : IDisposable where T : SignalingHandlerBase, IMonoBehaviourTest
@@ -95,19 +94,12 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         public void Dispose()
         {
-            instance.Dispose();
             test.component.StopAllCoroutines();
+            instance.Dispose();
             UnityEngine.Object.Destroy(test.gameObject);
         }
     }
 
-    [UnityPlatform(exclude = new[] {
-        RuntimePlatform.OSXEditor,
-        RuntimePlatform.OSXPlayer,
-        RuntimePlatform.LinuxEditor,
-        RuntimePlatform.LinuxPlayer
-    })]
-    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class BroadcastTest
     {
         [SetUp]
@@ -130,10 +122,10 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void AddInputChannel()
+        public void AddDataChannel()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<InputChannelTest>();
+            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
             channel.SetLabel("test");
             channel.SetLocal(true);
 
@@ -159,27 +151,28 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream2 = false;
+            bool isStoppedStream2 = false;
+
             receiver.OnStartedStream += _ => isStartedStream2 = true;
+            receiver.OnStoppedStream += _ => isStoppedStream2 = true;
             container2.test.component.AddComponent(receiver);
-            container2.test.component.CreateConnection(connectionId);
+            container2.test.component.CreateConnection(connectionId, true);
 
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedStream2);
+
             container1.Dispose();
             container2.Dispose();
         }
     }
 
-    [UnityPlatform(exclude = new[] {
-        RuntimePlatform.OSXEditor,
-        RuntimePlatform.OSXPlayer,
-        RuntimePlatform.LinuxEditor,
-        RuntimePlatform.LinuxPlayer
-    })]
-    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class SingleConnectionTest
     {
         [SetUp]
@@ -206,15 +199,17 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Senders, Is.Not.Empty);
 
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => streamer.Senders.Count == 0);
             container.Dispose();
         }
 
         [UnityTest, Timeout(1000)]
-        public IEnumerator AddInputChannel()
+        public IEnumerator AddDataChannel()
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<InputChannelTest>();
+            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
 
             channel.SetLocal(true);
             channel.SetLabel("test");
@@ -231,10 +226,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(channel.Channel, Is.Not.Null);
             Assert.That(channel.Channel.Label, Is.EqualTo("test"));
 
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => channel.Channel == null);
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(5000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -243,7 +240,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
             bool isStartedStream0 = false;
+            bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
+            streamer.OnStoppedStream += _ => isStoppedStream0 = true;
 
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
@@ -251,7 +250,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream1 = false;
+            bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
+            receiver.OnStoppedStream += _ => isStoppedStream1 = true;
 
             Assert.That(receiver.Track, Is.Null);
             Assert.That(receiver.Receiver, Is.Null);
@@ -264,26 +265,37 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedStream0 && isStoppedStream1);
+
             container1.Dispose();
             container2.Dispose();
         }
 
         [UnityTest, Timeout(1000)]
-        public IEnumerator ReceiveInputChannel()
+        public IEnumerator ReceiveDataChannel()
         {
             string connectionId = "12345";
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var channel1 = container1.test.gameObject.AddComponent<InputChannelTest>();
+            var channel1 = container1.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel1 = false;
+            bool isStoppedChannel1 = false;
+
             channel1.OnStartedChannel += _ => isStartedChannel1 = true;
+            channel1.OnStoppedChannel += _ => isStoppedChannel1 = true;
+
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
 
-            var channel2 = container2.test.gameObject.AddComponent<InputChannelTest>();
+            var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel2 = false;
+            bool isStoppedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
+            channel2.OnStoppedChannel += _ => isStoppedChannel2 = true;
 
             channel2.SetLocal(true);
             channel2.SetLabel("test");
@@ -299,6 +311,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(channel1.Channel, Is.Not.Null);
             Assert.That(channel1.IsLocal, Is.False);
             Assert.That(channel1.Label, Is.EqualTo("test"));
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
 
             container1.Dispose();
             container2.Dispose();

@@ -142,6 +142,25 @@ namespace Unity.RenderStreaming
             uiController.SetInput(input);
         }
 
+        public void SetDevice(InputDevice device)
+        {
+            switch (device)
+            {
+                case Mouse mouse:
+                    m_mouse = mouse;
+                    return;
+                case Keyboard keyboard:
+                    m_keyboard = keyboard;
+                    return;
+                case Touchscreen screen:
+                    m_screen = screen;
+                    return;
+                case Gamepad pad:
+                    m_gamepad = pad;
+                    return;
+            }
+        }
+
         void OnEnable()
         {
             m_TargetCameraState.SetFromTransform(transform);
@@ -211,7 +230,7 @@ namespace Unity.RenderStreaming
             }
 
             // gamepad right stick control
-            if (m_gamepad.rightStick != null)
+            if (m_gamepad?.rightStick != null)
             {
                 var axis = m_gamepad.rightStick.ReadValue();
                 direction += new Vector3(axis.x, 0, axis.y);
@@ -219,7 +238,7 @@ namespace Unity.RenderStreaming
 
             var touches = m_screen.GetTouches();
             //Translation
-            if (touches.Count() == 2)
+            if (touches?.Count() == 2)
             {
                 var activeTouches = touches.ToArray();
                 direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
@@ -233,6 +252,8 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
+            if (m_keyboard == null)
+                return;
             if (m_keyboard.uKey.isPressed)
             {
                 ResetCamera();
@@ -253,7 +274,7 @@ namespace Unity.RenderStreaming
             }
             
             // Rotation from joystick
-            if(m_gamepad.leftStick != null)
+            if(m_gamepad?.leftStick != null)
                 UpdateTargetCameraStateFromInput(m_gamepad.leftStick.ReadValue());
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;

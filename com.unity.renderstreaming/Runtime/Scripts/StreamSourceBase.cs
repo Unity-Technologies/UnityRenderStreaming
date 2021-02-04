@@ -10,11 +10,22 @@ namespace Unity.RenderStreaming
     /// </summary>
     public abstract class StreamSourceBase : MonoBehaviour, IStreamSource
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public OnStartedStreamHandler OnStartedStream { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, RTCRtpSender> Senders => m_senders;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected virtual MediaStreamTrack CreateTrack() { return null; }
 
         private MediaStreamTrack m_track;

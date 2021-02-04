@@ -13,6 +13,7 @@ namespace Unity.RenderStreaming
         private List<Component> streams = new List<Component>();
 
         private string connectionId;
+        private bool sendOffer;
 
         public void AddComponent(Component component)
         {
@@ -22,6 +23,13 @@ namespace Unity.RenderStreaming
         public void RemoveComponent(Component component)
         {
             streams.Remove(component);
+        }
+
+        //todo(kazuki):: sendOffer flag is for workaround
+        public void CreateConnection(string connectionId, bool sendOffer)
+        {
+            this.sendOffer = sendOffer;
+            CreateConnection(connectionId);
         }
 
         public override void CreateConnection(string connectionId)
@@ -57,11 +65,6 @@ namespace Unity.RenderStreaming
                 return;
 
             // Send offer explicitly when the media source is nothing
-            if (!streams.OfType<IStreamSource>().Any() && !streams.OfType<IDataChannel>().Any())
-            {
-                SendOffer(connectionId);
-            }
-            else
             {
                 foreach (var source in streams.OfType<IStreamSource>())
                 {
@@ -73,6 +76,8 @@ namespace Unity.RenderStreaming
                     var _channel = CreateChannel(connectionId, channel.Label);
                     channel.SetChannel(connectionId, _channel);
                 }
+                if (sendOffer)
+                    SendOffer(connectionId);
             }
         }
 
@@ -101,7 +106,8 @@ namespace Unity.RenderStreaming
                 return;
 
             // Send offer explicitly when the media source is nothing
-            if (!streams.OfType<IStreamSource>().Any() && !streams.OfType<IDataChannel>().Any())
+            if (!streams.OfType<IStreamSource>().Any() &&
+                !streams.OfType<IDataChannel>().Any(c => c.IsLocal))
             {
                 SendOffer(connectionId);
             }

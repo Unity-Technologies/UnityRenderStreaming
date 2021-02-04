@@ -147,6 +147,12 @@ namespace Unity.RenderStreaming
                 return;
             }
             _signaling.Stop();
+            _signaling.OnStart -= OnStart;
+            _signaling.OnCreateConnection -= OnCreateConnection;
+            _signaling.OnDestroyConnection -= OnDestroyConnection;
+            _signaling.OnOffer -= OnOffer;
+            _signaling.OnAnswer -= OnAnswer;
+            _signaling.OnIceCandidate -= OnIceCandidate;
 
             s_list.Remove(this);
             if (s_list.Count == 0)
@@ -387,7 +393,7 @@ namespace Unity.RenderStreaming
             onGotAnswer?.Invoke(connectionId, sdp);
         }
 
-        void OnIceCandidate(ISignaling m_signaling, CandidateData e)
+        void OnIceCandidate(ISignaling signaling, CandidateData e)
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
             {

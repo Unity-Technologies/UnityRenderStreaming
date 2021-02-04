@@ -14,7 +14,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
-    [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class RenderStreamingInternalTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
@@ -444,6 +443,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
+
+            // send offer manually 
+            target2.SendOffer(connectionId);
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
 
