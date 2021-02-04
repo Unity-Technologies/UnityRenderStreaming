@@ -3,27 +3,30 @@ using UnityEngine; //Debug
 using UnityEditor; //AssetPostProcessor
 using UnityEngine.Rendering; //GraphicsSettings
 
-public class URPInitialSetupPostProcessor
+namespace Unity.RenderStreaming.Editor
 {
-    [InitializeOnLoadMethod]
-    static void OnLoad()
+    public class URPInitialSetupPostProcessor
     {
-        if (null != GraphicsSettings.renderPipelineAsset)
+        [InitializeOnLoadMethod]
+        static void OnLoad()
         {
-            return;
-        }
-
-        var allAssetPaths = AssetDatabase.GetAllAssetPaths();
-
-        foreach (var curAssetPath in allAssetPaths)
-        {
-            if (curAssetPath.EndsWith("UniversalRenderPipelineAsset.asset"))
+            if (null != GraphicsSettings.renderPipelineAsset)
             {
-                UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =
-                    AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>(
-                        curAssetPath);
-                GraphicsSettings.renderPipelineAsset = pipelineAsset;
-                PlayerSettings.colorSpace = ColorSpace.Linear;
+                return;
+            }
+
+            var allAssetPaths = AssetDatabase.GetAllAssetPaths();
+
+            foreach (var curAssetPath in allAssetPaths)
+            {
+                if (curAssetPath.EndsWith("UniversalRenderPipelineAsset.asset"))
+                {
+                    UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset pipelineAsset =
+                        AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>(
+                            curAssetPath);
+                    GraphicsSettings.renderPipelineAsset = pipelineAsset;
+                    PlayerSettings.colorSpace = ColorSpace.Linear;
+                }
             }
         }
     }
