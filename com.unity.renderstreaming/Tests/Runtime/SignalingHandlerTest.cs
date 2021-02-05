@@ -145,7 +145,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
             bool isStartedStream1 = false;
+            bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
+            streamer.OnStoppedStream += _ => isStoppedStream1 = true;
 
             container1.test.component.AddComponent(streamer);
 
@@ -158,15 +160,21 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId, true);
 
+
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
 
+
+            Assert.That(isStartedStream1, Is.True);
+            Assert.That(isStartedStream2, Is.True);
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
-            container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
 
-            yield return new WaitUntil(() => isStoppedStream2);
+            yield return new WaitUntil(() => isStoppedStream1 && isStoppedStream2);
+
+            Assert.That(isStoppedStream1, Is.True);
+            Assert.That(isStoppedStream2, Is.True);
 
             container1.Dispose();
             container2.Dispose();
