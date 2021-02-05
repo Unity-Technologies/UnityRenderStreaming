@@ -93,9 +93,6 @@ namespace Unity.RenderStreaming
         private readonly Func<IEnumerator, Coroutine> _startCoroutine;
         private readonly Dictionary<string, RTCPeerConnection> _mapConnectionIdAndPeer =
             new Dictionary<string, RTCPeerConnection>();
-        private readonly Dictionary<string, RTCDataChannel> _mapConnectionIdAndChannel =
-            new Dictionary<string, RTCDataChannel>();
-
         static List<RenderStreamingInternal> s_list = new List<RenderStreamingInternal>();
 
         /// <summary>
@@ -179,6 +176,19 @@ namespace Unity.RenderStreaming
         public void DeleteConnection(string connectionId)
         {
             _signaling.CloseConnection(connectionId);
+        }
+
+        public bool ExistConnection(string connectionId)
+        {
+            return _mapConnectionIdAndPeer.ContainsKey(connectionId);
+        }
+
+        public bool IsConnected(string connectionId)
+        {
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
+                return false;
+
+            return peer.ConnectionState == RTCPeerConnectionState.Connected;
         }
 
         /// <summary>
@@ -313,7 +323,6 @@ namespace Unity.RenderStreaming
 
         void OnDataChannel(string connectionId, RTCDataChannel channel)
         {
-            _mapConnectionIdAndChannel.Add(connectionId, channel);
             onAddChannel?.Invoke(connectionId, channel);
         }
 

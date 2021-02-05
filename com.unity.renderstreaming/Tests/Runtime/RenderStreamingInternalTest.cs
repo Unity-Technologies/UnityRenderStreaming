@@ -111,17 +111,22 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStarted);
             Assert.That(isStarted, Is.True);
 
-            target.CreateConnection("12345");
+            string connectionId = "12345";
+            Assert.That(target.ExistConnection(connectionId), Is.False);
+
+            target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
             Assert.That(isCreatedConnection, Is.True);
+            Assert.That(target.ExistConnection(connectionId), Is.True);
 
-            target.DeleteConnection("12345");
+            target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
-            Assert.That(isCreatedConnection, Is.True);
+            Assert.That(isDeletedConnection, Is.True);
+            Assert.That(target.ExistConnection(connectionId), Is.False);
 
             target.Dispose();
         }

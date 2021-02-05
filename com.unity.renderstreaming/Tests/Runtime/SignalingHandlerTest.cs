@@ -96,7 +96,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             test.component.StopAllCoroutines();
             instance.Dispose();
-            UnityEngine.Object.Destroy(test.gameObject);
+            UnityEngine.Object.DestroyImmediate(test.gameObject);
         }
     }
 
@@ -167,6 +167,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
+            yield return new WaitUntil(() => container1.test.component.IsConnected(connectionId));
+            yield return new WaitUntil(() => container2.test.component.IsConnected(connectionId));
+
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedStream1 && isStoppedStream2);
@@ -198,14 +201,13 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container.test.component.AddComponent(streamer);
             container.test.component.CreateConnection(connectionId);
-
-            yield return new WaitUntil(() => streamer.Senders.Count == 1);
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Senders, Is.Not.Empty);
 
             container.test.component.DeleteConnection(connectionId);
-            yield return new WaitUntil(() => streamer.Senders.Count == 0);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
             container.Dispose();
         }
 
@@ -225,14 +227,13 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container.test.component.AddComponent(channel);
             container.test.component.CreateConnection(connectionId);
-
-            yield return new WaitUntil(() => channel.Channel != null);
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
             Assert.That(channel.Channel, Is.Not.Null);
             Assert.That(channel.Channel.Label, Is.EqualTo("test"));
 
             container.test.component.DeleteConnection(connectionId);
-            yield return new WaitUntil(() => channel.Channel == null);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
             container.Dispose();
         }
 
@@ -251,6 +252,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
+
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
@@ -265,6 +268,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
 
             yield return new WaitUntil(() => isStartedStream1);
             Assert.That(isStartedStream1, Is.True);
@@ -299,6 +303,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
 
             var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel2 = false;
@@ -315,6 +320,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container2.test.component.AddComponent(channel2);
             container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
             Assert.That(isStartedChannel1, Is.True);
             Assert.That(isStartedChannel2, Is.True);

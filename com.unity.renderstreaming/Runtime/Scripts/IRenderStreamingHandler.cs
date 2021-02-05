@@ -74,6 +74,20 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <returns></returns>
+        bool ExistConnection(string connectionId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        bool IsConnected(string connectionId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         RTCDataChannel CreateChannel(string connectionId, string name);
