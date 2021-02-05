@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class CreatedConnectionHandlerTest : MonoBehaviour,
+    class CreatedConnectionHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, ICreatedConnectionHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -20,7 +20,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class FoundConnectionHandlerTest : MonoBehaviour,
+    class FoundConnectionHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IFoundConnectionHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class DeletedConnectionHandlerTest : MonoBehaviour,
+    class DeletedConnectionHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IDeletedConnectionHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -45,7 +45,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class ConnectHandlerTest : MonoBehaviour,
+    class ConnectHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IConnectHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -57,7 +57,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class DisconnectHandlerTest : MonoBehaviour,
+    class DisconnectHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IDisconnectHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -69,7 +69,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class OfferHandlerTest : MonoBehaviour,
+    class OfferHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IOfferHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -81,7 +81,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class AnswerHandlerTest : MonoBehaviour,
+    class AnswerHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IAnswerHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -93,7 +93,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class AddReceiverHandlerTest : MonoBehaviour,
+    class AddReceiverHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IAddReceiverHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -105,7 +105,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    public class AddChannelHandlerTest : MonoBehaviour,
+    class AddChannelHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IAddChannelHandler
     {
         public bool IsTestFinished { get; private set; }
@@ -178,7 +178,7 @@ namespace Unity.RenderStreaming.RuntimeTest
     }
 
     [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
-    public class SignalingEventProviderTest
+    class SignalingEventProviderTest
     {
         private EventSystem m_eventSystem;
         private SignalingEventProvider m_provider;

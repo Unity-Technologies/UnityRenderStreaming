@@ -1,10 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class RenderStreamingTest
+    class RenderStreamingTest
     {
         [Test]
         [Ignore("This test occurs a crash")]
@@ -12,6 +11,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             GameObject obj = new GameObject();
             obj.AddComponent<RenderStreaming>();
+            Object.DestroyImmediate(obj);
         }
     }
 }
