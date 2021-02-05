@@ -161,16 +161,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.CreateConnection(connectionId, true);
 
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
-
             Assert.That(isStartedStream1, Is.True);
             Assert.That(isStartedStream2, Is.True);
+            
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedStream1 && isStoppedStream2);
-
             Assert.That(isStoppedStream1, Is.True);
             Assert.That(isStoppedStream2, Is.True);
 
@@ -187,7 +186,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -210,7 +209,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator AddDataChannel()
         {
             string connectionId = "12345";
@@ -237,7 +236,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(5000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -253,6 +252,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => isStartedStream0);
+            Assert.That(isStartedStream0, Is.True);
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream1 = false;
@@ -267,6 +267,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.CreateConnection(connectionId);
 
             yield return new WaitUntil(() => isStartedStream1);
+            Assert.That(isStartedStream1, Is.True);
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
@@ -275,12 +276,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedStream0 && isStoppedStream1);
+            Assert.That(isStoppedStream0, Is.True);
+            Assert.That(isStoppedStream1, Is.True);
 
             container1.Dispose();
             container2.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator ReceiveDataChannel()
         {
             string connectionId = "12345";
@@ -313,6 +316,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.AddComponent(channel2);
             container2.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
+            Assert.That(isStartedChannel1, Is.True);
+            Assert.That(isStartedChannel2, Is.True);
 
             Assert.That(channel1.Channel, Is.Not.Null);
             Assert.That(channel1.IsLocal, Is.False);
@@ -322,6 +327,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
+            Assert.That(isStoppedChannel1, Is.True);
+            Assert.That(isStoppedChannel2, Is.True);
 
             container1.Dispose();
             container2.Dispose();
