@@ -449,7 +449,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
-        [UnityTest, Timeout(10000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator OnAddChannelPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -482,12 +482,13 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddChannel1 = false;
             bool isGotAnswer2 = false;
-            target1.onAddChannel += (_, channel) => { isAddChannel1 = true; };
+            target1.onAddChannel += (_, _channel) => { isAddChannel1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
-            target2.CreateChannel(connectionId, "test");
+            RTCDataChannel channel = target2.CreateChannel(connectionId, "test");
+            Assert.That(channel, Is.Not.Null);
 
             // send offer manually
             target2.SendOffer(connectionId);
