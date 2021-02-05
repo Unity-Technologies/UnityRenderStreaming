@@ -1,0 +1,1 @@
+# Web browser input sample
