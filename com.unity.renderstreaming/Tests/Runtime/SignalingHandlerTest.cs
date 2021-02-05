@@ -136,7 +136,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -160,9 +160,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId, true);
 
-
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
-
 
             Assert.That(isStartedStream1, Is.True);
             Assert.That(isStartedStream2, Is.True);
