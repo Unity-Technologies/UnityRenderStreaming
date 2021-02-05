@@ -66,6 +66,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             target.Dispose();
         }
@@ -88,6 +89,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.onStart += () => { isStarted2 = true; };
             yield return new WaitUntil(() => isStarted1);
             yield return new WaitUntil(() => isStarted2);
+            Assert.That(isStarted1, Is.True);
+            Assert.That(isStarted2, Is.True);
 
             target1.Dispose();
             target2.Dispose();
@@ -106,16 +109,19 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             target.CreateConnection("12345");
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
+            Assert.That(isCreatedConnection, Is.True);
 
             target.DeleteConnection("12345");
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
+            Assert.That(isCreatedConnection, Is.True);
 
             target.Dispose();
         }
@@ -133,6 +139,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             Assert.That(() => target.CreateConnection(null), Throws.TypeOf<ArgumentException>());
             Assert.That(() => target.CreateConnection(string.Empty), Throws.TypeOf<ArgumentException>());
@@ -152,12 +159,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             var connectionId = "12345";
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             target.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection);
+            Assert.That(isCreatedConnection, Is.True);
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
@@ -170,6 +179,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             target.DeleteConnection(connectionId);
             yield return new WaitUntil(() => isDeletedConnection);
+            Assert.That(isDeletedConnection, Is.True);
 
             target.Dispose();
             track.Dispose();
@@ -189,12 +199,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             var connectionId = "12345";
             target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
+            Assert.That(isCreatedConnection, Is.True);
 
             Assert.That(() => target.AddTrack(null, null), Throws.TypeOf<ArgumentNullException>());
             Assert.That(() => target.AddTrack(connectionId, null), Throws.TypeOf<ArgumentNullException>());
@@ -204,6 +216,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
+            Assert.That(isDeletedConnection, Is.True);
 
             target.Dispose();
         }
@@ -221,12 +234,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             var connectionId = "12345";
             target.CreateConnection(connectionId);
             bool isCreatedConnection = false;
             target.onCreatedConnection += _ => { isCreatedConnection = true; };
             yield return new WaitUntil(() => isCreatedConnection);
+            Assert.That(isCreatedConnection, Is.True);
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
@@ -242,6 +257,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
+            Assert.That(isDeletedConnection, Is.True);
 
             target.Dispose();
             track.Dispose();
@@ -262,6 +278,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
+            Assert.That(isStarted, Is.True);
 
             var connectionId = "12345";
             target.CreateConnection(connectionId);
@@ -277,6 +294,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
             yield return new WaitUntil(() => isDeletedConnection);
+            Assert.That(isDeletedConnection, Is.True);
 
             target.Dispose();
             channel.Dispose();
@@ -297,6 +315,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onStart += () => { isStarted1 = true; };
             target2.onStart += () => { isStarted2 = true; };
             yield return new WaitUntil(() => isStarted1 && isStarted2);
+            Assert.That(isStarted1, Is.True);
+            Assert.That(isStarted2, Is.True);
 
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
@@ -308,10 +328,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             // target1 is Receiver in private mode
             target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
+            Assert.That(isCreatedConnection1, Is.True);
 
             // target2 is sender in private mode
             target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
+            Assert.That(isCreatedConnection2, Is.True);
 
             bool isAddReceiver1 = false;
             bool isGotAnswer2 = false;
@@ -328,6 +350,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(transceiver, Is.Not.Null);
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
+            Assert.That(isAddReceiver1, Is.True);
+            Assert.That(isGotAnswer2, Is.True);
 
             target1.DeleteConnection(connectionId);
             target2.DeleteConnection(connectionId);
@@ -337,6 +361,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True);
+            Assert.That(isDeletedConnection2, Is.True);
 
             target1.Dispose();
             target2.Dispose();
@@ -359,6 +385,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onStart += () => { isStarted1 = true; };
             target2.onStart += () => { isStarted2 = true; };
             yield return new WaitUntil(() => isStarted1 && isStarted2);
+            Assert.That(isStarted1, Is.True);
+            Assert.That(isStarted2, Is.True);
 
             bool isCreatedConnection1 = false;
             bool isOnGotOffer2 = false;
@@ -370,11 +398,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             // target1 is Receiver in public mode
             target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
+            Assert.That(isCreatedConnection1, Is.True);
 
             target1.SendOffer(connectionId);
 
             // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
+            Assert.That(isOnGotOffer2, Is.True);
 
             bool isAddReceiver1 = false;
             bool isGotAnswer1 = false;
@@ -397,6 +427,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True);
+            Assert.That(isDeletedConnection2, Is.True);
 
             target1.Dispose();
             target2.Dispose();
@@ -444,10 +476,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after creating channel
             target2.CreateChannel(connectionId, "test");
 
-            // send offer manually 
+            // send offer manually
             target2.SendOffer(connectionId);
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
+            Assert.That(isAddChannel1, Is.True);
+            Assert.That(isGotAnswer2, Is.True);
 
             target1.DeleteConnection(connectionId);
             target2.DeleteConnection(connectionId);
@@ -457,6 +491,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True);
+            Assert.That(isDeletedConnection2, Is.True);
 
             target1.Dispose();
             target2.Dispose();
