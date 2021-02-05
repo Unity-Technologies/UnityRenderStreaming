@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class TestUtility
+    internal class TestUtility
     {
         const string FileNameWebAppForMac = "webserver_mac";
         const string FileNameWebAppForLinux = "webserver";

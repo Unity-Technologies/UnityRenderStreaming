@@ -3,7 +3,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class ConditionalIgnore
+    internal class ConditionalIgnore
     {
         public const string IL2CPP = "IgnoreIL2CPP";
 
