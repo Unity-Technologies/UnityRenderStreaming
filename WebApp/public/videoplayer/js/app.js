@@ -1,5 +1,5 @@
-import { VideoPlayer } from "./video-player.js";
-import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "./register-events.js";
+//import { VideoPlayer } from "../../scripts/video-player.js";
+import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../scripts/register-events.js";
 
 let playButton;
 let videoPlayer;

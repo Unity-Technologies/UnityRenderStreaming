@@ -1,4 +1,4 @@
-import Signaling, { WebSocketSignaling } from "./signaling.js"
+import Signaling, { WebSocketSignaling } from "../../scripts/signaling.js"
 
 // enum type of event sending from Unity
 var UnityEventType = {
