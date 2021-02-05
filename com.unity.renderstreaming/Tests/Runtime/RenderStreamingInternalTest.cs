@@ -151,9 +151,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.Dispose();
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -226,9 +228,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.Dispose();
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddTrackMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -305,7 +309,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel.Dispose();
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -375,7 +381,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.Destroy(camObj);
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);

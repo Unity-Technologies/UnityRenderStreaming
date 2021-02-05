@@ -108,7 +108,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(false);
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public void AddStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
@@ -136,7 +138,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -189,7 +193,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -237,7 +243,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
