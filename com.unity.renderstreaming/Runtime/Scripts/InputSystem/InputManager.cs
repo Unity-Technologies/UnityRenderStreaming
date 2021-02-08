@@ -1,7 +1,7 @@
 // todo(kazuki):: This script should be moved into the WebRTC package.
 // #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
@@ -36,6 +36,11 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         ReadOnlyArray<InputDevice> devices { get; }
+        /// <summary>
+        ///
+        /// </summary>
+        IEnumerable<string> layouts { get; }
+
         /// <summary>
         ///
         /// </summary>
@@ -101,6 +106,14 @@ namespace Unity.RenderStreaming
             get
             {
                 return InputSystem.devices;
+            }
+        }
+
+        public virtual IEnumerable<string> layouts
+        {
+            get
+            {
+                return InputSystem.ListLayouts();
             }
         }
 

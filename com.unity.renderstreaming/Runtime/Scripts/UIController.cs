@@ -2,14 +2,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro;
 
 namespace Unity.RenderStreaming
 {
     [RequireComponent(typeof(RectTransform))]
     public class UIController : MonoBehaviour
     {
-        [SerializeField] TextMeshProUGUI text = null;
+        [SerializeField] Text text = null;
         [SerializeField] CanvasGroup canvasGroup = null;
         [SerializeField] Image pointer = null;
         [SerializeField] private AnimationCurve transitionCurve =

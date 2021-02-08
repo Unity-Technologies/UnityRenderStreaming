@@ -1,0 +1,23 @@
+{
+    "name": "Unity.RenderStreaming.ARFoundationSample",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.RenderStreaming.Runtime",
+        "Unity.XR.ARFoundation"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.xr.arfoundation",
+            "expression": "1.0.0",
+            "define": "URS_USE_AR_FOUNDATION"
+        }
+    ],
+    "noEngineReferences": false
+}

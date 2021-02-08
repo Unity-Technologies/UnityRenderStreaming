@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
 namespace Unity.RenderStreaming
 {
@@ -131,6 +132,8 @@ namespace Unity.RenderStreaming
         private Keyboard m_keyboard;
         private Mouse m_mouse;
         private Touchscreen m_screen;
+        private Gyroscope m_gyroscpe;
+        private TrackedDevice m_tracker;
 
         public void SetInput(IInput input)
         {
@@ -144,6 +147,10 @@ namespace Unity.RenderStreaming
 
         public void SetDevice(InputDevice device)
         {
+
+            Debug.Log(device.name);
+            Debug.Log(device.displayName);
+
             switch (device)
             {
                 case Mouse mouse:
@@ -158,6 +165,12 @@ namespace Unity.RenderStreaming
                 case Gamepad pad:
                     m_gamepad = pad;
                     return;
+                case Gyroscope gyroscope:
+                    m_gyroscpe = gyroscope;
+                    return;
+                case TrackedDevice tracker:
+                    m_tracker = tracker;
+                    return;
             }
         }
 
@@ -165,13 +178,6 @@ namespace Unity.RenderStreaming
         {
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
-
-            RenderStreaming.Instance?.AddController(this);
-        }
-
-        void OnDisable()
-        {
-            RenderStreaming.Instance?.RemoveController(this);
         }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -259,10 +265,17 @@ namespace Unity.RenderStreaming
                 ResetCamera();
                 return;
             }
+            if (m_tracker != null && m_tracker.enabled)
+            {
+                m_TargetCameraState.UpdateTransform(transform);
+                transform.position += m_tracker.devicePosition.ReadValue();
+                transform.eulerAngles += m_tracker.deviceRotation.ReadValue().eulerAngles;
+                return;
+            }
 
             var touches = m_screen.GetTouches();
 
-            // Rotation 
+            // Rotation
             if (IsMouseDragged(m_mouse,false))
             {
                 UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
@@ -272,7 +285,14 @@ namespace Unity.RenderStreaming
                 var activeTouches = touches.ToArray();
                 UpdateTargetCameraStateFromInput(activeTouches[0].delta);
             }
-            
+            else if(m_gyroscpe != null && m_gyroscpe.enabled)
+            {
+                var v = m_gyroscpe.angularVelocity.ReadValue();
+                m_TargetCameraState.yaw += v.x;
+                m_TargetCameraState.pitch -= v.y;
+                m_TargetCameraState.roll += v.z;
+            }
+
             // Rotation from joystick
             if(m_gamepad?.leftStick != null)
                 UpdateTargetCameraStateFromInput(m_gamepad.leftStick.ReadValue());
@@ -313,7 +333,7 @@ namespace Unity.RenderStreaming
 
             if (Screen.safeArea.Contains(m.position.ReadValue())) {
                 //check left/right click
-                if ((useLeftButton && m.leftButton.isPressed) || (!useLeftButton && m.rightButton.isPressed)) {               
+                if ((useLeftButton && m.leftButton.isPressed) || (!useLeftButton && m.rightButton.isPressed)) {
                     return true;
                 }
             }

@@ -20,7 +20,9 @@ namespace Unity.RenderStreaming.Editor
                 ShowIceServerList(serializedObject.FindProperty("iceServers"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("hardwareEncoderSupport"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("arrayButtonClickEvent"), true);
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("handlers"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("runOnAwake"));
+
                 serializedObject.ApplyModifiedProperties();
             }
         }
