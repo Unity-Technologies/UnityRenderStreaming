@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
-    public class ReceiveVideoSample : MonoBehaviour
+    public class ReceiverSample : MonoBehaviour
     {
 #pragma warning disable 0649
         [SerializeField] private Button sendOfferButton;

@@ -1214,7 +1214,7 @@ GameObject:
   - component: {fileID: 1915034404}
   - component: {fileID: 1915034401}
   m_Layer: 0
-  m_Name: ReceiveVideoSample
+  m_Name: ReceiverSample
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
