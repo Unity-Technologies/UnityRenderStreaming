@@ -1,4 +1,4 @@
-//import { VideoPlayer } from "../../scripts/video-player.js";
+import { VideoPlayer } from "./video-player.js";
 import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../scripts/register-events.js";
 
 let playButton;
