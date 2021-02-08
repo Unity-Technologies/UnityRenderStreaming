@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.InputSystem.EnhancedTouch;
 using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
@@ -48,6 +48,7 @@ namespace Unity.RenderStreaming
         }
     }
 
+    [RequireComponent(typeof(InputChannelReceiverBase))]
     public class SimpleCameraController : MonoBehaviour
     {
         class CameraState
@@ -125,7 +126,7 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private UIController uiController = null;
 
-        [SerializeField] private InputSystemChannelReceiver receiver;
+        [SerializeField] private InputChannelReceiverBase receiver;
 
         readonly CameraState m_TargetCameraState = new CameraState();
         readonly CameraState m_InterpolatingCameraState = new CameraState();
@@ -139,7 +140,11 @@ namespace Unity.RenderStreaming
 
         void Awake()
         {
+            if (receiver == null)
+                receiver = GetComponent<InputChannelReceiverBase>();
             receiver.onDeviceChange += OnDeviceChange;
+
+            EnhancedTouchSupport.Enable();
         }
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
@@ -152,18 +157,10 @@ namespace Unity.RenderStreaming
             }
         }
 
-        //public void SetInput(IInput input)
-        //{
-        //    m_mouse = input.RemoteMouse;
-        //    m_keyboard = input.RemoteKeyboard;
-        //    m_screen = input.RemoteTouchscreen;
-        //    m_gamepad = input.RemoteGamepad;
-
-        //    uiController.SetInput(input);
-        //}
-
         void SetDevice(InputDevice device)
         {
+            uiController?.SetDevice(device);
+
             switch (device)
             {
                 case Mouse mouse:
@@ -185,7 +182,6 @@ namespace Unity.RenderStreaming
                     m_tracker = tracker;
                     return;
             }
-            uiController.SetDevice(device);
         }
 
         void OnEnable()

@@ -23,7 +23,6 @@ namespace Unity.RenderStreaming
         private Keyboard m_keyboard;
         private Mouse m_mouse;
         private Touchscreen m_screen;
-        private bool m_isSetInput = false;
 
         public void SetDevice(InputDevice device)
         {
@@ -34,6 +33,7 @@ namespace Unity.RenderStreaming
                     return;
                 case Keyboard keyboard:
                     m_keyboard = keyboard;
+                    m_keyboard.onTextInput += OnTextInput;
                     return;
                 case Touchscreen screen:
                     m_screen = screen;
@@ -50,10 +50,8 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
-            if (!m_isSetInput)
-                return;
-
-            if (!m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
+            if (m_keyboard != null && !m_keyboard.anyKey.isPressed &&
+                !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
                 canvasGroup.alpha = transitionCurve.Evaluate(timeTransition);
@@ -68,9 +66,9 @@ namespace Unity.RenderStreaming
             if (pointerFromMouse)
                 return;
 
-            var touches = m_screen.GetTouches();
+            var touches = m_screen?.GetTouches();
 
-            if (touches.Count() > 0)
+            if (touches != null && touches.Count() > 0)
             {
                 var position = Vector2.zero;
                 var count = touches.Count();
@@ -92,6 +90,8 @@ namespace Unity.RenderStreaming
 //----------------------------------------------------------------------------------------------------------------------
         bool HighlightPointerFromMouse(Mouse mouse, Vector2Int screenSize)
         {
+            if (mouse == null)
+                return false;
             if (!Screen.safeArea.Contains(mouse.position.ReadValue()))
                 return false;
 

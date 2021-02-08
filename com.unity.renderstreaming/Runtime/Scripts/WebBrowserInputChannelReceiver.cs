@@ -1,15 +1,13 @@
 using System;
 using Unity.WebRTC;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Unity.RenderStreaming
 {
-    public class WebBrowserInputChannelReceiver : DataChannelBase
+    public class WebBrowserInputChannelReceiver : InputChannelReceiverBase
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public event Action<InputDevice, InputDeviceChange> onDeviceChange;
+        public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         private RemoteInput remoteInput;
 
@@ -25,6 +23,7 @@ namespace Unity.RenderStreaming
                 return;
             }
             remoteInput = RemoteInputReceiver.Create();
+            channel.OnMessage += remoteInput.ProcessInput;
             onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
             onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
             onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Added);

@@ -1214,6 +1214,7 @@ GameObject:
   - component: {fileID: 1915034402}
   - component: {fileID: 1915034404}
   - component: {fileID: 1915034401}
+  - component: {fileID: 1915034406}
   - component: {fileID: 1915034405}
   m_Layer: 0
   m_Name: ReceiverSample
@@ -1293,6 +1294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   streams:
   - {fileID: 1915034401}
+  - {fileID: 1915034406}
 --- !u!114 &1915034405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1310,3 +1312,17 @@ MonoBehaviour:
   remoteVideoImage: {fileID: 1363584101}
   receiveVideoViewer: {fileID: 1915034401}
   connection: {fileID: 1915034404}
+--- !u!114 &1915034406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915034400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6d9188eb6318c488077f3c88318a65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  local: 1
+  label: input

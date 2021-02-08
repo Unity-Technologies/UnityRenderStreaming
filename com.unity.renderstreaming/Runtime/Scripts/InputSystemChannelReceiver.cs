@@ -4,12 +4,12 @@ using UnityEngine.InputSystem;
 
 namespace Unity.RenderStreaming
 {
-    public class InputSystemChannelReceiver : DataChannelBase
+    public class InputSystemChannelReceiver : InputChannelReceiverBase
     {
         /// <summary>
         /// 
         /// </summary>
-        public event Action<InputDevice, InputDeviceChange> onDeviceChange;
+        public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         private Receiver receiver;
         private InputRemoting receiverInput;
