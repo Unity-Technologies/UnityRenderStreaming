@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class RenderpipelineTest
+    class RenderpipelineTest
     {
         [Test]
         public void Test()

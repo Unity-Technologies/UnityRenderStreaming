@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    public class RemoteInputTest
+    class RemoteInputTest
     {
         [Test]
         public void RemoteInputReceiverCreate()

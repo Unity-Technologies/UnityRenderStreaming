@@ -7,7 +7,7 @@ using UnityEditor.PackageManager;           //PackageCollection
 
 namespace Unity.RenderStreaming.EditorTest
 {
-public class RequestJobTest
+class RequestJobTest
 {
     [UnityTest]
     [Timeout(5000)]

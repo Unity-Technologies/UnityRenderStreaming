@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
@@ -9,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.RuntimeTest.Signaling
 {
-    public class MockSignaling : ISignaling
+    internal class MockSignaling : ISignaling
     {
         interface IMockSignalingManager
         {
