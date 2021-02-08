@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
-    public class OneOnOneSample : MonoBehaviour
+    public class BidirectionalSample : MonoBehaviour
     {
 #pragma warning disable 0649
         [SerializeField] private Button setUpButton;
