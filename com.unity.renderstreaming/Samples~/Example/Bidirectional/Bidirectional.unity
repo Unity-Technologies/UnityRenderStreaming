@@ -394,6 +394,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+  m_ShouldActivateOnSelect: 1
 --- !u!114 &185332757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1340,7 +1341,8 @@ MonoBehaviour:
     username: 
   interval: 5
   hardwareEncoderSupport: 0
-  arrayButtonClickEvent: []
+  handlers: []
+  runOnAwake: 1
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1367,7 +1369,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f37261e4dcc3ef4a949ca413a2cddee, type: 3}
   m_Name: 
@@ -1381,13 +1383,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e06fd32ea04af9b843af232d7e9db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  connectionId: 
 --- !u!1 &2128695118
 GameObject:
   m_ObjectHideFlags: 0
