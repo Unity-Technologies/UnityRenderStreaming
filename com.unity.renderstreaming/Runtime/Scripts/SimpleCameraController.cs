@@ -220,29 +220,34 @@ namespace Unity.RenderStreaming
         Vector3 GetInputTranslationDirection()
         {
             Vector3 direction = new Vector3();
-            if (m_keyboard.wKey.isPressed)
+
+            // keyboard control
+            if (m_keyboard != null)
             {
-                direction += Vector3.forward;
-            }
-            if (m_keyboard.sKey.isPressed)
-            {
-                direction += Vector3.back;
-            }
-            if (m_keyboard.aKey.isPressed)
-            {
-                direction += Vector3.left;
-            }
-            if (m_keyboard.dKey.isPressed)
-            {
-                direction += Vector3.right;
-            }
-            if (m_keyboard.qKey.isPressed)
-            {
-                direction += Vector3.down;
-            }
-            if (m_keyboard.eKey.isPressed)
-            {
-                direction += Vector3.up;
+                if (m_keyboard.wKey.isPressed)
+                {
+                    direction += Vector3.forward;
+                }
+                if (m_keyboard.sKey.isPressed)
+                {
+                    direction += Vector3.back;
+                }
+                if (m_keyboard.aKey.isPressed)
+                {
+                    direction += Vector3.left;
+                }
+                if (m_keyboard.dKey.isPressed)
+                {
+                    direction += Vector3.right;
+                }
+                if (m_keyboard.qKey.isPressed)
+                {
+                    direction += Vector3.down;
+                }
+                if (m_keyboard.eKey.isPressed)
+                {
+                    direction += Vector3.up;
+                }
             }
 
             // gamepad right stick control
@@ -268,9 +273,7 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
-            if (m_keyboard == null)
-                return;
-            if (m_keyboard.uKey.isPressed)
+            if (m_keyboard != null && m_keyboard.uKey.isPressed)
             {
                 ResetCamera();
                 return;
@@ -310,7 +313,7 @@ namespace Unity.RenderStreaming
             var translation = GetInputTranslationDirection() * Time.deltaTime;
 
             // Speed up movement when shift key held
-            if (m_keyboard.leftShiftKey.isPressed)
+            if (m_keyboard != null && m_keyboard.leftShiftKey.isPressed)
             {
                 translation *= 10.0f;
             }
