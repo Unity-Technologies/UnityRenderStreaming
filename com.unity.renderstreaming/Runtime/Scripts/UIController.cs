@@ -20,21 +20,25 @@ namespace Unity.RenderStreaming
         private Color transparentColor = new Color(0, 0, 0, 0);
         private RectTransform m_rectTransform = null;
 
-        private Gamepad m_gamepad;
         private Keyboard m_keyboard;
         private Mouse m_mouse;
         private Touchscreen m_screen;
         private bool m_isSetInput = false;
 
-        public void SetInput(IInput input)
+        public void SetDevice(InputDevice device)
         {
-            m_isSetInput = true;
-            m_mouse = input.RemoteMouse;
-            m_keyboard = input.RemoteKeyboard;
-            m_screen = input.RemoteTouchscreen;
-            m_gamepad = input.RemoteGamepad;
-
-            m_keyboard.onTextInput += OnTextInput;
+            switch (device)
+            {
+                case Mouse mouse:
+                    m_mouse = mouse;
+                    return;
+                case Keyboard keyboard:
+                    m_keyboard = keyboard;
+                    return;
+                case Touchscreen screen:
+                    m_screen = screen;
+                    return;
+            }
         }
 
         void Start()

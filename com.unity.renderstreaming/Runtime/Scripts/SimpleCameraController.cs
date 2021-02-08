@@ -125,6 +125,8 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private UIController uiController = null;
 
+        [SerializeField] private InputSystemChannelReceiver receiver;
+
         readonly CameraState m_TargetCameraState = new CameraState();
         readonly CameraState m_InterpolatingCameraState = new CameraState();
         readonly CameraState m_InitialCameraState = new CameraState();
@@ -135,22 +137,33 @@ namespace Unity.RenderStreaming
         private Gyroscope m_gyroscpe;
         private TrackedDevice m_tracker;
 
-        public void SetInput(IInput input)
+        void Awake()
         {
-            m_mouse = input.RemoteMouse;
-            m_keyboard = input.RemoteKeyboard;
-            m_screen = input.RemoteTouchscreen;
-            m_gamepad = input.RemoteGamepad;
-
-            uiController.SetInput(input);
+            receiver.onDeviceChange += OnDeviceChange;
         }
 
-        public void SetDevice(InputDevice device)
+        void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
+            switch (change)
+            {
+                case InputDeviceChange.Added:
+                    SetDevice(device);
+                    return;
+            }
+        }
 
-            Debug.Log(device.name);
-            Debug.Log(device.displayName);
+        //public void SetInput(IInput input)
+        //{
+        //    m_mouse = input.RemoteMouse;
+        //    m_keyboard = input.RemoteKeyboard;
+        //    m_screen = input.RemoteTouchscreen;
+        //    m_gamepad = input.RemoteGamepad;
 
+        //    uiController.SetInput(input);
+        //}
+
+        void SetDevice(InputDevice device)
+        {
             switch (device)
             {
                 case Mouse mouse:
@@ -172,6 +185,7 @@ namespace Unity.RenderStreaming
                     m_tracker = tracker;
                     return;
             }
+            uiController.SetDevice(device);
         }
 
         void OnEnable()

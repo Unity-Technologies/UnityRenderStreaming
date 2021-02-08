@@ -398,7 +398,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   local: 0
   label: 
-  controller: {fileID: 725451153}
 --- !u!114 &725451153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,6 +440,7 @@ MonoBehaviour:
   rotationLerpTime: 0.01
   invertY: 0
   uiController: {fileID: 1215389824}
+  receiver: {fileID: 725451152}
 --- !u!20 &725451154
 Camera:
   m_ObjectHideFlags: 0
