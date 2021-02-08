@@ -1,0 +1,38 @@
+h1 {
+    border-bottom: 1px solid #ccc;
+    margin: 0 0 0.8em 0;
+    padding: 0 0 0.2em 0;
+}
+
+body {
+    margin: 0;
+    padding: 1em;
+    word-break: break-word;
+}
+
+section {
+    border-bottom: 1px solid #eee;
+    margin: 0 0 1.5em 0;
+    padding: 0 0 1.5em 0;
+}
+
+section:last-child {
+    border-bottom: none;
+    margin: 0;
+    padding: 0;
+}
+
+div#container {
+    margin: 0 auto 0 auto;
+    max-width: 60em;
+    padding: 1em 1.5em 1.3em 1.5em;
+}
+
+code {
+    display: inline-block;
+    padding: 0.1em 0.25em;
+    color: #444;
+    background-color: #e7edf3;
+    border-radius: 3px;
+    border: solid 1px #d6dde4;
+  }
