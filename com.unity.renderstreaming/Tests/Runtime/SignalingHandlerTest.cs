@@ -96,7 +96,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             test.component.StopAllCoroutines();
             instance.Dispose();
-            UnityEngine.Object.Destroy(test.gameObject);
+            UnityEngine.Object.DestroyImmediate(test.gameObject);
         }
     }
 
@@ -108,7 +108,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(false);
         }
 
+        // todo(kazuki): the software encoder is not supported on Linux
         [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public void AddStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
@@ -136,7 +138,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        // todo(kazuki): the software encoder is not supported on Linux
+        [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -145,7 +149,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
             bool isStartedStream1 = false;
+            bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
+            streamer.OnStoppedStream += _ => isStoppedStream1 = true;
 
             container1.test.component.AddComponent(streamer);
 
@@ -159,14 +165,20 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.CreateConnection(connectionId, true);
 
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
-
+            Assert.That(isStartedStream1, Is.True);
+            Assert.That(isStartedStream2, Is.True);
+            
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
 
-            container1.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.IsConnected(connectionId));
+            yield return new WaitUntil(() => container2.test.component.IsConnected(connectionId));
+
             container2.test.component.DeleteConnection(connectionId);
 
-            yield return new WaitUntil(() => isStoppedStream2);
+            yield return new WaitUntil(() => isStoppedStream1 && isStoppedStream2);
+            Assert.That(isStoppedStream1, Is.True);
+            Assert.That(isStoppedStream2, Is.True);
 
             container1.Dispose();
             container2.Dispose();
@@ -181,7 +193,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
-        [UnityTest, Timeout(1000)]
+        // todo(kazuki): the software encoder is not supported on Linux
+        [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -193,18 +207,17 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container.test.component.AddComponent(streamer);
             container.test.component.CreateConnection(connectionId);
-
-            yield return new WaitUntil(() => streamer.Senders.Count == 1);
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Senders, Is.Not.Empty);
 
             container.test.component.DeleteConnection(connectionId);
-            yield return new WaitUntil(() => streamer.Senders.Count == 0);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
             container.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator AddDataChannel()
         {
             string connectionId = "12345";
@@ -220,18 +233,19 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container.test.component.AddComponent(channel);
             container.test.component.CreateConnection(connectionId);
-
-            yield return new WaitUntil(() => channel.Channel != null);
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
             Assert.That(channel.Channel, Is.Not.Null);
             Assert.That(channel.Channel.Label, Is.EqualTo("test"));
 
             container.test.component.DeleteConnection(connectionId);
-            yield return new WaitUntil(() => channel.Channel == null);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
             container.Dispose();
         }
 
-        [UnityTest, Timeout(5000)]
+        // todo(kazuki): the software encoder is not supported on Linux
+        [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -246,7 +260,10 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
+
             yield return new WaitUntil(() => isStartedStream0);
+            Assert.That(isStartedStream0, Is.True);
 
             var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
             bool isStartedStream1 = false;
@@ -259,8 +276,10 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
 
             yield return new WaitUntil(() => isStartedStream1);
+            Assert.That(isStartedStream1, Is.True);
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);
@@ -269,12 +288,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedStream0 && isStoppedStream1);
+            Assert.That(isStoppedStream0, Is.True);
+            Assert.That(isStoppedStream1, Is.True);
 
             container1.Dispose();
             container2.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator ReceiveDataChannel()
         {
             string connectionId = "12345";
@@ -290,6 +311,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
 
             var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel2 = false;
@@ -306,7 +328,10 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container2.test.component.AddComponent(channel2);
             container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
+            Assert.That(isStartedChannel1, Is.True);
+            Assert.That(isStartedChannel2, Is.True);
 
             Assert.That(channel1.Channel, Is.Not.Null);
             Assert.That(channel1.IsLocal, Is.False);
@@ -316,6 +341,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.DeleteConnection(connectionId);
 
             yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
+            Assert.That(isStoppedChannel1, Is.True);
+            Assert.That(isStoppedChannel2, Is.True);
 
             container1.Dispose();
             container2.Dispose();

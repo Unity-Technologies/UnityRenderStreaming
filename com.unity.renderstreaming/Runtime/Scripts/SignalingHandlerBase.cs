@@ -25,8 +25,27 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public virtual void DeleteConnection(string connectionId)
         {
-
             m_handler.DeleteConnection(connectionId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public virtual bool ExistConnection(string connectionId)
+        {
+            return m_handler.ExistConnection(connectionId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public virtual bool IsConnected(string connectionId)
+        {
+            return m_handler.IsConnected(connectionId);
         }
 
         /// <summary>
