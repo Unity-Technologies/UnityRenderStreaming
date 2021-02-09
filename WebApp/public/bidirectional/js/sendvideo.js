@@ -1,4 +1,4 @@
-import Signaling, { WebSocketSignaling } from "../../scripts/signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
 
 export class SendVideo {
   constructor() {
