@@ -1,4 +1,4 @@
-import Signaling, { WebSocketSignaling } from "./signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
 
 export class SendVideo {
   constructor() {
@@ -36,7 +36,7 @@ export class SendVideo {
 
     this.remoteStram.onaddtrack = async (e) => await _this.remoteVideo.play();
 
-    const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
+    const protocolEndPoint = location.origin + '/protocol';
     const createResponse = await fetch(protocolEndPoint);
     const res = await createResponse.json();
 

@@ -1,4 +1,4 @@
-import Signaling, { WebSocketSignaling } from "./signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
 
 // enum type of event sending from Unity
 var UnityEventType = {
@@ -60,7 +60,7 @@ export class VideoPlayer {
     }
 
     // Decide Signaling Protocol
-    const protocolEndPoint = location.protocol + '//' + location.host + location.pathname + 'protocol';
+    const protocolEndPoint = location.origin + '/protocol';
     const createResponse = await fetch(protocolEndPoint);
     const res = await createResponse.json();
 
