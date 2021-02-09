@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -10,24 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    static class RenderStreamingExtension
-    {
-        private static Type type;
-        private static FieldInfo fieldRunOnAwake;
-
-        static RenderStreamingExtension()
-        {
-            type = typeof(RenderStreaming);
-            fieldRunOnAwake = type.GetField("runOnAwake",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-        }
-
-        //public static void SetRunOnAwake(this RenderStreaming obj, bool value)
-        //{
-        //    fieldRunOnAwake.SetValue(obj, value);
-        //}
-    }
-
     class RenderStreamingTest
     {
         RenderStreaming component;

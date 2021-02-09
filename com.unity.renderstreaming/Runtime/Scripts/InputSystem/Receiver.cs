@@ -11,9 +11,6 @@ using UnityEngine.InputSystem.Utilities;
 // namespace Unity.WebRTC.InputSystem
 namespace Unity.RenderStreaming
 {
-    /// <summary>
-    ///
-    /// </summary>
     class Receiver : InputManager
     {
         public override event Action<InputRemoting.Message> onMessage;
@@ -21,12 +18,8 @@ namespace Unity.RenderStreaming
         public new event Action<string, InputControlLayoutChange> onLayoutChange;
 
         private RTCDataChannel _channel;
-        private readonly List<InputDevice> _remoteDevices = new List<InputDevice>();
+        List<InputDevice> _remoteDevices = new List<InputDevice>();
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="channel"></param>
         public Receiver(RTCDataChannel channel)
         {
             _channel = channel ?? throw new ArgumentNullException("channel is null");
@@ -39,9 +32,7 @@ namespace Unity.RenderStreaming
             onMessage?.Invoke(message);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+
         public override ReadOnlyArray<InputDevice> devices
         {
             get
@@ -53,30 +44,19 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        public override IEnumerable<string> layouts
-        {
-            get
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
-
-
-        /// <summary>
-        ///
+        /// 
         /// </summary>
         public ReadOnlyArray<InputDevice> remoteDevices
         {
             get
             {
                 return new ReadOnlyArray<InputDevice>(_remoteDevices.ToArray());
+
             }
         }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         public void RemoveAllDevices()
         {

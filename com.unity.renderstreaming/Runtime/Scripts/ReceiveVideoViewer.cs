@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming
 
         private Texture m_receiveTexture;
 
-        void Start()
+        protected virtual void Start()
         {
             OnStartedStream += StartedStream;
             OnStoppedStream += StoppedStream;
@@ -50,4 +50,4 @@ namespace Unity.RenderStreaming
             OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
         }
     }
-    }
+}
