@@ -1,7 +1,7 @@
 {
   "name": "com.unity.renderstreaming",
   "displayName": "Unity Render Streaming",
-  "version": "2.2.2-preview",
+  "version": "3.0.0-preview",
   "unity": "2019.4",
   "description": "This is a package for using Unity Render Streaming technology. It contains two samples to use the technology.",
   "dependencies": {

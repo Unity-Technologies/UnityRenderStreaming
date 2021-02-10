@@ -1,6 +1,7 @@
 # Unity Render Streaming
 
 <img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4">
+<img src="https://img.shields.io/badge/unity-2020.2-green.svg?style=flat-square" alt="unity 2020.2">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://github.com/Unity-Technologies/com.unity.webrtc) to create their own unique solutions. 
@@ -17,7 +18,7 @@ This repository manages 1 package and 2 templates. Details can be found in the `
 
 | Branch                                                                                         | Status         |
 | ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/2.1.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/2.1.0) | Stable         |
+| [release/3.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/3.0.0) | Stable         |
 | [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Requirements
@@ -47,7 +48,9 @@ Then just build a standalone Windows version of your application, zip it and upl
 ├── com.unity.renderstreaming
 │   ├── Documentation~
 │   ├── Editor
-│   └── Samples~
+│   ├── Runtime
+│   ├── Samples~
+│   └── Test
 ├── com.unity.template.renderstreaming-hd
 │   ├── Assets
 │   │   ├── Plugins
@@ -64,10 +67,10 @@ Then just build a standalone Windows version of your application, zip it and upl
 │   │   └── Tests
 │   ├── Packages
 │   └── ProjectSettings
-├── EmptyProjectForTest~
-├── RenderStreamingSampleSrc~
-|   ├── RS_HDRPSampleSrc_1.x
-│   └── RS_URPSampleSrc_1.x
+├── RenderStreaming~
+│   ├── Assets
+│   ├── Packages
+│   └── ProjectSettings
 └── WebApp
     ├── public
     ├── src
@@ -84,7 +87,8 @@ Then just build a standalone Windows version of your application, zip it and upl
 | `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support            |
 | `2.1`   | - Unity 2019.4 support <br>- Add bitrate control sample |
 | `2.2`   | - Add video receiver <br>- HDRP/URP on Linux support    |
-| `2.3`   | - Gyro input remote control <br>- iOS platform sample   |
+| `3.0`   | - iOS platform support <br>- AR Foundation sample       |
+| `3.1`   | - Android platform support                              |
 
 ## FAQ
 

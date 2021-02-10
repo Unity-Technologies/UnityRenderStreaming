@@ -86,7 +86,7 @@
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.editorcoroutines": "1.0.0"
       },
-      "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
+      "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
