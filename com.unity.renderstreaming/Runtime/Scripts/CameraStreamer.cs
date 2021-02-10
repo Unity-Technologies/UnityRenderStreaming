@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming
         private Camera m_camera;
         public override Texture SendTexture => m_camera.targetTexture;
 
-        void Awake()
+        protected virtual void Awake()
         {
             m_camera = GetComponent<Camera>();
         }

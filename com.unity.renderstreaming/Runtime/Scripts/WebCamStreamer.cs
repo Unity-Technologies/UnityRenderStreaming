@@ -4,18 +4,36 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class WebCamStreamer : VideoStreamBase
     {
         [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex = 0;
 
         private WebCamTexture m_webCamTexture;
-
+        private Coroutine m_startVideoCorutine;
         public override Texture SendTexture => m_webCamTexture;
 
-        void Start()
+        protected virtual void Start()
         {
-            StartCoroutine(StartVideo());
+            m_startVideoCorutine = StartCoroutine(StartVideo());
+        }
+
+        protected virtual void OnEnable()
+        {
+            m_webCamTexture?.Play();
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (m_startVideoCorutine != null)
+            {
+                StopCoroutine(m_startVideoCorutine);
+                m_startVideoCorutine = null;
+            }
+            m_webCamTexture?.Pause();
         }
 
         IEnumerator StartVideo()
@@ -37,6 +55,7 @@ namespace Unity.RenderStreaming
             m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y);
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
+            m_startVideoCorutine = null;
         }
 
         protected override MediaStreamTrack CreateTrack()
