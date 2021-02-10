@@ -41,7 +41,7 @@ In case of iOS, Please enable to `Requires ARKit support` on `Player Settings`. 
 
 In this version, Android is not supported by this sample.
 
-## 利用方法
+## Usage
 
 1. Launch the signaling server using public mode. Please refer to [this link](webapp.md) for launching.
 
