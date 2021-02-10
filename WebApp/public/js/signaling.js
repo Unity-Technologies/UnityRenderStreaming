@@ -18,7 +18,7 @@ export default class Signaling extends EventTarget {
   };
 
   url(method) {
-    return location.protocol + '//' + location.host + location.pathname + 'signaling/' + method;
+    return location.origin + '/signaling/' + method;
   };
 
   async start() {
