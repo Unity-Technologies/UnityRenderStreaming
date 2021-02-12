@@ -1,5 +1,3 @@
-import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
-
 export default class Signaling extends EventTarget {
 
   constructor() {

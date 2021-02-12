@@ -1,4 +1,5 @@
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
+import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
 
 // enum type of event sending from Unity
 var UnityEventType = {
@@ -143,7 +144,8 @@ export class VideoPlayer {
     });
 
     // setup signaling
-    this.connectionId = await this.signaling.start();
+    await this.signaling.start();
+    this.connectionId = uuid4();
 
     // Add transceivers to receive multi stream.
     // It can receive two video tracks and one audio track from Unity app.
