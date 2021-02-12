@@ -43,6 +43,6 @@ namespace Unity.RenderStreaming
             int length = reader.ReadInt32();
             message.data = reader.ReadBytes(length);
         }
-}
+    }
 }
 // #endif

@@ -1,14 +1,15 @@
 using System;
 using Unity.WebRTC;
-using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Unity.RenderStreaming
 {
-    public class InputSystemChannelReceiver : DataChannelBase, IDataChannel
+    public class InputSystemChannelReceiver : InputChannelReceiverBase
     {
-        [SerializeField] private SimpleCameraController controller;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         private Receiver receiver;
         private InputRemoting receiverInput;
@@ -20,8 +21,15 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
+            if (channel == null)
+            {
+                receiverInput?.StopSending();
+                receiverDisposer?.Dispose();
+                receiver = null;
+                return;
+            }
             receiver = new Receiver(channel);
-            receiver.onDeviceChange += OnDeviceChange;
+            receiver.onDeviceChange += onDeviceChange;
             receiverInput = new InputRemoting(receiver);
             receiverDisposer = receiverInput.Subscribe(receiverInput);
             receiverInput.StartSending();
@@ -33,21 +41,6 @@ namespace Unity.RenderStreaming
         {
             receiverInput?.StopSending();
             receiverDisposer?.Dispose();
-        }
-
-        private void OnDeviceChange(InputDevice device, InputDeviceChange change)
-        {
-            switch (change)
-            {
-                case InputDeviceChange.Added:
-                    OnAddDevice(device);
-                    return;
-            }
-        }
-
-        private void OnAddDevice(InputDevice device)
-        {
-            controller?.SetDevice(device);
         }
     }
 }

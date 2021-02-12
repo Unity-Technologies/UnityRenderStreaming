@@ -852,6 +852,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+  m_ShouldActivateOnSelect: 1
 --- !u!114 &935674851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1213,6 +1214,8 @@ GameObject:
   - component: {fileID: 1915034402}
   - component: {fileID: 1915034404}
   - component: {fileID: 1915034401}
+  - component: {fileID: 1915034406}
+  - component: {fileID: 1915034405}
   m_Layer: 0
   m_Name: ReceiverSample
   m_TagString: Untagged
@@ -1227,13 +1230,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e06fd32ea04af9b843af232d7e9db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  connectionId: 
 --- !u!114 &1915034402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1256,7 +1258,9 @@ MonoBehaviour:
     username: 
   interval: 5
   hardwareEncoderSupport: 0
-  arrayButtonClickEvent: []
+  handlers:
+  - {fileID: 1915034404}
+  runOnAwake: 1
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1285,6 +1289,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1915034400}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ae253ffca93b1b44a471a07cde60141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  streams:
+  - {fileID: 1915034401}
+  - {fileID: 1915034406}
+--- !u!114 &1915034405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915034400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97627988cbc0b4b15aefdbed5cb090d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -1292,3 +1311,18 @@ MonoBehaviour:
   connectionIdInput: {fileID: 935674850}
   remoteVideoImage: {fileID: 1363584101}
   receiveVideoViewer: {fileID: 1915034401}
+  connection: {fileID: 1915034404}
+--- !u!114 &1915034406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915034400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6d9188eb6318c488077f3c88318a65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  local: 1
+  label: input

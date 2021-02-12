@@ -394,6 +394,7 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+  m_ShouldActivateOnSelect: 1
 --- !u!114 &185332757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1289,6 +1290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1915034403}
   - component: {fileID: 1915034402}
+  - component: {fileID: 1915034406}
   - component: {fileID: 1915034405}
   - component: {fileID: 1915034404}
   - component: {fileID: 1915034401}
@@ -1308,7 +1310,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1915034400}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd07afc0983a13046a910fd730a45421, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ae98fcc4fa36bd48877f86930b988de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   setUpButton: {fileID: 346362251}
@@ -1318,6 +1320,7 @@ MonoBehaviour:
   remoteVideoImage: {fileID: 1221238573}
   videoStream: {fileID: 1915034404}
   receiveVideoViewer: {fileID: 1915034405}
+  singleConnection: {fileID: 1915034406}
 --- !u!114 &1915034402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1340,7 +1343,9 @@ MonoBehaviour:
     username: 
   interval: 5
   hardwareEncoderSupport: 0
-  arrayButtonClickEvent: []
+  handlers:
+  - {fileID: 1915034406}
+  runOnAwake: 1
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1367,7 +1372,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f37261e4dcc3ef4a949ca413a2cddee, type: 3}
   m_Name: 
@@ -1381,13 +1386,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e06fd32ea04af9b843af232d7e9db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  connectionId: 
+--- !u!114 &1915034406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915034400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ae253ffca93b1b44a471a07cde60141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  streams:
+  - {fileID: 1915034405}
+  - {fileID: 1915034404}
 --- !u!1 &2128695118
 GameObject:
   m_ObjectHideFlags: 0

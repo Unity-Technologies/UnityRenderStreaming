@@ -2,14 +2,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro;
 
 namespace Unity.RenderStreaming
 {
     [RequireComponent(typeof(RectTransform))]
     public class UIController : MonoBehaviour
     {
-        [SerializeField] TextMeshProUGUI text = null;
+        [SerializeField] Text text = null;
         [SerializeField] CanvasGroup canvasGroup = null;
         [SerializeField] Image pointer = null;
         [SerializeField] private AnimationCurve transitionCurve =
@@ -21,21 +20,25 @@ namespace Unity.RenderStreaming
         private Color transparentColor = new Color(0, 0, 0, 0);
         private RectTransform m_rectTransform = null;
 
-        private Gamepad m_gamepad;
         private Keyboard m_keyboard;
         private Mouse m_mouse;
         private Touchscreen m_screen;
-        private bool m_isSetInput = false;
 
-        public void SetInput(IInput input)
+        public void SetDevice(InputDevice device)
         {
-            m_isSetInput = true;
-            m_mouse = input.RemoteMouse;
-            m_keyboard = input.RemoteKeyboard;
-            m_screen = input.RemoteTouchscreen;
-            m_gamepad = input.RemoteGamepad;
-
-            m_keyboard.onTextInput += OnTextInput;
+            switch (device)
+            {
+                case Mouse mouse:
+                    m_mouse = mouse;
+                    return;
+                case Keyboard keyboard:
+                    m_keyboard = keyboard;
+                    m_keyboard.onTextInput += OnTextInput;
+                    return;
+                case Touchscreen screen:
+                    m_screen = screen;
+                    return;
+            }
         }
 
         void Start()
@@ -47,10 +50,8 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
-            if (!m_isSetInput)
-                return;
-
-            if (!m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
+            if (m_keyboard != null && !m_keyboard.anyKey.isPressed &&
+                !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
                 canvasGroup.alpha = transitionCurve.Evaluate(timeTransition);
@@ -65,9 +66,9 @@ namespace Unity.RenderStreaming
             if (pointerFromMouse)
                 return;
 
-            var touches = m_screen.GetTouches();
+            var touches = m_screen?.GetTouches();
 
-            if (touches.Count() > 0)
+            if (touches != null && touches.Count() > 0)
             {
                 var position = Vector2.zero;
                 var count = touches.Count();
@@ -89,6 +90,8 @@ namespace Unity.RenderStreaming
 //----------------------------------------------------------------------------------------------------------------------
         bool HighlightPointerFromMouse(Mouse mouse, Vector2Int screenSize)
         {
+            if (mouse == null)
+                return false;
             if (!Screen.safeArea.Contains(mouse.position.ReadValue()))
                 return false;
 

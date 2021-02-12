@@ -10,7 +10,7 @@ namespace Unity.RenderStreaming
         private IDisposable senderDisposer;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
@@ -18,8 +18,8 @@ namespace Unity.RenderStreaming
             sender = new Sender();
             senderInput = new InputRemoting(sender);
             senderDisposer = senderInput.Subscribe(new Observer(channel));
-            senderInput.StartSending();
-
+            channel.OnOpen += OnOpen;
+            channel.OnClose += OnClose;
             base.SetChannel(connectionId, channel);
         }
 
@@ -28,5 +28,15 @@ namespace Unity.RenderStreaming
             senderInput?.StopSending();
             senderDisposer?.Dispose();
         }
+
+        void OnOpen()
+        {
+            senderInput.StartSending();
+        }
+        void OnClose()
+        {
+            senderInput.StopSending();
+        }
+
     }
 }
