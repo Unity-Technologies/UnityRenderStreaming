@@ -1,8 +1,10 @@
 {
     "name": "Unity.RenderStreaming.Runtime",
+    "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
         "Unity.WebRTC",
+        "Unity.XR.ARSubsystems",
         "Unity.TextMeshPro",
         "Unity.RenderPipelines.HighDefinition.Runtime",
         "Unity.RenderPipelines.Universal.Runtime"
@@ -30,6 +32,11 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "",
             "define": "URS_USE_URP_RUNTIME"
+        },
+        {
+            "name": "com.unity.xr.arsubsystems",
+            "expression": "",
+            "define": "URS_USE_AR_SUBSYSTEMS"
         }
     ],
     "noEngineReferences": false
