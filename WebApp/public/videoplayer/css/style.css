@@ -1,9 +1,9 @@
-body{
+body {
   margin: 0px;
 }
 
-#player{
-  position: absolute;
+#player {
+  position: relative;
   top: 0;
   right: 0;
   bottom: 0;
@@ -14,13 +14,19 @@ body{
   background-color: #323232;
 }
 
-#playButton{
+#player:before {
+  content: "";
+  display: block;
+  padding-top: 66%;
+}
+
+#playButton {
   width: 15%;
   max-width: 200px;
   cursor: pointer;
 }
 
-#Video{
+#Video {
   position: absolute;
   top: 0;
   left: 0;
@@ -28,7 +34,7 @@ body{
   height: 100%;
 }
 
-#VideoThumbnail{
+#VideoThumbnail {
   position: absolute;
   top: 0;
   left: 0;
@@ -36,54 +42,58 @@ body{
   height: 30%;
 }
 
-#greenButton{
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    width: 160px;
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-}
-#blueButton{
-    position: absolute;
-    bottom: 10px;
-    left: 180px;
-    width: 160px;
-    background-color: #447FAF; /* Blue */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+#greenButton {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 160px;
+  background-color: #4CAF50;
+  /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
 }
 
-#orangeButton{
-    position: absolute;
-    bottom: 10px;
-    left: 350px;
-    width: 160px;
-    background-color: #FF7700; /* Blue */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+#blueButton {
+  position: absolute;
+  bottom: 10px;
+  left: 180px;
+  width: 160px;
+  background-color: #447FAF;
+  /* Blue */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
 }
 
-#fullscreenButton{
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    width: 32px;
-    height: 32px;
+#orangeButton {
+  position: absolute;
+  bottom: 10px;
+  left: 350px;
+  width: 160px;
+  background-color: #FF7700;
+  /* Blue */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+#fullscreenButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  width: 32px;
+  height: 32px;
 }

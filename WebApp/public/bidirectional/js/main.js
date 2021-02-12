@@ -15,14 +15,20 @@ hangUpButton.addEventListener('click', hangUp);
 
 
 async function startVideo() {
+  startButton.disabled = true;
+  setupButton.disabled = false;
   await sendVideo.startVideo(localVideo);
 }
 
 async function setUp() {
+  setupButton.disabled = true;
+  hangUpButton.disabled = false;
   await sendVideo.setupConnection(remoteVideo, textForConnectionId.value);
 }
 
 function hangUp() {
+  hangUpButton.disabled = true;
+  setupButton.disabled = false;
   sendVideo.hangUp();
   remoteVideo.pause();
   remoteVideo.srcObject = null;
