@@ -1,7 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
-using System.Linq;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
@@ -190,7 +189,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator AddDevice()
         {
             var sender = new Sender();
