@@ -1,10 +1,13 @@
 h1 {
   border-bottom: 1px solid #ccc;
+  font-weight: 500;
   margin: 0 0 0.8em 0;
   padding: 0 0 0.2em 0;
 }
 
 body {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
   margin: 0;
   padding: 1em;
   word-break: break-word;
@@ -29,12 +32,12 @@ div#container {
 }
 
 code {
-  display: inline-block;
   padding: 0.1em 0.25em;
   color: #444;
   background-color: #e7edf3;
   border-radius: 3px;
   border: solid 1px #d6dde4;
+  font-weight: 400;
 }
 
 p {
@@ -44,7 +47,6 @@ p {
 
 p#data {
   border-top: 1px dotted #666;
-  font-family: Courier New, monospace;
   line-height: 1.3em;
   max-height: 1000px;
   overflow-y: auto;
@@ -62,4 +64,30 @@ video {
   --width: 100%;
   width: var(--width);
   height: calc(var(--width) * 0.75);
+}
+
+@media screen and (max-width: 650px) {
+  .highlight {
+    font-size: 1em;
+    margin: 0 0 20px 0;
+    padding: 0.2em 1em;
+  }
+  h1 {
+    font-size: 24px;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  button:active {
+    background-color: darkRed;
+  }
+  h1 {
+    font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  h1 {
+    font-size: 20px;
+  }
 }
