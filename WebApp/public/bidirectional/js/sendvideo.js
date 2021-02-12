@@ -49,46 +49,57 @@ export class SendVideo {
     this.signaling.addEventListener('connect', async (e) => {
       const data = e.detail;
       _this.prepareNewPeerConnection(data.peerExists, data.connectionId);
-
-      if (data.peerExists) {
-        _this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
-      }
+      _this.addTracks();
     });
 
     this.signaling.addEventListener('offer', async (e) => {
-      if (_this.pc) {
-        console.error('peerConnection alreay exist');
-      }
       const offer = e.detail;
+
+      if (_this.connectionId != offer.connectionId) {
+        return;
+      }
+
       _this.prepareNewPeerConnection(false, offer.connectionId);
+      _this.addTracks();
+
       const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
       await _this.pc.setRemoteDescription(desc);
       let answer = await _this.pc.createAnswer();
       await _this.pc.setLocalDescription(answer);
-      _this.signaling.sendAnswer(_this.connectionId, answer.sdp);
+      _this.signaling.sendAnswer(offer.connectionId, answer.sdp);
     });
 
     this.signaling.addEventListener('answer', async (e) => {
-      if (!_this.pc) {
-        console.error('peerConnection NOT exist!');
+      const answer = e.detail;
+
+      if (_this.connectionId != answer.connectionId) {
         return;
       }
-      const answer = e.detail;
+
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
       await _this.pc.setRemoteDescription(desc);
     });
 
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
+
+      if (_this.connectionId != candidate.connectionId) {
+        return;
+      }
+
       const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
       _this.pc.addIceCandidate(iceCandidate);
     });
 
     await this.signaling.start();
-    await this.signaling.createConnection(this.connectionId);
+    await this.signaling.createConnection(connectionId);
   }
 
   prepareNewPeerConnection(isOffer, connectionId) {
+    if (this.connectionId != connectionId) {
+      return;
+    }
+
     const _this = this;
     this.isOffer = isOffer;
     // close current RTCPeerConnection
@@ -123,19 +134,35 @@ export class SendVideo {
 
     this.pc.onicecandidate = e => {
       if (e.candidate != null) {
-        _this.signaling.sendCandidate(connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+        _this.signaling.sendCandidate(_this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     };
 
     this.pc.onnegotiationneeded = async () => {
       if (_this.isOffer) {
-        let offer = await _this.pc.createOffer();
-        console.log('createOffer() succsess in promise');
-        await _this.pc.setLocalDescription(offer);
-        console.log('setLocalDescription() succsess in promise');
-        _this.signaling.sendOffer(_this.connectionId, offer.sdp);
+        await _this.sendOffer();
       }
     };
+  }
+
+  async sendOffer() {
+    const _this = this;
+    let offer = await _this.pc.createOffer();
+    console.log('createOffer() succsess in promise');
+
+    if (_this.pc.signalingState != 'stable') {
+      console.error("peerConnection's signaling state is not stable. " + pc.SignalingState);
+      return;
+    }
+
+    await _this.pc.setLocalDescription(offer);
+    console.log('setLocalDescription() succsess in promise');
+    _this.signaling.sendOffer(_this.connectionId, offer.sdp);
+  }
+
+  addTracks() {
+    const _this = this;
+    _this.localStream.getTracks().forEach(track => _this.pc.addTrack(track, _this.localStream));
   }
 
   async hangUp() {
