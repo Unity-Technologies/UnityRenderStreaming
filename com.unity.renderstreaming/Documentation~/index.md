@@ -29,9 +29,7 @@ It is possible to send input messages to Unity from the browser, and sending inp
 
 This version of Render Streaming is compatible with the following versions of the Unity Editor
 - **Unity 2019.4**
-
-> [!NOTE]
-> Because this template depends on `HDRP 7.3`, it does not work correctly older versions than `Unity 2019.4`.
+- **Unity 2020.2**
 
 | Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
 | ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |
@@ -42,7 +40,7 @@ This version of Render Streaming is compatible with the following versions of th
 | Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
 | Linux x64   | Vulkan       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: |
 | MacOS       | Metal        | :white_check_mark:                              	                                                                        | :white_check_mark: |
-| iOS         | Metal        |                                                 	                                                                        |                    |
+| iOS         | Metal        | :white_check_mark:                              	                                                                        | :white_check_mark: |
 | Android     | Vulkan       |                                                 	                                                                        |                    |
 
 > [!NOTE]
@@ -53,7 +51,9 @@ This version of Render Streaming is compatible with the following versions of th
 
 This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
-### Browsers
+### Web Browsers support
+
+Unity Render Streaming supports almost all browsers that can use WebRTC. See [Web browser input sample](sample-browserinput.md).
 
 | Browser                           | Windows            | Mac                | iOS                | Android            |
 | --------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
