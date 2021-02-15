@@ -3,7 +3,7 @@
     * [Overview](overview.md)
     * [Tutorial](tutorial.md)
 * [Web Application](webapp.md)
-    * [Browser Input Process](input.md)
+    * [Browser Input Process](browser_input.md)
     * [Configure Self-Signed Credentials for https](https.md)
     * [Setting for TURN Server](turnserver.md)
     * [About Signaling Protocol](signalingprotocol.md)
