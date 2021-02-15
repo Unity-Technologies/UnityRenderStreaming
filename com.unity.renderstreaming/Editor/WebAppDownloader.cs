@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming.Editor
     public static class WebAppDownloader
     {
         const string URLRoot = "https://github.com/Unity-Technologies/UnityRenderStreaming";
-        const string LatestKnownVersion = "2.2.2-preview";
+        const string LatestKnownVersion = "3.0.0-preview";
 
         // TODO::fix release process of webserver runtime.
         const string FileNameWebAppForMac = "webserver_mac";
