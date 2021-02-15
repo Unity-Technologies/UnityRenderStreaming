@@ -1,7 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
-using System.Linq;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
@@ -72,8 +71,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    // todo(kazuki)::fix crash bug
-    [Ignore("Crash occurs when testing on all platforms")]
     class InputRemotingTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
@@ -145,7 +142,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer manually 
             _target2.SendOffer(connectionId);
 
-            yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
+            yield return new WaitUntil(() => _target1.IsConnected(connectionId));
+            yield return new WaitUntil(() => _target2.IsConnected(connectionId));
         }
 
         [UnityTearDown]
@@ -164,7 +162,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             _channel2.Dispose();
 
             _test.component.StopAllCoroutines();
-            UnityEngine.Object.Destroy(_test.gameObject);
+            _target1.Dispose();
+            _target2.Dispose();
+            UnityEngine.Object.DestroyImmediate(_test.gameObject);
         }
 
         [Test]
@@ -189,7 +189,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
-        [UnityTest, Timeout(1000)]
+        [UnityTest, Timeout(3000)]
         public IEnumerator AddDevice()
         {
             var sender = new Sender();
@@ -214,6 +214,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(device, Is.Not.Null);
             Assert.That(change, Is.EqualTo(InputDeviceChange.Added));
+            Assert.That(receiver.layouts, Is.Empty);
             Assert.That(receiver.remoteDevices, Is.Not.Empty);
             Assert.That(receiver.remoteDevices, Has.All.Matches<InputDevice>(d => d.remote));
 
@@ -221,6 +222,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverInput.StopSending();
 
             receiver.RemoveAllDevices();
+
+            Assert.That(receiver.layouts, Is.Empty);
             Assert.That(receiver.remoteDevices, Is.Empty);
 
             senderDisposer.Dispose();

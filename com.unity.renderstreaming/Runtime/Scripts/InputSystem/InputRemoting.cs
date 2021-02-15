@@ -129,6 +129,7 @@ namespace Unity.RenderStreaming
 
             sending = true;
 
+            SendAllLayouts();
             SendAllDevices();
         }
 
@@ -212,6 +213,13 @@ namespace Unity.RenderStreaming
         {
             var message = NewDeviceMsg.Create(device);
             Send(message);
+        }
+
+        private void SendAllLayouts()
+        {
+            var layouts = m_LocalManager.layouts.ToArray();
+            foreach(var layout in layouts)
+                SendLayoutChange(layout, InputControlLayoutChange.Added);
         }
 
         private unsafe void SendEvent(InputEventPtr eventPtr, InputDevice device)

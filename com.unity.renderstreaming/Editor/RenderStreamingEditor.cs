@@ -16,7 +16,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 serializedObject.Update();
                 ShowSignalingTypes(serializedObject.FindProperty("signalingType"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"), new GUIContent("Signaling URL"));
                 ShowIceServerList(serializedObject.FindProperty("iceServers"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("hardwareEncoderSupport"));
