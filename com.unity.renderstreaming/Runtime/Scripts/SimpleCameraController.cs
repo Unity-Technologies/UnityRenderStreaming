@@ -154,32 +154,35 @@ namespace Unity.RenderStreaming
                 case InputDeviceChange.Added:
                     SetDevice(device);
                     return;
+                case InputDeviceChange.Removed:
+                    SetDevice(device, false);
+                    return;
             }
         }
 
-        void SetDevice(InputDevice device)
+        void SetDevice(InputDevice device, bool add=true)
         {
             uiController?.SetDevice(device);
 
             switch (device)
             {
                 case Mouse mouse:
-                    m_mouse = mouse;
+                    m_mouse = add ? mouse : null;
                     return;
                 case Keyboard keyboard:
-                    m_keyboard = keyboard;
+                    m_keyboard = add ? keyboard : null;
                     return;
                 case Touchscreen screen:
-                    m_screen = screen;
+                    m_screen = add ? screen : null;
                     return;
                 case Gamepad pad:
-                    m_gamepad = pad;
+                    m_gamepad = add ? pad : null;
                     return;
                 case Gyroscope gyroscope:
-                    m_gyroscpe = gyroscope;
+                    m_gyroscpe = add ? gyroscope : null;
                     return;
                 case TrackedDevice tracker:
-                    m_tracker = tracker;
+                    m_tracker = add ? tracker : null;
                     return;
             }
         }
