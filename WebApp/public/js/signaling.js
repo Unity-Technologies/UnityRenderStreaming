@@ -38,7 +38,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const offers = data.offers;
-      console.log(offers);
+      console.log('get offers:', offers);
 
       offers.forEach(offer => {
         this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
@@ -58,7 +58,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const answers = data.answers;
-      console.log(answers);
+      console.log('get answers:', answers);
 
       answers.forEach(answer => {
         this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
@@ -78,7 +78,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const candidates = data.candidates;
-      console.log(candidates);
+      console.log('get candidates:', candidates);
 
       if (candidates.length > 0) {
         for (let candidate of candidates[0].candidates) {
