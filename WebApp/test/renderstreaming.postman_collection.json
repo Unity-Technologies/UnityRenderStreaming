@@ -1,18 +1,17 @@
 {
 	"info": {
-		"_postman_id": "e2e7fe3d-b575-41a7-a1ed-5edc96d55827",
+		"_postman_id": "8ef6e076-eb43-4dbb-838d-6c93d9b9e8ef",
 		"name": "renderstreaming",
 		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "/signaling",
+			"name": "Create Session1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
@@ -47,12 +46,50 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/connection",
+			"name": "Create Session2",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    var jsonData = pm.response.json();",
+							"    pm.response.to.have.jsonBody(\"sessionId\");",
+							"});",
+							"pm.environment.set(\"session_Id2\", pm.response.json().sessionId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Connection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"
@@ -94,12 +131,11 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/offer",
+			"name": "Post Offer from Session1",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "1f7448eb-7fbe-4e06-8f57-1ab1a52f642a",
 						"exec": [
 							""
 						],
@@ -109,7 +145,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "65d5877e-6458-404d-abae-3f6a2feff5d3",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							""
@@ -175,12 +210,11 @@
 			]
 		},
 		{
-			"name": "/signaling/answer",
+			"name": "Post Answer from Session2",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "1f7448eb-7fbe-4e06-8f57-1ab1a52f642a",
 						"exec": [
 							""
 						],
@@ -190,7 +224,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "88f991c5-074f-4040-9629-4ab3538d37d6",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
 						],
@@ -210,7 +243,7 @@
 					{
 						"key": "Session-Id",
 						"type": "text",
-						"value": "{{session_Id}}"
+						"value": "{{session_Id2}}"
 					}
 				],
 				"body": {
@@ -255,12 +288,11 @@
 			]
 		},
 		{
-			"name": "/signaling/candidate",
+			"name": "Post Candidate from Session1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "028da34c-ba2a-4404-a46d-82c303642cae",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
 						],
@@ -274,13 +306,13 @@
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					},
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{session_Id}}"
 					}
 				],
 				"body": {
@@ -325,12 +357,11 @@
 			]
 		},
 		{
-			"name": "/",
+			"name": "Get Top index.html",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "42e4303e-4f2f-4c16-a23a-2390bf3dac32",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
 						],
@@ -352,19 +383,19 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/offer",
+			"name": "Get Offer to Session1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"offers\");",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.offers.length).to.be.above(0);",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.offers.length).to.be.equal(0);",
 							"});",
 							""
 						],
@@ -377,8 +408,8 @@
 				"header": [
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{session_Id}}"
 					}
 				],
 				"url": {
@@ -396,18 +427,62 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/offer?fromtime={{datetime}}",
+			"name": "Get Offer to Session2",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"offers\");",
 							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.offers.length).to.be.above(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id2}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/offer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"offer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Offer to Session1 fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"offers\");",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
 							"    pm.expect(jsonData.offers.length).to.be.equal(0);",
 							"});",
 							""
@@ -418,7 +493,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
 						"exec": [
 							"// datetime in the future",
 							"let datetime = Date.now() + 30;",
@@ -458,18 +532,18 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/answer",
+			"name": "Get Answer to Session1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"answers\");",
 							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
 							"    pm.expect(jsonData.answers.length).to.be.above(0);",
 							"});",
 							""
@@ -483,8 +557,8 @@
 				"header": [
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{session_Id}}"
 					}
 				],
 				"url": {
@@ -502,18 +576,62 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/answer?fromtime={{datetime}}",
+			"name": "Get Answer to Session2",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"answers\");",
 							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.answers.length).to.be.equal(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id2}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/answer",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"answer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Answer to Session1 fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"answers\");",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
 							"    pm.expect(jsonData.answers.length).to.be.equal(0);",
 							"});",
 							""
@@ -524,7 +642,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
 						"exec": [
 							"// datetime in the future",
 							"let datetime = Date.now() + 30;",
@@ -564,18 +681,18 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/candidate",
+			"name": "Get Candidate to Session2",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "c3371877-1fc1-418d-a5f8-2829e4be4c0a",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"candidates\");",
 							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
 							"    pm.expect(jsonData.candidates.length).to.be.above(0);",
 							"    pm.expect(jsonData.candidates[0].connectionId).to.not.equal(null);",
 							"    pm.expect(jsonData.candidates[0].candidates.length).to.be.above(0);",
@@ -591,7 +708,7 @@
 				"header": [
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
+						"value": "{{session_Id2}}",
 						"type": "text"
 					}
 				],
@@ -610,18 +727,18 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/candidate?fromtime={{datetime}}",
+			"name": "Get Candidate to Session1 fromtime={{datetime}}",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "fda4f1b3-3b8b-4c88-83bc-333ccfee434d",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"candidates\");",
 							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
 							"    pm.expect(jsonData.candidates.length).to.be.equal(0);",
 							"});",
 							""
@@ -632,7 +749,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f86be7b4-e904-4c95-a41a-1c452c3232f5",
 						"exec": [
 							"// datetime in the future",
 							"let datetime = Date.now() + 30;",
@@ -672,12 +788,11 @@
 			"response": []
 		},
 		{
-			"name": "/signaling/connection",
+			"name": "Delete Connection",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
 						],
@@ -690,13 +805,13 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					},
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{session_Id}}"
 					}
 				],
 				"body": {
@@ -718,12 +833,11 @@
 			"response": []
 		},
 		{
-			"name": "/signaling",
+			"name": "Delete Session1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "38efc5aa-83d4-436a-8c8a-c80993a1dfcd",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
 						],
@@ -736,8 +850,47 @@
 				"header": [
 					{
 						"key": "Session-Id",
-						"value": "{{session_Id}}",
-						"type": "text"
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{url}}/signaling",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Session2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id2}}"
 					}
 				],
 				"body": {
@@ -762,7 +915,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "5b49db9f-4fc8-41c3-90b3-4d2b84c39f69",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -772,7 +924,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "0a8f284b-249d-40b5-be4f-e77111ed9471",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -782,31 +933,26 @@
 	],
 	"variable": [
 		{
-			"id": "94471478-f191-4511-acc9-a0636873ed02",
 			"key": "url",
 			"value": "localhost:8080",
 			"type": "string"
 		},
 		{
-			"id": "e3c1d667-b69c-463e-a9bc-5e5d7d1fe35b",
 			"key": "session_Id",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "5c48aa60-227a-419d-b9a4-94912a16d187",
 			"key": "sdp",
 			"value": "\"v=0\\r\\no=- 7060022371716902156 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=msid-semantic: WMS 3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\nm=audio 9 UDP\\/TLS\\/RTP\\/SAVPF 111 103 104 9 0 8 110 112 113 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:yOxE\\r\\na=ice-pwd:Ekoek1dl79NlWZS2dfmrW7Cr\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 02:F8:39:CE:EF:A7:77:B4:8D:56:8A:A1:C8:14:0C:1D:00:DF:99:14:ED:CE:05:4B:94:F9:EE:36:EE:4F:82:61\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http:\\/\\/www.ietf.org\\/id\\/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\\r\\na=extmap:5 urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\\r\\na=sendonly\\r\\na=msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=rtcp-mux\\r\\na=rtpmap:111 opus\\/48000\\/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:103 ISAC\\/16000\\r\\na=rtpmap:104 ISAC\\/32000\\r\\na=rtpmap:9 G722\\/8000\\r\\na=rtpmap:0 PCMU\\/8000\\r\\na=rtpmap:8 PCMA\\/8000\\r\\na=rtpmap:110 telephone-event\\/48000\\r\\na=rtpmap:112 telephone-event\\/32000\\r\\na=rtpmap:113 telephone-event\\/16000\\r\\na=rtpmap:126 telephone-event\\/8000\\r\\na=ssrc:2852212123 cname:GybrBKZh3U5xSqQq\\r\\na=ssrc:2852212123 msid:3fd630e8-9285-4f82-adbc-a7e31c334740 a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\na=ssrc:2852212123 mslabel:3fd630e8-9285-4f82-adbc-a7e31c334740\\r\\na=ssrc:2852212123 label:a573e4b8-b844-4ab9-b5b2-62c5bea85e9e\\r\\n\"",
 			"type": "string"
 		},
 		{
-			"id": "e20ff983-1fc3-4bdd-ac91-ffcd1a1f6f26",
 			"key": "candidate",
 			"value": "\"\"",
 			"type": "string"
 		},
 		{
-			"id": "2ae1653e-072b-4bf3-a9c8-8d2037340fc5",
 			"key": "connection_id",
 			"value": "",
 			"type": "string"

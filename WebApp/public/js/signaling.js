@@ -1,5 +1,3 @@
-import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
-
 export default class Signaling extends EventTarget {
 
   constructor() {
@@ -26,15 +24,9 @@ export default class Signaling extends EventTarget {
     const session = await createResponse.json();
     this.sessionId = session.sessionId;
 
-    const id = uuid4();
-    const connection = await this.createConnection(id);
-
     this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
-
-    this.connectionId = connection.connectionId;
-    return this.connectionId;
   }
 
   async loopGetOffer() {
@@ -46,6 +38,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const offers = data.offers;
+      console.log('get offers:', offers);
 
       offers.forEach(offer => {
         this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
@@ -65,6 +58,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const answers = data.answers;
+      console.log('get answers:', answers);
 
       answers.forEach(answer => {
         this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
@@ -83,7 +77,8 @@ export default class Signaling extends EventTarget {
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
       const data = await res.json();
-      const candidates = data.candidates.filter(v => v.connectionId = this.connectionId);
+      const candidates = data.candidates;
+      console.log('get candidates:', candidates);
 
       if (candidates.length > 0) {
         for (let candidate of candidates[0].candidates) {
@@ -96,8 +91,6 @@ export default class Signaling extends EventTarget {
   }
 
   async stop() {
-    await this.deleteConnection();
-    this.connectionId = null;
     await fetch(this.url(''), { method: 'DELETE', headers: this.headers() });
     this.sessionId = null;
   }
@@ -106,24 +99,26 @@ export default class Signaling extends EventTarget {
     const data = { 'connectionId': connectionId };
     const res = await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
     const json = await res.json();
-    this.dispatchEvent(new CustomEvent('connect', {detail: json}));
+    this.dispatchEvent(new CustomEvent('connect', { detail: json }));
     return json;
   };
   async deleteConnection(connectionId) {
     const data = { 'connectionId': connectionId };
     const res = await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
     const json = await res.json();
-    this.dispatchEvent(new CustomEvent('disconnect', {detail: json}));
+    this.dispatchEvent(new CustomEvent('disconnect', { detail: json }));
     return json;
   };
 
   async sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
+    console.log('sendOffer:', data);
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
   async sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
+    console.log('sendAnswer:', data);
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
@@ -134,6 +129,7 @@ export default class Signaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': connectionId
     };
+    console.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
@@ -152,6 +148,7 @@ export class WebSocketSignaling extends EventTarget {
 
   constructor() {
     super();
+    this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
     if (location.protocol === "https:") {
       var websocketUrl = "wss://" + location.host;
@@ -163,8 +160,11 @@ export class WebSocketSignaling extends EventTarget {
     this.connectionId = null;
 
     this.websocket.onopen = () => {
-      const id = uuid4();
-      this.websocket.send(JSON.stringify({ type: "connect", connectionId: id }));
+      this.isWsOpen = true;
+    }
+
+    this.websocket.onclose = () => {
+      this.isWsOpen = false;
     }
 
     this.websocket.onmessage = (event) => {
@@ -177,20 +177,19 @@ export class WebSocketSignaling extends EventTarget {
 
       switch (msg.type) {
         case "connect":
-          this.connectionId = msg.connectionId;
           this.dispatchEvent(new CustomEvent('connect', { detail: msg }));
           break;
         case "disconnect":
           this.dispatchEvent(new CustomEvent('disconnect', { detail: msg }));
           break;
         case "offer":
-          this.dispatchEvent(new CustomEvent('offer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('offer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
           break;
         case "answer":
-          this.dispatchEvent(new CustomEvent('answer', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('answer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
           break;
         case "candidate":
-          this.dispatchEvent(new CustomEvent('candidate', { detail: msg.data }));
+          this.dispatchEvent(new CustomEvent('candidate', { detail: { connectionId: msg.from, candidate: msg.data.candidate, sdpMLineIndex: msg.data.sdpMLineIndex, sdpMid: msg.data.sdpMid } }));
           break;
         default:
           break;
@@ -199,15 +198,16 @@ export class WebSocketSignaling extends EventTarget {
   }
 
   async start() {
-    const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
-    while(this.connectionId == null){
-      await sleep(100);
+    while (!this.isWsOpen) {
+      await this.sleep(100);
     }
-    return this.connectionId;
   }
 
-  stop() {
-    this.websocket.send(JSON.stringify({ type: "disconnect", from: this.connectionId }));
+  async stop() {
+    this.websocket.close();
+    while (this.isWsOpen) {
+      await this.sleep(100);
+    }
   }
 
   createConnection(connectionId) {
