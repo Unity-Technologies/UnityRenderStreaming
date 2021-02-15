@@ -58,7 +58,7 @@ router.get('/offer', (req: Request, res: Response) => {
         arrayOffers = Array.from(offers.get(sessionId));
       }
     } else {
-      arrayOffers = [].concat(...Array.from(offers));
+      arrayOffers = [].concat(...Array.from(offers.values(), x => Array.from(x, y => [y[0], y[1]])));
     }
   }
 

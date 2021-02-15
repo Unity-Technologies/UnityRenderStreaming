@@ -112,13 +112,13 @@ export default class Signaling extends EventTarget {
 
   async sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    console.log(`sendOffer:${data}`);
+    console.log('sendOffer:', data);
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
   async sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    console.log(`sendAnswer:${data}`);
+    console.log('sendAnswer:', data);
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
@@ -129,7 +129,7 @@ export default class Signaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': connectionId
     };
-    console.log(`sendCandidate:${data}`);
+    console.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
