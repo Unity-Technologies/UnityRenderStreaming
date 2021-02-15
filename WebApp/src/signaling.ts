@@ -58,7 +58,8 @@ router.get('/offer', (req: Request, res: Response) => {
         arrayOffers = Array.from(offers.get(sessionId));
       }
     } else {
-      arrayOffers = [].concat(...Array.from(offers.values(), x => Array.from(x, y => [y[0], y[1]])));
+      let otherSessionMap = Array.from(offers).filter(x => x[0] != sessionId);
+      arrayOffers = [].concat(...Array.from(otherSessionMap, x => Array.from(x[1], y => [y[0], y[1]])));
     }
   }
 
@@ -95,16 +96,19 @@ router.get('/candidate', (req: Request, res: Response) => {
   for (const connectionId of connectionIds) {
     const pair = connectionPair.get(connectionId);
     if (pair == null) {
+      console.log(`pair is null on connection id: ${connectionId}`);
       continue;
     }
     const otherSessionId = sessionId === pair[0] ? pair[1] : pair[0];
     if (!candidates.get(otherSessionId) || !candidates.get(otherSessionId).get(connectionId)) {
+      console.log(`candidate is null on sessionId: ${otherSessionId} from sessionId: ${sessionId}`);
       continue;
     }
     const arrayCandidates = candidates.get(otherSessionId).get(connectionId)
       .filter((v) => v.datetime > fromTime)
       .map((v) => ({ candidate: v.candidate, sdpMLineIndex: v.sdpMLineIndex, sdpMid: v.sdpMid }));
     if (arrayCandidates.length === 0) {
+      console.log(`candidate array is empty on session id: ${otherSessionId} from sessionId: ${sessionId}`);
       continue;
     }
     arr.push({ connectionId, candidates: arrayCandidates });
