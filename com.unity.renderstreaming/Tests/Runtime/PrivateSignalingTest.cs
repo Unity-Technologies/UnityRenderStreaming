@@ -69,6 +69,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 MockSignaling.Reset(true);
                 return;
             }
+
             m_ServerProcess = new Process();
 
             string fileName = TestUtility.GetWebAppLocationFromEnv();
@@ -83,9 +84,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.IsTrue(System.IO.File.Exists(fileName), $"webapp file not found in {fileName}");
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = fileName,
-                UseShellExecute = false
+                WindowStyle = ProcessWindowStyle.Hidden, FileName = fileName, UseShellExecute = false
             };
 
             string arguments = $"-m private -p {TestUtility.PortNumber}";
@@ -113,6 +112,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 return;
             }
+
             m_ServerProcess.Kill();
             m_ServerProcess.WaitForExit();
             m_ServerProcess.Dispose();
@@ -135,6 +135,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 return new MockSignaling();
             }
+
             throw new ArgumentException();
         }
 
@@ -305,7 +306,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.OpenConnection(connectionId);
             signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
             signaling2.OpenConnection(connectionId);
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
@@ -346,7 +348,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.OpenConnection(connectionId);
             signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
             signaling2.OpenConnection(connectionId);
-            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
 
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
@@ -355,6 +358,61 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.OnAnswer += (s, e) => { answerRaised = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
             yield return new WaitUntil(() => answerRaised);
+
+            signaling2.OnIceCandidate += (s, e) => { candidateRaised1 = true; };
+            signaling1.SendCandidate(connectionId1, m_candidate);
+            yield return new WaitUntil(() => candidateRaised1);
+
+            signaling1.OnIceCandidate += (s, e) => { candidateRaised2 = true; };
+            signaling2.SendCandidate(connectionId1, m_candidate);
+            yield return new WaitUntil(() => candidateRaised2);
+
+            signaling1.CloseConnection(connectionId1);
+            signaling2.CloseConnection(connectionId2);
+            signaling1.Stop();
+            signaling2.Stop();
+            yield return new WaitForSeconds(1);
+        }
+
+        [UnityTest]
+        public IEnumerator NotReceiveOwnOfferAnswer()
+        {
+            bool startRaised1 = false;
+            bool startRaised2 = false;
+            bool offerRaised1 = false;
+            bool offerRaised2 = false;
+            bool answerRaised1 = false;
+            bool answerRaised2 = false;
+            bool candidateRaised1 = false;
+            bool candidateRaised2 = false;
+            const string connectionId = "12345";
+            string connectionId1 = null;
+            string connectionId2 = null;
+
+            signaling1.OnStart += s => { startRaised1 = true; };
+            signaling2.OnStart += s => { startRaised2 = true; };
+            signaling1.Start();
+            signaling2.Start();
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
+
+            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling1.OpenConnection(connectionId);
+            signaling2.OpenConnection(connectionId);
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+
+            signaling1.OnOffer += (s, e) => { offerRaised1 = true; };
+            signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
+            signaling1.SendOffer(connectionId1, m_DescOffer);
+            yield return new WaitUntil(() => offerRaised2);
+            Assert.That(offerRaised1, Is.False, () => "Receive own offer on private mode");
+
+            signaling1.OnAnswer += (s, e) => { answerRaised1 = true; };
+            signaling2.OnAnswer += (s, e) => { answerRaised2 = true; };
+            signaling2.SendAnswer(connectionId1, m_DescAnswer);
+            yield return new WaitUntil(() => answerRaised1);
+            Assert.That(answerRaised2, Is.False, () => "Receive own answer on private mode");
 
             signaling2.OnIceCandidate += (s, e) => { candidateRaised1 = true; };
             signaling1.SendCandidate(connectionId1, m_candidate);
