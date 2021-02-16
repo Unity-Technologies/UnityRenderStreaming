@@ -1,5 +1,5 @@
 export async function getServerConfig() {
-  const protocolEndPoint = location.origin + '/protocol';
+  const protocolEndPoint = location.origin + '/config';
   const createResponse = await fetch(protocolEndPoint);
   return await createResponse.json();
 }
