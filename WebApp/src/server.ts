@@ -17,7 +17,7 @@ export const createServer = (config :Options): express.Application => {
   // const signal = require('./signaling');
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-  app.get('/protocol', (req, res) => res.json({ useWebSocket: config.websocket }));
+  app.get('/protocol', (req, res) => res.json({ useWebSocket: config.websocket, startupMode: config.mode, logging: config.logging }));
   app.use('/signaling', signaling);
   app.use(express.static('public'));
   app.get('/', (req, res) => {
