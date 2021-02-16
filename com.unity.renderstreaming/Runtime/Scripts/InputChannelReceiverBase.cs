@@ -11,6 +11,8 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+#pragma warning disable 0067
         public virtual event Action<InputDevice, InputDeviceChange> onDeviceChange;
+#pragma warning restore 0067
     }
 }
