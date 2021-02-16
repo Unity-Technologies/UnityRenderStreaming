@@ -24,7 +24,7 @@ async function setupConfig() {
   showPlayButton();
 }
 
-async function showWarningIfNeeded(startupMode) {
+function showWarningIfNeeded(startupMode) {
   const warningDiv = document.getElementById("warning");
   if (startupMode == "public") {
     warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Public Mode."
