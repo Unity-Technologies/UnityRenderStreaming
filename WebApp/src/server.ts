@@ -2,12 +2,12 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import * as fs from 'fs';
-import signaling from './signaling';
-
-import { log, LogLevel } from './log';
 import * as morgan from 'morgan';
+import signaling from './signaling';
+import { log, LogLevel } from './log';
+import Options from './class/options';
 
-export const createServer = (config): express.Application => {
+export const createServer = (config :Options): express.Application => {
   const app: express.Application = express();
   app.set('isPrivate', config.mode == "private");
   // logging http access
