@@ -1,4 +1,5 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import * as Config from "../../js/config.js";
 import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
 
 // enum type of event sending from Unity
@@ -7,9 +8,9 @@ var UnityEventType = {
 };
 
 export class VideoPlayer {
-  constructor(elements, config) {
+  constructor(elements) {
     const _this = this;
-    this.cfg = VideoPlayer.getConfiguration(config);
+    this.cfg = Config.getRTCConfiguration();
     this.pc = null;
     this.channel = null;
     this.offerOptions = {
@@ -42,15 +43,6 @@ export class VideoPlayer {
     this.ondisconnect = function () { };
   }
 
-  static getConfiguration(config) {
-    if (config === undefined) {
-      config = {};
-    }
-    config.sdpSemantics = 'unified-plan';
-    config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
-    return config;
-  }
-
   async setupConnection() {
     const _this = this;
     // close current RTCPeerConnection
@@ -61,9 +53,7 @@ export class VideoPlayer {
     }
 
     // Decide Signaling Protocol
-    const protocolEndPoint = location.origin + '/protocol';
-    const createResponse = await fetch(protocolEndPoint);
-    const res = await createResponse.json();
+    const res = await Config.getServerConfig();
 
     if (res.useWebSocket) {
       this.signaling = new WebSocketSignaling();

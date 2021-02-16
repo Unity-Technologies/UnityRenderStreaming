@@ -1,21 +1,15 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import * as Config from "../../js/config.js";
 
 export class SendVideo {
   constructor() {
     const _this = this;
-    this.config = SendVideo.getConfiguration();
+    this.config = Config.getRTCConfiguration();
     this.pc = null;
     this.localStream = null;
     this.remoteStram = new MediaStream();
     this.isOffer = false;
     this.connectionId = null;
-  }
-
-  static getConfiguration() {
-    let config = {};
-    config.sdpSemantics = 'unified-plan';
-    config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
-    return config;
   }
 
   async startVideo(localVideo) {
@@ -36,10 +30,7 @@ export class SendVideo {
 
     this.remoteStram.onaddtrack = async (e) => await _this.remoteVideo.play();
 
-    const protocolEndPoint = location.origin + '/protocol';
-    const createResponse = await fetch(protocolEndPoint);
-    const res = await createResponse.json();
-
+    const res = await Config.getServerConfig();
     if (res.useWebSocket) {
       this.signaling = new WebSocketSignaling();
     } else {

@@ -109,8 +109,8 @@ function onClickPlayButton() {
   }
 }
 
-async function setupVideoPlayer(elements, config) {
-  const videoPlayer = new VideoPlayer(elements, config);
+async function setupVideoPlayer(elements) {
+  const videoPlayer = new VideoPlayer(elements);
   await videoPlayer.setupConnection();
 
   videoPlayer.ondisconnect = onDisconnect;
