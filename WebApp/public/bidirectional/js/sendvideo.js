@@ -22,7 +22,7 @@ export class SendVideo {
     }
   }
 
-  async setupConnection(remoteVideo, connectionId) {
+  async setupConnection(remoteVideo, connectionId, useWebSocket) {
     const _this = this;
     this.connectionId = connectionId;
     this.remoteVideo = remoteVideo;
@@ -30,8 +30,7 @@ export class SendVideo {
 
     this.remoteStram.onaddtrack = async (e) => await _this.remoteVideo.play();
 
-    const res = await Config.getServerConfig();
-    if (res.useWebSocket) {
+    if (useWebSocket) {
       this.signaling = new WebSocketSignaling();
     } else {
       this.signaling = new Signaling();
