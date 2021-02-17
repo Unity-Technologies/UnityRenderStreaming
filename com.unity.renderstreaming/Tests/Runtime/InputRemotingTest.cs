@@ -130,11 +130,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             _target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
 
-            bool isAddChannel1 = false;
-            bool isGotAnswer2 = false;
-            _target1.onAddChannel += (_, channel) => { isAddChannel1 = true; _channel1 = channel; };
+            _target1.onAddChannel += (_, channel) => { _channel1 = channel; };
             _target1.onGotOffer += (_, sdp) => { _target1.SendAnswer(connectionId); };
-            _target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
             _channel2 = _target2.CreateChannel(connectionId, "_test");
