@@ -1,4 +1,4 @@
-# AR Foundation sample
+# AR Foundation Sample
 
 This sample demonstrates operating the position and direction of a camera on another PC from the mobile device supported by [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest).
 

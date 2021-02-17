@@ -1,4 +1,4 @@
-# Gyroscope sample
+# Gyroscope Sample
 
 This sample shows ways to operate the direction of a camera on the remote PC from the mobile device that equipped gyro sensor.
 

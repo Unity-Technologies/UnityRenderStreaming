@@ -1,1 +1,1 @@
-# Web browser input sample
+# Web Browser Input Sample

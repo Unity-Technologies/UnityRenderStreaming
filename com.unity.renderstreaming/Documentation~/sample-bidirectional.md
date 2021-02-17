@@ -1,4 +1,4 @@
-# Bidirectional sample
+# Bidirectional Sample
 
 ![1on1 Sample](images/renderstreaming_1on1sample.png)
 
