@@ -1,7 +1,5 @@
 # Web Browser Input Sample
 
-このサンプルは、Unity 上の映像をストリーミングをウェブブラウザ上に表示、また、ブラウザからのマウスやキーボードの入力イベントを処理します。
-
 This sample demonstrates to stream the video from Unity to the web browser, and operate input events on the browser as Unity events.
 
 you can see the list of supported browsers on [The Web Application](webapp.md) page.
