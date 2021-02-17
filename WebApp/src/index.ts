@@ -25,10 +25,10 @@ export class RenderStreaming {
           .parse(argv);
         return {
           port: program.port,
-          secure: program.secure,
+          secure: program.secure == undefined ? false : program.secure,
           keyfile: program.keyfile,
           certfile: program.certfile,
-          websocket: program.websocket,
+          websocket: program.websocket == undefined ? false : program.websocket,
           mode: program.mode,
           logging: program.logging,
         };
