@@ -79,12 +79,18 @@ function onClickPlayButton() {
   elementFullscreenButton.src = 'images/FullScreen.png';
   playerDiv.appendChild(elementFullscreenButton);
   elementFullscreenButton.addEventListener("click", function () {
-    if (!document.fullscreenElement) {
+    if (!document.fullscreenElement || !document.webkitFullscreenElement) {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
       }
       else if (document.documentElement.webkitRequestFullscreen) {
         document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else {
+        if (playerDiv.style.position == "absolute") {
+          playerDiv.style.position = "relative";
+        } else {
+          playerDiv.style.position = "absolute";
+        }
       }
     }
   });
