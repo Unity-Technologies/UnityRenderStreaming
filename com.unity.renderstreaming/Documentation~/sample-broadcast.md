@@ -30,7 +30,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 4. Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
 
-![Open Broadcast scene](images/broadcast_sample_signaling.png)
+![Signaling url on inspector](images/broadcast_sample_signaling.png)
 
 4. Click on the Play button in Unity Editor.
 
