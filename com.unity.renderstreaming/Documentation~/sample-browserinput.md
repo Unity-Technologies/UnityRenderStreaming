@@ -2,7 +2,9 @@
 
 このサンプルは、Unity 上の映像をストリーミングをウェブブラウザ上に表示、また、ブラウザからのマウスやキーボードの入力イベントを処理します。
 
-利用可能なブラウザについては [Web アプリケーション](webapp.md)を確認してください。
+This sample demonstrates to stream the video from Unity to the web browser, and operate input events on the browser as Unity events.
+
+you can see the list of supported browsers on [The Web Application](webapp.md) page.
 
 ## Usage
 
@@ -24,4 +26,8 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 4. Open your web browser and access `http://localhost`. You can see the top page. Click a `VideoPlayer Sample` link.
 
+![Signaling url on inspector](images/browser_mainpage.png)
+
 5. You can see the Unity scene on the browser, and control a camera in the Unity scene.
+
+![Signaling url on inspector](images/browser_videoplayer.png)
