@@ -23,8 +23,17 @@ To use this sample, You need to install additional packages shown following tabl
 
 | Unity version | Platform | packages |
 | ------------- | -------- | -------- |
-| Unity2019.4   | iOS      | `ARFoundation 2.1`<br/> `AR Kit 2.1` |
-| Unity2020.2   | iOS      | `ARFoundation 4.0`<br/> `AR Kit 4.0` |
+| Unity2019.4   | iOS      | `ARFoundation 2.1` |
+| Unity2020.2   | iOS      | `ARFoundation 4.0` |
+
+In addition, depending on the platform, each `XR plugin` package must be installed.
+​
+| Unity version | Platform | packages |
+| ------------- | -------- | -------- |
+| Unity2019.4   | iOS      | `ARKit XR Plugin 2.1` |
+| Unity2019.4   | Android  | `ARCore XR Plugin 2.1` |
+| Unity2020.2   | iOS      | `ARKit XR Plugin 4.0` |
+| Unity2020.2   | Android  | `ARCore XR Plugin 4.0` |
 
 > [!NOTE]
 > In this version, Android is not supported by this sample.
