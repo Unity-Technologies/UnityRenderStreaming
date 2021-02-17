@@ -1,1 +1,27 @@
 # Web Browser Input Sample
+
+このサンプルは、Unity 上の映像をストリーミングをウェブブラウザ上に表示、また、ブラウザからのマウスやキーボードの入力イベントを処理します。
+
+利用可能なブラウザについては [Web アプリケーション](webapp.md)を確認してください。
+
+## Usage
+
+### Hardware acceleration 
+
+Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
+
+### Procedure
+
+1. Launch the signaling server using public mode. Please refer to [this link](webapp.md) for launching.
+
+![Launch web server](images/launch_webserver_public_mode.png)
+
+2. Open `WebBrowserInput` scene and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+
+![Signaling url on inspector](images/webbrowserinput_sample_signaling_url_on_inspector.png)
+
+3. Click on the Play button in Unity Editor.
+
+4. Open your web browser and access `http://localhost`. You can see the top page. Click a `VideoPlayer Sample` link.
+
+5. You can see the Unity scene on the browser, and control a camera in the Unity scene.
