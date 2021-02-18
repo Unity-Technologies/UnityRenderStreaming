@@ -6,13 +6,13 @@ using UnityEngine.InputSystem;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [Serializable]
     public class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [Serializable]
     public class ButtonClickElement
@@ -24,31 +24,39 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class WebBrowserInputChannelReceiver : InputChannelReceiverBase
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [SerializeField, Tooltip("Array to set your own click event")]
         private ButtonClickElement[] arrayButtonClickEvent;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         private RemoteInput remoteInput;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
             if (channel == null)
             {
+                if (remoteInput == null)
+                {
+                    return;
+                }
+                onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
+                onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
+                onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
+                onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
                 remoteInput?.Dispose();
                 return;
             }
@@ -64,7 +72,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="elementId"></param>
         public virtual void OnButtonClick(int elementId)
@@ -79,7 +87,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual void OnDestroy()
         {
