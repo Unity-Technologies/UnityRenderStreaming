@@ -5,6 +5,11 @@ h1 {
   padding: 0 0 0.2em 0;
 }
 
+h4 {
+  margin: 0;
+  padding: 0 0 0.2em 0;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
@@ -64,6 +69,14 @@ video {
   --width: 100%;
   width: var(--width);
   height: calc(var(--width) * 0.75);
+}
+
+div#warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  padding: 1em;
+  border: 1px solid transparent;
 }
 
 @media screen and (max-width: 650px) {

@@ -6,16 +6,7 @@ import * as os from 'os';
 import { createServer } from './server';
 import { AddressInfo } from 'net';
 import WSSignaling from './websocket';
-
-export interface Options {
-  secure?: boolean;
-  port?: number;
-  keyfile?: string;
-  certfile?: string;
-  websocket?: boolean;
-  mode?: string;
-  logging?: string;
-}
+import Options from './class/options';
 
 export class RenderStreaming {
   public static run(argv: string[]): RenderStreaming {
@@ -34,10 +25,10 @@ export class RenderStreaming {
           .parse(argv);
         return {
           port: program.port,
-          secure: program.secure,
+          secure: program.secure == undefined ? false : program.secure,
           keyfile: program.keyfile,
           certfile: program.certfile,
-          websocket: program.websocket,
+          websocket: program.websocket == undefined ? false : program.websocket,
           mode: program.mode,
           logging: program.logging,
         };

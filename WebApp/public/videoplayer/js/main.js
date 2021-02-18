@@ -1,10 +1,12 @@
 import { VideoPlayer } from "./video-player.js";
 import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../js/register-events.js";
+import { getServerConfig } from "../../js/config.js";
+
+setup();
 
 let playButton;
 let videoPlayer;
-
-showPlayButton();
+let useWebSocket;
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
@@ -14,6 +16,20 @@ window.addEventListener('resize', function () {
   videoPlayer.resizeVideo();
 }, true);
 
+async function setup() {
+  const res = await getServerConfig();
+  useWebSocket = res.useWebSocket;
+  showWarningIfNeeded(res.startupMode);
+  showPlayButton();
+}
+
+function showWarningIfNeeded(startupMode) {
+  const warningDiv = document.getElementById("warning");
+  if (startupMode == "private") {
+    warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Private Mode."
+    warningDiv.hidden = false;
+  }
+}
 
 function showPlayButton() {
   if (!document.getElementById('playButton')) {
@@ -109,9 +125,9 @@ function onClickPlayButton() {
   }
 }
 
-async function setupVideoPlayer(elements, config) {
-  const videoPlayer = new VideoPlayer(elements, config);
-  await videoPlayer.setupConnection();
+async function setupVideoPlayer(elements) {
+  const videoPlayer = new VideoPlayer(elements);
+  await videoPlayer.setupConnection(useWebSocket);
 
   videoPlayer.ondisconnect = onDisconnect;
   registerGamepadEvents(videoPlayer);

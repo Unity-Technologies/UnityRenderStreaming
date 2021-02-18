@@ -1,4 +1,5 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js"
+import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import * as Config from "../../js/config.js";
 import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
 
 // enum type of event sending from Unity
@@ -7,9 +8,9 @@ var UnityEventType = {
 };
 
 export class VideoPlayer {
-  constructor(elements, config) {
+  constructor(elements) {
     const _this = this;
-    this.cfg = VideoPlayer.getConfiguration(config);
+    this.cfg = Config.getRTCConfiguration();
     this.pc = null;
     this.channel = null;
     this.offerOptions = {
@@ -42,16 +43,7 @@ export class VideoPlayer {
     this.ondisconnect = function () { };
   }
 
-  static getConfiguration(config) {
-    if (config === undefined) {
-      config = {};
-    }
-    config.sdpSemantics = 'unified-plan';
-    config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
-    return config;
-  }
-
-  async setupConnection() {
+  async setupConnection(useWebSocket) {
     const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
@@ -60,12 +52,7 @@ export class VideoPlayer {
       this.pc = null;
     }
 
-    // Decide Signaling Protocol
-    const protocolEndPoint = location.origin + '/protocol';
-    const createResponse = await fetch(protocolEndPoint);
-    const res = await createResponse.json();
-
-    if (res.useWebSocket) {
+    if (useWebSocket) {
       this.signaling = new WebSocketSignaling();
     } else {
       this.signaling = new Signaling();
@@ -87,13 +74,13 @@ export class VideoPlayer {
       console.log('iceGatheringState changed:', e);
     };
     this.pc.ontrack = function (e) {
-      if(e.track.kind == 'video') {
+      if (e.track.kind == 'video') {
         _this.videoTrackList.push(e.track);
       }
-      if(e.track.kind == 'audio') {
+      if (e.track.kind == 'audio') {
         _this.localStream.addTrack(e.track);
       }
-      if(_this.videoTrackList.length == _this.maxVideoTrackLength) {
+      if (_this.videoTrackList.length == _this.maxVideoTrackLength) {
         _this.switchVideo(_this.videoTrackIndex);
       }
     };
@@ -117,14 +104,14 @@ export class VideoPlayer {
       // receive message from unity and operate message
       let data;
       // receive message data type is blob only on Firefox
-      if(navigator.userAgent.indexOf('Firefox') != -1) {
+      if (navigator.userAgent.indexOf('Firefox') != -1) {
         data = await msg.data.arrayBuffer();
-      }else{
+      } else {
         data = msg.data;
       }
       const bytes = new Uint8Array(data);
       _this.videoTrackIndex = bytes[1];
-      switch(bytes[0]) {
+      switch (bytes[0]) {
         case UnityEventType.SWITCH_VIDEO:
           _this.switchVideo(_this.videoTrackIndex);
           break;
@@ -180,7 +167,7 @@ export class VideoPlayer {
     this.video.srcObject = this.localStream;
     this.videoThumb.srcObject = this.localStream2;
 
-    if(indexVideoTrack == 0) {
+    if (indexVideoTrack == 0) {
       this.replaceTrack(this.localStream, this.videoTrackList[0]);
       this.replaceTrack(this.localStream2, this.videoTrackList[1]);
     }
@@ -193,8 +180,8 @@ export class VideoPlayer {
   // replace video track related the MediaStream
   replaceTrack(stream, newTrack) {
     const tracks = stream.getVideoTracks();
-    for(const track of tracks) {
-      if(track.kind == 'video') {
+    for (const track of tracks) {
+      if (track.kind == 'video') {
         stream.removeTrack(track);
       }
     }
