@@ -24,8 +24,8 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 4. Open your web browser and access `http://localhost`. You can see the top page. Click a `VideoPlayer Sample` link.
 
-![Signaling url on inspector](images/browser_mainpage.png)
+![Main page on the browser](images/browser_mainpage.png)
 
 5. You can see the Unity scene on the browser, and control a camera in the Unity scene.
 
-![Signaling url on inspector](images/browser_videoplayer.png)
+![Video player sample on the browser](images/browser_videoplayer.png)
