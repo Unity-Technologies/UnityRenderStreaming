@@ -24,11 +24,11 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2. Open `Bidirectional` scene and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
 
-3. If you need, change device index on `WebCamStremer` compornent.
+3. If you need, change the `Device Index` parameter on `WebCamStreamer` component.
 
-![Change Device Index](images/change_device_index_on_webcamstremr.png)
+![Change Device Index](images/change_device_index_on_webcamstreamer.png)
 
-4. Build and run application. After runnning application click `SetUp` button. (ConnectionID is autofill.)
+4. Build and run application. After running application click `SetUp` button. (ConnectionID is autofill.)
 
 ![Bidirectional Sample Setup](images/sample_bidirectional_setup.png)
 
@@ -47,7 +47,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Bidirectional Streaming](images/sample_bidirectional_streaming.png)
 
-### Procedure (Unity-Broweser)
+### Procedure (Unity-Browser)
 
 1.~3. steps same as Unity-Unity Procedure. 
 
