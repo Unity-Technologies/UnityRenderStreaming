@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     public class Broadcast : SignalingHandlerBase,
-        IOfferHandler, IAddChannelHandler, IDisconnectHandler
+        IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler
     {
         [SerializeField]
         private List<Component> streams = new List<Component>();
@@ -22,23 +22,33 @@ namespace Unity.RenderStreaming
             streams.Remove(component);
         }
 
-        public void OnDisconnect(SignalingEventData data)
+        public void OnDeletedConnection(SignalingEventData eventData)
         {
-            if (!connectionIds.Contains(data.connectionId))
+            Disconnect(eventData.connectionId);
+        }
+
+        public void OnDisconnect(SignalingEventData eventData)
+        {
+            Disconnect(eventData.connectionId);
+        }
+
+        private void Disconnect(string connectionId)
+        {
+            if (!connectionIds.Contains(connectionId))
                 return;
-            connectionIds.Remove(data.connectionId);
+            connectionIds.Remove(connectionId);
 
             foreach (var source in streams.OfType<IStreamSource>())
             {
-                source.SetSender(data.connectionId, null);
+                source.SetSender(connectionId, null);
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
-                receiver.SetReceiver(data.connectionId, null);
+                receiver.SetReceiver(connectionId, null);
             }
             foreach (var channel in streams.OfType<IDataChannel>())
             {
-                channel.SetChannel(data.connectionId, null);
+                channel.SetChannel(connectionId, null);
             }
         }
 

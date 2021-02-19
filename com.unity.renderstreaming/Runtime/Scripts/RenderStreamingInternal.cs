@@ -9,81 +9,81 @@ using Unity.WebRTC;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal struct RenderStreamingDependencies
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public ISignaling signaling;
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public EncoderType encoderType;
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public RTCConfiguration config;
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public Func<IEnumerator, Coroutine> startCoroutine;
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal class RenderStreamingInternal : IDisposable,
         IRenderStreamingHandler, IRenderStreamingDelegate
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action onStart;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string> onCreatedConnection;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string> onFoundConnection;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string> onDeletedConnection;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string, string> onGotOffer;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string, string> onGotAnswer;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string> onConnect;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string> onDisconnect;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string, RTCRtpReceiver> onAddReceiver;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public event Action<string, RTCDataChannel> onAddChannel;
 
@@ -96,7 +96,7 @@ namespace Unity.RenderStreaming
         static List<RenderStreamingInternal> s_list = new List<RenderStreamingInternal>();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="dependencies"></param>
         public RenderStreamingInternal(ref RenderStreamingDependencies dependencies)
@@ -110,7 +110,7 @@ namespace Unity.RenderStreaming
             {
                 WebRTC.WebRTC.Initialize(dependencies.encoderType);
             }
-            
+
             _config = dependencies.config;
             _startCoroutine = dependencies.startCoroutine;
             _signaling = dependencies.signaling;
@@ -127,7 +127,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         ~RenderStreamingInternal()
         {
@@ -135,7 +135,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void Dispose()
         {
@@ -161,7 +161,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         public void CreateConnection(string connectionId)
@@ -170,7 +170,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         public void DeleteConnection(string connectionId)
@@ -192,7 +192,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
@@ -200,14 +200,11 @@ namespace Unity.RenderStreaming
         {
             // todo:: replace RTCPeerConnection.AddTransceiver(MediaStreamTrack track, RTCRtpTransceiverInit init)
             RTCRtpSender sender = _mapConnectionIdAndPeer[connectionId].AddTrack(track);
-
-            // todo:: The comparison of RTCRtpSender has bug
-            //return _mapConnectionIdAndPeer[connectionId].GetTransceivers().First(t => t.Sender == sender);
-            return _mapConnectionIdAndPeer[connectionId].GetTransceivers().Last();
+            return _mapConnectionIdAndPeer[connectionId].GetTransceivers().First(t => t.Sender == sender);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
@@ -218,7 +215,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="name"></param>
@@ -230,7 +227,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
@@ -241,7 +238,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
@@ -252,7 +249,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
@@ -261,7 +258,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         public void SendAnswer(string connectionId)

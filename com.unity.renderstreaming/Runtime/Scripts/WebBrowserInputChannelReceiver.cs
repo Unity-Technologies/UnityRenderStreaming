@@ -47,27 +47,24 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
-            if (channel == null)
+            if (channel == null && remoteInput != null)
             {
-                if (remoteInput == null)
-                {
-                    return;
-                }
                 onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
                 onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
                 onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
                 onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
                 remoteInput?.Dispose();
-                return;
             }
-            remoteInput = RemoteInputReceiver.Create();
-            remoteInput.ActionButtonClick = OnButtonClick;
-            channel.OnMessage += remoteInput.ProcessInput;
-            onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
-            onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
-            onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Added);
-            onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Added);
-
+            else
+            {
+                remoteInput = RemoteInputReceiver.Create();
+                remoteInput.ActionButtonClick = OnButtonClick;
+                channel.OnMessage += remoteInput.ProcessInput;
+                onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
+                onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
+                onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Added);
+                onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Added);
+            }
             base.SetChannel(connectionId, channel);
         }
 
