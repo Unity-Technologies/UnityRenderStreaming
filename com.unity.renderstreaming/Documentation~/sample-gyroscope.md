@@ -22,11 +22,11 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2. Open `Gyro` scene and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
 
-![Launch web server](images/signaling_url_on_inspector.png)
+![Signaling url on inspector](images/gyro_sample_signaling_url_on_inspector.png)
 
 3. Specify the build platform (Currently iOS supported only) and start building. Connect the device to the PC, and transfer the application to the device.
 
-![Launch web server](images/sample_gyroscope_build_settings.png)
+![Build settings](images/sample_gyroscope_build_settings.png)
 
 4. Open `Broadcast` scene and Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
 
