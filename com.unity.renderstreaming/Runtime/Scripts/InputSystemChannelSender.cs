@@ -15,6 +15,13 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
+            if (channel == null)
+            {
+                senderInput?.StopSending();
+                senderDisposer?.Dispose();
+                sender = null;
+                return;
+            }
             sender = new Sender();
             senderInput = new InputRemoting(sender);
             senderDisposer = senderInput.Subscribe(new Observer(channel));

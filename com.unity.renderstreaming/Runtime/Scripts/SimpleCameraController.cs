@@ -6,6 +6,9 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
+#if URS_USE_AR_SUBSYSTEMS
+using UnityEngine.XR.ARSubsystems;
+#endif
 namespace Unity.RenderStreaming
 {
     public interface IInput
@@ -137,7 +140,9 @@ namespace Unity.RenderStreaming
         private Touchscreen m_screen;
         private Gyroscope m_gyroscpe;
         private TrackedDevice m_tracker;
-
+#if URS_USE_AR_SUBSYSTEMS
+        private HandheldARInputDevice m_handheld;
+#endif
         void Awake()
         {
             if (receiver == null)
@@ -184,6 +189,11 @@ namespace Unity.RenderStreaming
                 case TrackedDevice tracker:
                     m_tracker = add ? tracker : null;
                     return;
+#if URS_USE_AR_SUBSYSTEMS
+                case HandheldARInputDevice handheld:
+                    m_handheld = handheld;
+                    return;
+#endif
             }
         }
 
@@ -289,6 +299,15 @@ namespace Unity.RenderStreaming
                 return;
             }
 
+#if URS_USE_AR_SUBSYSTEMS
+            if (m_handheld != null && m_handheld.enabled)
+            {
+                m_TargetCameraState.UpdateTransform(transform);
+                transform.position += m_handheld.devicePosition.ReadValue();
+                transform.eulerAngles += m_handheld.deviceRotation.ReadValue().eulerAngles;
+                return;
+            }
+#endif
             var touches = m_screen.GetTouches();
 
             // Rotation

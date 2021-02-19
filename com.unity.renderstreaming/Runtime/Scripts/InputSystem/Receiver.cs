@@ -33,6 +33,11 @@ namespace Unity.RenderStreaming
             _channel.OnMessage += OnMessage;
         }
 
+        ~Receiver()
+        {
+            RemoveAllDevices();
+        }
+
         private void OnMessage(byte[] bytes)
         {
             MessageSerializer.Deserialize(bytes, out var message);
