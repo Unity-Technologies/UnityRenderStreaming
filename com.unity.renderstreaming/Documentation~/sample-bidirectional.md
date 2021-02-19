@@ -2,6 +2,8 @@
 
 This is a sample of bi-directional(send/receive) each other's video.
 
+It works with Unity-Unity or Unity-Browser combination.
+
 > [!NOTE]
 > If no codec is available on both sender and receiver, the video can not stream. Please note that the compatibility of codecs is different corresponding to platforms and graphics API.
 
