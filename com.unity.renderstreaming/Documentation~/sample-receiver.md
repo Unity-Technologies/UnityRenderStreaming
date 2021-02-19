@@ -29,7 +29,7 @@ This procedure is for using it with the [Broadcast](sample-broadcast.md) sample.
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Build a scene as a receiver (ex. [`Receiver`](sample-receiver.md) scene) in Unity Editor, and launch an application.
+2) Build a `Receiver` scene in Unity Editor, and launch an application.
 
 3) Open `Broadcast` scene.
 
