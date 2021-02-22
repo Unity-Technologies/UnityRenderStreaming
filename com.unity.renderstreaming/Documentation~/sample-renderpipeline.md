@@ -2,6 +2,12 @@
 
 This samples can stream video and audio to multi Unity applications using [High-Definition Render pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) or [Universal Render Pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest).
 
+This sample can use in combination with other samples below.
+
+- [AR Foundation Sample](sample-arfoundation.md)
+- [Gyroscope Sample](sample-gyroscope.md)
+- [Receiver Sample](sample-receiver.md)
+
 ## Additional packages
 
 To use this sample, You need to install additional packages shown following table.
@@ -35,6 +41,8 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 2. Build a scene as a receiver (ex. [`Receiver`](sample-receiver.md) scene) in Unity Editor, and launch an application.
 
 3. Open `HDRP` or `URP` scene, and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+
+![Open Render Pipeline scene](images/open_renderpipeline_scene.png)
 
 4. Click on the Play button in Unity Editor.
 
