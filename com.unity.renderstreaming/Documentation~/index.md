@@ -28,8 +28,8 @@ It is possible to send input messages to Unity from the browser, and sending inp
 ## Requirements
 
 This version of Render Streaming is compatible with the following versions of the Unity Editor
+
 - **Unity 2019.4**
-- **Unity 2020.2**
 
 ### Web Browsers support
 
