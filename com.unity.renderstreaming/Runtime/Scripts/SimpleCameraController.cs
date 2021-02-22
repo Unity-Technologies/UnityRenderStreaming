@@ -167,7 +167,7 @@ namespace Unity.RenderStreaming
 
         void SetDevice(InputDevice device, bool add=true)
         {
-            uiController?.SetDevice(device);
+            uiController?.SetDevice(device, add);
 
             switch (device)
             {

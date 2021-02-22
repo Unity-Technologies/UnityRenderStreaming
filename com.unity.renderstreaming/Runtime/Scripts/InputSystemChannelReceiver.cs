@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming
     public class InputSystemChannelReceiver : InputChannelReceiverBase
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
@@ -16,7 +16,7 @@ namespace Unity.RenderStreaming
         private IDisposable receiverDisposer;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
@@ -27,14 +27,15 @@ namespace Unity.RenderStreaming
                 receiverDisposer?.Dispose();
                 receiver.RemoveAllDevices();
                 receiver = null;
-                return;
             }
-            receiver = new Receiver(channel);
-            receiver.onDeviceChange += onDeviceChange;
-            receiverInput = new InputRemoting(receiver);
-            receiverDisposer = receiverInput.Subscribe(receiverInput);
-            receiverInput.StartSending();
-
+            else
+            {
+                receiver = new Receiver(channel);
+                receiver.onDeviceChange += onDeviceChange;
+                receiverInput = new InputRemoting(receiver);
+                receiverDisposer = receiverInput.Subscribe(receiverInput);
+                receiverInput.StartSending();
+            }
             base.SetChannel(connectionId, channel);
         }
 

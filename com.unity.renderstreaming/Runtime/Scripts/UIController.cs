@@ -24,19 +24,20 @@ namespace Unity.RenderStreaming
         private Mouse m_mouse;
         private Touchscreen m_screen;
 
-        public void SetDevice(InputDevice device)
+        public void SetDevice(InputDevice device, bool add=false)
         {
             switch (device)
             {
                 case Mouse mouse:
-                    m_mouse = mouse;
+                    m_mouse = add ? mouse : null;
                     return;
                 case Keyboard keyboard:
-                    m_keyboard = keyboard;
-                    m_keyboard.onTextInput += OnTextInput;
+                    m_keyboard = add ? keyboard : null;
+                    if(add)
+                        m_keyboard.onTextInput += OnTextInput;
                     return;
                 case Touchscreen screen:
-                    m_screen = screen;
+                    m_screen = add ? screen : null;
                     return;
             }
         }
