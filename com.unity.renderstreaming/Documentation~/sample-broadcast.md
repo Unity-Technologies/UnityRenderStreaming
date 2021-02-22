@@ -8,7 +8,7 @@ This sample can use in combination with other samples below.
 - [Gyroscope Sample](sample-gyroscope.md)
 - [Receiver Sample](sample-receiver.md)
 
-This sample uses build-in render pipeline. If you want to try [High-Definition Render pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) or [Universal Render Pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest), please try [Render Pipeline Sample](sample-renderpipeline.md).
+This sample uses build-in render pipeline. If you want to try [High-Definition Render pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest) or [Universal Render Pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest), please try [Render Pipeline Sample](sample-renderpipeline.md).
 
 ## Usage
 
