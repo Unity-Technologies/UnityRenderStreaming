@@ -4,7 +4,6 @@ using System.Threading;
 using UnityEngine;
 using Unity.WebRTC;
 using Unity.RenderStreaming.Signaling;
-using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Unity.RenderStreaming
 {
@@ -14,7 +13,7 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Signaling server url")]
         private string urlSignaling = "http://localhost";
 
-        [SerializeField, Tooltip("Type of signaling server")]
+        [SerializeField, Tooltip("Type of signaling")]
         private string signalingType = typeof(HttpSignaling).FullName;
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]

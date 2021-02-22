@@ -71,7 +71,7 @@ namespace Unity.RenderStreaming.Editor
                 }
             }
 
-            selected = EditorGUILayout.Popup("Signaling server type", selected, options.ToArray());
+            selected = EditorGUILayout.Popup("Signaling Type", selected, options.ToArray());
             signalingType.stringValue = types[selected];
 
         }

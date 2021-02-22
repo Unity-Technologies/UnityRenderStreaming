@@ -1,7 +1,6 @@
 * [Unity Render Streaming](index.md)
-* Getting Started
-    * [Overview](overview.md)
-    * [Tutorial](tutorial.md)
+* [Overview](overview.md)
+* [Tutorial](tutorial.md)
 * [Web Application](webapp.md)
     * [Browser Input Process](browser_input.md)
     * [Configure Self-Signed Credentials for https](https.md)
