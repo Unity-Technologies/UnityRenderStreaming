@@ -25,15 +25,18 @@ publish_github_release_webapp:
   name: Publish Webapp to Github Release
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/ubuntu:stable
     flavor: b1.large
   variables:
     GIT_TAG: Foo
   commands:
-    - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver_mac"
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver.exe"
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+    - sudo apt-add-repository https://cli.github.com/packages
+    - sudo apt update
+    - sudo apt install gh
+    - gh release upload $GIT_TAG 'WebApp/bin~/webserver' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - gh release upload $GIT_TAG 'WebApp/bin~/webserver_mac' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - gh release upload $GIT_TAG 'WebApp/bin~/webserver.exe' --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
    {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -44,13 +47,16 @@ publish_github_release_template_{{ project.name }}:
   name: Publish Template to Github Release {{ project.name }}
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/ubuntu:stable
     flavor: b1.large
   variables:
     GIT_TAG: Foo
   commands:
-    - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz"
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+    - sudo apt-add-repository https://cli.github.com/packages
+    - sudo apt update
+    - sudo apt install gh
+    - gh release upload $GIT_TAG 'upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz' --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
 {% endfor %}
