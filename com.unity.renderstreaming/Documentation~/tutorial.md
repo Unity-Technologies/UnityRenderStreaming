@@ -45,8 +45,6 @@ com.unity.renderstreaming@3.0.0-preview
 
 The list of version string is [here](https://github.com/Unity-Technologies/com.unity.renderstreaming/tags). In most cases, the latest version is recommended to use.
 
-![Input Render Streaming package git URL](images/install_input_webrtc_git_url.png)
-
  Click `Add` button, and will start install the package.
 
 If an input system dialog box appears, click `Yes`
