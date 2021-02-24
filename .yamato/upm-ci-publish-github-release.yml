@@ -30,10 +30,10 @@ publish_github_release_webapp:
   variables:
     GIT_TAG: Foo
   commands:
-    - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver"
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver_mac"
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "WebApp/bin~/webserver.exe"
+    - choco install -y gh
+    - gh release upload %GIT_TAG% 'WebApp/bin~/webserver' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - gh release upload %GIT_TAG% 'WebApp/bin~/webserver_mac' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - gh release upload %GIT_TAG% 'WebApp/bin~/webserver.exe' --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
    {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
@@ -49,8 +49,8 @@ publish_github_release_template_{{ project.name }}:
   variables:
     GIT_TAG: Foo
   commands:
-    - npm install github-release-cli -g
-    - github-release upload -o "Unity-Technologies" -r "UnityRenderStreaming" -t "%GIT_TAG%" -n "%GIT_TAG%" "upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz"
+    - choco install -y gh
+    - gh release upload %GIT_TAG% 'upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz' --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}
 {% endfor %}
