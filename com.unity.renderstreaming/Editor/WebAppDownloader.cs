@@ -35,7 +35,8 @@ namespace Unity.RenderStreaming.Editor
             {
                 version = LatestKnownVersion;
             }
-            string path = string.Format("releases/download/{0}", version);
+
+            string path = $"releases/download/{version}";
             string fileName = GetFileName();
             return $"{URLRoot}/{path}/{fileName}";
         }
@@ -81,7 +82,7 @@ namespace Unity.RenderStreaming.Editor
                     if (version != LatestKnownVersion) {
                         DownloadWebApp(LatestKnownVersion, dstPath, callback);
                     } else {
-                        Debug.LogError("Failed downloading webserver from: " + url + " . Error: " + e.Error.ToString());
+                        Debug.LogError($"Failed downloading web server from:{url}. Error: {e.Error}");
                     }
                     callback?.Invoke(false);
                     return;
@@ -89,7 +90,7 @@ namespace Unity.RenderStreaming.Editor
 
                 if (!System.IO.File.Exists(tmpFilePath))
                 {
-                    Debug.LogErrorFormat("Download failed. url:{0}", url);
+                    Debug.LogError($"Download failed. url:{url}");
                     callback?.Invoke(false);
                     return;
                 }
@@ -122,7 +123,7 @@ namespace Unity.RenderStreaming.Editor
                 var packageInfo = req.FindPackage(packageName);
                 if (null == packageInfo)
                 {
-                    Debug.LogErrorFormat("Not found package \"{0}\"", packageName);
+                    Debug.LogError($"Not found package \"{packageName}\"");
                     return;
                 }
                 callback(packageInfo.version);
