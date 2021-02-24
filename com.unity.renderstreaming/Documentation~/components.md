@@ -44,6 +44,12 @@ This component streams the `WebCamTexture` rendering results. Please refer [WebC
 
 ![WebCam Streamer inspector](images/webcamstreamer_inspector.png)
 
+> [!NOTE]
+> When building application for iOS platform, you need set `Camera Usage Description` on Player Settings.
+> If not set this, your application exits. (refer [this page](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW24))
+
+![Set Camera Usage Description](images/sample_bidirectional_camerausagedescription.png)
+
 ### Properties
 
 | Parameter                    | Description                                                         | Default                         |

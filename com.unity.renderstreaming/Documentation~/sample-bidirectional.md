@@ -33,7 +33,8 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 ![Bidirectional Sample Setup](images/sample_bidirectional_setup.png)
 
 > [!NOTE]
-> If use on iOS/macOS platform, you need set `Camera Usage Description` on Player Settings.
+> When building application for iOS platform, you need set `Camera Usage Description` on Player Settings.
+> If not set this, your application exits. (refer [this page](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW24))
 
 ![Set Camera Usage Description](images/sample_bidirectional_camerausagedescription.png)
 
