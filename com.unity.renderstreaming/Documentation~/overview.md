@@ -35,28 +35,3 @@ The following is an explanation of how signaling works.
 6. Unity checks the Web server for unprocessed **ICE Candidates** and receives any found. 
 7. Unity sends **ICE Candidate**to the Web server.
 8. Web browser checks the Web server for unprocessed **ICE Candidate** and receives any found. 
-
-## Package Structure 
-
-The Render Steraming package includes the following.
-
-- WebRTC package
-- Sample code / assets
-- Web application
-
-![Package Render Streaming](images/package_renderstreaming.png)
-
-### WebRTC Package
-
-This provides the WebRTC C# API. See the [WebRTC package documentation](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) for details on the API.
-
-![WebRTC package manager](images/webrtc_package_manager.png)
-
-### Sample Code / Assets
-
-This is a template project containing an HDRP template sample which also incorporates Render Streaming.
-
-### Web Application
-
-Includes a client side and server side sample. Also provides the signaling server features. For details, see the [documentation](webapp.md).
-For information on signaling protocols, see [Documentation] (signalingprotocol.md).

@@ -1,45 +1,61 @@
-# Tutorial
+# Tutorial 
 
-In this tutorial, we introduce the way to use samples published on Package Manager.
-For template installation tutorial, please see the document on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
+In this page, we introduce the way to use samples published on Package Manager.
 
 ## Install package
 
-Open an existing or create a new project
-Click on the `Window` Menu and open `Package Manager`. Then, click on `Advanced` and make sure `Show preview packages` is checked
+> [!NOTE]
+> In Unity `2020.2` and `2019.4`, there are differences about how to install Unity Render Streaming package so please pay attention to the Unity version you are using and follow the instructions below.
 
-![Show Preview Packages](images/show_preview_packages.png)
+### Case of Unity 2019.4
 
-Make sure to search `All packages`, and type `RenderStreaming` in the text box.
+Select `Window/Package Manager` in the menu bar.
 
-![Render Streaming Package](images/renderstreaming_package.png)
+![Install Package Manager from menu bar](images/install_select_packman_menu_unity2019.png)
 
-Click `Install` on the bottom right.
+Check Package Manager window, Click `Advanced` button and enable `Show preview packages`.
+
+![Select show preview packages on advanced options](images/install_select_show_preview_packages.png)
+
+Input `renderstreaming` to the search box at the top of the Package Manager window.
+
+![Search renderstreaming package](images/install_search_renderstreaming_package.png)
+
+Click `Install` button at the bottom left of the window, and will start install the package.
 
 If an input system dialog box appears, click `Yes`
 
 ![Input system backend](images/input_system_backend.png)
 
-## Install HDRP sample
+### Case of Unity 2020.2
 
-Click on `Import in project` to import the HDRP sample.
-   This will also automatically install the HDRP package *(com.unity.render-pipelines.high-definition)*.
+Select `Window/Package Manager` in the menu bar.
 
-![HDRP sample](images/hdrp_sample.png)
+![Install Package Manager from menu bar](images/install_select_packman_menu_unity2020.png)
 
-When this `Import Unity Package` dialog box appears, click `Import` to import all assets.
+Check Package Manager window, Click `+` button and select `Add package from git URL...`.
 
-![HDRP Unitypackage](images/hdrp_unitypackage.png)
+![Select add package from git url](images/install_select_add_package_from_git_url.png)
 
-After all the import process has been finished, open `Assets/SimpleScene` in the Project View.
+Input the string below to the input field.
 
-![Simple Scene](images/simplescene.png)
+```
+com.unity.renderstreaming@3.0.0-preview
+```
+
+The list of version string is [here](https://github.com/Unity-Technologies/com.unity.renderstreaming/tags). In most cases, the latest version is recommended to use.
+
+ Click `Add` button, and will start install the package.
+
+If an input system dialog box appears, click `Yes`
+
+![Input system backend](images/input_system_backend.png)
 
 ## Install web application
 
-Click on `Edit/Render Streaming/Download web app` menu item to download [our web server](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
+Click on `Edit/Render Streaming/Download web app` menu item to download the application from [this page](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 
-![Download webapp](images/simplescene.png)
+![Download webapp](images/download_webapp.png)
 
 When the select download folder window appears, click on `Select Folder` to download the file to the default folder
 
@@ -50,17 +66,34 @@ Unity RenderStreaming web server.
 
 ![Web Server](images/webserver.png)
 
+## Install samples
+
+You can import Samples from the bottom of the `com.unity.renderstreaming` package in the PackageManager Window.
+
+![Sample List](images/renderstreaming_samples.png)
+
 ## Play Unity
 
-Enter play mode in Unity
+Open `WebBrowserInput` scene.
+
+![Open WebBrowserInput scene](images/open_webbrowserinput_scene.png)
+
+Enter play mode in Unity Editor.
 
 ![Play mode](images/play_mode.png)
 
-Open your browser and type `localhost` on the URL bar. Then click on the play button in the middle. 
-The view in Unity should then appear on your browser.
+Open your web browser and access `http://localhost`. You can see the top page. Click a `VideoPlayer Sample` link.
 
-![Browser](images/browser.png)
+![Main page on the browser](images/browser_mainpage.png)
+
+You can see the Unity scene on the browser, and control a camera in the Unity scene.
+
+![Video player sample on the browser](images/browser_videoplayer.png)
 
 ## After tutorial
 
-About general questions, please see [FAQ](faq.md) page. About the operation of inspectors, please see [Components settings](components.md) page. About options of web application, please see [The web application](webapp.md) page.
+About general questions, please see [FAQ](faq.md) page. About the operation of inspectors, please see [Components settings](components.md) page. 
+
+About options of web application, please see [The web application](webapp.md) page.
+
+You can see more details for samples on the [Samples](samples.md) page.

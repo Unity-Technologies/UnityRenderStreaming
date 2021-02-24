@@ -28,28 +28,8 @@ It is possible to send input messages to Unity from the browser, and sending inp
 ## Requirements
 
 This version of Render Streaming is compatible with the following versions of the Unity Editor
+
 - **Unity 2019.4**
-- **Unity 2020.2**
-
-| Platform    | Graphics API | Hardware Encoder                                                                                                         | Software Encoder   |
-| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------ |
-| Windows x64 | DirectX11    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
-| Windows x64 | DirectX12    | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
-| Windows x64 | OpenGL       |                                                                                                                          |                    |
-| Windows x64 | Vulkan       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: | 
-| Linux x64   | OpenGL       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) |                    |
-| Linux x64   | Vulkan       | :white_check_mark: (Require [NVIDIA Graphics card](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix)) | :white_check_mark: |
-| MacOS       | Metal        | :white_check_mark:                              	                                                                        | :white_check_mark: |
-| iOS         | Metal        | :white_check_mark:                              	                                                                        | :white_check_mark: |
-| Android     | Vulkan       |                                                 	                                                                        |                    |
-
-> [!NOTE]
-> Supporting OpenGL API on MacOS is not planned.
-
-
-### Hardware encoder
-
-This solution is optimised for NVIDIA graphics cards. Using a recommended graphics card will allow streaming with lower latency. See NVIDIA's [NVIDIA VIDEO CODEC SDK](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) webpage for a list of recommended graphics cards.
 
 ### Web Browsers support
 
@@ -65,7 +45,18 @@ Unity Render Streaming supports almost all browsers that can use WebRTC. See [We
 > [!NOTE]
 > It may not work properly on some browsers caused by depending on the status of support about WebRTC.
 
-### Furioos compatibility
+> [!NOTE]
+> In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
+
+## Samples
+
+Please check [this page](samples.md).
+
+## Project template
+
+Project templates are on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
+
+## Furioos compatibility
 
 > [!NOTE]
 > This is an experimental feature.
@@ -75,7 +66,3 @@ That means that you can easily build a RenderStreaming application, upload it on
 To do so, the requirement is to select "FurioosSignaling" in the "Signaling server type" parameter of the RenderStreaming script.
 This allow your application to connect to Furioos services when running on the managed virtual machines.
 Then just build a standalone Windows version of your application, zip it and upload it on your account at https://portal.furioos.com/ .
-
-## Samples
-
-Please check [this page](samples.md).

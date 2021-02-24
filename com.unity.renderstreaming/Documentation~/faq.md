@@ -25,25 +25,27 @@ Make sure the port isn't being used by another service.
 ### uGUI can't be operated through a browser.
 
 It is only possible to operate when the focus is on the running application.
-This problem depends on the availability of `com.unity.inputsystem`.
+On [This page](browser_input.md#using-unity-ui), you can see more info.
 
 ## Issues with the environment
 
 ### Which versions of Unity can be used?
 
-It is available on Unity 2019.4.
+It is available on **Unity 2019.4**.
 
 ### Which OS can be used?
 
-Windows10 x64, Linux x64, MacOS. Support for UWP(Universal Windows Platform), mobile platform like Android and iOS will be provided later.
+**Windows10 x64**, **Linux x64**, **macOS** and **iOS**. 
+
+**Android** will be provided later. Support for **UWP**(Universal Windows Platform) and **WebGL** is not supported, 
 
 ### Are there any hardware constraints?
 
-The hardware code uses NVCodec, so an NVIDIA graphics card is required. See the NVIDIA [site](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) for information on graphics cards that support NVCodec.
+On Windows and Linux, the hardware codec uses an NVIDIA graphics card. See the NVIDIA [site](https://developer.nvidia.com/video-encode-decode-gpu-support-matrix) for information on graphics cards that support NVCodec.
 
 ### Which browsers are supported?
 
-Any browser, as long as it supports WebRTC.
+See [this page](https://caniuse.com/#search=webrtc).
 
 ## Questions about features
 
@@ -62,10 +64,6 @@ Yes. If you use the hardware encoder, make sure to check the limitation of the n
 ### How do you increase the video quality?
 
 You can set the resolution of the frame on the `CameraStreamer` inspector. Keep in mind that video quality depends on the quality of the network. 
-
-### Is Realtime-Raytracing supported? 
-
-Yes. Please see the detail on the HDRP [document](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@7.1/manual/Ray-Tracing-Getting-Started.html).
 
 ## Questions about support
 

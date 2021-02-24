@@ -1,6 +1,6 @@
 # Components Settings
 
-## `Render Streaming` Components
+## `Render Streaming`
 
 **Render Streaming** includes the following features.
 
@@ -10,23 +10,23 @@
 
 ![Render Streaming Inspector](images/renderstreaming_inspector.png)
 
-## Properties
+### Properties
 
 | Parameter                    | Description                                                                                                                | Default                         |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| **URL Signaling**            | Set the signaling server URL <br>If you use WebSocket as a signaling protocol, you should specify a URL starting with `ws` or `wss`. | http://localhost                |
+| **Signaling Type**           | Class type of the signaling | `WebSocketSignaling`                |
+| **Signaling URL**            | Set the signaling server URL <br>If you use WebSocket as a signaling protocol, you should specify a URL starting with `ws` or `wss`. | `ws://localhost`             |
 | **Ice Servers**              | Set a list of STUN/TURN servers                                                                                            |                                 |
-| *Urls*                       | Set URLs of STUN/TURN servers                                                                                              | [stun:stun.l.google.com:19302\] |
+| *Urls*                       | Set URLs of STUN/TURN servers                                                                                              | `[stun:stun.l.google.com:19302\]` |
 | *Username*                   | The username to use when logging into the TURN server                                                                      |                                 |
 | *Credencial*                 | The credential to use when logging into the TURN server                                                                    |                                 |
-| *Credencial Type*            | This attribute specifies what kind of `credential` is to be used when connecting to the TURN server                        | Password                        |
+| *Credencial Type*            | This attribute specifies what kind of `credential` is to be used when connecting to the TURN server                        | `Password`                        |
 | **Interval**                 | Set the polling frequency (in seconds) to the signaling server <br>Valid only if you are using Http as the signaling protocol. | 5 (sec)                         |
-| **Hardware Encoder Support** | Enable the checkbox to make this video encoding replace values that use a [hardware encoder](index.md#hardware-encoder) | Enabled                         |
-| **Array Button Click Event** | Register browser button click events                                                                                       |                                 |
-| *Element Id*                 | Set an ID that is sent from browsers                                                                                       |                                 |
-| *Click*                      | Set button click event                                                                                                     |                                 |
+| **Hardware Encoder Support** | Enable the checkbox to make this video encoding replace values that use a [hardware encoder](index.md#hardware-encoder) | `False`                         |
+| **Handlers**                 | Register browser button click events                                                                                       |                                 |
+| **Run On Awake**               | Automatically started when called `Awake` method                                                                                                     | `True`                              |
 
-## `CameraStreamer` Component
+## `CameraStreamer`
 
 This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
@@ -38,7 +38,7 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
 
-## `WebCamStreamer` Component
+## `WebCamStreamer`
 
 This component streams the `WebCamTexture` rendering results. Please refer [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) pages.
 
@@ -51,7 +51,7 @@ This component streams the `WebCamTexture` rendering results. Please refer [WebC
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
 | **Device Index**             | Index of `WebCamTexutre.devices` to use                             | 0                               |
 
-## `AudioStreamer` Component
+## `AudioStreamer`
 
 This component streams the `AudioListener` component's audio rendering results. 
 
@@ -59,7 +59,7 @@ This component streams the `AudioListener` component's audio rendering results.
 
 None
 
-## `ReceiveVideoViewer` Component
+## `ReceiveVideoViewer`
 
 This component receives a videostream and exposes a texture that rendered the receiving frame buffer. 
 
@@ -71,3 +71,71 @@ This component receives a videostream and exposes a texture that rendered the re
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
 | **Connection Id**            | ID of receiving videostream                                         | Empty                           |
+
+## `InputSystemChannelSender`
+
+This component sends input events from Unity.
+
+![InputSystem Channel Sender inspector](images/inputsystemchannelsender_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Local**           | Channel is local or remote                         | `False`                       |
+| **Label**            | Channel label                                         | Empty                           |
+
+## `InputSystemChannelReceiver`
+
+This component receives input events from Unity.
+
+![InputSystem Channel Receiver inspector](images/inputsystemchannelreceiver_inspector.png)
+
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Local**           | Channel is local or remote                         | `False`                       |
+| **Label**            | Channel label                                         | Empty                           |
+
+## `WebBrowserInputChannelReceiver`
+
+This component receives input events from web browsers.
+
+![Web Browser Input Channel Receiver inspector](images/webbrowserinputchannelreceiver_inspector.png)
+
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Local**           | Channel is local or remote                         | `False`                       |
+| **Label**            | Channel label                                         | Empty                           |
+| **Array Button Click Event** | Register browser button click events                                                                                       | []                                |
+| *Element Id*                 | Set an ID that is sent from browsers                                                                                       |                                 |
+| *Click*                      | Set button click event                                                                                                     |                                 |
+
+## `SingleConnection`
+
+This component lists components that stream media or data via a single peer connection.
+
+![Single Connection inspector](images/singleconnection_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streams**           | List of streams                         | []                       |
+
+## `Broadcast`
+
+This component lists components that stream media or data via multiple peer connections.
+
+![Broadcast inspector](images/broadcast_inspector.png)
+
+### Properties
+
+| Parameter                    | Description                                                         | Default                         |
+| ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| **Streams**           | List of streams                         | []                       |
