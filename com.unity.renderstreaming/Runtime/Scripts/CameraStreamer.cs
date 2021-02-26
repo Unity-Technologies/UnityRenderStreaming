@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming
     [RequireComponent(typeof(Camera))]
     public class CameraStreamer : VideoStreamBase
     {
-        private Camera m_camera;
+        protected Camera m_camera;
         public override Texture SendTexture => m_camera.targetTexture;
 
         protected virtual void Awake()
