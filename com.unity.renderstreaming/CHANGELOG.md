@@ -17,7 +17,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 ### Changed
 
 - Moved scripts from the sample folder to Package Manager.
-- Upgrading WebRTC package to `2.3.2-preview`.
+- Upgrading WebRTC package to `2.3.3-preview`.
 
 ## [2.2.2] - 2020-12-15
 

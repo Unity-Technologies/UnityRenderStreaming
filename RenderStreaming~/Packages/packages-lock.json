@@ -54,7 +54,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "2.3.2-preview",
+        "com.unity.webrtc": "2.3.3-preview",
         "com.unity.inputsystem": "1.0.0"
       }
     },
@@ -79,7 +79,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.3.2-preview",
+      "version": "2.3.3-preview",
       "depth": 1,
       "source": "registry",
       "dependencies": {

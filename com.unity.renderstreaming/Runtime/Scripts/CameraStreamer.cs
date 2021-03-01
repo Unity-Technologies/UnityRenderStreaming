@@ -8,7 +8,7 @@ namespace Unity.RenderStreaming
     {
         [SerializeField] private RenderTextureDepth depth;
         [SerializeField, Tooltip("This property is needed to choose from 1,2,4 or 8")]
-        private int antiAliasing; //ToDO(kannan):using enum
+        private int antiAliasing = 1; //ToDO(kannan):using enum
 
 
         protected Camera m_camera;
