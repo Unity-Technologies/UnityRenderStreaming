@@ -47,13 +47,17 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
-            if (channel == null && remoteInput != null)
+            if (channel == null)
             {
-                onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
-                onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
-                onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
-                onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
-                remoteInput?.Dispose();
+                if (remoteInput != null)
+                {
+                    onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
+                    onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
+                    onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
+                    onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
+                    remoteInput.Dispose();
+                    remoteInput = null;
+                }
             }
             else
             {
