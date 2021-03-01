@@ -6,7 +6,12 @@ namespace Unity.RenderStreaming
     [RequireComponent(typeof(Camera))]
     public class CameraStreamer : VideoStreamBase
     {
-        private Camera m_camera;
+        [SerializeField] private RenderTextureDepth depth;
+        [SerializeField, Tooltip("This property is needed to choose from 1,2,4 or 8")]
+        private int antiAliasing; //ToDO(kannan):using enum
+
+
+        protected Camera m_camera;
         public override Texture SendTexture => m_camera.targetTexture;
 
         protected virtual void Awake()
@@ -16,7 +21,15 @@ namespace Unity.RenderStreaming
 
         protected override MediaStreamTrack CreateTrack()
         {
-            return m_camera.CaptureStreamTrack(streamingSize.x, streamingSize.y, 1000000);
+            int depthValue = (int)depth;
+            var format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
+            var rt = new RenderTexture(streamingSize.x, streamingSize.y, depthValue, format)
+            {
+                antiAliasing = antiAliasing
+            };
+            rt.Create();
+            m_camera.targetTexture = rt;
+            return new VideoStreamTrack(m_camera.name, rt);
         }
     }
 }
