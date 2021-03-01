@@ -63,7 +63,6 @@ namespace Unity.RenderStreaming
             {
                 remoteInput = RemoteInputReceiver.Create();
                 remoteInput.ActionButtonClick = OnButtonClick;
-                Debug.Log(channel == null);
                 channel.OnMessage += remoteInput.ProcessInput;
                 onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
                 onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
