@@ -30,6 +30,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
 {% endfor %}
 
