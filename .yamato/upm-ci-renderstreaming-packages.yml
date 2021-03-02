@@ -239,7 +239,7 @@ publish_dry_run_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_2019.4
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_mac_2019.4
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_2019.4
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_2019.4
 
 publish_{{ package.name }}:
