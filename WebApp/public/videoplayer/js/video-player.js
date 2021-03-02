@@ -1,5 +1,6 @@
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
 import * as Config from "../../js/config.js";
+import * as Logger from "../../js/logger.js";
 import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
 
 // enum type of event sending from Unity
@@ -47,7 +48,7 @@ export class VideoPlayer {
     const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
-      console.log('Close current PeerConnection');
+      Logger.log('Close current PeerConnection');
       this.pc.close();
       this.pc = null;
     }
@@ -61,17 +62,17 @@ export class VideoPlayer {
     // Create peerConnection with proxy server and set up handlers
     this.pc = new RTCPeerConnection(this.cfg);
     this.pc.onsignalingstatechange = function (e) {
-      console.log('signalingState changed:', e);
+      Logger.log('signalingState changed:', e);
     };
     this.pc.oniceconnectionstatechange = function (e) {
-      console.log('iceConnectionState changed:', e);
-      console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
+      Logger.log('iceConnectionState changed:', e);
+      Logger.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
       if (_this.pc.iceConnectionState === 'disconnected') {
         _this.ondisconnect();
       }
     };
     this.pc.onicegatheringstatechange = function (e) {
-      console.log('iceGatheringState changed:', e);
+      Logger.log('iceGatheringState changed:', e);
     };
     this.pc.ontrack = function (e) {
       if (e.track.kind == 'video') {
@@ -92,13 +93,13 @@ export class VideoPlayer {
     // Create data channel with proxy server and set up handlers
     this.channel = this.pc.createDataChannel('data');
     this.channel.onopen = function () {
-      console.log('Datachannel connected.');
+      Logger.log('Datachannel connected.');
     };
     this.channel.onerror = function (e) {
-      console.log("The error " + e.error.message + " occurred\n while handling data with proxy server.");
+      Logger.log("The error " + e.error.message + " occurred\n while handling data with proxy server.");
     };
     this.channel.onclose = function () {
-      console.log('Datachannel disconnected.');
+      Logger.log('Datachannel disconnected.');
     };
     this.channel.onmessage = async (msg) => {
       // receive message from unity and operate message
@@ -210,7 +211,7 @@ export class VideoPlayer {
 
   close() {
     if (this.pc) {
-      console.log('Close current PeerConnection');
+      Logger.log('Close current PeerConnection');
       this.pc.close();
       this.pc = null;
     }
@@ -222,16 +223,16 @@ export class VideoPlayer {
     }
     switch (this.channel.readyState) {
       case 'connecting':
-        console.log('Connection not ready');
+        Logger.log('Connection not ready');
         break;
       case 'open':
         this.channel.send(msg);
         break;
       case 'closing':
-        console.log('Attempt to sendMsg message while closing');
+        Logger.log('Attempt to sendMsg message while closing');
         break;
       case 'closed':
-        console.log('Attempt to sendMsg message while connection closed.');
+        Logger.log('Attempt to sendMsg message while connection closed.');
         break;
     }
   };

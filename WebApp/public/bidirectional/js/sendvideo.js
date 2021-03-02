@@ -1,5 +1,6 @@
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
 import * as Config from "../../js/config.js";
+import * as Logger from "../../js/logger.js";
 
 export class SendVideo {
   constructor() {
@@ -18,7 +19,7 @@ export class SendVideo {
       localVideo.srcObject = this.localStream;
       await localVideo.play();
     } catch (err) {
-      console.error('mediaDevice.getUserMedia() error:', err);
+      Logger.error('mediaDevice.getUserMedia() error:', err);
     }
   }
 
@@ -94,7 +95,7 @@ export class SendVideo {
     this.isOffer = isOffer;
     // close current RTCPeerConnection
     if (this.pc) {
-      console.log('Close current PeerConnection');
+      Logger.log('Close current PeerConnection');
       this.pc.close();
       this.pc = null;
     }
@@ -103,19 +104,19 @@ export class SendVideo {
     this.pc = new RTCPeerConnection(this.config);
 
     this.pc.onsignalingstatechange = e => {
-      console.log('signalingState changed:', e);
+      Logger.log('signalingState changed:', e);
     };
 
     this.pc.oniceconnectionstatechange = e => {
-      console.log('iceConnectionState changed:', e);
-      console.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
+      Logger.log('iceConnectionState changed:', e);
+      Logger.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
       if (_this.pc.iceConnectionState === 'disconnected') {
         _this.hangUp();
       }
     };
 
     this.pc.onicegatheringstatechange = e => {
-      console.log('iceGatheringState changed:', e);
+      Logger.log('iceGatheringState changed:', e);
     };
 
     this.pc.ontrack = async (e) => {
@@ -138,15 +139,15 @@ export class SendVideo {
   async sendOffer() {
     const _this = this;
     let offer = await _this.pc.createOffer();
-    console.log('createOffer() succsess in promise');
+    Logger.log('createOffer() succsess in promise');
 
     if (_this.pc.signalingState != 'stable') {
-      console.error("peerConnection's signaling state is not stable. " + pc.SignalingState);
+      Logger.error("peerConnection's signaling state is not stable. " + pc.SignalingState);
       return;
     }
 
     await _this.pc.setLocalDescription(offer);
-    console.log('setLocalDescription() succsess in promise');
+    Logger.log('setLocalDescription() succsess in promise');
     _this.signaling.sendOffer(_this.connectionId, offer.sdp);
   }
 
@@ -160,12 +161,12 @@ export class SendVideo {
       if (this.pc.iceConnectionState !== 'closed') {
         this.pc.close();
         this.pc = null;
-        console.log('sending close message');
+        Logger.log('sending close message');
         this.signaling.stop();
         return;
       }
     }
-    console.log('peerConnection is closed.');
+    Logger.log('peerConnection is closed.');
     await this.signaling.deleteConnection(this.connectionId);
     this.connectionId = null;
   }

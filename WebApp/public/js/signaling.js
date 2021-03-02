@@ -1,3 +1,5 @@
+import * as Logger from "./logger.js";
+
 export default class Signaling extends EventTarget {
 
   constructor() {
@@ -38,7 +40,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const offers = data.offers;
-      console.log('get offers:', offers);
+      logger.log('get offers:', offers);
 
       offers.forEach(offer => {
         this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
@@ -58,7 +60,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const answers = data.answers;
-      console.log('get answers:', answers);
+      Logger.log('get answers:', answers);
 
       answers.forEach(answer => {
         this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
@@ -78,7 +80,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const candidates = data.candidates;
-      console.log('get candidates:', candidates);
+      Logger.log('get candidates:', candidates);
 
       if (candidates.length > 0) {
         for (let candidate of candidates[0].candidates) {
@@ -112,13 +114,13 @@ export default class Signaling extends EventTarget {
 
   async sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    console.log('sendOffer:', data);
+    Logger.log('sendOffer:', data);
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
   async sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    console.log('sendAnswer:', data);
+    Logger.log('sendAnswer:', data);
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
@@ -129,7 +131,7 @@ export default class Signaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': connectionId
     };
-    console.log('sendCandidate:', data);
+    Logger.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   };
 
@@ -173,7 +175,7 @@ export class WebSocketSignaling extends EventTarget {
         return;
       }
 
-      console.log(msg);
+      Logger.log(msg);
 
       switch (msg.type) {
         case "connect":
@@ -212,27 +214,27 @@ export class WebSocketSignaling extends EventTarget {
 
   createConnection(connectionId) {
     const sendJson = JSON.stringify({ type: "connect", connectionId: connectionId });
-    console.log(sendJson);
+    Logger.log(sendJson);
     this.websocket.send(sendJson);
   };
 
   deleteConnection(connectionId) {
     const sendJson = JSON.stringify({ type: "disconnect", connectionId: connectionId });
-    console.log(sendJson);
+    Logger.log(sendJson);
     this.websocket.send(sendJson);
   };
 
   sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
     const sendJson = JSON.stringify({ type: "offer", from: connectionId, data: data });
-    console.log(sendJson);
+    Logger.log(sendJson);
     this.websocket.send(sendJson);
   }
 
   sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
     const sendJson = JSON.stringify({ type: "answer", from: connectionId, data: data });
-    console.log(sendJson);
+    Logger.log(sendJson);
     this.websocket.send(sendJson);
   }
 
@@ -244,7 +246,7 @@ export class WebSocketSignaling extends EventTarget {
       'connectionId': connectionId
     };
     const sendJson = JSON.stringify({ type: "candidate", from: connectionId, data: data });
-    console.log(sendJson);
+    Logger.log(sendJson);
     this.websocket.send(sendJson);
   }
 }

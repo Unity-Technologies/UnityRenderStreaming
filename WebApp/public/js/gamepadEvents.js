@@ -1,3 +1,5 @@
+import * as Logger from "./logger.js";
+
 const _e = 0.09;
 const _gameloopInterval = 16.67; //in milliseconds, 60 times a second
 var gameloop = null;
@@ -143,7 +145,7 @@ export function gamepadHandler(event, connecting) {
       gamepadsConnectedTimeStamp[gamepad.index] = cookieTimeStamp;
     }
 
-    console.log("connected: " + gamepadsConnectedTimeStamp[gamepad.index])
+    Logger.log("connected: " + gamepadsConnectedTimeStamp[gamepad.index])
   
   } else {
     delete gamepadsPreviousAxesStates[gamepad.index];
@@ -153,6 +155,6 @@ export function gamepadHandler(event, connecting) {
       clearInterval(gameloop);
       gameloop = null;
     }
-    console.log("disconnected: " + gamepad.id)
+    Logger.log("disconnected: " + gamepad.id)
   }
 }
