@@ -13,7 +13,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Supported iOS platform.
 - Added new samples.
 - Added a documentation for samples. 
-- Added `InputSystemChannelSender`, `InputSystemChannelReceiver`, `WebBrowserInputChannelReceiver`, `SingleConnection` and `Broadcast`.
+- Added components (`InputSystemChannelSender`, `InputSystemChannelReceiver`, `WebBrowserInputChannelReceiver`, `SingleConnection` and `Broadcast`).
 
 ### Changed
 
