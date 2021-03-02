@@ -238,9 +238,9 @@ publish_dry_run_{{ package.name }}:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    {% for editor in editors %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_package_test_{{ package.name }}_{{ editor.version }}
-    {% endfor %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_2019.4
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_2019.4
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_2019.4
 
 publish_{{ package.name }}:
   name: Publish {{ package.packagename }}
