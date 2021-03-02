@@ -20,14 +20,26 @@ namespace Unity.RenderStreaming.Editor
         readonly GUIContent antiAliasing =
             EditorGUIUtility.TrTextContent("Anti-aliasing", "Number of anti-aliasing samples.");
 
+        readonly GUIContent[] renderTextureDepthBuffer = new GUIContent[3]
+        {
+            EditorGUIUtility.TrTextContent("No depth buffer"),
+            EditorGUIUtility.TrTextContent("At least 16 bits depth (no stencil)"),
+            EditorGUIUtility.TrTextContent("At least 24 bits depth (with stencil)")
+        };
+
+        readonly int[] renderTextureDepthBufferValues = new int[3] {0, 16, 24};
+
+        readonly GUIContent depthBuffer = EditorGUIUtility.TrTextContent("Depth Buffer", "Format of the depth buffer.");
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("streamingSize"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("depth"));
             var antiAliasingProperty = serializedObject.FindProperty("antiAliasing");
             EditorGUILayout.IntPopup(antiAliasingProperty, renderTextureAntiAliasing, renderTextureAntiAliasingValues, antiAliasing);
+            var depthBufferProperty = serializedObject.FindProperty("depth");
+            EditorGUILayout.IntPopup(depthBufferProperty, renderTextureDepthBuffer, renderTextureDepthBufferValues, depthBuffer);
 
             serializedObject.ApplyModifiedProperties();
 

@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming
     [RequireComponent(typeof(Camera))]
     public class CameraStreamer : VideoStreamBase
     {
-        [SerializeField] private RenderTextureDepth depth;
+        [SerializeField] private int depth = 0;
         [SerializeField] private int antiAliasing = 1;
 
 
@@ -25,10 +25,10 @@ namespace Unity.RenderStreaming
             if (m_camera.targetTexture != null)
             {
                 rt = m_camera.targetTexture;
-                var supportFormat = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
+                RenderTextureFormat supportFormat = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
                 GraphicsFormat graphicsFormat = GraphicsFormatUtility.GetGraphicsFormat(supportFormat, RenderTextureReadWrite.Default);
                 GraphicsFormat compatibleFormat = SystemInfo.GetCompatibleFormat(graphicsFormat, FormatUsage.Render);
-                var format = graphicsFormat == compatibleFormat ? graphicsFormat : compatibleFormat;
+                GraphicsFormat format = graphicsFormat == compatibleFormat ? graphicsFormat : compatibleFormat;
 
                 if (rt.graphicsFormat != format)
                 {
@@ -43,9 +43,8 @@ namespace Unity.RenderStreaming
             }
             else
             {
-                int depthValue = (int)depth;
-                var format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
-                rt = new RenderTexture(streamingSize.x, streamingSize.y, depthValue, format)
+                RenderTextureFormat format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
+                rt = new RenderTexture(streamingSize.x, streamingSize.y, depth, format)
                 {
                     antiAliasing = antiAliasing
                 };
