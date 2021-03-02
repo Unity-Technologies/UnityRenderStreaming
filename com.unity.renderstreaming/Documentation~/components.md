@@ -30,6 +30,10 @@
 
 This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
+> [!NOTE]
+> You can attach the `Target Texture` to the `Camera` component.
+> If `Target Texture` is attached on Camera, use that `Render Texture` setting first.
+
 ![Camera Streamer inspector](images/camerastreamer_inspector.png)
 
 ### Properties
@@ -37,6 +41,8 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | Parameter                    | Description                                                         | Default                         |
 | ---------------------------- | ------------------------------------------------------------------- | ------------------------------- |
 | **Streaming Size**           | Size of the frame buffer used for streaming                         | 1280, 720                       |
+| **Anti-aliasing**            | The antialiasing level for the RenderTexture                        | None                            |
+| **Depth Buffer**             | The precision of the render texture's depth buffer in bits          | No depth buffer                 |
 
 ## `WebCamStreamer`
 
