@@ -40,7 +40,7 @@ Check Package Manager window, Click `+` button and select `Add package from git 
 Input the string below to the input field.
 
 ```
-com.unity.renderstreaming@3.0.0-preview
+com.unity.renderstreaming@3.0.0-preview.1
 ```
 
 The list of version string is [here](https://github.com/Unity-Technologies/com.unity.renderstreaming/tags). In most cases, the latest version is recommended to use.
