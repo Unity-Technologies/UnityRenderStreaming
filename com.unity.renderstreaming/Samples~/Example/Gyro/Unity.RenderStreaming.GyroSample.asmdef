@@ -1,0 +1,16 @@
+{
+    "name": "Unity.RenderStreaming.GyroSample",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.RenderStreaming.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
