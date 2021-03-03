@@ -23,14 +23,13 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.packagename }}
+    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.packagename }} --platform editmode --backend mono
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
 {% endfor %}
 
