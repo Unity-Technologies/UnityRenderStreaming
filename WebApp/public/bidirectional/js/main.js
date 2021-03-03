@@ -21,7 +21,6 @@ async function setupConfig() {
   const res = await getServerConfig();
   useWebSocket = res.useWebSocket;
   showWarningIfNeeded(res.startupMode);
-  showPlayButton();
 }
 
 function showWarningIfNeeded(startupMode) {
