@@ -1,4 +1,12 @@
-const isDebug = false;
+let isDebug = false;
+
+export function enable() {
+  isDebug = true;
+}
+
+export function disable() {
+  isDebug = false;
+}
 
 export function debug(msg) {
   isDebug && console.debug(msg);
