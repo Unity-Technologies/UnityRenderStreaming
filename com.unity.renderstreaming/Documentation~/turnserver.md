@@ -94,7 +94,7 @@ Use the [webrtc sample](https://webrtc.github.io/samples/src/content/peerconnect
 | TURN username    | username                              |
 | TURN password    | password                              |
 
-<img src="images/turn-connection-testing.png" width=600 align=center>
+![TURN connection testing](images/turn-connection-testing.png)
 
 Click `Gather candidates` to show a list of potential communication paths. Verify that a log is also printed on the TURN server side. 
 

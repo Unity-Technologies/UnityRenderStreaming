@@ -92,8 +92,8 @@ You can see the Unity scene on the browser, and control a camera in the Unity sc
 
 ## After tutorial
 
-About general questions, please see [FAQ](faq.md) page. About the operation of inspectors, please see [Components settings](components.md) page. 
+About general questions, please see [FAQ](faq.md) page. And you are available for discussions about Unity Render Streaming on [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413). 
 
+About the operation of inspectors, please see [Components settings](components.md) page. 
 About options of web application, please see [The web application](webapp.md) page.
-
 You can see more details for samples on the [Samples](samples.md) page.
