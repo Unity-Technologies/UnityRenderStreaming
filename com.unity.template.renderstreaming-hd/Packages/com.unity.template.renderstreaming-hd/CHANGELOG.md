@@ -6,19 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0] - 2021-03-02
 
-Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from the sample folder to Package Manager.
-
-### Added
-
-- Supported iOS platform.
-- Added new samples.
-- Added a documentation for samples. 
-- Added components (`InputSystemChannelSender`, `InputSystemChannelReceiver`, `WebBrowserInputChannelReceiver`, `SingleConnection` and `Broadcast`).
+Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from template to package.
 
 ### Changed
 
-- Moved scripts from the sample folder to Package Manager.
-- Upgrading WebRTC package to `2.3.3-preview`.
+- Upgrading RenderStreaming package to `3.0.1-preview`.
 
 ## [2.2.2] - 2020-12-15
 
