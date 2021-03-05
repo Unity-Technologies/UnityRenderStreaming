@@ -3,6 +3,24 @@
 
 ---
 {% for project in template_projects %}
+prepack_{{ project.name }}:
+  name: Pre-Pack {{ project.packagename }} - Primed Artifacts
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - pip install unity-downloader-cli --index-url {{ intra_pypi_url }} --upgrade
+    - unity-downloader-cli -u 2019.4 -c editor -w --fast
+    - FOR /F "usebackq" %%i IN (`dir /B /S /AL {{ project.packagename }}`) DO (call "BuildScripts~\convert_symlinks.cmd" %%i)
+    - .Editor\Unity.exe -projectPath {{ project.packagename }} -batchmode -quit
+  artifacts:
+    primed:
+      paths:
+        - "{{ project.packagename }}/Library/Artifacts/**"
+        - "{{ project.packagename }}/Library/ArtifactDB"
+        - "{{ project.packagename }}/Library/SourceAssetDB"
+
 pack_{{ project.name }}:
   name: Pack {{ project.packagename }}
   agent:  
@@ -11,8 +29,10 @@ pack_{{ project.name }}:
     flavor: b1.large  
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
     - upm-ci template pack --project-path {{ project.packagename }}
+  dependencies:
+    - .yamato/upm-ci-template.yml#prepack_{{ project.name }}
   artifacts:
     packages:
       paths:
@@ -29,6 +49,9 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
+    {% if project.name == "renderstreaming-rtx" %}
+    model: rtx2080
+    {% endif %}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
