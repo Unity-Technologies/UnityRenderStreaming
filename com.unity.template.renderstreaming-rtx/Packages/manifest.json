@@ -5,7 +5,6 @@
     "com.unity.code-analysis": "0.1.2-preview",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.3",
-    "com.unity.inputsystem": "1.0.2",
     "com.unity.render-pipelines.high-definition": "7.5.3",
     "com.unity.render-pipelines.high-definition-config": "file:../LocalPackages/com.unity.render-pipelines.high-definition-config",
     "com.unity.renderstreaming": "3.0.1-preview",
