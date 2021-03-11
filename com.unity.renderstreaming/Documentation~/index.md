@@ -54,7 +54,7 @@ Please check [this page](samples.md).
 
 ## Project template
 
-Project templates are on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
+Project templates are on the [**GitHub Release** page](https://github.com/Unity-Technologies/UnityRenderStreaming/releases/tag/3.0.2-preview). Please see [this instruction](template.md).
 
 ## Furioos compatibility
 
