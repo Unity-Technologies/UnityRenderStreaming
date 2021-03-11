@@ -61,10 +61,15 @@ When the select download folder window appears, click on `Select Folder` to down
 
 ![Select Download folder](images/select_download_folder.png)
 
-After the download is finished and a new explorer window is opened, click on `webserver.exe` to start 
-Unity RenderStreaming web server.
+After the download is finished and a `powershell` or `cmd` window is opened, and run `webserver.exe` with `-w` option. Please refer to [this page](webapp.md) for commandline options.
 
-![Web Server](images/webserver.png)
+```
+.\webserver.exe -w
+```
+
+You can see logs on the commandline like below.
+
+![Launch web server](images/launch_webserver_public_mode_on_windows.png)
 
 ## Install samples
 
