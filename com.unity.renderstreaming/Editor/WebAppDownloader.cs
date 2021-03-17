@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming.Editor
     public static class WebAppDownloader
     {
         const string URLRoot = "https://github.com/Unity-Technologies/UnityRenderStreaming";
-        const string LatestKnownVersion = "2.2.1-preview";
+        const string LatestKnownVersion = "3.0.1-preview";
 
         // TODO::fix release process of webserver runtime.
         const string FileNameWebAppForMac = "webserver_mac";
@@ -35,9 +35,10 @@ namespace Unity.RenderStreaming.Editor
             {
                 version = LatestKnownVersion;
             }
-            string path = string.Format("releases/download/{0}", version);
+
+            string path = $"releases/download/{version}";
             string fileName = GetFileName();
-            return System.IO.Path.Combine(URLRoot, System.IO.Path.Combine(path, fileName));
+            return $"{URLRoot}/{path}/{fileName}";
         }
 
         public static string GetURLDocumentation(string version)
@@ -81,7 +82,7 @@ namespace Unity.RenderStreaming.Editor
                     if (version != LatestKnownVersion) {
                         DownloadWebApp(LatestKnownVersion, dstPath, callback);
                     } else {
-                        Debug.LogError("Failed downloading webserver from: " + url + " . Error: " + e.Error.ToString());
+                        Debug.LogError($"Failed downloading web server from:{url}. Error: {e.Error}");
                     }
                     callback?.Invoke(false);
                     return;
@@ -89,7 +90,7 @@ namespace Unity.RenderStreaming.Editor
 
                 if (!System.IO.File.Exists(tmpFilePath))
                 {
-                    Debug.LogErrorFormat("Download failed. url:{0}", url);
+                    Debug.LogError($"Download failed. url:{url}");
                     callback?.Invoke(false);
                     return;
                 }
@@ -122,7 +123,7 @@ namespace Unity.RenderStreaming.Editor
                 var packageInfo = req.FindPackage(packageName);
                 if (null == packageInfo)
                 {
-                    Debug.LogErrorFormat("Not found package \"{0}\"", packageName);
+                    Debug.LogError($"Not found package \"{packageName}\"");
                     return;
                 }
                 callback(packageInfo.version);

@@ -86,7 +86,7 @@
       }
     },
     "com.unity.renderstreaming": {
-      "version": "2.2.1-preview",
+      "version": "2.2.2-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -109,7 +109,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.renderstreaming": "2.1.1-preview",
+        "com.unity.renderstreaming": "2.2.2-preview",
         "com.unity.render-pipelines.high-definition": "7.3.1"
       }
     },

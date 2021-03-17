@@ -344,7 +344,7 @@ MigrationBackup/
 # Exclude folder
 !Documentation~
 !BuildScripts~
-!EmptyProjectForTest~
+!Samples~
 
 # Exclude webrtc source 
 Plugin/webrtc

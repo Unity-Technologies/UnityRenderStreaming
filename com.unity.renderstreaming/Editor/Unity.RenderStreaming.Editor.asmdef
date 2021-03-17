@@ -1,7 +1,10 @@
 {
     "name": "Unity.RenderStreaming.Editor",
-    "references": [],
-    "optionalUnityReferences": [],
+    "references": [
+        "GUID:40a5acf76f04c4c8ebb69605e4b0d5c7",
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
     "includePlatforms": [
         "Editor"
     ],
@@ -11,5 +14,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "URS_USE_HDRP_EDITOR"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "URS_USE_URS_EDITOR"
+        }
+    ],
+    "noEngineReferences": false
 }

@@ -6,14 +6,7 @@ import * as os from 'os';
 import { createServer } from './server';
 import { AddressInfo } from 'net';
 import WSSignaling from './websocket';
-
-export interface Options {
-  secure?: boolean;
-  port?: number;
-  keyfile?: string;
-  certfile?: string;
-  websocket?: boolean;
-}
+import Options from './class/options';
 
 export class RenderStreaming {
   public static run(argv: string[]): RenderStreaming {
@@ -27,13 +20,17 @@ export class RenderStreaming {
           .option('-k, --keyfile <path>', 'https key file (default server.key)', process.env.KEYFILE || 'server.key')
           .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
           .option('-w, --websocket', 'Enable Websocket Signaling', process.env.WEBSOCKET || false)
+          .option('-m, --mode <type>', 'Choose Communication mode public or private (default public)', process.env.MODE || 'public')
+          .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.(default dev)', process.env.LOGGING || 'dev')
           .parse(argv);
         return {
           port: program.port,
-          secure: program.secure,
+          secure: program.secure == undefined ? false : program.secure,
           keyfile: program.keyfile,
           certfile: program.certfile,
-          websocket: program.websocket,
+          websocket: program.websocket == undefined ? false : program.websocket,
+          mode: program.mode,
+          logging: program.logging,
         };
       }
     };
@@ -74,8 +71,10 @@ export class RenderStreaming {
     if (this.options.websocket) {
       console.log(`start websocket signaling server ws://${this.getIPAddress()[0]}`)
       //Start Websocket Signaling server
-      new WSSignaling(this.server);
+      new WSSignaling(this.server, this.options.mode);
     }
+
+    console.log(`start as ${this.options.mode} mode`);
   }
 
   getIPAddress(): string[] {

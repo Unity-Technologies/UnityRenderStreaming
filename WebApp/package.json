@@ -1,6 +1,6 @@
 {
   "name": "webserver",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "prestart": "npm install",
@@ -18,11 +18,13 @@
     "@types/ws": "^7.2.2",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "morgan": "^1.10.0",
     "uuid": "^3.4.0",
     "ws": "^7.2.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.12",
+    "@types/morgan": "^1.9.2",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
     "@typescript-eslint/parser": "^2.3.3",
     "eslint": "^6.5.1",
@@ -33,7 +35,9 @@
     "ts-node": "^8.1.0",
     "typescript": "^3.3.4000"
   },
-  "bin": "build/index.js",
+  "bin": {
+    "webserver": "build/index.js"
+  },
   "pkg": {
     "assets": [
       "public/**/*"

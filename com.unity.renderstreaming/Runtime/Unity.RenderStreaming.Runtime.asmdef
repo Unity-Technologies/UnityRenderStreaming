@@ -1,0 +1,43 @@
+{
+    "name": "Unity.RenderStreaming.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "Unity.InputSystem",
+        "Unity.WebRTC",
+        "Unity.XR.ARSubsystems",
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.HighDefinition.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "iOS",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "URS_USE_HDRP_RUNTIME"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "URS_USE_URP_RUNTIME"
+        },
+        {
+            "name": "com.unity.xr.arsubsystems",
+            "expression": "",
+            "define": "URS_USE_AR_SUBSYSTEMS"
+        }
+    ],
+    "noEngineReferences": false
+}

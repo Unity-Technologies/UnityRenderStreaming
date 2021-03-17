@@ -4,6 +4,38 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2021-03-04
+
+### Fixed
+
+- Fixed a script error when importing the package sample
+
+### Changed
+
+- `Camerastreamer` uses a `TargetTexture` on the `Camera` component if the `RenderTexture` is attached on the `Camera`.
+
+## [3.0.0] - 2021-03-02
+
+Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from the sample folder to Package Manager.
+
+### Added
+
+- Supported iOS platform.
+- Added new samples.
+- Added a documentation for samples. 
+- Added components (`InputSystemChannelSender`, `InputSystemChannelReceiver`, `WebBrowserInputChannelReceiver`, `SingleConnection` and `Broadcast`).
+
+### Changed
+
+- Moved scripts from the sample folder to Package Manager.
+- Upgrading WebRTC package to `2.3.3-preview`.
+
+## [2.2.2] - 2020-12-15
+
+### Changed
+
+- Updated unitypackage files of the package samples
+
 ## [2.2.1] - 2020-11-19
 
 ### Added

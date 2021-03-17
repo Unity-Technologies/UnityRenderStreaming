@@ -1,0 +1,44 @@
+button {
+  margin: 0 20px 5px 0;
+  vertical-align: top;
+  width: 155px;
+}
+
+div#buttons {
+  border-bottom: 1px solid #eee;
+  margin: 1em 0 1em 0;
+  padding: 0 0 1em 0;
+}
+
+div#local {
+  margin: 0 20px 0 0;
+}
+
+div#preview {
+  border-bottom: 1px solid #eee;
+  margin: 0 0 1em 0;
+  padding: 0 0 0.5em 0;
+}
+
+div#preview>div {
+  display: inline-block;
+  vertical-align: top;
+  width: calc(50% - 20px);
+}
+
+h2 {
+  margin: 0 0 0.5em 0;
+}
+
+textarea {
+  color: #444;
+  font-size: 0.9em;
+  font-weight: 300;
+  height: 2.0em;
+  padding: 5px;
+  width: calc(20% - 10px);
+}
+
+video {
+  height: 225px;
+}
