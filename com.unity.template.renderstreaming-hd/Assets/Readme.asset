@@ -30,27 +30,27 @@ MonoBehaviour:
   - heading: 
     text: To read more about Unity RenderStreaming please refer to the manual page.
     linkText: Unity Render Streaming (English)
-    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/stable/com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/index.md
+    url: https://docs.unity3d.com/Packages/com.unity.renderstreaming@3.0
   - heading: 
     text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
     linkText: Unity Render Streaming (Japanese)
-    url: https://github.com/Unity-Technologies/UnityRenderStreaming/blob/stable/com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming/Documentation~/jp/index.md
+    url: https://docs.unity3d.com/ja/Packages/com.unity.renderstreaming@3.0
   - heading: WebRTC Package
-    text: The Unity WebRTC package implements Unity Render Streaming technology and provides
-      C# WebRTC API for you to build WebRTC applications inside Unity. To read more
-      about it please refer to the manual page
+    text: The Unity WebRTC package implements Unity Render Streaming technology and
+      provides C# WebRTC API for you to build WebRTC applications inside Unity. To
+      read more about it please refer to the manual page
     linkText: WebRTC Package (English)
-    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/stable/Documentation~/index.md
+    url: https://docs.unity3d.com/Packages/com.unity.webrtc@2.3
   - heading: 
     text: "\u65E5\u672C\u8A9E\u30C9\u30AD\u30E5\u30E1\u30F3\u30C8"
     linkText: WebRTC Package (Japanese)
-    url: https://github.com/Unity-Technologies/com.unity.webrtc/blob/stable/Documentation~/jp/index.md
+    url: https://docs.unity3d.com/ja/Packages/com.unity.webrtc@2.3
   - heading: 
     text: This project uses the Package Manager to bring you the latest features
       Unity has to offer. Open the Package Manager from Windows > Package Manager
       and make sure you're using the most recent version of WebRTC package. To update
-      packages, select your desired package from the list on the left, and click the
-      Update to button in the bottom right corner.
+      packages, select your desired package from the list on the left, and click
+      the Update to button in the bottom right corner.
     linkText: 
     url: 
   loadedLayout: 1
