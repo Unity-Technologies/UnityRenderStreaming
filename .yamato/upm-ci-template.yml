@@ -3,22 +3,43 @@
 
 ---
 {% for project in template_projects %}
-pack_{{ project.name }}:
-  name: Pack {{ project.packagename }}
+
+{% for editor in editors %}
+prepack_{{ project.name }}_{{ editor.version }}:
+  name: Pre-Pack {{ project.packagename }} {{ editor.version }} - Primed Artifacts
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - pip install unity-downloader-cli --index-url {{ intra_pypi_url }} --upgrade
+    - unity-downloader-cli -u {{ editor.version }} -c editor -w --fast
+    # ToDO: windows vm can not use symbolic link
+    # - FOR /F "usebackq" %%i IN (`dir /B /S /AL {{ project.packagename }}`) DO (call "BuildScripts~\convert_symlinks.cmd" %%i)
+    - .Editor\Unity.exe -projectPath {{ project.packagename }} -batchmode -quit
+  artifacts:
+    primed:
+      paths:
+        - "{{ project.packagename }}/Library/Artifacts/**"
+        - "{{ project.packagename }}/Library/ArtifactDB"
+        - "{{ project.packagename }}/Library/SourceAssetDB"
+
+pack_{{ project.name }}_{{ editor.version }}:
+  name: Pack {{ project.packagename }} {{ editor.version }}
   agent:  
     type: Unity::VM
-    image: package-ci/ubuntu:stable    
+    image: package-ci/ubuntu:stable
     flavor: b1.large  
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
     - upm-ci template pack --project-path {{ project.packagename }}
+  dependencies:
+    - .yamato/upm-ci-template.yml#prepack_{{ project.name }}_{{ editor.version }}
   artifacts:
     packages:
       paths:
         - "upm-ci~/**/*"
-
-{% for editor in editors %}
 
 {% for platform in platforms %}
 {% if platform.name == "win" -%}
@@ -29,15 +50,18 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
+    {% if project.name == "renderstreaming-rtx" %}
+    model: rtx2080
+    {% endif %}
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+    - upm-ci template test -u {{ editor.version }} --project-path {{ project.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!ValidationSuiteRun"
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
 {% else -%}
@@ -57,7 +81,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endif -%}
 {% endfor %}
@@ -105,8 +129,8 @@ publish_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
 
@@ -132,8 +156,8 @@ publish_dryrun_{{ project.name }}:
         - "upm-ci~/packages/*.tgz"
         - "upm-ci~/templates/*.tgz"
   dependencies:
-    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
     {% for editor in editors %}
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
     {% endfor %}
 {% endfor %}

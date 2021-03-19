@@ -4,6 +4,14 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2021-03-02
+
+Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from template to package.
+
+### Changed
+
+- Upgrading RenderStreaming package to `3.0.1-preview`.
+
 ## [2.2.2] - 2020-12-15
 
 ### Changed
