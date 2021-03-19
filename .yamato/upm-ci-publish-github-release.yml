@@ -17,7 +17,7 @@ publish_github_release:
         - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   dependencies:
     - .yamato/upm-ci-publish-github-release.yml#publish_github_release_webapp
-    {% for project in projects %}
+    {% for project in template_projects %}
     - .yamato/upm-ci-publish-github-release.yml#publish_github_release_template_{{ project.name }}
     {% endfor %}
 
@@ -42,7 +42,7 @@ publish_github_release_webapp:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
    {% endfor %}
 
-{% for project in projects %}
+{% for project in template_projects %}
 publish_github_release_template_{{ project.name }}:
   name: Publish Template to Github Release {{ project.name }}
   agent:
