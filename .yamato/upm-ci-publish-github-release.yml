@@ -44,7 +44,9 @@ publish_github_release_template_{{ project.name }}_{{ editor.version }}:
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh
-    - gh release upload $GIT_TAG 'upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - |
+      file=`find upm-ci~/packages -name "*.tgz" -print`
+      gh release upload $GIT_TAG $file --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
 {% endfor %}
