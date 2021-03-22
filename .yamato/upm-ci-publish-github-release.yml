@@ -8,19 +8,6 @@ packages:
   - name: renderstreaming
 ---
 
-publish_github_release:
-  name: Trigger publish Webapp and templates to Github Release
-  triggers:
-    cancel_old_ci: true
-    tags:
-      only:
-        - /^(v|V)?\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  dependencies:
-    - .yamato/upm-ci-publish-github-release.yml#publish_github_release_webapp
-    {% for project in projects %}
-    - .yamato/upm-ci-publish-github-release.yml#publish_github_release_template_{{ project.name }}
-    {% endfor %}
-
 publish_github_release_webapp:
   name: Publish Webapp to Github Release
   agent:
@@ -42,9 +29,10 @@ publish_github_release_webapp:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
    {% endfor %}
 
-{% for project in projects %}
-publish_github_release_template_{{ project.name }}:
-  name: Publish Template to Github Release {{ project.name }}
+{% for project in template_projects %}
+{% for editor in editors %}
+publish_github_release_template_{{ project.name }}_{{ editor.version }}:
+  name: Publish Template to Github Release {{ project.name }} {{ editor.version }}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
@@ -56,7 +44,10 @@ publish_github_release_template_{{ project.name }}:
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh
-    - gh release upload $GIT_TAG 'upm-ci~/packages/{{ project.packagename }}-%GIT_TAG%.tgz' --clobber -R Unity-Technologies/UnityRenderStreaming
+    - |
+      file=`find upm-ci~/packages -name "*.tgz" -print`
+      gh release upload $GIT_TAG $file --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
-    - .yamato/upm-ci-template.yml#pack_{{ project.name }}
+    - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
+{% endfor %}
 {% endfor %}
