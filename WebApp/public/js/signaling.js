@@ -40,7 +40,7 @@ export default class Signaling extends EventTarget {
 
       const data = await res.json();
       const offers = data.offers;
-      logger.log('get offers:', offers);
+      Logger.log('get offers:', offers);
 
       offers.forEach(offer => {
         this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
