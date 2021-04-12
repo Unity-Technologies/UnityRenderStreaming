@@ -171,7 +171,7 @@ namespace Unity.RenderStreaming.Signaling
                         if (msg.status == "SUCCESS")
                         {
                             Debug.Log("Signaling: Slot signed in.");
-                            this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamTypes\":\"WebRTC\",\"controlType\":\"RenderStreaming\"}");
+                            this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamType\":\"RenderStreaming\",\"streamProtocols\":[\"WebRTC\"],\"controlsTypes\":[\"RenderStreaming\"]}");
 
                             OnSignedIn?.Invoke(this);
                         }

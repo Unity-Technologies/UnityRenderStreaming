@@ -1,12 +1,19 @@
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
 import * as Config from "../../js/config.js";
 import * as Logger from "../../js/logger.js";
-import uuid4 from 'https://cdn.jsdelivr.net/gh/tracker1/node-uuid4/browser.mjs';
+
 
 // enum type of event sending from Unity
 var UnityEventType = {
   SWITCH_VIDEO: 0
 };
+
+function uuid4() {
+  var temp_url = URL.createObjectURL(new Blob());
+  var uuid = temp_url.toString();
+  URL.revokeObjectURL(temp_url);
+  return uuid.split(/[:\/]/g).pop().toLowerCase(); // remove prefixes
+}
 
 export class VideoPlayer {
   constructor(elements) {
