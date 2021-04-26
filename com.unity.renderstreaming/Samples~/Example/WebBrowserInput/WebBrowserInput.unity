@@ -636,7 +636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  depth: 0
+  depth: 16
   antiAliasing: 1
 --- !u!1 &783215601
 GameObject:
@@ -1187,7 +1187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  depth: 0
+  depth: 16
   antiAliasing: 1
 --- !u!114 &1112556117
 MonoBehaviour:
