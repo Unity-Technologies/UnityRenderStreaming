@@ -512,7 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  depth: 0
+  depth: 16
   antiAliasing: 1
 --- !u!850595691 &774178818
 LightingSettings:
