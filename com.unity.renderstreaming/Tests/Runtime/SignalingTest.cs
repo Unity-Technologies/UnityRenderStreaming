@@ -146,8 +146,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MediaStream stream = WebRTC.Audio.CaptureStream();
             peer1.AddTrack(stream.GetTracks().First());
 
-            RTCOfferOptions offerOptions = new RTCOfferOptions();
-            var op1 = peer1.CreateOffer(ref offerOptions);
+            var op1 = peer1.CreateOffer();
             yield return op1;
             m_DescOffer = op1.Desc;
             var op2 = peer1.SetLocalDescription(ref m_DescOffer);
@@ -155,8 +154,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var op3 = peer2.SetRemoteDescription(ref m_DescOffer);
             yield return op3;
 
-            RTCAnswerOptions answerOptions = new RTCAnswerOptions();
-            var op4 = peer2.CreateAnswer(ref answerOptions);
+            var op4 = peer2.CreateAnswer();
             yield return op4;
             m_DescAnswer = op4.Desc;
             var op5 = peer2.SetLocalDescription(ref m_DescAnswer);

@@ -347,8 +347,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator SendOfferCoroutine(string connectionId, RTCPeerConnection pc)
         {
-            RTCOfferOptions option = new RTCOfferOptions { offerToReceiveAudio = true, offerToReceiveVideo = true };
-            var offerOp = pc.CreateOffer(ref option);
+            var offerOp = pc.CreateOffer();
             yield return offerOp;
 
             if (offerOp.IsError)
@@ -444,8 +443,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator SendAnswerCoroutine(string connectionId, RTCPeerConnection pc)
         {
-            RTCAnswerOptions options = default;
-            var op = pc.CreateAnswer(ref options);
+            var op = pc.CreateAnswer();
             yield return op;
 
             if (op.IsError)
