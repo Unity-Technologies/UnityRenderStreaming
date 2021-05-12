@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task OpenConnection(MockSignaling signaling, string connectionId)
             {
                 await Task.Delay(MillisecondsDelay);
-                signaling.OnCreateConnection?.Invoke(signaling, connectionId, false);
+                signaling.OnCreateConnection?.Invoke(signaling, connectionId, false, true);
             }
 
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
@@ -52,6 +52,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task Offer(MockSignaling owner, DescData data)
             {
                 await Task.Delay(MillisecondsDelay);
+                data.polite = false;
                 foreach (var signaling in list.Where(e => e != owner))
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
@@ -80,6 +81,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
         class MockPrivateSignalingManager : IMockSignalingManager
         {
             private Dictionary<string, List<MockSignaling>> connectionIds = new Dictionary<string, List<MockSignaling>>();
+            private Dictionary<string, (MockSignaling signaling1, MockSignaling signaling2)> pairMap =
+                new Dictionary<string, (MockSignaling signaling1, MockSignaling signaling2)>();
             private const int MillisecondsDelay = 10;
 
             public async Task Add(MockSignaling signaling)
@@ -102,7 +105,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                     connectionIds.Add(connectionId, list);
                 }
                 list.Add(signaling);
-                signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists);
+
+                signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists, peerExists);
             }
 
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
@@ -144,6 +148,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                     Debug.LogError($"{data.connectionId} This connection id is not ready other session.");
                     return;
                 }
+
+                data.polite = true;
                 foreach (var signaling in list)
                 {
                     signaling.OnOffer?.Invoke(signaling, data);

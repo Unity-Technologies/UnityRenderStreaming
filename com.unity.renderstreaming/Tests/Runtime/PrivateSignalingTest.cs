@@ -211,7 +211,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool receivePeerExists1 = false;
             bool receivePeerExists2 = false;
 
-            signaling1.OnCreateConnection += (s, id, peerExists) =>
+            signaling1.OnCreateConnection += (s, id, peerExists, polite) =>
             {
                 receiveConnectionId1 = id;
                 receivePeerExists1 = peerExists;
@@ -221,7 +221,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.AreEqual(connectionId, receiveConnectionId1);
             Assert.IsFalse(receivePeerExists1);
 
-            signaling2.OnCreateConnection += (s, id, peerExists) =>
+            signaling2.OnCreateConnection += (s, id, peerExists, polite) =>
             {
                 receiveConnectionId2 = id;
                 receivePeerExists2 = peerExists;
@@ -254,7 +254,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OnCreateConnection += (s, id, peerExists, polite) => { connectionId1 = id; };
             signaling1.OpenConnection(connectionId);
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
@@ -266,7 +266,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
             Assert.IsFalse(offerRaised2);
 
-            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OnCreateConnection += (s, id, peerExists, polite) => { connectionId2 = id; };
             signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId2));
 
@@ -300,9 +300,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OnCreateConnection += (s, id, peerExists, polite) => { connectionId1 = id; };
             signaling1.OpenConnection(connectionId);
-            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OnCreateConnection += (s, id, peerExists, polite) => { connectionId2 = id; };
             signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() =>
                 !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
@@ -342,9 +342,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
+            signaling1.OnCreateConnection += (s, id, peerExists, polite) => { connectionId1 = id; };
             signaling1.OpenConnection(connectionId);
-            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling2.OnCreateConnection += (s, id, peerExists, polite) => { connectionId2 = id; };
             signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() =>
                 !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
@@ -393,8 +393,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, id, peerExists) => { connectionId1 = id; };
-            signaling2.OnCreateConnection += (s, id, peerExists) => { connectionId2 = id; };
+            signaling1.OnCreateConnection += (s, id, peerExists, polite) => { connectionId1 = id; };
+            signaling2.OnCreateConnection += (s, id, peerExists, polite) => { connectionId2 = id; };
             signaling1.OpenConnection(connectionId);
             signaling2.OpenConnection(connectionId);
             yield return new WaitUntil(() =>
