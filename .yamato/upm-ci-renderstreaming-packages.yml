@@ -243,14 +243,21 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% endif -%}
 {% endfor %}
 
-trigger_package_test_{{ package.name }}_{{ editor.version }}:
-  name : Trigger all Package test {{ package.packagename }} {{ editor.version }}
+trigger_test_{{ package.name }}_{{ editor.version }}:
+  name : Trigger test {{ package.packagename }} {{ editor.version }} all platforms
+  dependencies:
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}
+{% if editor.version == "2020.3" -%}
   triggers:
     branches:
       only:
       - "/.*/"
       except:
       - "master"
+{% endif -%}
+
+test_{{ package.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ editor.version }} all platforms
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -262,8 +269,8 @@ trigger_package_test_{{ package.name }}_{{ editor.version }}:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
 {% endfor %}
 
-trigger_renderpipeline_test_{{ package.name }}_{{ editor.version }}:
-  name : Trigger all RenderPipeline test {{ package.packagename }} {{ editor.version }}
+test_renderpipeline_{{ package.name }}_{{ editor.version }}:
+  name : test {{ package.packagename }} {{ editor.version }} all RenderPipeline
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
