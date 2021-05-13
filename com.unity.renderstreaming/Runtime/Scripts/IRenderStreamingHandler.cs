@@ -115,6 +115,14 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <param name="kind"></param>
+        /// <returns></returns>
+        RTCRtpTransceiver AddTrack(string connectionId, TrackKind kind);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
         /// <param name="track"></param>
         void RemoveTrack(string connectionId, MediaStreamTrack track);
     }

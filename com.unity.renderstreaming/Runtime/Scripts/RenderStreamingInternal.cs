@@ -198,10 +198,21 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track)
         {
-            // todo:: replace RTCPeerConnection.AddTransceiver(MediaStreamTrack track, RTCRtpTransceiverInit init)
             RTCRtpSender sender = _mapConnectionIdAndPeer[connectionId].AddTrack(track);
             return _mapConnectionIdAndPeer[connectionId].GetTransceivers().First(t => t.Sender == sender);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="kind"></param>
+        /// <returns></returns>
+        public RTCRtpTransceiver AddTrack(string connectionId, TrackKind kind)
+        {
+            return _mapConnectionIdAndPeer[connectionId].AddTransceiver(kind);
+        }
+
 
         /// <summary>
         ///
