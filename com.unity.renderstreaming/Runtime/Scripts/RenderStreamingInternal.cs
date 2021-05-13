@@ -444,7 +444,7 @@ namespace Unity.RenderStreaming
 
             if (!pc.peer.AddIceCandidate(new RTCIceCandidate(option)) && !pc.ignoreOffer)
             {
-                Debug.LogError($"{pc} this candidate can't accept current signaling state {pc.peer.SignalingState}.");
+                Debug.LogWarning($"{pc} this candidate can't accept current signaling state {pc.peer.SignalingState}.");
             }
         }
 

@@ -494,9 +494,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             RTCDataChannel channel = target2.CreateChannel(connectionId, "test");
             Assert.That(channel, Is.Not.Null);
 
-            // send offer manually
-            target2.SendOffer(connectionId);
-
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
             Assert.That(isAddChannel1, Is.True);
             Assert.That(isGotAnswer2, Is.True);
