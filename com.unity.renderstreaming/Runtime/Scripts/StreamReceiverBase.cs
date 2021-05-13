@@ -23,8 +23,14 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="track"></param>
-        public virtual void SetReceiver(string connectionId, RTCRtpReceiver receiver)
+        public virtual TrackKind Kind { get; }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="track"></param>
+    public virtual void SetReceiver(string connectionId, RTCRtpReceiver receiver)
         {
             m_receiver = receiver;
             Track = m_receiver?.Track;

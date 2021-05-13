@@ -22,6 +22,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public override TrackKind Kind { get { return TrackKind.Video; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
 
         /// <summary>

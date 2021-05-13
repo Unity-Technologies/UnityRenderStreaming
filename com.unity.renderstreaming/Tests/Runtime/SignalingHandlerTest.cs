@@ -36,8 +36,9 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class StreamReceiverTest : StreamReceiverBase
+    class VideoStreamReceiverTest : StreamReceiverBase
     {
+        public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
     class DataChannelTest : DataChannelBase
@@ -155,7 +156,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
@@ -265,7 +266,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;

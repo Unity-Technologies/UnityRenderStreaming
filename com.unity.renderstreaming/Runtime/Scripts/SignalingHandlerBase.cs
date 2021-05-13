@@ -161,6 +161,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        TrackKind Kind { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="track"></param>
         void SetReceiver(string connectionId, RTCRtpReceiver sender);
     }
