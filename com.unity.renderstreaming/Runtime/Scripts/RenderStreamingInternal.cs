@@ -199,6 +199,14 @@ namespace Unity.RenderStreaming
             return peer.peer.ConnectionState == RTCPeerConnectionState.Connected;
         }
 
+        public bool IsStable(string connectionId)
+        {
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
+                return false;
+
+            return peer.peer.SignalingState == RTCSignalingState.Stable;
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -273,6 +281,12 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
+            if (!IsStable(connectionId))
+            {
+                throw new InvalidOperationException(
+                    $"sendoffer needs in stable state, current state is {_mapConnectionIdAndPeer[connectionId].peer.SignalingState}");
+            }
+
             _startCoroutine(SendOfferCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
         }
 
@@ -384,7 +398,7 @@ namespace Unity.RenderStreaming
             }
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.HaveLocalOffer,
-                $"{pc} negotiationneeded always fires in stable state");
+                $"{pc} negotiationneeded not racing with onmessage");
             Assert.AreEqual(pc.peer.LocalDescription.type, RTCSdpType.Offer, $"{pc} negotiationneeded SLD worked");
             pc.makingOffer = false;
 

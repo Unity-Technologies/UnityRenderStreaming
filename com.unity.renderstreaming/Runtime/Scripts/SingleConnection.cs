@@ -80,7 +80,7 @@ namespace Unity.RenderStreaming
                     var _channel = CreateChannel(connectionId, channel.Label);
                     channel.SetChannel(connectionId, _channel);
                 }
-                if (sendOffer)
+                if (sendOffer && IsStable(connectionId))
                     SendOffer(connectionId);
             }
         }
@@ -119,7 +119,14 @@ namespace Unity.RenderStreaming
             if (!streams.OfType<IStreamSource>().Any() &&
                 !streams.OfType<IDataChannel>().Any(c => c.IsLocal))
             {
-                SendOffer(connectionId);
+                if (IsStable(connectionId))
+                {
+                    SendOffer(connectionId);
+                }
+                else
+                {
+                    Debug.LogError($"{connectionId} peer is not stable state.");
+                }
             }
             else
             {
