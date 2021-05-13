@@ -1,7 +1,14 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Unity.WebRTC;
+using Gyroscope = UnityEngine.InputSystem.Gyroscope;
+
+#if URS_USE_AR_FOUNDATION
+using System;
+using UnityEngine.XR.ARFoundation;
+#endif
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -44,7 +51,30 @@ namespace Unity.RenderStreaming.Samples
             buttonReceiver.onClick.AddListener(OnPressedReceiver);
             buttonWebBrowserInput.onClick.AddListener(OnPressedWebBrowserInput);
             buttonAR.onClick.AddListener(OnPressedAR);
+
+
+            // Gyro input is not supported on this device.
+            if (Gyroscope.current == null)
+            {
+                buttonGyro.interactable = false;
+            }
+
+            StartCoroutine(CheckARAvailability(available => { buttonAR.interactable = available; }));
         }
+
+
+#if URS_USE_AR_FOUNDATION
+        IEnumerator CheckARAvailability(Action<bool> callback)
+        {
+            if ((ARSession.state == ARSessionState.None) ||
+                (ARSession.state == ARSessionState.CheckingAvailability))
+            {
+                yield return ARSession.CheckAvailability();
+            }
+
+            callback?.Invoke(ARSession.state == ARSessionState.Ready);
+        }
+#endif
 
         private void OnChangeHWCodec(bool enable)
         {
