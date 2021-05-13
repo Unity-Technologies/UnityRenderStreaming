@@ -25,7 +25,7 @@ platforms:
         platform: standalone
   - name: macos
     type: Unity::metal::macmini
-    image: package-ci/mac:stable
+    image: package-ci/mac:latest
     flavor: m1.mac
     packed_webapp_name: webserver_mac
     test_params:

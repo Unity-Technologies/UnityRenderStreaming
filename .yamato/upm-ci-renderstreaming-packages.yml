@@ -186,7 +186,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
+    flavor: {{ platform.flavor }}
   variables:
       TEMPLATE_FILE: BuildScripts~/template/remote.sh.template
       PACKAGE_DIR: UnityRenderStreaming
@@ -300,9 +300,11 @@ publish_dry_run_{{ package.name }}:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_2019.4
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_2019.4
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_2019.4
+{% for editor in editors %}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_{{ editor.version }}
+{% endfor %}
 
 publish_{{ package.name }}:
   name: Publish {{ package.packagename }}
