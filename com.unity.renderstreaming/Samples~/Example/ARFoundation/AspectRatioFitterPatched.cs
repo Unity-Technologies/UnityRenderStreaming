@@ -4,7 +4,7 @@ using UnityEngine.UI;
 /// See below
 /// https://forum.unity.com/threads/aspectratiofitter-new-restriction-in-2020-2.1022683/
 /// </summary>
-public class AspectRatioFitterPatched : AspectRatioFitter
+internal class AspectRatioFitterPatched : AspectRatioFitter
 {
     protected override void Start()
     {
