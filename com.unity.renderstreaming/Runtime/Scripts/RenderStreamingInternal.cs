@@ -288,8 +288,9 @@ namespace Unity.RenderStreaming
         {
             if (!IsStable(connectionId))
             {
+                var pc = _mapConnectionIdAndPeer[connectionId];
                 throw new InvalidOperationException(
-                    $"sendoffer needs in stable state, current state is {_mapConnectionIdAndPeer[connectionId].peer.SignalingState}");
+                    $"{pc} sendoffer needs in stable state, current state is {pc.peer.SignalingState}");
             }
 
             _startCoroutine(SendOfferCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
@@ -384,7 +385,6 @@ namespace Unity.RenderStreaming
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
         {
             Debug.Log($"{pc} SLD due to negotiationneeded");
-
             yield return new WaitWhile(() => pc.sldGetBackStable);
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
