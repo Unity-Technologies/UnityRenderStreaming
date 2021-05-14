@@ -59,7 +59,11 @@ namespace Unity.RenderStreaming.Samples
                 buttonGyro.interactable = false;
             }
 
+#if URS_USE_AR_FOUNDATION
             StartCoroutine(CheckARAvailability(available => { buttonAR.interactable = available; }));
+#else
+            buttonAR.interactable = false;
+#endif
         }
 
 
