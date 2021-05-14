@@ -416,8 +416,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var transceiver = target1.AddTrack(connectionId, TrackKind.Video);
             transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
 
-            target1.SendOffer(connectionId);
-
             // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
             Assert.That(isOnGotOffer2, Is.True);
