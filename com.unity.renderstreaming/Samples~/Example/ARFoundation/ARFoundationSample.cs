@@ -6,9 +6,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.ARFoundation;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Sample
 {
-    public class ARFoundationSample : MonoBehaviour
+    internal class ARFoundationSample : MonoBehaviour
     {
 #pragma warning disable 0649
         [SerializeField] private Button startButton;

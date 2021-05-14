@@ -36,8 +36,9 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class StreamReceiverTest : StreamReceiverBase
+    class VideoStreamReceiverTest : StreamReceiverBase
     {
+        public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
     class DataChannelTest : DataChannelBase
@@ -108,9 +109,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(false);
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
         [Test]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public void AddStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
@@ -138,9 +137,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -155,7 +152,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
@@ -193,9 +190,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -243,9 +238,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
         [UnityTest, Timeout(3000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -265,7 +258,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<StreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
@@ -295,7 +288,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.Dispose();
         }
 
+        //todo(kazuki):: Unknown error is occurred on Android
         [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.Android })]
         public IEnumerator ReceiveDataChannel()
         {
             string connectionId = "12345";

@@ -2853,7 +2853,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045786cf504bd7347842d6948241cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urlSignaling: ws://localhost
+  urlSignaling: ws://192.168.11.11
   signalingType: Unity.RenderStreaming.Signaling.WebSocketSignaling
   iceServers:
   - credential: 
@@ -2925,6 +2925,14 @@ MonoBehaviour:
       m_Groups: 
       m_Action: Position
       m_Flags: 0
+    - m_Name: 
+      m_Id: 88b5f99a-4851-4c20-8ef8-80ef6d180f29
+      m_Path: <XRInputV1::ARCore>/deviceposition
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Position
+      m_Flags: 0
   quaternionAction:
     m_Name: Quaternion
     m_Type: 0
@@ -2936,6 +2944,14 @@ MonoBehaviour:
     - m_Name: 
       m_Id: 8d9aa61a-e1be-45f8-b882-0f20a4416bbd
       m_Path: <XRInputV1::ARKit>/devicerotation
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Quaternion
+      m_Flags: 0
+    - m_Name: 
+      m_Id: f59f314e-440b-4d9c-9ec8-25be82d7c317
+      m_Path: <XRInputV1::ARCore>/devicerotation
       m_Interactions: 
       m_Processors: 
       m_Groups: 

@@ -1,9 +1,11 @@
 {
-    "name": "Unity.RenderStreaming.ARFoundationSample",
+    "name": "Unity.RenderStreaming.Sample",
+    "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
         "Unity.RenderStreaming.Runtime",
-        "Unity.XR.ARFoundation"
+        "Unity.XR.ARFoundation",
+        "Unity.WebRTC"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

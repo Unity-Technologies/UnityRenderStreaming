@@ -4,6 +4,7 @@ upm:
 intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
 editors:
   - version: 2019.4
+  - version: 2020.3
 platforms:
   - name: win
     type: Unity::VM::GPU
@@ -24,7 +25,7 @@ platforms:
         platform: standalone
   - name: macos
     type: Unity::metal::macmini
-    image: package-ci/mac:stable
+    image: package-ci/mac:latest
     flavor: m1.mac
     packed_webapp_name: webserver_mac
     test_params:
@@ -60,3 +61,10 @@ template_projects:
     packagename: com.unity.template.renderstreaming-hd
   - name: renderstreaming-rtx
     packagename: com.unity.template.renderstreaming-rtx
+test_targets_android:
+  - name: vulkan
+    playergraphicsapi: Vulkan
+    extra-editor-arg: vulkan
+  - name: opengles3
+    playergraphicsapi: OpenGLES3
+    extra-editor-arg: gles3

@@ -413,6 +413,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection1);
             Assert.That(isCreatedConnection1, Is.True);
 
+            var transceiver = target1.AddTrack(connectionId, TrackKind.Video);
+            transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
+
             target1.SendOffer(connectionId);
 
             // target2 is sender in private mode
@@ -427,7 +430,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
-            target2.AddTrack(connectionId, track);
+            var transceiver2 = target2.AddTrack(connectionId, track);
+            transceiver2.Direction = RTCRtpTransceiverDirection.SendOnly;
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);

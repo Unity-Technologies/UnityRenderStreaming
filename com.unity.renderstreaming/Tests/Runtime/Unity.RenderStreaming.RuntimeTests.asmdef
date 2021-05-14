@@ -1,5 +1,6 @@
 {
     "name": "Unity.RenderStreaming.RuntimeTests",
+    "rootNamespace": "",
     "references": [
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
@@ -9,6 +10,7 @@
         "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [
+        "Android",
         "Editor",
         "iOS",
         "LinuxStandalone64",

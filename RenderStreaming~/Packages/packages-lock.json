@@ -14,7 +14,7 @@
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.0",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -27,11 +27,20 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "1.1.4",
+      "version": "2.0.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.test-framework": "1.1.1"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.visualstudio": {
+      "version": "2.0.7",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
       },
       "url": "https://packages.unity.com"
     },
@@ -43,7 +52,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.0.0",
+      "version": "1.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -54,12 +63,12 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "2.3.3-preview",
-        "com.unity.inputsystem": "1.0.0"
+        "com.unity.webrtc": "2.4.0-exp.1",
+        "com.unity.inputsystem": "1.0.2"
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.22",
+      "version": "1.1.24",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -79,8 +88,8 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.3.3-preview",
-      "depth": 1,
+      "version": "2.4.0-exp.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.jsonserialize": "1.0.0",
@@ -221,6 +230,18 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.uielementsnative": "1.0.0"
+      }
+    },
+    "com.unity.modules.uielementsnative": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }

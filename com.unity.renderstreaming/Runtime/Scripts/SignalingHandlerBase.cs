@@ -67,8 +67,12 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public virtual RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track)
         {
-            var  transceiver = m_handler.AddTrack(connectionId, track);
-            return transceiver;
+            return m_handler.AddTrack(connectionId, track);
+        }
+
+        public virtual RTCRtpTransceiver AddTrack(string connectionId, TrackKind kind)
+        {
+            return m_handler.AddTrack(connectionId, kind);
         }
 
         /// <summary>
@@ -153,6 +157,11 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         MediaStreamTrack Track { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        TrackKind Kind { get; }
 
         /// <summary>
         /// 
