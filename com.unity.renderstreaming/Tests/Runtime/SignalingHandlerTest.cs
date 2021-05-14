@@ -307,7 +307,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.AddComponent(channel1);
             container1.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
-            Debug.Log("1");
 
             var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
             bool isStartedChannel2 = false;
@@ -324,11 +323,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container2.test.component.AddComponent(channel2);
             container2.test.component.CreateConnection(connectionId);
-            Debug.Log("2");
             yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
-            Debug.Log("3");
             yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
-            Debug.Log("4");
             Assert.That(isStartedChannel1, Is.True);
             Assert.That(isStartedChannel2, Is.True);
 
@@ -339,9 +335,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
 
-            Debug.Log("5");
             yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
-            Debug.Log("6");
             Assert.That(isStoppedChannel1, Is.True);
             Assert.That(isStoppedChannel2, Is.True);
 
