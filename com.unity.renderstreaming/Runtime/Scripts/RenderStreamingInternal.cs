@@ -204,6 +204,11 @@ namespace Unity.RenderStreaming
             if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
                 return false;
 
+            if (peer.makingOffer || peer.sldGetBackStable || peer.srdAnswerPending)
+            {
+                return false;
+            }
+
             return peer.peer.SignalingState == RTCSignalingState.Stable;
         }
 
