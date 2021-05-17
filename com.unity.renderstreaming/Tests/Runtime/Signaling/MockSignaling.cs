@@ -42,6 +42,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             {
                 await Task.Delay(MillisecondsDelay);
                 signaling.OnCreateConnection?.Invoke(signaling, connectionId, false, true);
+                signaling.OnReadyOtherConnection?.Invoke(signaling, connectionId, true);
             }
 
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
@@ -53,6 +54,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             {
                 await Task.Delay(MillisecondsDelay);
                 data.polite = false;
+                data.readyOtherPeer = true;
                 foreach (var signaling in list.Where(e => e != owner))
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
@@ -81,8 +83,6 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
         class MockPrivateSignalingManager : IMockSignalingManager
         {
             private Dictionary<string, List<MockSignaling>> connectionIds = new Dictionary<string, List<MockSignaling>>();
-            private Dictionary<string, (MockSignaling signaling1, MockSignaling signaling2)> pairMap =
-                new Dictionary<string, (MockSignaling signaling1, MockSignaling signaling2)>();
             private const int MillisecondsDelay = 10;
 
             public async Task Add(MockSignaling signaling)
@@ -107,6 +107,11 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 list.Add(signaling);
 
                 signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists, peerExists);
+
+                foreach (var other in list.Where(x => x != signaling))
+                {
+                    other.OnReadyOtherConnection?.Invoke(other, connectionId, true);
+                }
             }
 
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
@@ -150,6 +155,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 }
 
                 data.polite = true;
+                data.readyOtherPeer = true;
                 foreach (var signaling in list)
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
@@ -213,11 +219,12 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public void Stop()
         {
-            manager.Remove(this);
+            manager.Remove(this).Wait(1000);
         }
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
+        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         public event OnAnswerHandler OnAnswer;

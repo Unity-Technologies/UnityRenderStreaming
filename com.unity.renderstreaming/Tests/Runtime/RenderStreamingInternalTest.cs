@@ -451,7 +451,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddChannelPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -483,14 +483,19 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
+            bool isGotOffer1 = false;
             bool isGotAnswer2 = false;
             target1.onAddChannel += (_, _channel) => { isAddChannel1 = true; };
-            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
             RTCDataChannel channel = target2.CreateChannel(connectionId, "test");
             Assert.That(channel, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotOffer1);
+            Assert.That(isGotOffer1, Is.True);
+            target1.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
             Assert.That(isAddChannel1, Is.True);
@@ -511,7 +516,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator SendOfferThrowExceptionPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -579,7 +584,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [UnityTest, Timeout(300000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator SwapTransceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -613,11 +618,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isGotOffer1 = false;
             bool isGotOffer2 = false;
             bool isGotAnswer1 = false;
-            bool isGotAnswer2 = false;
             target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
             target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
-            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             target1.AddTrack(connectionId, TrackKind.Audio);
             target2.AddTrack(connectionId, TrackKind.Audio);

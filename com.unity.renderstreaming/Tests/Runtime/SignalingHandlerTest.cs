@@ -137,7 +137,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -190,7 +190,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -212,7 +212,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator AddDataChannel()
         {
             string connectionId = "12345";
@@ -238,7 +238,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container.Dispose();
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -289,7 +289,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         //todo(kazuki):: Unknown error is occurred on Android
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         [UnityPlatform(exclude = new[] { RuntimePlatform.Android })]
         public IEnumerator ReceiveDataChannel()
         {
