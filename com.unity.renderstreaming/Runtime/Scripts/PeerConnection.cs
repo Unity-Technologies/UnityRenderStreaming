@@ -8,6 +8,7 @@ namespace Unity.RenderStreaming
         public readonly RTCPeerConnection peer;
         public readonly bool polite;
 
+        public bool readyOtherPeer;
         public bool makingOffer;
         public bool ignoreOffer;
         public bool srdAnswerPending;

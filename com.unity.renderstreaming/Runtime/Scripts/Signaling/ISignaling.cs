@@ -4,6 +4,7 @@ namespace Unity.RenderStreaming.Signaling
 {
     public delegate void OnStartHandler(ISignaling signaling);
     public delegate void OnConnectHandler(ISignaling signaling, string connectionId, bool peerExists, bool polite);
+    public delegate void OnReadyOtherHandler(ISignaling signaling, string connectionId, bool readyOtherPeer);
     public delegate void OnDisconnectHandler(ISignaling signaling, string connectionId);
     public delegate void OnOfferHandler(ISignaling signaling, DescData e);
     public delegate void OnAnswerHandler(ISignaling signaling, DescData e);
@@ -16,6 +17,7 @@ namespace Unity.RenderStreaming.Signaling
 
         event OnStartHandler OnStart;
         event OnConnectHandler OnCreateConnection;
+        event OnReadyOtherHandler OnReadyOtherConnection;
         event OnDisconnectHandler OnDestroyConnection;
         event OnOfferHandler OnOffer;
         event OnAnswerHandler OnAnswer;

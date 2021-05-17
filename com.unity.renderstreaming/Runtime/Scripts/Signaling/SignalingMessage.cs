@@ -36,6 +36,7 @@ namespace Unity.RenderStreaming
         public string connectionId;
         public string sdp;
         public string type;
+        public bool readyOtherPeer;
         public bool polite;
     }
 
