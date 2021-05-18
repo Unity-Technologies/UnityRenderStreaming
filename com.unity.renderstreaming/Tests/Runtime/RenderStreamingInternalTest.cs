@@ -628,14 +628,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isGotOffer1 || isGotOffer2);
 
             // ignore offer because impolite peer
-            Assert.That(isGotOffer1, Is.False);
+            Assert.That(isGotOffer1, Is.False, $"{nameof(isGotOffer1)} is not False.");
             // accept offer because polite peer
-            Assert.That(isGotOffer2, Is.True);
+            Assert.That(isGotOffer2, Is.True, $"{nameof(isGotOffer2)} is not True.");
 
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isGotAnswer1);
-            Assert.That(isGotAnswer1, Is.True);
+            Assert.That(isGotAnswer1, Is.True, $"{nameof(isGotAnswer1)} is not True.");
 
             target1.DeleteConnection(connectionId);
             target2.DeleteConnection(connectionId);
@@ -645,8 +645,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
-            Assert.That(isDeletedConnection1, Is.True);
-            Assert.That(isDeletedConnection2, Is.True);
+            Assert.That(isDeletedConnection1, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
 
             target1.Dispose();
             target2.Dispose();
