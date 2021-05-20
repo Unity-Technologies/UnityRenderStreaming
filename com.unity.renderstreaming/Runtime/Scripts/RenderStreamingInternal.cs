@@ -342,7 +342,7 @@ namespace Unity.RenderStreaming
             onDeletedConnection?.Invoke(connectionId);
         }
 
-        PeerConnection CreatePeerConnection(string connectionId, bool peerExists, bool polite)
+        PeerConnection CreatePeerConnection(string connectionId, bool readyOtherPeer, bool polite)
         {
             if (_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
             {
@@ -350,7 +350,7 @@ namespace Unity.RenderStreaming
             }
 
             var pc = new RTCPeerConnection();
-            peer = new PeerConnection(pc, polite) {readyOtherPeer = peerExists};
+            peer = new PeerConnection(pc, polite) {readyOtherPeer = readyOtherPeer};
             _mapConnectionIdAndPeer[connectionId] = peer;
 
             pc.SetConfiguration(ref _config);

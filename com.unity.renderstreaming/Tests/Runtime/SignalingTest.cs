@@ -185,7 +185,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             m_Context = null;
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnConnect()
         {
             bool startRaised1 = false;
@@ -201,7 +201,43 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.IsNotEmpty(connectionId1);
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(10000)]
+        public IEnumerator OnReadyOtherPeer()
+        {
+            bool startRaised1 = false;
+            bool peerExists1 = false;
+            bool polite1 = false;
+            bool readyOtherPeer1 = false;
+            string connectionId1 = null;
+            const string _connectionId = "12345";
+
+            signaling1.OnStart += s => { startRaised1 = true; };
+            signaling1.Start();
+            yield return new WaitUntil(() => startRaised1);
+
+            signaling1.OnCreateConnection += (s, id, exists, polite) => {
+                connectionId1 = id;
+                peerExists1 = exists;
+                polite1 = polite;
+            };
+            signaling1.OnReadyOtherConnection += (signaling, id, peer) =>
+            {
+                if (id == connectionId1)
+                {
+                    readyOtherPeer1 = peer;
+                }
+            };
+            signaling1.OpenConnection(_connectionId);
+
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
+
+            Assert.That(connectionId1, Is.EqualTo(_connectionId));
+            Assert.That(peerExists1, Is.False);
+            Assert.That(polite1, Is.True);
+            Assert.That(readyOtherPeer1, Is.True);
+        }
+
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnOffer()
         {
             bool startRaised1 = false;
@@ -242,7 +278,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => offerRaised);
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAnswer()
         {
             bool startRaised1 = false;
@@ -274,7 +310,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => answerRaised);
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnCandidate()
         {
             bool startRaised1 = false;
