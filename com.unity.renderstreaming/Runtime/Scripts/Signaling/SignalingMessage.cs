@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
         public string message;
         public string sessionId;
         public string connectionId;
-        public bool peerExists;
+        public bool readyOtherPeer;
         public bool polite;
         public string sdp;
         public string type;
@@ -50,7 +50,7 @@ namespace Unity.RenderStreaming
     class CreateConnectionResData
     {
         public string connectionId;
-        public bool peerExists;
+        public bool readyOtherPeer;
         public bool polite;
     }
 

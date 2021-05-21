@@ -318,11 +318,11 @@ namespace Unity.RenderStreaming
             onStart?.Invoke();
         }
 
-        void OnCreateConnection(ISignaling signaling, string connectionId, bool peerExists, bool polite)
+        void OnCreateConnection(ISignaling signaling, string connectionId, bool readyOtherPeer, bool polite)
         {
-            CreatePeerConnection(connectionId, peerExists, polite);
+            CreatePeerConnection(connectionId, readyOtherPeer, polite);
 
-            if (peerExists)
+            if (readyOtherPeer)
                 onFoundConnection?.Invoke(connectionId);
             else
                 onCreatedConnection?.Invoke(connectionId);

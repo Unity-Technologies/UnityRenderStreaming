@@ -49,6 +49,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
             {
                 await Task.Delay(MillisecondsDelay);
+                signaling.OnReadyOtherConnection?.Invoke(signaling, connectionId, false);
                 signaling.OnDestroyConnection?.Invoke(signaling, connectionId);
             }
 

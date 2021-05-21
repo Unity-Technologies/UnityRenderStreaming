@@ -195,7 +195,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.Start();
             yield return new WaitUntil(() => startRaised1);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists, polite) => { connectionId1 = connectionId; };
+            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId1 = connectionId; };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
             Assert.IsNotEmpty(connectionId1);
@@ -205,9 +205,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         public IEnumerator OnReadyOtherPeer()
         {
             bool startRaised1 = false;
-            bool peerExists1 = false;
-            bool polite1 = false;
             bool readyOtherPeer1 = false;
+            bool polite1 = false;
             string connectionId1 = null;
             const string _connectionId = "12345";
 
@@ -215,16 +214,16 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.Start();
             yield return new WaitUntil(() => startRaised1);
 
-            signaling1.OnCreateConnection += (s, id, exists, polite) => {
+            signaling1.OnCreateConnection += (s, id, readyOtherPeer, polite) => {
                 connectionId1 = id;
-                peerExists1 = exists;
+                readyOtherPeer1 = readyOtherPeer;
                 polite1 = polite;
             };
-            signaling1.OnReadyOtherConnection += (signaling, id, peer) =>
+            signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
                 if (id == connectionId1)
                 {
-                    readyOtherPeer1 = peer;
+                    readyOtherPeer1 = readyOtherPeer;
                 }
             };
             signaling1.OpenConnection(_connectionId);
@@ -232,9 +231,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             Assert.That(connectionId1, Is.EqualTo(_connectionId));
-            Assert.That(peerExists1, Is.False);
-            Assert.That(polite1, Is.True);
             Assert.That(readyOtherPeer1, Is.True);
+            Assert.That(polite1, Is.True);
         }
 
         [UnityTest, Timeout(10000)]
@@ -243,8 +241,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool startRaised1 = false;
             bool startRaised2 = false;
             bool offerRaised = false;
-            bool peerExists1 = false;
-            bool peerExists2 = false;
+            bool readyOtherPeer1 = false;
+            bool readyOtherPeer2 = false;
             string connectionId1 = null;
             string connectionId2 = null;
             const string _connectionId = "12345";
@@ -255,15 +253,29 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists, polite) => {
+            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
                 connectionId1 = connectionId;
-                peerExists1 = peerExists;
+                readyOtherPeer1 = readyOtherPeer;
+            };
+            signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
+            {
+                if (id == connectionId1)
+                {
+                    readyOtherPeer1 = readyOtherPeer;
+                }
             };
             signaling1.OpenConnection(_connectionId);
 
-            signaling2.OnCreateConnection += (s, connectionId, peerExists, polite) => {
+            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
                 connectionId2 = connectionId;
-                peerExists2 = peerExists;
+                readyOtherPeer2 = readyOtherPeer;
+            };
+            signaling2.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
+            {
+                if (id == connectionId2)
+                {
+                    readyOtherPeer2 = readyOtherPeer;
+                }
             };
             signaling2.OpenConnection(_connectionId);
             yield return new WaitUntil(() =>
@@ -271,8 +283,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(connectionId1, Is.EqualTo(_connectionId));
             Assert.That(connectionId2, Is.EqualTo(_connectionId));
-            Assert.That(peerExists1, Is.False);
-            Assert.That(peerExists2, Is.False);
+            Assert.That(readyOtherPeer1, Is.True);
+            Assert.That(readyOtherPeer2, Is.True);
             signaling2.OnOffer += (s, e) => { offerRaised = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
             yield return new WaitUntil(() => offerRaised);
@@ -294,9 +306,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists, polite) => { connectionId1 = connectionId; };
+            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId1 = connectionId; };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists, polite) => { connectionId2 = connectionId; };
+            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId2 = connectionId; };
             signaling2.OpenConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() =>
                 !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
@@ -328,9 +340,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, peerExists, polite) => { connectionId1 = connectionId; };
+            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId1 = connectionId; };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, peerExists, polite) => { connectionId2 = connectionId; };
+            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId2 = connectionId; };
             signaling2.OpenConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() =>
                 !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
