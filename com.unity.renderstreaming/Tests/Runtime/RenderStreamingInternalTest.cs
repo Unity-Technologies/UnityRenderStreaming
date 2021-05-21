@@ -46,7 +46,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 signaling = new MockSignaling(),
                 config = new RTCConfiguration
                 {
-                    iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } },
+                    iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}},
                 },
                 encoderType = EncoderType.Software,
                 startCoroutine = test.component.StartCoroutine
@@ -151,11 +151,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.Dispose();
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
+        //todo:: crash in dispose process on standalone linux
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -228,11 +228,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.Dispose();
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
+        //todo:: crash in dispose process on standalone linux
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+        [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
         public IEnumerator AddTrackMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -309,9 +309,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel.Dispose();
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
+        //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -381,9 +381,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.Destroy(camObj);
         }
 
-        // todo(kazuki): the software encoder is not supported on Linux
+        //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
@@ -415,8 +415,6 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var transceiver = target1.AddTrack(connectionId, TrackKind.Video);
             transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
-
-            target1.SendOffer(connectionId);
 
             // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
@@ -453,7 +451,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(camObj);
         }
 
-        [UnityTest, Timeout(3000)]
+        [UnityTest, Timeout(10000)]
         public IEnumerator OnAddChannelPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -485,17 +483,19 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             bool isAddChannel1 = false;
+            bool isGotOffer1 = false;
             bool isGotAnswer2 = false;
             target1.onAddChannel += (_, _channel) => { isAddChannel1 = true; };
-            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
             // send offer automatically after creating channel
             RTCDataChannel channel = target2.CreateChannel(connectionId, "test");
             Assert.That(channel, Is.Not.Null);
 
-            // send offer manually
-            target2.SendOffer(connectionId);
+            yield return new WaitUntil(() => isGotOffer1);
+            Assert.That(isGotOffer1, Is.True);
+            target1.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddChannel1 && isGotAnswer2);
             Assert.That(isAddChannel1, Is.True);
@@ -511,6 +511,142 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
             Assert.That(isDeletedConnection1, Is.True);
             Assert.That(isDeletedConnection2, Is.True);
+
+            target1.Dispose();
+            target2.Dispose();
+        }
+
+        [UnityTest, Timeout(10000)]
+        public IEnumerator SendOfferThrowExceptionPrivateMode()
+        {
+            MockSignaling.Reset(true);
+
+            var dependencies1 = CreateDependencies();
+            var dependencies2 = CreateDependencies();
+            var target1 = new RenderStreamingInternal(ref dependencies1);
+            var target2 = new RenderStreamingInternal(ref dependencies2);
+
+            bool isStarted1 = false;
+            bool isStarted2 = false;
+            target1.onStart += () => { isStarted1 = true; };
+            target2.onStart += () => { isStarted2 = true; };
+            yield return new WaitUntil(() => isStarted1 && isStarted2);
+
+            bool isCreatedConnection1 = false;
+            bool isCreatedConnection2 = false;
+            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+
+            var connectionId = "12345";
+
+            // target1 is Receiver in private mode
+            target1.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection1);
+
+            // target2 is sender in private mode
+            target2.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection2);
+
+            bool isGotOffer1 = false;
+            bool isGotAnswer2 = false;
+            target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
+
+            target2.SendOffer(connectionId);
+
+            // each peer are not stable, signaling process not complete.
+            yield return new WaitUntil(() => isGotOffer1);
+            Assert.That(target1.IsStable(connectionId), Is.False);
+            Assert.That(target2.IsStable(connectionId), Is.False);
+            Assert.That(() => target1.SendOffer(connectionId), Throws.TypeOf<InvalidOperationException>());
+            Assert.That(() => target2.SendOffer(connectionId), Throws.TypeOf<InvalidOperationException>());
+
+            target1.SendAnswer(connectionId);
+
+            yield return new WaitUntil(() => isGotAnswer2);
+            Assert.That(isGotAnswer2, Is.True);
+
+            Assert.That(target1.IsStable(connectionId), Is.True);
+            Assert.That(target2.IsStable(connectionId), Is.True);
+
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
+
+            bool isDeletedConnection1 = false;
+            bool isDeletedConnection2 = false;
+            target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
+            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True);
+            Assert.That(isDeletedConnection2, Is.True);
+
+            target1.Dispose();
+            target2.Dispose();
+        }
+
+        [UnityTest, Timeout(10000)]
+        public IEnumerator SwapTransceiverPrivateMode()
+        {
+            MockSignaling.Reset(true);
+
+            var dependencies1 = CreateDependencies();
+            var dependencies2 = CreateDependencies();
+            var target1 = new RenderStreamingInternal(ref dependencies1);
+            var target2 = new RenderStreamingInternal(ref dependencies2);
+
+            bool isStarted1 = false;
+            bool isStarted2 = false;
+            target1.onStart += () => { isStarted1 = true; };
+            target2.onStart += () => { isStarted2 = true; };
+            yield return new WaitUntil(() => isStarted1 && isStarted2);
+
+            bool isCreatedConnection1 = false;
+            bool isCreatedConnection2 = false;
+            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+
+            var connectionId = "12345";
+
+            // target1 has impolite peer (request first)
+            target1.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection1);
+
+            // target2 has polite peer (request second)
+            target2.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection2);
+
+            bool isGotOffer1 = false;
+            bool isGotOffer2 = false;
+            bool isGotAnswer1 = false;
+            target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
+            target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
+            target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
+
+            target1.AddTrack(connectionId, TrackKind.Audio);
+            target2.AddTrack(connectionId, TrackKind.Audio);
+
+            yield return new WaitUntil(() => isGotOffer1 || isGotOffer2);
+
+            // ignore offer because impolite peer
+            Assert.That(isGotOffer1, Is.False, $"{nameof(isGotOffer1)} is not False.");
+            // accept offer because polite peer
+            Assert.That(isGotOffer2, Is.True, $"{nameof(isGotOffer2)} is not True.");
+
+            target2.SendAnswer(connectionId);
+
+            yield return new WaitUntil(() => isGotAnswer1);
+            Assert.That(isGotAnswer1, Is.True, $"{nameof(isGotAnswer1)} is not True.");
+
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
+
+            bool isDeletedConnection1 = false;
+            bool isDeletedConnection2 = false;
+            target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
+            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
 
             target1.Dispose();
             target2.Dispose();

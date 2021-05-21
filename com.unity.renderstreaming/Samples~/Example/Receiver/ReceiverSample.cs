@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming
             }
             connectionIdInput.interactable = false;
 
-            connection.CreateConnection(connectionId, true);
+            connection.CreateConnection(connectionId);
             startButton.gameObject.SetActive(false);
             stopButton.gameObject.SetActive(true);
         }

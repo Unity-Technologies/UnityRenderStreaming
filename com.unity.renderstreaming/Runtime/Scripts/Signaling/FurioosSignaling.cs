@@ -67,9 +67,9 @@ namespace Unity.RenderStreaming.Signaling
         public event OnStartHandler OnStart;
         public event OnSignedInHandler OnSignedIn;
         public event OnConnectHandler OnCreateConnection;
+        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
-        // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
         public event OnIceCandidateHandler OnIceCandidate;
 #pragma warning restore 0067

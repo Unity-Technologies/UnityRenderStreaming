@@ -55,6 +55,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
+        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         #pragma warning disable 0067
@@ -177,7 +178,7 @@ namespace Unity.RenderStreaming.Signaling
                     if (routedMessage.type == "connect")
                     {
                         msg = JsonUtility.FromJson<SignalingMessage>(content);
-                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, msg.connectionId, msg.peerExists), null);
+                        m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, msg.connectionId, msg.readyOtherPeer, msg.polite), null);
                     }
                     else if (routedMessage.type == "disconnect")
                     {

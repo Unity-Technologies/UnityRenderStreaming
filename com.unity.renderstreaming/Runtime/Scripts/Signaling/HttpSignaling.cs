@@ -61,12 +61,10 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
+        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
-        #pragma warning disable 0067
-        // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
-        #pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
 
         public void SendOffer(string connectionId, RTCSessionDescription offer)
@@ -289,7 +287,7 @@ namespace Unity.RenderStreaming.Signaling
             if (data == null) return false;
 
             Debug.Log("Signaling: HTTP create connection, connectionId : " + connectionId);
-            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.peerExists), null);
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.readyOtherPeer, data.polite), null);
             return true;
         }
 

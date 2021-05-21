@@ -60,7 +60,7 @@ namespace Unity.RenderStreaming
         void SendOffer()
         {
             var connectionId = System.Guid.NewGuid().ToString("N");
-            connection.CreateConnection(connectionId, true);
+            connection.CreateConnection(connectionId);
         }
     }
 }
