@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Unity.WebRTC;
@@ -20,6 +23,7 @@ namespace Unity.RenderStreaming.Signaling
         private long m_lastTimeGetAnswerRequest;
         private long m_lastTimeGetCandidateRequest;
 
+        private HashSet<string> m_connection;
 
         public HttpSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
@@ -32,10 +36,13 @@ namespace Unity.RenderStreaming.Signaling
                 ServicePointManager.ServerCertificateValidationCallback =
                     (sender, certificate, chain, errors) => true;
             }
+
+            m_connection = new HashSet<string>();
         }
 
         ~HttpSignaling()
         {
+            m_connection?.Clear();
             if(m_running)
                 Stop();
         }
@@ -126,6 +133,7 @@ namespace Unity.RenderStreaming.Signaling
             {
                 try
                 {
+                    HTTPGetConnections();
                     HTTPGetOffers();
                     HTTPGetAnswers();
                     HTTPGetCandidates();
@@ -313,6 +321,38 @@ namespace Unity.RenderStreaming.Signaling
 
             Debug.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
             m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, connectionId), null);
+            return true;
+        }
+
+        private bool HTTPGetConnections()
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Session-Id", m_sessionId);
+            request.KeepAlive = false;
+
+            HttpWebResponse response = HTTPGetResponse(request);
+            ConnectionResDataList list = HTTPParseJsonResponse<ConnectionResDataList>(response);
+
+            if (list == null) return false;
+
+            foreach (var deleted in m_connection.Except(list.connections.Select(x => x.connectionId)).ToList())
+            {
+                m_mainThreadContext.Post(d => OnReadyOtherConnection?.Invoke(this, deleted, false), null);
+                m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, deleted), null);
+                m_connection.Remove(deleted);
+            }
+
+            foreach (var connection in list.connections)
+            {
+                m_mainThreadContext.Post(
+                    d => OnReadyOtherConnection?.Invoke(this, connection.connectionId, connection.readyOtherPeer),
+                    null);
+                m_connection.Add(connection.connectionId);
+            }
+
             return true;
         }
 

@@ -61,6 +61,12 @@ namespace Unity.RenderStreaming
     }
 
     [Serializable]
+    class ConnectionResDataList
+    {
+        public DescData[] connections;
+    }
+
+    [Serializable]
     class OfferResDataList
     {
         public DescData[] offers;
