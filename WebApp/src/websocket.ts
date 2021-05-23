@@ -142,14 +142,14 @@ export default class WSSignaling {
 
   private onOffer(ws: WebSocket, message: any) {
     const connectionId = message.connectionId as string;
-    let newOffer = new Offer(message.sdp, Date.now(), false, false);
+    let newOffer = new Offer(message.sdp, Date.now(), true, false);
     offers.set(connectionId, newOffer);
 
     if (this.isPrivate) {
       const pair = connectionPair.get(connectionId);
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
-        newOffer.readyOtherPeer = true;
+        newOffer.polite = true;
         otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
       } else {
         ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is not ready other session.` }));

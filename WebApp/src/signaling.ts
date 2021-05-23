@@ -205,7 +205,7 @@ router.post('/offer', (req: Request, res: Response) => {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
   let keySessionId = null;
-  let readyOtherPeer = false;
+  let readyOtherPeer = true;
   let polite = false;
 
   if (res.app.get('isPrivate')) {
@@ -217,7 +217,7 @@ router.post('/offer', (req: Request, res: Response) => {
       res.status(400).send({ error: err });
       return;
     }
-    readyOtherPeer = true;
+    polite = true;
   } else {
     connectionPair.set(connectionId, [sessionId, null]);
     keySessionId = sessionId;
