@@ -199,8 +199,14 @@ namespace Unity.RenderStreaming.Signaling
                             DescData offer = new DescData();
                             offer.connectionId = routedMessage.from;
                             offer.sdp = msg.sdp;
+                            offer.readyOtherPeer = true;
+                            offer.polite = false;
 
-                            m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
+                            m_mainThreadContext.Post(d =>
+                            {
+                                OnReadyOtherConnection?.Invoke(this, offer.connectionId, offer.readyOtherPeer);
+                                OnOffer?.Invoke(this, offer);
+                            }, null);
                         }
                         else
                         {
