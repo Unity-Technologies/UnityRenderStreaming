@@ -584,7 +584,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
+        //Todo: Sometimes happen error on windows/il2cpp
         [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] {RuntimePlatform.WindowsPlayer})]
         public IEnumerator SwapTransceiverPrivateMode()
         {
             MockSignaling.Reset(true);
