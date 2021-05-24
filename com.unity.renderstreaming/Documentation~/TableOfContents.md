@@ -1,6 +1,7 @@
 * [Unity Render Streaming](index.md)
 * [Overview](overview.md)
 * [Tutorial](tutorial.md)
+* [Project Template](template.md)
 * [Web Application](webapp.md)
     * [Browser Input Process](browser_input.md)
     * [Configure Self-Signed Credentials for https](https.md)

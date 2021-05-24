@@ -30,6 +30,15 @@ It is possible to send input messages to Unity from the browser, and sending inp
 This version of Render Streaming is compatible with the following versions of the Unity Editor
 
 - **Unity 2019.4**
+- **Unity 2020.3**
+
+### Platform
+
+- **Windows**
+- **Linux**
+- **macOS** (**Apple Slicon** is not supported yet)
+- **iOS**
+- **Android** (**ARMv7** is not supported)
 
 ### Web Browsers support
 
@@ -54,7 +63,7 @@ Please check [this page](samples.md).
 
 ## Project template
 
-Project templates are on the [GitHub repository](https://github.com/Unity-Technologies/UnityRenderStreaming).
+Please check [this page](template.md).
 
 ## Furioos compatibility
 
