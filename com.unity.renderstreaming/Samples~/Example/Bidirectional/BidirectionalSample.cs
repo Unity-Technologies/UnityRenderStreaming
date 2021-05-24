@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Sample
 {
-    public class BidirectionalSample : MonoBehaviour
+    class BidirectionalSample : MonoBehaviour
     {
 #pragma warning disable 0649
         [SerializeField] private Button setUpButton;

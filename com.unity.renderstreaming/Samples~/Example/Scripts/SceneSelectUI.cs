@@ -1,4 +1,8 @@
+using System;
 using System.Collections;
+using System.Threading;
+using Unity.RenderStreaming.Samples;
+using Unity.RenderStreaming.Signaling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,9 +16,20 @@ using UnityEngine.XR.ARFoundation;
 
 namespace Unity.RenderStreaming.Samples
 {
+    internal enum SignalingType
+    {
+        Furioos,
+        WebSocket,
+        Http
+    }
+
     internal static class RenderStreamingSettings
     {
         private static bool s_enableHWCodec = false;
+        private static SignalingType s_signalingType = SignalingType.WebSocket;
+        private static string s_signalingAddress = "localhost";
+        private static int s_signalingInterval = 5;
+        private static bool s_signalingSecured = false;
 
         public static bool EnableHWCodec
         {
@@ -22,15 +37,61 @@ namespace Unity.RenderStreaming.Samples
             set { s_enableHWCodec = value; }
         }
 
-        public static EncoderType EncoderType
+        public static SignalingType SignalingType
         {
-            get { return s_enableHWCodec ? EncoderType.Hardware : EncoderType.Software; }
+            get { return s_signalingType; }
+            set { s_signalingType = value; }
+        }
+
+        public static string SignalingAddress
+        {
+            get { return s_signalingAddress; }
+            set { s_signalingAddress = value; }
+        }
+
+        public static bool SignalingSecured
+        {
+            get { return s_signalingSecured; }
+            set { s_signalingSecured = value; }
+        }
+
+        public static ISignaling Signaling
+        {
+            get
+            {
+                switch (s_signalingType)
+                {
+                    case SignalingType.Furioos:
+                    {
+                        var schema = s_signalingSecured ? "https" : "http";
+                        return new FurioosSignaling(
+                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                    }
+                    case SignalingType.WebSocket:
+                    {
+                        var schema = s_signalingSecured ? "wss" : "ws";
+                        return new WebSocketSignaling(
+                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                    }
+                    case SignalingType.Http:
+                    {
+                        var schema = s_signalingSecured ? "https" : "http";
+                        return new HttpSignaling(
+                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                    }
+                }
+                throw new InvalidOperationException();
+            }
         }
     }
 
     internal class SceneSelectUI : MonoBehaviour
     {
         [SerializeField] private Toggle toggleEnableHWCodec;
+        [SerializeField] private Dropdown dropdownSignalingType;
+        [SerializeField] private InputField inputFieldSignalingAddress;
+        [SerializeField] private Toggle toggleSignalingSecured;
+
         [SerializeField] private Button buttonBidirectional;
         [SerializeField] private Button buttonBroadcast;
         [SerializeField] private Button buttonGyro;
@@ -43,6 +104,9 @@ namespace Unity.RenderStreaming.Samples
         {
             toggleEnableHWCodec.isOn = RenderStreamingSettings.EnableHWCodec;
             toggleEnableHWCodec.onValueChanged.AddListener(OnChangeHWCodec);
+            dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
+            inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
+            toggleSignalingSecured.onValueChanged.AddListener(OnChangeSignalingSecured);
 
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
@@ -85,31 +149,50 @@ namespace Unity.RenderStreaming.Samples
             RenderStreamingSettings.EnableHWCodec = enable;
         }
 
-        public void OnPressedBidirectional()
+        private void OnChangeSignalingType(int value)
+        {
+            string type = dropdownSignalingType.itemText.text;
+            if (Enum.TryParse(type, out SignalingType result))
+            {
+                RenderStreamingSettings.SignalingType = result;
+            }
+        }
+
+        private void OnChangeSignalingAddress(string value)
+        {
+            RenderStreamingSettings.SignalingAddress = value;
+        }
+
+        private void OnChangeSignalingSecured(bool value)
+        {
+            RenderStreamingSettings.SignalingSecured = value;
+        }
+
+        private void OnPressedBidirectional()
         {
             SceneManager.LoadScene("Bidirectional", LoadSceneMode.Single);
         }
-        public void OnPressedBroadcast()
+        private void OnPressedBroadcast()
         {
             SceneManager.LoadScene("Broadcast", LoadSceneMode.Single);
         }
-        public void OnPressedGyro()
+        private void OnPressedGyro()
         {
             SceneManager.LoadScene("Gyro", LoadSceneMode.Single);
         }
-        public void OnPressedRenderPipeline()
+        private void OnPressedRenderPipeline()
         {
             SceneManager.LoadScene("MultiplePeerConnections", LoadSceneMode.Single);
         }
-        public void OnPressedReceiver()
+        private void OnPressedReceiver()
         {
             SceneManager.LoadScene("Receiver", LoadSceneMode.Single);
         }
-        public void OnPressedWebBrowserInput()
+        private void OnPressedWebBrowserInput()
         {
             SceneManager.LoadScene("WebBrowserInput", LoadSceneMode.Single);
         }
-        public void OnPressedAR()
+        private void OnPressedAR()
         {
 #if UNITY_2020_1_OR_NEWER
             SceneManager.LoadScene("ARFoundation4.0", LoadSceneMode.Single);

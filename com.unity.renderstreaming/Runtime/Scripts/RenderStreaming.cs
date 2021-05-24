@@ -78,9 +78,10 @@ namespace Unity.RenderStreaming
         {
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
-            bool _hardwareEncoder =
-                hardwareEncoder.GetValueOrDefault(hardwareEncoderSupport);
-            var encoderType = _hardwareEncoder ? EncoderType.Hardware : EncoderType.Software;
+            if (hardwareEncoder != null)
+                hardwareEncoderSupport = hardwareEncoder.Value;
+            var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
+
             ISignaling _signaling = signaling ?? CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
@@ -114,8 +115,6 @@ namespace Unity.RenderStreaming
         public void OnDestroy()
         {
             Stop();
-            //EnhancedTouchSupport.Disable();
-            //RemoteInputReceiver.Dispose();
         }
     }
 }

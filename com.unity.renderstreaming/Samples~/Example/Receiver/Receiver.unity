@@ -1465,7 +1465,7 @@ MonoBehaviour:
   hardwareEncoderSupport: 0
   handlers:
   - {fileID: 1915034404}
-  runOnAwake: 1
+  runOnAwake: 0
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1512,6 +1512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97627988cbc0b4b15aefdbed5cb090d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderStreaming: {fileID: 1915034402}
   startButton: {fileID: 662432479}
   stopButton: {fileID: 159113884}
   connectionIdInput: {fileID: 935674850}

@@ -1460,6 +1460,7 @@ GameObject:
   - component: {fileID: 1623734775}
   - component: {fileID: 1623734776}
   - component: {fileID: 1623734774}
+  - component: {fileID: 1623734777}
   m_Layer: 0
   m_Name: RenderStreaming
   m_TagString: Untagged
@@ -1521,4 +1522,17 @@ MonoBehaviour:
   hardwareEncoderSupport: 1
   handlers:
   - {fileID: 1623734774}
-  runOnAwake: 1
+  runOnAwake: 0
+--- !u!114 &1623734777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623734773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d207eb28d60cb5941a6a8f93a10ec652, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderStreaming: {fileID: 1623734776}
