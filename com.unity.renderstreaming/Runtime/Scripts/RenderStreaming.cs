@@ -89,9 +89,6 @@ namespace Unity.RenderStreaming
                 //todo:: This property is not needed by FurioosSignaling.
                 urlSignaling = signaling.Url;
                 interval = signaling.Interval;
-
-                Debug.Log($"signaling {signalingType}");
-
             }
             ISignaling _signaling = signaling ?? CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
