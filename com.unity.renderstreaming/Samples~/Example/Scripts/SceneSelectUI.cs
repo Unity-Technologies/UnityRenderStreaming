@@ -1,16 +1,13 @@
 using System;
 using System.Collections;
 using System.Threading;
-using Unity.RenderStreaming.Samples;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Unity.WebRTC;
 using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
 #if URS_USE_AR_FOUNDATION
-using System;
 using UnityEngine.XR.ARFoundation;
 #endif
 
