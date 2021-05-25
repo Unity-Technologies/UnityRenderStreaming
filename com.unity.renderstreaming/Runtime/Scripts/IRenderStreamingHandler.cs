@@ -18,11 +18,6 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        event Action<string> onFoundConnection;
-
-        /// <summary>
-        ///
-        /// </summary>
         event Action<string> onDeletedConnection;
 
         /// <summary>
@@ -85,7 +80,7 @@ namespace Unity.RenderStreaming
         bool IsConnected(string connectionId);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connection"></param>
         /// <returns></returns>
@@ -127,7 +122,7 @@ namespace Unity.RenderStreaming
         RTCRtpTransceiver AddTrack(string connectionId, TrackKind kind);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>

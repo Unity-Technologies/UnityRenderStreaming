@@ -13,7 +13,6 @@ namespace Unity.RenderStreaming
         public SignalingEventProvider(IRenderStreamingDelegate handler)
         {
             handler.onCreatedConnection += OnCreatedConnection;
-            handler.onFoundConnection += OnFoundConnection;
             handler.onDeletedConnection += OnDeletedConnection;
             handler.onConnect += OnConnect;
             handler.onDisconnect += OnDisconnect;
@@ -70,15 +69,6 @@ namespace Unity.RenderStreaming
                 connectionId = connectionId
             };
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.createdConnectionHandler);
-        }
-
-        private void OnFoundConnection(string connectionId)
-        {
-            var data = new SignalingEventData(EventSystem.current)
-            {
-                connectionId = connectionId
-            };
-            ExecuteEventToAllTargets(data, ExecuteSignalingEvents.foundConnectionHandler);
         }
 
         private void OnDeletedConnection(string connectionId)

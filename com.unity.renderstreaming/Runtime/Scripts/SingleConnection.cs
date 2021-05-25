@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     public class SingleConnection : SignalingHandlerBase,
-        ICreatedConnectionHandler, IFoundConnectionHandler, IDeletedConnectionHandler,
+        ICreatedConnectionHandler, IDeletedConnectionHandler,
         IAddReceiverHandler, IOfferHandler, IAddChannelHandler
     {
         [SerializeField]
@@ -89,27 +89,6 @@ namespace Unity.RenderStreaming
                 channel.SetChannel(connectionId, null);
             }
             connectionId = null;
-        }
-
-        public void OnFoundConnection(SignalingEventData data)
-        {
-            if (data.connectionId != connectionId)
-                return;
-
-            foreach (var source in streams.OfType<IStreamSource>())
-            {
-                var transceiver = AddTrack(connectionId, source.Track);
-                source.SetSender(connectionId, transceiver.Sender);
-            }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                AddTrack(data.connectionId, receiver.Kind);
-            }
-            foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
-            {
-                var _channel = CreateChannel(connectionId, channel.Label);
-                channel.SetChannel(connectionId, _channel);
-            }
         }
 
         public void OnOffer(SignalingEventData data)

@@ -54,11 +54,6 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public event Action<string> onFoundConnection;
-
-        /// <summary>
-        ///
-        /// </summary>
         public event Action<string> onDeletedConnection;
 
         /// <summary>
@@ -321,11 +316,7 @@ namespace Unity.RenderStreaming
         void OnCreateConnection(ISignaling signaling, string connectionId, bool readyOtherPeer, bool polite)
         {
             CreatePeerConnection(connectionId, readyOtherPeer, polite);
-
-            if (readyOtherPeer)
-                onFoundConnection?.Invoke(connectionId);
-            else
-                onCreatedConnection?.Invoke(connectionId);
+            onCreatedConnection?.Invoke(connectionId);
         }
 
         void OnReadyOtherConnection(ISignaling signaling, string connectionId, bool readyOtherPeer)

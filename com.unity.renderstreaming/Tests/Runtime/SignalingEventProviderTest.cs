@@ -20,19 +20,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class FoundConnectionHandlerTest : MonoBehaviour,
-        IMonoBehaviourTest, IFoundConnectionHandler
-    {
-        public bool IsTestFinished { get; private set; }
-        public SignalingEventData Data { get; private set; }
-
-        public void OnFoundConnection(SignalingEventData data)
-        {
-            IsTestFinished = true;
-            this.Data = data;
-        }
-    }
-
     class DeletedConnectionHandlerTest : MonoBehaviour,
         IMonoBehaviourTest, IDeletedConnectionHandler
     {
@@ -125,7 +112,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         public event Action onStart;
         public event Action<string> onCreatedConnection;
-        public event Action<string> onFoundConnection;
         public event Action<string> onDeletedConnection;
         public event Action<string, string> onGotOffer;
         public event Action<string, string> onGotAnswer;
@@ -142,10 +128,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void RaiseOnCreatedConnection(string connectionId)
         {
             onCreatedConnection?.Invoke(connectionId);
-        }
-        public void RaiseOnFoundConnection(string connectionId)
-        {
-            onFoundConnection?.Invoke(connectionId);
         }
         public void RaiseOnDeletedConnection(string connectionId)
         {
@@ -227,18 +209,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var test = new MonoBehaviourTest<CreatedConnectionHandlerTest>();
             m_provider.Subscribe(test.component);
             _mDelegate.RaiseOnCreatedConnection(connectionId);
-            Assert.That(test.component.IsTestFinished, Is.True);
-            Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
-            UnityEngine.Object.DestroyImmediate(test.gameObject);
-        }
-
-        [Test]
-        public void OnFoundConnection()
-        {
-            var connectionId = "12345";
-            var test = new MonoBehaviourTest<FoundConnectionHandlerTest>();
-            m_provider.Subscribe(test.component);
-            _mDelegate.RaiseOnFoundConnection(connectionId);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
             UnityEngine.Object.DestroyImmediate(test.gameObject);

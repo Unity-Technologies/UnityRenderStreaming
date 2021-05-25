@@ -332,7 +332,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 
@@ -470,7 +470,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 
@@ -535,7 +535,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 
@@ -605,7 +605,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
 
             var connectionId = "12345";
 

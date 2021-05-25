@@ -15,8 +15,6 @@ namespace Unity.RenderStreaming
 
         private static readonly ExecuteEvents.EventFunction<ICreatedConnectionHandler>
             s_CreatedConnectionHandler = Execute;
-        private static readonly ExecuteEvents.EventFunction<IFoundConnectionHandler>
-            s_FoundConnectionHandler = Execute;
         private static readonly ExecuteEvents.EventFunction<IDeletedConnectionHandler>
             s_DeletedConnectionHandler = Execute;
         private static readonly ExecuteEvents.EventFunction<IConnectHandler>
@@ -35,10 +33,6 @@ namespace Unity.RenderStreaming
         private static void Execute(ICreatedConnectionHandler handler, BaseEventData eventData)
         {
             handler.OnCreatedConnection(ValidateEventData<SignalingEventData>(eventData));
-        }
-        private static void Execute(IFoundConnectionHandler handler, BaseEventData eventData)
-        {
-            handler.OnFoundConnection(ValidateEventData<SignalingEventData>(eventData));
         }
         private static void Execute(IDeletedConnectionHandler handler, BaseEventData eventData)
         {
@@ -72,11 +66,6 @@ namespace Unity.RenderStreaming
         public static ExecuteEvents.EventFunction<ICreatedConnectionHandler> createdConnectionHandler
         {
             get { return s_CreatedConnectionHandler; }
-        }
-
-        public static ExecuteEvents.EventFunction<IFoundConnectionHandler> foundConnectionHandler
-        {
-            get { return s_FoundConnectionHandler; }
         }
 
         public static ExecuteEvents.EventFunction<IDeletedConnectionHandler> deletedConnectionHandler

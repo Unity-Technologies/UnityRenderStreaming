@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 type = InputRemoting.MessageType.NewEvents,
                 data = new byte[] {1, 2, 3, 4, 5},
             };
-            
+
             var bytes = MessageSerializer.Serialize(ref message1);
 
             Assert.That(bytes, Is.Not.Null);
@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
             _target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
-            _target2.onFoundConnection += _ => { isCreatedConnection2 = true; };
+            _target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
 
             // _target1 is Receiver in private mode
             _target1.CreateConnection(connectionId);
@@ -138,7 +138,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after creating channel
             _channel2 = _target2.CreateChannel(connectionId, "_test");
 
-            // send offer manually 
+            // send offer manually
             _target2.SendOffer(connectionId);
 
             yield return new WaitUntil(() => _target1.IsConnected(connectionId));
