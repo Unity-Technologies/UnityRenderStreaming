@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Unity.RenderStreaming.Sample
+namespace Unity.RenderStreaming.Samples
 {
     class BidirectionalSample : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
         [SerializeField] private InputField connectionIdInput;
@@ -33,6 +34,15 @@ namespace Unity.RenderStreaming.Sample
                 localVideoImage.texture = videoStream.SendTexture;
             };
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+        }
+
+        void Start()
+        {
+            if (renderStreaming.runOnAwake)
+                return;
+            renderStreaming.Run(
+                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
+                signaling: RenderStreamingSettings.Signaling);
         }
 
         private void SetUp()

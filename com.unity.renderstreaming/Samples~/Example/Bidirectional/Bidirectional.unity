@@ -486,7 +486,7 @@ PrefabInstance:
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
@@ -891,7 +891,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.47, y: 41}
+  m_AnchoredPosition: {x: 1.4699707, y: 41}
   m_SizeDelta: {x: -1.4700012, y: -475.5351}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &932364533
@@ -1325,6 +1325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae98fcc4fa36bd48877f86930b988de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderStreaming: {fileID: 1915034402}
   setUpButton: {fileID: 346362251}
   hangUpButton: {fileID: 2128695120}
   connectionIdInput: {fileID: 185332756}
@@ -1357,7 +1358,7 @@ MonoBehaviour:
   hardwareEncoderSupport: 0
   handlers:
   - {fileID: 1915034406}
-  runOnAwake: 1
+  runOnAwake: 0
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0
