@@ -4,11 +4,22 @@ using System.Threading;
 using UnityEngine;
 using Unity.WebRTC;
 using Unity.RenderStreaming.Signaling;
+using System.IO;
 
 namespace Unity.RenderStreaming
 {
     public sealed class RenderStreaming : MonoBehaviour
     {
+        public string url
+        {
+            set
+            {
+                Debug.LogFormat("Token {0}. Method {1}. URL = {2}", "JSHARIFI TOKEN", new System.Diagnostics.StackFrame().GetMethod(), value);
+                
+                urlSignaling = value;
+            }
+        }
+
 #pragma warning disable 0649
         [SerializeField, Tooltip("Signaling server url")]
         private string urlSignaling = "http://localhost";
@@ -42,6 +53,8 @@ namespace Unity.RenderStreaming
         static ISignaling CreateSignaling(
             string type, string url, float interval, SynchronizationContext context)
         {
+            Debug.LogFormat("Token {0}. Method {1}. urlSignaling is {2}", "JSHARIFI TOKEN", new System.Diagnostics.StackFrame().GetMethod(), url);
+
             Type _type = Type.GetType(type);
             if (_type == null)
             {
@@ -51,10 +64,59 @@ namespace Unity.RenderStreaming
             return (ISignaling)Activator.CreateInstance(_type, args);
         }
 
+        [System.Serializable]
+        struct dataIn
+        {
+            public string uriHost;
+
+            public override string ToString()
+            {
+                return JsonUtility.ToJson(this, true);
+            }
+        }
+
+        dataIn mConfig;
+
+        public void UpdateConfig()
+        {
+            string path = Path.Combine(Application.streamingAssetsPath, "config.json");
+            if (Application.platform == RuntimePlatform.Android) path = Path.Combine(Application.persistentDataPath, "config.json");
+
+            if (File.Exists(path))
+            {
+                string text = File.ReadAllText(path);
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    return;
+                }
+                
+                mConfig = JsonUtility.FromJson<dataIn>(text);
+                
+                if (!string.IsNullOrEmpty(mConfig.uriHost))
+                {
+                    Debug.LogFormat("update urlSignaling to {0}", mConfig.uriHost);
+                    urlSignaling = mConfig.uriHost;
+                }
+                else
+                {
+                    Debug.LogFormat("No param for uriHost");
+                }
+            }
+            else
+            {
+                Debug.LogFormat("No file at {0}", path);
+            }
+        }
+
         void Awake()
         {
             if (!runOnAwake || m_running)
                 return;
+
+            UpdateConfig();
+
+            Debug.LogFormat("Token {0}. Method {1}. urlSignaling is {2}", "JSHARIFI TOKEN", new System.Diagnostics.StackFrame().GetMethod(), urlSignaling);
 
             RTCConfiguration conf = new RTCConfiguration {iceServers = iceServers};
             ISignaling signaling = CreateSignaling(
