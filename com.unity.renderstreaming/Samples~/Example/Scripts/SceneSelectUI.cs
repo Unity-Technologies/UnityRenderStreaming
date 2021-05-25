@@ -18,9 +18,9 @@ namespace Unity.RenderStreaming.Samples
 {
     internal enum SignalingType
     {
-        Furioos,
         WebSocket,
-        Http
+        Http,
+        Furioos
     }
 
     internal static class RenderStreamingSettings
@@ -28,7 +28,7 @@ namespace Unity.RenderStreaming.Samples
         private static bool s_enableHWCodec = false;
         private static SignalingType s_signalingType = SignalingType.WebSocket;
         private static string s_signalingAddress = "localhost";
-        private static int s_signalingInterval = 5;
+        private static float s_signalingInterval = 5;
         private static bool s_signalingSecured = false;
 
         public static bool EnableHWCodec
@@ -53,6 +53,12 @@ namespace Unity.RenderStreaming.Samples
         {
             get { return s_signalingSecured; }
             set { s_signalingSecured = value; }
+        }
+
+        public static float SignalingInterval
+        {
+            get { return s_signalingInterval; }
+            set { s_signalingInterval = value; }
         }
 
         public static ISignaling Signaling
@@ -91,6 +97,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Dropdown dropdownSignalingType;
         [SerializeField] private InputField inputFieldSignalingAddress;
         [SerializeField] private Toggle toggleSignalingSecured;
+        [SerializeField] private InputField inputFieldSignalingInterval;
 
         [SerializeField] private Button buttonBidirectional;
         [SerializeField] private Button buttonBroadcast;
@@ -107,6 +114,7 @@ namespace Unity.RenderStreaming.Samples
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
             toggleSignalingSecured.onValueChanged.AddListener(OnChangeSignalingSecured);
+            inputFieldSignalingInterval.onValueChanged.AddListener(OnChangeSignalingInterval);
 
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
@@ -151,11 +159,8 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnChangeSignalingType(int value)
         {
-            string type = dropdownSignalingType.itemText.text;
-            if (Enum.TryParse(type, out SignalingType result))
-            {
-                RenderStreamingSettings.SignalingType = result;
-            }
+            RenderStreamingSettings.SignalingType =
+                (SignalingType)Enum.GetValues(typeof(SignalingType)).GetValue(value);
         }
 
         private void OnChangeSignalingAddress(string value)
@@ -166,6 +171,18 @@ namespace Unity.RenderStreaming.Samples
         private void OnChangeSignalingSecured(bool value)
         {
             RenderStreamingSettings.SignalingSecured = value;
+        }
+
+        private void OnChangeSignalingInterval(string value)
+        {
+            if (float.TryParse(value, out float _value))
+            {
+                RenderStreamingSettings.SignalingInterval = _value;
+            }
+            else
+            {
+                RenderStreamingSettings.SignalingInterval = 5;
+            }
         }
 
         private void OnPressedBidirectional()

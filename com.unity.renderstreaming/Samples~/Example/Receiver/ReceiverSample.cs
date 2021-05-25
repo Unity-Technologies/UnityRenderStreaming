@@ -30,6 +30,8 @@ namespace Unity.RenderStreaming
 
         void Start()
         {
+            if (renderStreaming.runOnAwake)
+                return;
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling);

@@ -11,9 +11,12 @@ namespace Unity.RenderStreaming.Samples
         // Start is called before the first frame update
         void Start()
         {
+            if (renderStreaming.runOnAwake)
+                return;
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling:RenderStreamingSettings.Signaling);
+                signaling: RenderStreamingSettings.Signaling);
+
         }
     }
 }

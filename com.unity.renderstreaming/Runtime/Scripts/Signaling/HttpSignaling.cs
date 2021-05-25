@@ -24,6 +24,8 @@ namespace Unity.RenderStreaming.Signaling
         private long m_lastTimeGetCandidateRequest;
 
         private HashSet<string> m_connection;
+	    public string Url { get { return m_url; } }
+	    public float Interval { get { return m_timeout; } }
 
         public HttpSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {

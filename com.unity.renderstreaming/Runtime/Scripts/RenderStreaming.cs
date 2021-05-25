@@ -82,6 +82,17 @@ namespace Unity.RenderStreaming
                 hardwareEncoderSupport = hardwareEncoder.Value;
             var encoderType = hardwareEncoderSupport ? EncoderType.Hardware : EncoderType.Software;
 
+            if (signaling != null)
+            {
+                signalingType = signaling.GetType().FullName;
+
+                //todo:: This property is not needed by FurioosSignaling.
+                urlSignaling = signaling.Url;
+                interval = signaling.Interval;
+
+                Debug.Log($"signaling {signalingType}");
+
+            }
             ISignaling _signaling = signaling ?? CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies

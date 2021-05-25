@@ -215,6 +215,10 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             }
         }
 
+        public string Url { get { return string.Empty; } }
+
+        public float Interval { get { return 0; } }
+
         static MockSignaling()
         {
             manager = new MockPublicSignalingManager();
