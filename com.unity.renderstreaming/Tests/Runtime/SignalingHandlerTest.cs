@@ -76,7 +76,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                     iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } },
                 },
                 encoderType = EncoderType.Software,
-                startCoroutine = behaviour.StartCoroutine
+                startCoroutine = behaviour.StartCoroutine,
+                resentOfferInterval = 1.0f,
             };
         }
 

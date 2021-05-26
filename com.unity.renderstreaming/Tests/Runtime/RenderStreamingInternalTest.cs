@@ -49,7 +49,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                     iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}},
                 },
                 encoderType = EncoderType.Software,
-                startCoroutine = test.component.StartCoroutine
+                startCoroutine = test.component.StartCoroutine,
+                resentOfferInterval = 0.1f,
             };
         }
 
@@ -559,7 +560,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(target1.IsStable(connectionId), Is.False);
             Assert.That(target2.IsStable(connectionId), Is.False);
             Assert.That(() => target1.SendOffer(connectionId), Throws.TypeOf<InvalidOperationException>());
-            Assert.That(() => target2.SendOffer(connectionId), Throws.TypeOf<InvalidOperationException>());
 
             target1.SendAnswer(connectionId);
 

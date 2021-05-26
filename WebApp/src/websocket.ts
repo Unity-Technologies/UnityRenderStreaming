@@ -97,7 +97,6 @@ export default class WSSignaling {
   }
 
   private onConnect(ws: WebSocket, connectionId: string) {
-    let readyOtherPeer = true;
     let polite = true;
     if (this.isPrivate) {
       if (connectionPair.has(connectionId)) {
@@ -108,19 +107,16 @@ export default class WSSignaling {
           return;
         } else if (pair[0] != null) {
           connectionPair.set(connectionId, [pair[0], ws]);
-          pair[0].send(JSON.stringify({ type: "readyotherpeer", connectionId: connectionId, readyOtherPeer: true }));
         }
       } else {
         connectionPair.set(connectionId, [ws, null]);
         polite = false;
-        readyOtherPeer = false;
       }
     }
 
     const connectionIds = getOrCreateConnectionIds(ws);
     connectionIds.add(connectionId);
     ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, polite: polite }));
-    ws.send(JSON.stringify({ type: "readyotherpeer", connectionId: connectionId, readyOtherPeer: readyOtherPeer }));
   }
 
   private onDisconnect(ws: WebSocket, connectionId: string) {
@@ -131,18 +127,16 @@ export default class WSSignaling {
       const pair = connectionPair.get(connectionId);
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
-        otherSessionWs.send(JSON.stringify({ type: "readyotherpeer", connectionId: connectionId, readyOtherPeer: false }));
         otherSessionWs.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
       }
     }
     connectionPair.delete(connectionId);
-    ws.send(JSON.stringify({ type: "readyotherpeer", connectionId: connectionId, readyOtherPeer: false }));
     ws.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
   }
 
   private onOffer(ws: WebSocket, message: any) {
     const connectionId = message.connectionId as string;
-    let newOffer = new Offer(message.sdp, Date.now(), true, false);
+    let newOffer = new Offer(message.sdp, Date.now(), false);
     offers.set(connectionId, newOffer);
 
     if (this.isPrivate) {

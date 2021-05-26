@@ -10,7 +10,6 @@ namespace Unity.RenderStreaming
         public string message;
         public string sessionId;
         public string connectionId;
-        public bool readyOtherPeer;
         public bool polite;
         public string sdp;
         public string type;
@@ -34,7 +33,6 @@ namespace Unity.RenderStreaming
         public string connectionId;
         public string sdp;
         public string type;
-        public bool readyOtherPeer;
         public bool polite;
     }
 

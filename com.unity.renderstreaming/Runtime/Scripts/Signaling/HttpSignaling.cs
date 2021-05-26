@@ -68,7 +68,6 @@ namespace Unity.RenderStreaming.Signaling
 
         public event OnStartHandler OnStart;
         public event OnConnectHandler OnCreateConnection;
-        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         public event OnAnswerHandler OnAnswer;
@@ -340,19 +339,12 @@ namespace Unity.RenderStreaming.Signaling
 
             foreach (var deleted in m_connection.Except(list.connections.Select(x => x.connectionId)).ToList())
             {
-                m_mainThreadContext.Post(d =>
-                {
-                    OnReadyOtherConnection?.Invoke(this, deleted, false);
-                    OnDestroyConnection?.Invoke(this, deleted);
-                }, null);
+                m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, deleted), null);
                 m_connection.Remove(deleted);
             }
 
             foreach (var connection in list.connections)
             {
-                m_mainThreadContext.Post(
-                    d => OnReadyOtherConnection?.Invoke(this, connection.connectionId, connection.readyOtherPeer),
-                    null);
                 m_connection.Add(connection.connectionId);
             }
 
@@ -378,11 +370,7 @@ namespace Unity.RenderStreaming.Signaling
 
             foreach (var offer in list.offers)
             {
-                m_mainThreadContext.Post(d =>
-                {
-                    OnReadyOtherConnection?.Invoke(this, offer.connectionId, offer.readyOtherPeer);
-                    OnOffer?.Invoke(this, offer);
-                }, null);
+                m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
             }
 
             return true;
