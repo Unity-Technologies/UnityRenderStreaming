@@ -185,7 +185,7 @@ export class WebSocketSignaling extends EventTarget {
           this.dispatchEvent(new CustomEvent('disconnect', { detail: msg }));
           break;
         case "offer":
-          this.dispatchEvent(new CustomEvent('offer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
+          this.dispatchEvent(new CustomEvent('offer', { detail: { connectionId: msg.from, sdp: msg.data.sdp, polite: msg.data.polite } }));
           break;
         case "answer":
           this.dispatchEvent(new CustomEvent('answer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
