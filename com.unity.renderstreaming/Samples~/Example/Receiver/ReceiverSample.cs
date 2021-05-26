@@ -3,7 +3,7 @@ using Unity.RenderStreaming.Samples;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Samples
 {
     class ReceiverSample : MonoBehaviour
     {
