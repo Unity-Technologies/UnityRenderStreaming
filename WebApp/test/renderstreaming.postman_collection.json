@@ -406,7 +406,6 @@
 							"    pm.expect(jsonData.connections.length).to.be.above(0);",
 							"    var connection = jsonData.connections[0];",
 							"    pm.expect(connection.connectionId).to.be.not.null;",
-							"    pm.expect(connection.readyOtherPeer).to.be.not.null;",
 							"});",
 							""
 						],
@@ -498,7 +497,6 @@
 							"    var offer = jsonData.offers[0];",
 							"    pm.expect(offer.connectionId).to.be.not.null;",
 							"    pm.expect(offer.sdp).to.be.not.null;",
-							"    pm.expect(offer.readyOtherPeer).to.be.not.null;",
 							"    pm.expect(offer.polite).to.be.not.null;",
 							"});",
 							""
