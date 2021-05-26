@@ -197,7 +197,11 @@ namespace Unity.RenderStreaming.Signaling
                         offer.sdp = msg.sdp;
                         offer.readyOtherPeer = msg.readyOtherPeer;
                         offer.polite = msg.polite;
-                        m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
+                        m_mainThreadContext.Post(d =>
+                        {
+                            OnReadyOtherConnection?.Invoke(this, offer.connectionId, offer.readyOtherPeer);
+                            OnOffer?.Invoke(this, offer);
+                        }, null);
                     }
                     else if (routedMessage.type == "answer")
                     {
