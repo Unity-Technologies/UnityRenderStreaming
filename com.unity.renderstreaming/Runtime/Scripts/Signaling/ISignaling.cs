@@ -3,7 +3,7 @@ using Unity.WebRTC;
 namespace Unity.RenderStreaming.Signaling
 {
     public delegate void OnStartHandler(ISignaling signaling);
-    public delegate void OnConnectHandler(ISignaling signaling, string connectionId, bool readyOtherPeer, bool polite);
+    public delegate void OnConnectHandler(ISignaling signaling, string connectionId, bool polite);
     public delegate void OnReadyOtherHandler(ISignaling signaling, string connectionId, bool readyOtherPeer);
     public delegate void OnDisconnectHandler(ISignaling signaling, string connectionId);
     public delegate void OnOfferHandler(ISignaling signaling, DescData e);

@@ -295,7 +295,7 @@ namespace Unity.RenderStreaming.Signaling
             if (data == null) return false;
 
             Debug.Log("Signaling: HTTP create connection, connectionId : " + connectionId);
-            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.readyOtherPeer, data.polite), null);
+            m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.polite), null);
             return true;
         }
 

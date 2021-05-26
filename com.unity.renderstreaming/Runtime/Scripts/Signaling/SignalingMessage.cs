@@ -1,6 +1,4 @@
 using System;
-using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Unity.RenderStreaming
 {
@@ -50,7 +48,6 @@ namespace Unity.RenderStreaming
     class CreateConnectionResData
     {
         public string connectionId;
-        public bool readyOtherPeer;
         public bool polite;
     }
 

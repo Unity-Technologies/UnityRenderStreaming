@@ -119,7 +119,7 @@ export default class WSSignaling {
 
     const connectionIds = getOrCreateConnectionIds(ws);
     connectionIds.add(connectionId);
-    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, readyOtherPeer: readyOtherPeer, polite: polite }));
+    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, polite: polite }));
     ws.send(JSON.stringify({ type: "readyotherpeer", connectionId: connectionId, readyOtherPeer: readyOtherPeer }));
   }
 

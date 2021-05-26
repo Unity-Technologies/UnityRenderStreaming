@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task OpenConnection(MockSignaling signaling, string connectionId)
             {
                 await Task.Delay(MillisecondsDelay);
-                signaling.OnCreateConnection?.Invoke(signaling, connectionId, false, true);
+                signaling.OnCreateConnection?.Invoke(signaling, connectionId, true);
                 signaling.OnReadyOtherConnection?.Invoke(signaling, connectionId, true);
             }
 
@@ -111,11 +111,14 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
                 list.Add(signaling);
 
-                signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists, peerExists);
+                signaling.OnCreateConnection?.Invoke(signaling, connectionId, peerExists);
 
-                foreach (var other in list.Where(x => x != signaling))
+                if (peerExists)
                 {
-                    other.OnReadyOtherConnection?.Invoke(other, connectionId, true);
+                    foreach (var element in list)
+                    {
+                        element.OnReadyOtherConnection?.Invoke(element, connectionId, true);
+                    }
                 }
             }
 

@@ -96,10 +96,8 @@
 							"    pm.response.to.be.json;",
 							"    var jsonData = pm.response.json();",
 							"    pm.response.to.have.jsonBody(\"connectionId\");",
-							"    pm.response.to.have.jsonBody(\"readyOtherPeer\");",
 							"    pm.response.to.have.jsonBody(\"polite\");",
 							"    console.log(jsonData);",
-							"    pm.expect(jsonData.readyOtherPeer).to.be.true;",
 							"    pm.expect(jsonData.polite).to.be.true;",
 							"});",
 							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"

@@ -313,9 +313,9 @@ namespace Unity.RenderStreaming
             onStart?.Invoke();
         }
 
-        void OnCreateConnection(ISignaling signaling, string connectionId, bool readyOtherPeer, bool polite)
+        void OnCreateConnection(ISignaling signaling, string connectionId, bool polite)
         {
-            CreatePeerConnection(connectionId, readyOtherPeer, polite);
+            CreatePeerConnection(connectionId, polite);
             onCreatedConnection?.Invoke(connectionId);
         }
 
@@ -333,7 +333,7 @@ namespace Unity.RenderStreaming
             onDeletedConnection?.Invoke(connectionId);
         }
 
-        PeerConnection CreatePeerConnection(string connectionId, bool readyOtherPeer, bool polite)
+        PeerConnection CreatePeerConnection(string connectionId, bool polite)
         {
             if (_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
             {
@@ -341,7 +341,7 @@ namespace Unity.RenderStreaming
             }
 
             var pc = new RTCPeerConnection();
-            peer = new PeerConnection(pc, polite) {readyOtherPeer = readyOtherPeer};
+            peer = new PeerConnection(pc, polite);
             _mapConnectionIdAndPeer[connectionId] = peer;
 
             pc.SetConfiguration(ref _config);
@@ -479,7 +479,8 @@ namespace Unity.RenderStreaming
             var connectionId = e.connectionId;
             if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
             {
-                pc = CreatePeerConnection(connectionId, e.readyOtherPeer, e.polite);
+                pc = CreatePeerConnection(connectionId, e.polite);
+                pc.readyOtherPeer = e.readyOtherPeer;
             }
 
             _startCoroutine(GotOfferCoroutine(connectionId, pc, e.sdp));

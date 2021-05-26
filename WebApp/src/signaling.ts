@@ -178,7 +178,7 @@ router.put('/connection', (req: Request, res: Response) => {
   connectionIds.add(connectionId);
   const map = readies.get(sessionId);
   map.set(connectionId, readyOtherPeer);
-  res.json({ connectionId: connectionId, readyOtherPeer: readyOtherPeer, polite: polite });
+  res.json({ connectionId: connectionId, polite: polite });
 });
 
 router.delete('/connection', (req: Request, res: Response) => {

@@ -198,7 +198,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.Start();
             yield return new WaitUntil(() => startRaised1);
 
-            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => { connectionId1 = connectionId; };
+            signaling1.OnCreateConnection += (s, connectionId, polite) => { connectionId1 = connectionId; };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
             Assert.IsNotEmpty(connectionId1);
@@ -217,9 +217,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.Start();
             yield return new WaitUntil(() => startRaised1);
 
-            signaling1.OnCreateConnection += (s, id, readyOtherPeer, polite) => {
+            signaling1.OnCreateConnection += (s, id, polite) => {
                 connectionId1 = id;
-                readyOtherPeer1 = readyOtherPeer;
                 polite1 = polite;
             };
             signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
@@ -258,9 +257,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling1.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId1 = connectionId;
-                readyOtherPeer1 = readyOtherPeer;
             };
             signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
@@ -271,9 +269,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             };
             signaling1.OpenConnection(_connectionId);
 
-            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling2.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId2 = connectionId;
-                readyOtherPeer2 = readyOtherPeer;
             };
             signaling2.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
@@ -316,9 +313,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling1.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId1 = connectionId;
-                readyOtherPeer1 = readyOtherPeer;
             };
             signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
@@ -328,9 +324,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 }
             };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling2.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId2 = connectionId;
-                readyOtherPeer2 = readyOtherPeer;
             };
             signaling2.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
@@ -373,9 +368,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.Start();
             yield return new WaitUntil(() => startRaised1 && startRaised2);
 
-            signaling1.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling1.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId1 = connectionId;
-                readyOtherPeer1 = readyOtherPeer;
             };
             signaling1.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
@@ -385,9 +379,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 }
             };
             signaling1.OpenConnection(Guid.NewGuid().ToString());
-            signaling2.OnCreateConnection += (s, connectionId, readyOtherPeer, polite) => {
+            signaling2.OnCreateConnection += (s, connectionId, polite) => {
                 connectionId2 = connectionId;
-                readyOtherPeer2 = readyOtherPeer;
             };
             signaling2.OnReadyOtherConnection += (signaling, id, readyOtherPeer) =>
             {
