@@ -89,7 +89,7 @@ export class SendVideo {
       }
 
       const direction = trackEvent.transceiver.direction;
-      if (direction == "sendrecv" || direction == "sendonly") {
+      if (direction == "sendrecv" || direction == "recvonly") {
         _this.remoteVideo.srcObject = new MediaStream();
         _this.remoteVideo.srcObject.addTrack(trackEvent.track);
       }
