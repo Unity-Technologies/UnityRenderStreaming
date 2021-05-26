@@ -1,4 +1,6 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import Signaling, {
+  WebSocketSignaling
+} from "../../js/signaling.js";
 import * as Config from "../../js/config.js";
 import * as Logger from "../../js/logger.js";
 
@@ -48,7 +50,7 @@ export class VideoPlayer {
     this.videoTrackIndex = 0;
     this.maxVideoTrackLength = 2;
 
-    this.ondisconnect = function () { };
+    this.ondisconnect = function () {};
   }
 
   async setupConnection(useWebSocket) {
@@ -128,13 +130,20 @@ export class VideoPlayer {
 
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
-      const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
+      const desc = new RTCSessionDescription({
+        sdp: answer.sdp,
+        type: "answer"
+      });
       await _this.pc.setRemoteDescription(desc);
     });
 
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
-      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
+      const iceCandidate = new RTCIceCandidate({
+        candidate: candidate.candidate,
+        sdpMid: candidate.sdpMid,
+        sdpMLineIndex: candidate.sdpMLineIndex
+      });
       await _this.pc.addIceCandidate(iceCandidate);
     });
 
@@ -145,15 +154,24 @@ export class VideoPlayer {
     // Add transceivers to receive multi stream.
     // It can receive two video tracks and one audio track from Unity app.
     // This operation is required to generate offer SDP correctly.
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('audio', { direction: 'recvonly' });
+    this.pc.addTransceiver('video', {
+      direction: 'recvonly'
+    });
+    this.pc.addTransceiver('video', {
+      direction: 'recvonly'
+    });
+    this.pc.addTransceiver('audio', {
+      direction: 'recvonly'
+    });
 
     // create offer
     const offer = await this.pc.createOffer(this.offerOptions);
 
     // set local sdp
-    const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
+    const desc = new RTCSessionDescription({
+      sdp: offer.sdp,
+      type: "offer"
+    });
     await this.pc.setLocalDescription(desc);
     await this.signaling.sendOffer(this.connectionId, offer.sdp);
   };
@@ -178,8 +196,7 @@ export class VideoPlayer {
     if (indexVideoTrack == 0) {
       this.replaceTrack(this.localStream, this.videoTrackList[0]);
       this.replaceTrack(this.localStream2, this.videoTrackList[1]);
-    }
-    else {
+    } else {
       this.replaceTrack(this.localStream, this.videoTrackList[1]);
       this.replaceTrack(this.localStream2, this.videoTrackList[0]);
     }

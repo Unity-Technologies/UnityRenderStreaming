@@ -10,10 +10,14 @@ export default class Signaling extends EventTarget {
 
   headers() {
     if (this.sessionId !== undefined) {
-      return { 'Content-Type': 'application/json', 'Session-Id': this.sessionId };
-    }
-    else {
-      return { 'Content-Type': 'application/json' };
+      return {
+        'Content-Type': 'application/json',
+        'Session-Id': this.sessionId
+      };
+    } else {
+      return {
+        'Content-Type': 'application/json'
+      };
     }
   };
 
@@ -22,7 +26,10 @@ export default class Signaling extends EventTarget {
   };
 
   async start() {
-    const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
+    const createResponse = await fetch(this.url(''), {
+      method: 'PUT',
+      headers: this.headers()
+    });
     const session = await createResponse.json();
     this.sessionId = session.sessionId;
 
@@ -43,7 +50,9 @@ export default class Signaling extends EventTarget {
       Logger.log('get offers:', offers);
 
       offers.forEach(offer => {
-        this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
+        this.dispatchEvent(new CustomEvent('offer', {
+          detail: offer
+        }));
       });
 
       await this.sleep(this.interval);
@@ -63,7 +72,9 @@ export default class Signaling extends EventTarget {
       Logger.log('get answers:', answers);
 
       answers.forEach(answer => {
-        this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
+        this.dispatchEvent(new CustomEvent('answer', {
+          detail: answer
+        }));
       });
 
       await this.sleep(this.interval);
@@ -84,7 +95,9 @@ export default class Signaling extends EventTarget {
 
       if (candidates.length > 0) {
         for (let candidate of candidates[0].candidates) {
-          this.dispatchEvent(new CustomEvent('candidate', { detail: candidate }));
+          this.dispatchEvent(new CustomEvent('candidate', {
+            detail: candidate
+          }));
         }
       }
 
@@ -93,35 +106,68 @@ export default class Signaling extends EventTarget {
   }
 
   async stop() {
-    await fetch(this.url(''), { method: 'DELETE', headers: this.headers() });
+    await fetch(this.url(''), {
+      method: 'DELETE',
+      headers: this.headers()
+    });
     this.sessionId = null;
   }
 
   async createConnection(connectionId) {
-    const data = { 'connectionId': connectionId };
-    const res = await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
+    const data = {
+      'connectionId': connectionId
+    };
+    const res = await fetch(this.url('connection'), {
+      method: 'PUT',
+      headers: this.headers(),
+      body: JSON.stringify(data)
+    });
     const json = await res.json();
-    this.dispatchEvent(new CustomEvent('connect', { detail: json }));
+    this.dispatchEvent(new CustomEvent('connect', {
+      detail: json
+    }));
     return json;
   };
   async deleteConnection(connectionId) {
-    const data = { 'connectionId': connectionId };
-    const res = await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
+    const data = {
+      'connectionId': connectionId
+    };
+    const res = await fetch(this.url('connection'), {
+      method: 'DELETE',
+      headers: this.headers(),
+      body: JSON.stringify(data)
+    });
     const json = await res.json();
-    this.dispatchEvent(new CustomEvent('disconnect', { detail: json }));
+    this.dispatchEvent(new CustomEvent('disconnect', {
+      detail: json
+    }));
     return json;
   };
 
   async sendOffer(connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
+    const data = {
+      'sdp': sdp,
+      'connectionId': connectionId
+    };
     Logger.log('sendOffer:', data);
-    await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
+    await fetch(this.url('offer'), {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(data)
+    });
   };
 
   async sendAnswer(connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
+    const data = {
+      'sdp': sdp,
+      'connectionId': connectionId
+    };
     Logger.log('sendAnswer:', data);
-    await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
+    await fetch(this.url('answer'), {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(data)
+    });
   };
 
   async sendCandidate(connectionId, candidate, sdpMid, sdpMLineIndex) {
@@ -132,17 +178,30 @@ export default class Signaling extends EventTarget {
       'connectionId': connectionId
     };
     Logger.log('sendCandidate:', data);
-    await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
+    await fetch(this.url('candidate'), {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(data)
+    });
   };
 
   async getOffer(fromTime = 0) {
-    return await fetch(this.url(`offer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`offer?fromtime=${fromTime}`), {
+      method: 'GET',
+      headers: this.headers()
+    });
   };
   async getAnswer(fromTime = 0) {
-    return await fetch(this.url(`answer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`answer?fromtime=${fromTime}`), {
+      method: 'GET',
+      headers: this.headers()
+    });
   };
   async getCandidate(fromTime = 0) {
-    return await fetch(this.url(`candidate?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`candidate?fromtime=${fromTime}`), {
+      method: 'GET',
+      headers: this.headers()
+    });
   };
 }
 
@@ -179,19 +238,40 @@ export class WebSocketSignaling extends EventTarget {
 
       switch (msg.type) {
         case "connect":
-          this.dispatchEvent(new CustomEvent('connect', { detail: msg }));
+          this.dispatchEvent(new CustomEvent('connect', {
+            detail: msg
+          }));
           break;
         case "disconnect":
-          this.dispatchEvent(new CustomEvent('disconnect', { detail: msg }));
+          this.dispatchEvent(new CustomEvent('disconnect', {
+            detail: msg
+          }));
           break;
         case "offer":
-          this.dispatchEvent(new CustomEvent('offer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
+          this.dispatchEvent(new CustomEvent('offer', {
+            detail: {
+              connectionId: msg.from,
+              sdp: msg.data.sdp
+            }
+          }));
           break;
         case "answer":
-          this.dispatchEvent(new CustomEvent('answer', { detail: { connectionId: msg.from, sdp: msg.data.sdp } }));
+          this.dispatchEvent(new CustomEvent('answer', {
+            detail: {
+              connectionId: msg.from,
+              sdp: msg.data.sdp
+            }
+          }));
           break;
         case "candidate":
-          this.dispatchEvent(new CustomEvent('candidate', { detail: { connectionId: msg.from, candidate: msg.data.candidate, sdpMLineIndex: msg.data.sdpMLineIndex, sdpMid: msg.data.sdpMid } }));
+          this.dispatchEvent(new CustomEvent('candidate', {
+            detail: {
+              connectionId: msg.from,
+              candidate: msg.data.candidate,
+              sdpMLineIndex: msg.data.sdpMLineIndex,
+              sdpMid: msg.data.sdpMid
+            }
+          }));
           break;
         default:
           break;
@@ -213,27 +293,47 @@ export class WebSocketSignaling extends EventTarget {
   }
 
   createConnection(connectionId) {
-    const sendJson = JSON.stringify({ type: "connect", connectionId: connectionId });
+    const sendJson = JSON.stringify({
+      type: "connect",
+      connectionId: connectionId
+    });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
   };
 
   deleteConnection(connectionId) {
-    const sendJson = JSON.stringify({ type: "disconnect", connectionId: connectionId });
+    const sendJson = JSON.stringify({
+      type: "disconnect",
+      connectionId: connectionId
+    });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
   };
 
   sendOffer(connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
-    const sendJson = JSON.stringify({ type: "offer", from: connectionId, data: data });
+    const data = {
+      'sdp': sdp,
+      'connectionId': connectionId
+    };
+    const sendJson = JSON.stringify({
+      type: "offer",
+      from: connectionId,
+      data: data
+    });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
   }
 
   sendAnswer(connectionId, sdp) {
-    const data = { 'sdp': sdp, 'connectionId': connectionId };
-    const sendJson = JSON.stringify({ type: "answer", from: connectionId, data: data });
+    const data = {
+      'sdp': sdp,
+      'connectionId': connectionId
+    };
+    const sendJson = JSON.stringify({
+      type: "answer",
+      from: connectionId,
+      data: data
+    });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
   }
@@ -245,7 +345,11 @@ export class WebSocketSignaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': connectionId
     };
-    const sendJson = JSON.stringify({ type: "candidate", from: connectionId, data: data });
+    const sendJson = JSON.stringify({
+      type: "candidate",
+      from: connectionId,
+      data: data
+    });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
   }

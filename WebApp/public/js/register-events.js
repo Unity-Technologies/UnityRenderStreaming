@@ -1,4 +1,6 @@
-import { gamepadHandler } from "./gamepadEvents.js";
+import {
+  gamepadHandler
+} from "./gamepadEvents.js";
 import * as Logger from "./logger.js";
 
 const InputEvent = {
@@ -163,8 +165,8 @@ export function registerGamepadEvents(videoPlayer) {
 
   const _videoPlayer = videoPlayer;
 
-  sendGamepadButtonDown = (e) =>  {
-    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " down" );
+  sendGamepadButtonDown = (e) => {
+    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " down");
     let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
     data.setUint8(1, GamepadEventType.ButtonDown);
@@ -175,7 +177,7 @@ export function registerGamepadEvents(videoPlayer) {
   }
 
   sendGamepadButtonUp = (e) => {
-    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " up" );
+    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " up");
     let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
     data.setUint8(1, GamepadEventType.ButtonUp);
@@ -186,29 +188,33 @@ export function registerGamepadEvents(videoPlayer) {
   }
 
   sendGamepadButtonPressed = (e) => {
-    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " pressed" );
+    Logger.log("gamepad id: " + e.id + " button index: " + e.index + " value " + e.value + " pressed");
     let data = new DataView(new ArrayBuffer(19));
     data.setUint8(0, InputEvent.Gamepad);
     data.setUint8(1, GamepadEventType.ButtonPressed);
     data.setUint8(2, e.index);
     data.setFloat64(3, e.value, true);
-    
+
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
-  gamepadAxisChange = (e) =>  {
-    Logger.log("gamepad id: " + e.id + " axis: " + e.index + " value " + e.value + " x:" + e.x + " y:" + e.y );
+  gamepadAxisChange = (e) => {
+    Logger.log("gamepad id: " + e.id + " axis: " + e.index + " value " + e.value + " x:" + e.x + " y:" + e.y);
     let data = new DataView(new ArrayBuffer(27));
-    data.setUint8(0, InputEvent.Gamepad);  
-    data.setUint8(1, GamepadEventType.Axis);  
+    data.setUint8(0, InputEvent.Gamepad);
+    data.setUint8(1, GamepadEventType.Axis);
     data.setUint8(2, e.index);
     data.setFloat64(3, e.x, true);
     data.setFloat64(11, e.y, true);
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
-  gamepadConnected = (e) => { gamepadHandler(e, true); }
-  gamepadDisconnected = (e) => { gamepadHandler(e, false); }
+  gamepadConnected = (e) => {
+    gamepadHandler(e, true);
+  }
+  gamepadDisconnected = (e) => {
+    gamepadHandler(e, false);
+  }
 
 
   document.addEventListener("gamepadButtonDown", sendGamepadButtonDown, false);
@@ -222,13 +228,13 @@ export function registerGamepadEvents(videoPlayer) {
 
 export function unregisterGamepadEvents(videoPlayer) {
 
-    document.removeEventListener("gamepadButtonDown", sendGamepadButtonDown, false);
-    document.removeEventListener("gamepadButtonUp", sendGamepadButtonUp, false);
-    document.removeEventListener("gamepadButtonPressed", sendGamepadButtonPressed, false);
-    document.removeEventListener("gamepadAxis", gamepadAxisChange, false);
+  document.removeEventListener("gamepadButtonDown", sendGamepadButtonDown, false);
+  document.removeEventListener("gamepadButtonUp", sendGamepadButtonUp, false);
+  document.removeEventListener("gamepadButtonPressed", sendGamepadButtonPressed, false);
+  document.removeEventListener("gamepadAxis", gamepadAxisChange, false);
 
-    window.removeEventListener("gamepadconnected", gamepadConnected, false);
-    window.removeEventListener("gamepaddisconnected", gamepadDisconnected, false);
+  window.removeEventListener("gamepadconnected", gamepadConnected, false);
+  window.removeEventListener("gamepaddisconnected", gamepadDisconnected, false);
 
 }
 
@@ -264,9 +270,9 @@ export function registerKeyboardEvents(videoPlayer) {
 
 export function unregisterKeyboardEvents(videoPlayer) {
 
-    //Stop listening to keyboard events
-    document.removeEventListener('keyup', sendKeyUp, false);
-    document.removeEventListener('keydown', sendKeyDown, false);
+  //Stop listening to keyboard events
+  document.removeEventListener('keyup', sendKeyUp, false);
+  document.removeEventListener('keydown', sendKeyDown, false);
 }
 
 
@@ -289,8 +295,8 @@ export function registerMouseEvents(videoPlayer, playerElement) {
 
     for (let i = 0; i < changedTouches.length; i++) {
       if (touches.find(function (t) {
-        return t.identifier === changedTouches[i].identifier
-      }) === undefined) {
+          return t.identifier === changedTouches[i].identifier
+        }) === undefined) {
         touches.push(changedTouches[i]);
       }
     }
@@ -382,46 +388,46 @@ export function registerMouseEvents(videoPlayer, playerElement) {
     _videoPlayer && _videoPlayer.sendMsg(data.buffer);
   }
 
-    // Listen to mouse events
-    playerElement.addEventListener('click', sendMouse, false);
-    playerElement.addEventListener('mousedown', sendMouse, false);
-    playerElement.addEventListener('mouseup', sendMouse, false);
-    playerElement.addEventListener('mousemove', sendMouse, false);
-    playerElement.addEventListener('wheel', sendMouseWheel, false);
+  // Listen to mouse events
+  playerElement.addEventListener('click', sendMouse, false);
+  playerElement.addEventListener('mousedown', sendMouse, false);
+  playerElement.addEventListener('mouseup', sendMouse, false);
+  playerElement.addEventListener('mousemove', sendMouse, false);
+  playerElement.addEventListener('wheel', sendMouseWheel, false);
 
-    // Listen to touch events based on "Touch Events Level1" TR.
-    //
-    // Touch event Level1 https://www.w3.org/TR/touch-events/
-    // Touch event Level2 https://w3c.github.io/touch-events/
-    //
-    playerElement.addEventListener('touchend', sendTouchEnd, false);
-    playerElement.addEventListener('touchstart', sendTouchStart, false);
-    playerElement.addEventListener('touchcancel', sendTouchCancel, false);
-    playerElement.addEventListener('touchmove', sendTouchMove, false);
+  // Listen to touch events based on "Touch Events Level1" TR.
+  //
+  // Touch event Level1 https://www.w3.org/TR/touch-events/
+  // Touch event Level2 https://w3c.github.io/touch-events/
+  //
+  playerElement.addEventListener('touchend', sendTouchEnd, false);
+  playerElement.addEventListener('touchstart', sendTouchStart, false);
+  playerElement.addEventListener('touchcancel', sendTouchCancel, false);
+  playerElement.addEventListener('touchmove', sendTouchMove, false);
 }
 
 
 export function unregisterMouseEvents(videoPlayer, playerElement) {
 
-    // Stop listening to mouse events
-    playerElement.removeEventListener('click', sendMouse, false);
-    playerElement.removeEventListener('mousedown', sendMouse, false);
-    playerElement.removeEventListener('mouseup', sendMouse, false);
-    playerElement.removeEventListener('mousemove', sendMouse, false);
-    playerElement.removeEventListener('wheel', sendMouseWheel, false);
+  // Stop listening to mouse events
+  playerElement.removeEventListener('click', sendMouse, false);
+  playerElement.removeEventListener('mousedown', sendMouse, false);
+  playerElement.removeEventListener('mouseup', sendMouse, false);
+  playerElement.removeEventListener('mousemove', sendMouse, false);
+  playerElement.removeEventListener('wheel', sendMouseWheel, false);
 
-    // Stop listening to touch events based on "Touch Events Level1" TR.
-    playerElement.removeEventListener('touchend', sendTouchEnd, false);
-    playerElement.removeEventListener('touchstart', sendTouchStart, false);
-    playerElement.removeEventListener('touchcancel', sendTouchCancel, false);
-    playerElement.removeEventListener('touchmove', sendTouchMove, false);
+  // Stop listening to touch events based on "Touch Events Level1" TR.
+  playerElement.removeEventListener('touchend', sendTouchEnd, false);
+  playerElement.removeEventListener('touchstart', sendTouchStart, false);
+  playerElement.removeEventListener('touchcancel', sendTouchCancel, false);
+  playerElement.removeEventListener('touchmove', sendTouchMove, false);
 
 }
 
 
 export function sendClickEvent(videoPlayer, elementId) {
-    let data = new DataView(new ArrayBuffer(3));
-    data.setUint8(0, InputEvent.ButtonClick);
-    data.setInt16(1, elementId, true);
-    videoPlayer && videoPlayer.sendMsg(data.buffer);
+  let data = new DataView(new ArrayBuffer(3));
+  data.setUint8(0, InputEvent.ButtonClick);
+  data.setInt16(1, elementId, true);
+  videoPlayer && videoPlayer.sendMsg(data.buffer);
 }

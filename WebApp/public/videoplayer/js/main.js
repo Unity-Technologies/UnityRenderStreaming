@@ -1,6 +1,15 @@
-import { VideoPlayer } from "./video-player.js";
-import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../js/register-events.js";
-import { getServerConfig } from "../../js/config.js";
+import {
+  VideoPlayer
+} from "./video-player.js";
+import {
+  registerGamepadEvents,
+  registerKeyboardEvents,
+  registerMouseEvents,
+  sendClickEvent
+} from "../../js/register-events.js";
+import {
+  getServerConfig
+} from "../../js/config.js";
 
 setup();
 
@@ -9,7 +18,7 @@ let videoPlayer;
 let useWebSocket;
 
 window.document.oncontextmenu = function () {
-  return false;     // cancel default menu
+  return false; // cancel default menu
 }
 
 window.addEventListener('resize', function () {
@@ -98,8 +107,7 @@ function onClickPlayButton() {
     if (!document.fullscreenElement || !document.webkitFullscreenElement) {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
-      }
-      else if (document.documentElement.webkitRequestFullscreen) {
+      } else if (document.documentElement.webkitRequestFullscreen) {
         document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
       } else {
         if (playerDiv.style.position == "absolute") {
@@ -117,8 +125,7 @@ function onClickPlayButton() {
     if (document.webkitFullscreenElement || document.fullscreenElement) {
       playerDiv.style.position = "absolute";
       elementFullscreenButton.style.display = 'none';
-    }
-    else {
+    } else {
       playerDiv.style.position = "relative";
       elementFullscreenButton.style.display = 'block';
     }

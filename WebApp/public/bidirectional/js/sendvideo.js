@@ -1,4 +1,6 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import Signaling, {
+  WebSocketSignaling
+} from "../../js/signaling.js";
 import * as Config from "../../js/config.js";
 import * as Logger from "../../js/logger.js";
 
@@ -15,7 +17,10 @@ export class SendVideo {
 
   async startVideo(localVideo) {
     try {
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
       localVideo.srcObject = this.localStream;
       await localVideo.play();
     } catch (err) {
@@ -53,7 +58,10 @@ export class SendVideo {
       _this.prepareNewPeerConnection(false, offer.connectionId);
       _this.addTracks();
 
-      const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
+      const desc = new RTCSessionDescription({
+        sdp: offer.sdp,
+        type: "offer"
+      });
       await _this.pc.setRemoteDescription(desc);
       let answer = await _this.pc.createAnswer();
       await _this.pc.setLocalDescription(answer);
@@ -67,7 +75,10 @@ export class SendVideo {
         return;
       }
 
-      const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
+      const desc = new RTCSessionDescription({
+        sdp: answer.sdp,
+        type: "answer"
+      });
       await _this.pc.setRemoteDescription(desc);
     });
 
@@ -78,7 +89,11 @@ export class SendVideo {
         return;
       }
 
-      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
+      const iceCandidate = new RTCIceCandidate({
+        candidate: candidate.candidate,
+        sdpMid: candidate.sdpMid,
+        sdpMLineIndex: candidate.sdpMLineIndex
+      });
       _this.pc.addIceCandidate(iceCandidate);
     });
 

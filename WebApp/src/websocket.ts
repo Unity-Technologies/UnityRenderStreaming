@@ -1,14 +1,17 @@
 import * as websocket from "ws";
-import { Server } from 'http';
-import Offer from './class/offer';
-import Answer from './class/answer';
-import Candidate from './class/candidate';
+import { Server } from "http";
+import Offer from "./class/offer";
+import Answer from "./class/answer";
+import Candidate from "./class/candidate";
 
 // [{sessonId:[connectionId,...]}]
 const clients: Map<WebSocket, Set<string>> = new Map<WebSocket, Set<string>>();
 
 // [{connectionId:[sessionId1, sessionId2]}]
-const connectionPair: Map<string, [WebSocket, WebSocket]> = new Map<string, [WebSocket, WebSocket]>();
+const connectionPair: Map<string, [WebSocket, WebSocket]> = new Map<
+  string,
+  [WebSocket, WebSocket]
+>();
 
 // [{connectionId:Offer}]
 const offers: Map<string, Offer> = new Map<string, Offer>();
@@ -17,7 +20,10 @@ const offers: Map<string, Offer> = new Map<string, Offer>();
 const answers: Map<string, Answer> = new Map<string, Answer>();
 
 // [{sessionId:[{connectionId:Candidate},...]}]
-const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<WebSocket, Map<string, Candidate[]>>();
+const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<
+  WebSocket,
+  Map<string, Candidate[]>
+>();
 
 function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
   let connectionIds = null;
@@ -39,14 +45,12 @@ export default class WSSignaling {
     this.wss = new websocket.Server({ server });
     this.isPrivate = mode == "private";
 
-    this.wss.on('connection', (ws: WebSocket) => {
-
+    this.wss.on("connection", (ws: WebSocket) => {
       clients.set(ws, new Set<string>());
 
       ws.onclose = (_event: CloseEvent) => {
-
         const connectionIds = clients.get(ws);
-        connectionIds.forEach(connectionId => {
+        connectionIds.forEach((connectionId) => {
           connectionPair.delete(connectionId);
           offers.delete(connectionId);
           answers.delete(connectionId);
@@ -54,10 +58,9 @@ export default class WSSignaling {
 
         clients.delete(ws);
         candidates.delete(ws);
-      }
+      };
 
       ws.onmessage = (event: MessageEvent) => {
-
         // type: connect, disconnect JSON Schema
         // connectionId: connect or disconnect connectionId
 
@@ -103,7 +106,12 @@ export default class WSSignaling {
         const pair = connectionPair.get(connectionId);
 
         if (pair[0] != null && pair[1] != null) {
-          ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is already used.` }));
+          ws.send(
+            JSON.stringify({
+              type: "error",
+              message: `${connectionId}: This connection id is already used.`,
+            })
+          );
           return;
         } else if (pair[0] != null) {
           connectionPair.set(connectionId, [pair[0], ws]);
@@ -116,7 +124,13 @@ export default class WSSignaling {
 
     const connectionIds = getOrCreateConnectionIds(ws);
     connectionIds.add(connectionId);
-    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, polite: polite }));
+    ws.send(
+      JSON.stringify({
+        type: "connect",
+        connectionId: connectionId,
+        polite: polite,
+      })
+    );
   }
 
   private onDisconnect(ws: WebSocket, connectionId: string) {
@@ -127,7 +141,9 @@ export default class WSSignaling {
       const pair = connectionPair.get(connectionId);
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
-        otherSessionWs.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
+        otherSessionWs.send(
+          JSON.stringify({ type: "disconnect", connectionId: connectionId })
+        );
       }
     }
     connectionPair.delete(connectionId);
@@ -144,9 +160,21 @@ export default class WSSignaling {
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
         newOffer.polite = true;
-        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+        otherSessionWs.send(
+          JSON.stringify({
+            from: connectionId,
+            to: "",
+            type: "offer",
+            data: newOffer,
+          })
+        );
       } else {
-        ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is not ready other session.` }));
+        ws.send(
+          JSON.stringify({
+            type: "error",
+            message: `${connectionId}: This connection id is not ready other session.`,
+          })
+        );
       }
       return;
     }
@@ -156,7 +184,14 @@ export default class WSSignaling {
       if (k == ws) {
         return;
       }
-      k.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+      k.send(
+        JSON.stringify({
+          from: connectionId,
+          to: "",
+          type: "offer",
+          data: newOffer,
+        })
+      );
     });
   }
 
@@ -187,7 +222,14 @@ export default class WSSignaling {
     }
 
     if (this.isPrivate) {
-      otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
+      otherSessionWs.send(
+        JSON.stringify({
+          from: connectionId,
+          to: "",
+          type: "answer",
+          data: newAnswer,
+        })
+      );
       return;
     }
 
@@ -195,7 +237,14 @@ export default class WSSignaling {
       if (k == ws) {
         return;
       }
-      k.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
+      k.send(
+        JSON.stringify({
+          from: connectionId,
+          to: "",
+          type: "answer",
+          data: newAnswer,
+        })
+      );
     });
   }
 
@@ -210,14 +259,26 @@ export default class WSSignaling {
       map.set(connectionId, []);
     }
     const arr = map.get(connectionId);
-    const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
+    const candidate = new Candidate(
+      message.candidate,
+      message.sdpMLineIndex,
+      message.sdpMid,
+      Date.now()
+    );
     arr.push(candidate);
 
     if (this.isPrivate) {
       const pair = connectionPair.get(connectionId);
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
-        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+        otherSessionWs.send(
+          JSON.stringify({
+            from: connectionId,
+            to: "",
+            type: "candidate",
+            data: candidate,
+          })
+        );
       }
       return;
     }
@@ -226,7 +287,14 @@ export default class WSSignaling {
       if (k === ws) {
         return;
       }
-      k.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+      k.send(
+        JSON.stringify({
+          from: connectionId,
+          to: "",
+          type: "candidate",
+          data: candidate,
+        })
+      );
     });
   }
 }

@@ -1,5 +1,9 @@
-import { SendVideo } from "./sendvideo.js";
-import { getServerConfig } from "../../js/config.js";
+import {
+  SendVideo
+} from "./sendvideo.js";
+import {
+  getServerConfig
+} from "../../js/config.js";
 
 const localVideo = document.getElementById('local_video');
 const remoteVideo = document.getElementById('remote_video');
