@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class BroadcastSample : MonoBehaviour
+    class BroadcastSample : MonoBehaviour
     {
         [SerializeField] RenderStreaming renderStreaming;
 

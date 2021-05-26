@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class WebBrowserInputSample : MonoBehaviour
+    class WebBrowserInputSample : MonoBehaviour
     {
         [SerializeField] RenderStreaming renderStreaming;
 

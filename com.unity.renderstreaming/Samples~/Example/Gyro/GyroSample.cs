@@ -6,7 +6,7 @@ using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class GyroSample : MonoBehaviour
+    class GyroSample : MonoBehaviour
     {
 #pragma warning disable 0649
             [SerializeField] private RenderStreaming renderStreaming;
