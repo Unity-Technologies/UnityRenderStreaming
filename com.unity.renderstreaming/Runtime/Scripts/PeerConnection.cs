@@ -8,8 +8,8 @@ namespace Unity.RenderStreaming
         public readonly RTCPeerConnection peer;
         public readonly bool polite;
 
-        public bool readyOtherPeer;
         public bool makingOffer;
+        public bool waitingAnswer;
         public bool ignoreOffer;
         public bool srdAnswerPending;
         public bool sldGetBackStable;
@@ -20,6 +20,11 @@ namespace Unity.RenderStreaming
             this.polite = polite;
         }
 
+        ~PeerConnection()
+        {
+            Dispose();
+        }
+
         public override string ToString()
         {
             var str = polite ? "polite" : "impolite";
@@ -28,7 +33,19 @@ namespace Unity.RenderStreaming
 
         public void Dispose()
         {
-            peer?.Dispose();
+            if (peer == null)
+            {
+                return;
+            }
+
+            peer.OnTrack = null;
+            peer.OnDataChannel = null;
+            peer.OnIceCandidate = null;
+            peer.OnNegotiationNeeded = null;
+            peer.OnConnectionStateChange = null;
+            peer.OnIceConnectionChange = null;
+            peer.OnIceGatheringStateChange = null;
+            peer.Dispose();
         }
     }
 }

@@ -97,7 +97,7 @@ export default class WSSignaling {
   }
 
   private onConnect(ws: WebSocket, connectionId: string) {
-    let peerExists = false;
+    let polite = true;
     if (this.isPrivate) {
       if (connectionPair.has(connectionId)) {
         const pair = connectionPair.get(connectionId);
@@ -107,16 +107,16 @@ export default class WSSignaling {
           return;
         } else if (pair[0] != null) {
           connectionPair.set(connectionId, [pair[0], ws]);
-          peerExists = true;
         }
       } else {
         connectionPair.set(connectionId, [ws, null]);
+        polite = false;
       }
     }
 
     const connectionIds = getOrCreateConnectionIds(ws);
     connectionIds.add(connectionId);
-    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, peerExists: peerExists }));
+    ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, polite: polite }));
   }
 
   private onDisconnect(ws: WebSocket, connectionId: string) {
@@ -131,17 +131,19 @@ export default class WSSignaling {
       }
     }
     connectionPair.delete(connectionId);
+    ws.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
   }
 
   private onOffer(ws: WebSocket, message: any) {
     const connectionId = message.connectionId as string;
-    const newOffer = new Offer(message.sdp, Date.now());
+    let newOffer = new Offer(message.sdp, Date.now(), false);
     offers.set(connectionId, newOffer);
 
     if (this.isPrivate) {
       const pair = connectionPair.get(connectionId);
       const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
       if (otherSessionWs) {
+        newOffer.polite = true;
         otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
       } else {
         ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is not ready other session.` }));

@@ -67,7 +67,6 @@ namespace Unity.RenderStreaming.Signaling
         public event OnStartHandler OnStart;
         public event OnSignedInHandler OnSignedIn;
         public event OnConnectHandler OnCreateConnection;
-        public event OnReadyOtherHandler OnReadyOtherConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
         public event OnAnswerHandler OnAnswer;
@@ -199,6 +198,7 @@ namespace Unity.RenderStreaming.Signaling
                             DescData offer = new DescData();
                             offer.connectionId = routedMessage.from;
                             offer.sdp = msg.sdp;
+                            offer.polite = false;
 
                             m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
                         }

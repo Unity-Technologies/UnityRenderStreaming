@@ -7,11 +7,6 @@ namespace Unity.RenderStreaming
         void OnCreatedConnection(SignalingEventData eventData);
     }
 
-    public interface IFoundConnectionHandler : IEventSystemHandler
-    {
-        void OnFoundConnection(SignalingEventData eventData);
-    }
-
     public interface IDeletedConnectionHandler : IEventSystemHandler
     {
         void OnDeletedConnection(SignalingEventData eventData);

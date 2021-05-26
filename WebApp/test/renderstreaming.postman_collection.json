@@ -92,6 +92,14 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    var jsonData = pm.response.json();",
+							"    pm.response.to.have.jsonBody(\"connectionId\");",
+							"    pm.response.to.have.jsonBody(\"polite\");",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.polite).to.be.true;",
+							"});",
 							"pm.environment.set(\"connection_id\", JSON.stringify(pm.response.json().connectionId));"
 						],
 						"type": "text/javascript"
@@ -383,6 +391,52 @@
 			"response": []
 		},
 		{
+			"name": "Get Connection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"connections\");",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.connections.length).to.be.above(0);",
+							"    var connection = jsonData.connections[0];",
+							"    pm.expect(connection.connectionId).to.be.not.null;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling/connection",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling",
+						"connection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Offer to Session1",
 			"event": [
 				{
@@ -440,6 +494,10 @@
 							"    var jsonData = pm.response.json();",
 							"    console.log(jsonData);",
 							"    pm.expect(jsonData.offers.length).to.be.above(0);",
+							"    var offer = jsonData.offers[0];",
+							"    pm.expect(offer.connectionId).to.be.not.null;",
+							"    pm.expect(offer.sdp).to.be.not.null;",
+							"    pm.expect(offer.polite).to.be.not.null;",
 							"});",
 							""
 						],
@@ -545,6 +603,9 @@
 							"    var jsonData = pm.response.json();",
 							"    console.log(jsonData);",
 							"    pm.expect(jsonData.answers.length).to.be.above(0);",
+							"    var answer = jsonData.answers[0];",
+							"    pm.expect(answer.connectionId).to.be.not.null;",
+							"    pm.expect(answer.sdp).to.be.not.null;",
 							"});",
 							""
 						],

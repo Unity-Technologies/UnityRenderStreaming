@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="conf"></param>
         /// <param name="hardwareEncoder"></param>
@@ -88,7 +88,8 @@ namespace Unity.RenderStreaming
                 config = _conf,
                 encoderType = encoderType,
                 signaling = _signaling,
-                startCoroutine = StartCoroutine
+                startCoroutine = StartCoroutine,
+                resentOfferInterval = interval,
             };
             m_instance = new RenderStreamingInternal(ref dependencies);
             m_provider = new SignalingEventProvider(m_instance);
