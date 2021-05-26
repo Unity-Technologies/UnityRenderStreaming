@@ -196,7 +196,13 @@ namespace Unity.RenderStreaming.Samples
         }
         private void OnPressedRenderPipeline()
         {
-            SceneManager.LoadScene("MultiplePeerConnections", LoadSceneMode.Single);
+#if URS_USE_URP_RUNTIME
+            SceneManager.LoadScene("URP", LoadSceneMode.Single);
+#elif URS_USE_HDRP_RUNTIME
+            SceneManager.LoadScene("HDRP", LoadSceneMode.Single);
+#else
+            throw new InvalidOperationException("HDRP or URP package is not found in this project.");
+#endif
         }
         private void OnPressedReceiver()
         {
