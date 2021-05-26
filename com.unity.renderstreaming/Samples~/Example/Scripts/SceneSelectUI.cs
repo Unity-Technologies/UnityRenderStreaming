@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Threading;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine;
@@ -107,6 +108,11 @@ namespace Unity.RenderStreaming.Samples
         void Start()
         {
             toggleEnableHWCodec.isOn = RenderStreamingSettings.EnableHWCodec;
+            dropdownSignalingType.value = (int)RenderStreamingSettings.SignalingType;
+            inputFieldSignalingAddress.text = RenderStreamingSettings.SignalingAddress;
+            toggleSignalingSecured.isOn = RenderStreamingSettings.SignalingSecured;
+            inputFieldSignalingInterval.text = RenderStreamingSettings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
+
             toggleEnableHWCodec.onValueChanged.AddListener(OnChangeHWCodec);
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
@@ -120,7 +126,6 @@ namespace Unity.RenderStreaming.Samples
             buttonReceiver.onClick.AddListener(OnPressedReceiver);
             buttonWebBrowserInput.onClick.AddListener(OnPressedWebBrowserInput);
             buttonAR.onClick.AddListener(OnPressedAR);
-
 
             // Gyro input is not supported on this device.
             if (Gyroscope.current == null)
