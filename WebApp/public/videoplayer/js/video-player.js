@@ -21,10 +21,6 @@ export class VideoPlayer {
     this.cfg = Config.getRTCConfiguration();
     this.pc = null;
     this.channel = null;
-    this.offerOptions = {
-      offerToReceiveAudio: true,
-      offerToReceiveVideo: true,
-    };
     this.connectionId = null;
 
     // main video
@@ -150,7 +146,7 @@ export class VideoPlayer {
     this.pc.addTransceiver('audio', { direction: 'recvonly' });
 
     // create offer
-    const offer = await this.pc.createOffer(this.offerOptions);
+    const offer = await this.pc.createOffer();
 
     // set local sdp
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
@@ -243,4 +239,8 @@ export class VideoPlayer {
         break;
     }
   };
+
+  async stop() {
+    await this.signaling.stop();
+  }
 }

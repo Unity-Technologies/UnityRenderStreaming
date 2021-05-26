@@ -16,6 +16,10 @@ window.addEventListener('resize', function () {
   videoPlayer.resizeVideo();
 }, true);
 
+window.addEventListener('beforeunload', async (e) => {
+  await videoPlayer.stop();
+}, true);
+
 async function setup() {
   const res = await getServerConfig();
   useWebSocket = res.useWebSocket;
