@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming
 {
-    public class ReceiverSample : MonoBehaviour
+    class ReceiverSample : MonoBehaviour
     {
 #pragma warning disable 0649
         [SerializeField] private RenderStreaming renderStreaming;
