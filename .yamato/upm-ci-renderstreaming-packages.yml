@@ -25,7 +25,7 @@ build_{{ package.name }}_{{ editor.version }}_ios:
   name : Build {{ package.packagename }} with {{ editor.version }} for ios device
   agent:
     type: Unity::VM::osx
-    image: mobile/macos-10.13-testing:stable
+    image: package-ci/mac:latest
     flavor: b1.large
   commands:
     - find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
@@ -48,7 +48,7 @@ test_{{ package.name }}_{{ editor.version }}_ios:
   name: Test {{ package.packagename }} with {{ editor.version }} on ios device
   agent:
     type: Unity::mobile::iPhone
-    image: mobile/macos-10.13-testing:stable
+    image: mobile/macos-10.15-testing:stable
     flavor: b1.medium
   skip_checkout: true
   commands:

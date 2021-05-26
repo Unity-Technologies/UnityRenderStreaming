@@ -4,7 +4,13 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.1] - 2021-03-04
+## [3.1.0-exp.1] - 2021-05-28
+
+### Added
+
+- Android platform support
+
+## [3.0.1-preview] - 2021-03-04
 
 ### Fixed
 
@@ -14,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `Camerastreamer` uses a `TargetTexture` on the `Camera` component if the `RenderTexture` is attached on the `Camera`.
 
-## [3.0.0] - 2021-03-02
+## [3.0.0-preview] - 2021-03-02
 
 Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from the sample folder to Package Manager.
 
@@ -30,13 +36,13 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Moved scripts from the sample folder to Package Manager.
 - Upgrading WebRTC package to `2.3.3-preview`.
 
-## [2.2.2] - 2020-12-15
+## [2.2.2-preview] - 2020-12-15
 
 ### Changed
 
 - Updated unitypackage files of the package samples
 
-## [2.2.1] - 2020-11-19
+## [2.2.1-preview] - 2020-11-19
 
 ### Added
 
@@ -52,14 +58,14 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Fixed `NullPointerException` occurred when `UIController` instance is not attached `SimpleCameraController` component
 - Fixed behavior of the editor menu
 
-## [2.2.0] - 2020-11-09
+## [2.2.0-preview] - 2020-11-09
 
 ### Changed
 
 - Upgrading WebRTC to `2.2.1-preview`
 
 
-## [2.1.1] - 2020-09-11
+## [2.1.1-preview] - 2020-09-11
 
 ### Changed
 
@@ -67,7 +73,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Changed not to customize SDP to make stabilize bitrate of video streaming
 - Erase Japanese documentation due to migrating to internal translation system
 
-## [2.1.0] - 2020-08-28
+## [2.1.0-preview] - 2020-08-28
 
 ### Added 
 
@@ -81,7 +87,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 
 - Fixed the issue when pressing multiple buttons on a keyboard
 
-## [2.0.2] - 2020-05-14
+## [2.0.2-preview] - 2020-05-14
 
 ### Changed
 
@@ -92,13 +98,13 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 
 - Fix documents
 
-## [2.0.1] - 2020-05-01
+## [2.0.1-preview] - 2020-05-01
 
 ### Fixed
 
 - Fixed versioning issue
 
-## [2.0.0] - 2020-04-30
+## [2.0.0-preview] - 2020-04-30
 
 ### Changed
 
@@ -106,19 +112,19 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Upgrading WebRTC to `2.0.0-preview`
 - Update URP/HDRP sample
 
-## [1.2.2] - 2020-03-06
+## [1.2.2-preview] - 2020-03-06
 
 ### Fixed
 
 - Fix build error when build standalone
 
-## [1.2.1] - 2020-02-28
+## [1.2.1-preview] - 2020-02-28
 
 ### Changed
 
 - Upgrading WebRTC to `1.1.1-preview`
 
-## [1.2.0] - 2020-02-25
+## [1.2.0-preview] - 2020-02-25
 
 ### Added
 
@@ -137,19 +143,19 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 - Display the mouse pointer in the correct position
 - Try downloading webserver from a known version if the current version doesn't exist
 
-## [1.1.2] - 2019-09-20
+## [1.1.2-preview] - 2019-09-20
 
 Fixed
 
 - Fix image links for Japanese documentation on Unity website
 
-## [1.1.1] - 2019-09-14
+## [1.1.1-preview] - 2019-09-14
 
 ### Fixed
 
 - Fix image links for documentation on Unity website
 
-## [1.1.0] - 2019-09-13
+## [1.1.0-preview] - 2019-09-13
 
 ### Added
 
@@ -161,7 +167,7 @@ Fixed
 - Upgrading HDRP to `5.16.1-preview`
 - Adding keyboard event to reset camera position
 
-## [1.0.0] - 2019-08-22
+## [1.0.0-preview] - 2019-08-22
 
 ### Added
 
@@ -176,7 +182,7 @@ Fixed
 
 - Blit Render Texture using customRender instead of `Rendering.RenderPipeline.BeginCameraRendering`
 
-## [0.2.0] - 2019-07-30
+## [0.2.0-preview] - 2019-07-30
 
 ### Changed
 
@@ -186,7 +192,7 @@ Fixed
 
 - Added a unitypackage file containing an HDRP sample, and a menu editor to install it
 
-## [0.1.0] - 2019-07-22
+## [0.1.0-preview] - 2019-07-22
 
 - Initial Release
 
