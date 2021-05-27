@@ -127,11 +127,20 @@ namespace Unity.RenderStreaming.Samples
             buttonWebBrowserInput.onClick.AddListener(OnPressedWebBrowserInput);
             buttonAR.onClick.AddListener(OnPressedAR);
 
+#if UNITY_EDITOR
+            buttonGyro.interactable = false;
+#else
             // Gyro input is not supported on this device.
             if (Gyroscope.current == null)
             {
                 buttonGyro.interactable = false;
             }
+#endif
+
+
+#if !URS_USE_URP_RUNTIME && !URS_USE_HDRP_RUNTIME
+            buttonRenderPipeline.interactable = false;
+#endif
 
 #if URS_USE_AR_FOUNDATION
             StartCoroutine(CheckARAvailability(available => { buttonAR.interactable = available; }));
