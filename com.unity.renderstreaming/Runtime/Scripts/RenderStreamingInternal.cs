@@ -472,6 +472,7 @@ namespace Unity.RenderStreaming
             Assert.AreEqual(pc.peer.RemoteDescription.type, RTCSdpType.Answer, $"{pc} Answer was set");
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable, $"{pc} answered");
             pc.srdAnswerPending = false;
+            Debug.Log($"{pc} is negotiated in connectionId:{connectionId}");
 
             onGotAnswer?.Invoke(connectionId, sdp);
         }
@@ -515,7 +516,7 @@ namespace Unity.RenderStreaming
                 pc.peer.SignalingState == RTCSignalingState.Stable ||
                 (pc.peer.SignalingState == RTCSignalingState.HaveLocalOffer && pc.srdAnswerPending);
             pc.ignoreOffer =
-                description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || !isStable);
+                description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || pc.sldGetBackStable || !isStable);
             if (pc.ignoreOffer)
             {
                 Debug.Log($"{pc} glare - ignoring offer");
