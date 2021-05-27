@@ -19,7 +19,17 @@
             "name": "com.unity.xr.arfoundation",
             "expression": "1.0.0",
             "define": "URS_USE_AR_FOUNDATION"
-        }
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "URS_USE_URP_RUNTIME"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "",
+            "define": "URS_USE_HDRP_RUNTIME"
+        }        
     ],
     "noEngineReferences": false
 }

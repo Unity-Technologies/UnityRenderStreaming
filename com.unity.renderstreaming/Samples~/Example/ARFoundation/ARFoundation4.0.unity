@@ -2865,7 +2865,7 @@ MonoBehaviour:
   hardwareEncoderSupport: 1
   handlers:
   - {fileID: 1915034405}
-  runOnAwake: 1
+  runOnAwake: 0
 --- !u!224 &1915034403
 RectTransform:
   m_ObjectHideFlags: 0

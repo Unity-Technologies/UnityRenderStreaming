@@ -1,12 +1,14 @@
 using System;
+using Unity.RenderStreaming.Samples;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Samples
 {
-    public class ReceiverSample : MonoBehaviour
+    class ReceiverSample : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private Button startButton;
         [SerializeField] private Button stopButton;
         [SerializeField] private InputField connectionIdInput;
@@ -24,6 +26,15 @@ namespace Unity.RenderStreaming
             if(connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+        }
+
+        void Start()
+        {
+            if (renderStreaming.runOnAwake)
+                return;
+            renderStreaming.Run(
+                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
+                signaling: RenderStreamingSettings.Signaling);
         }
 
         private void OnStart()

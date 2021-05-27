@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming.Samples
 
         void Update()
         {
-            if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current[Key.Escape].wasPressedThisFrame)
             {
                 BackButtonPressed();
             }

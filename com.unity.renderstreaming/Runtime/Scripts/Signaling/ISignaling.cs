@@ -21,6 +21,10 @@ namespace Unity.RenderStreaming.Signaling
         event OnAnswerHandler OnAnswer;
         event OnIceCandidateHandler OnIceCandidate;
 
+        string Url { get; }
+
+        float Interval { get; }
+
         void OpenConnection(string connectionId);
         void CloseConnection(string connectionId);
         void SendOffer(string connectionId, RTCSessionDescription offer);

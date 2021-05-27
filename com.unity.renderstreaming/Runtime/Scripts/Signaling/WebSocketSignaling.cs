@@ -18,6 +18,10 @@ namespace Unity.RenderStreaming.Signaling
         private AutoResetEvent m_wsCloseEvent;
         private WebSocket m_webSocket;
 
+        public string Url { get { return m_url; } }
+
+        public float Interval { get { return m_timeout; } }
+
         public WebSocketSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
             m_url = url;
