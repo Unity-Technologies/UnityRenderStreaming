@@ -25,7 +25,7 @@ namespace Unity.RenderStreaming
             {
                 receiverInput?.StopSending();
                 receiverDisposer?.Dispose();
-                receiver.RemoveAllDevices();
+                receiver?.RemoveAllDevices();
                 receiver = null;
             }
             else
