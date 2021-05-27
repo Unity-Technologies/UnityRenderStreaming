@@ -410,7 +410,8 @@ namespace Unity.RenderStreaming
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
         {
             Debug.Log($"{pc} SLD due to negotiationneeded");
-            yield return new WaitWhile(() => pc.sldGetBackStable);
+            // wait other setLocalDescription process
+            yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
                 $"{pc} negotiationneeded always fires in stable state");
@@ -453,7 +454,8 @@ namespace Unity.RenderStreaming
             description.type = RTCSdpType.Answer;
             description.sdp = sdp;
 
-            yield return new WaitWhile(() => pc.makingOffer);
+            // wait other setLocalDescription process
+            yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
 
             pc.waitingAnswer = false;
             pc.srdAnswerPending = true;
@@ -515,15 +517,15 @@ namespace Unity.RenderStreaming
             var isStable =
                 pc.peer.SignalingState == RTCSignalingState.Stable ||
                 (pc.peer.SignalingState == RTCSignalingState.HaveLocalOffer && pc.srdAnswerPending);
-            pc.ignoreOffer =
-                description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || pc.sldGetBackStable || !isStable);
-            if (pc.ignoreOffer)
+            pc.ignoreOffer = description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || !isStable);
+            if (pc.ignoreOffer || pc.makingAnswer)
             {
-                Debug.Log($"{pc} glare - ignoring offer");
+                Debug.Log($"{pc} glare - ignoreOffer {nameof(pc.peer.SignalingState)}:{pc.peer.SignalingState}, {nameof(pc.srdAnswerPending)}:{pc.srdAnswerPending}, {nameof(pc.makingOffer)}:{pc.makingOffer}, {nameof(pc.makingAnswer)}:{pc.makingAnswer}");
                 yield break;
             }
 
-            yield return new WaitWhile(() => pc.makingOffer);
+            // waiting ither setRemoteDescription process
+            yield return new WaitWhile(() => pc.srdAnswerPending);
             pc.waitingAnswer = false;
 
             Debug.Log($"{pc} SRD {description.type} SignalingState {pc.peer.SignalingState}");
@@ -545,7 +547,7 @@ namespace Unity.RenderStreaming
         IEnumerator SendAnswerCoroutine(string connectionId, PeerConnection pc)
         {
             Debug.Log($"{pc} SLD to get back to stable");
-            pc.sldGetBackStable = true;
+            pc.makingAnswer = true;
 
             var opLocalDesc = pc.peer.SetLocalDescription();
             yield return opLocalDesc;
@@ -553,14 +555,14 @@ namespace Unity.RenderStreaming
             if (opLocalDesc.IsError)
             {
                 Debug.LogError($"{pc} {opLocalDesc.Error.message}");
-                pc.sldGetBackStable = false;
+                pc.makingAnswer = false;
                 yield break;
             }
 
             Assert.AreEqual(pc.peer.LocalDescription.type, RTCSdpType.Answer, $"{pc} onmessage SLD worked");
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
                 $"{pc} onmessage not racing with negotiationneeded");
-            pc.sldGetBackStable = false;
+            pc.makingAnswer = false;
 
             _signaling.SendAnswer(connectionId, pc.peer.LocalDescription);
         }

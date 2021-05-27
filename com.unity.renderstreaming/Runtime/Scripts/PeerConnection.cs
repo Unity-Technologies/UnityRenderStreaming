@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
         public bool waitingAnswer;
         public bool ignoreOffer;
         public bool srdAnswerPending;
-        public bool sldGetBackStable;
+        public bool makingAnswer;
 
         public PeerConnection(RTCPeerConnection peer, bool polite)
         {
