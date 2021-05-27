@@ -517,7 +517,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [Ignore("not stable")]
         [UnityTest, Timeout(10000)]
         public IEnumerator SendOfferThrowExceptionPrivateMode()
         {
@@ -563,11 +562,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(() => target1.SendOffer(connectionId), Throws.TypeOf<InvalidOperationException>());
 
             target1.SendAnswer(connectionId);
-
             yield return new WaitUntil(() => isGotAnswer2);
             Assert.That(isGotAnswer2, Is.True);
 
-            Assert.That(target1.IsStable(connectionId), Is.True);
+            // If target1 processes resent　Offer from target2, target1 is not stable.
             Assert.That(target2.IsStable(connectionId), Is.True);
 
             target1.DeleteConnection(connectionId);
@@ -586,7 +584,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [UnityTest, Timeout(10000)]
-        [Ignore("not stable")]
         public IEnumerator SwapTransceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -628,6 +625,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.AddTrack(connectionId, TrackKind.Audio);
 
             yield return new WaitUntil(() => isGotOffer1 || isGotOffer2);
+            // check each target invoke onGotOffer
+            yield return new WaitForSeconds(0.1f);
 
             // ignore offer because impolite peer
             Assert.That(isGotOffer1, Is.False, $"{nameof(isGotOffer1)} is not False.");
