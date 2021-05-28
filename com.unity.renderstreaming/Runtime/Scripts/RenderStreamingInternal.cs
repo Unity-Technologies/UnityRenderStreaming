@@ -299,7 +299,6 @@ namespace Unity.RenderStreaming
                         $"{pc} sendoffer needs in stable state, current state is {pc.peer.SignalingState}");
                 }
 
-                Debug.Log($"re-sent offer sdp:{pc.peer.LocalDescription.sdp}");
                 _signaling.SendOffer(connectionId, pc.peer.LocalDescription);
                 return;
             }
@@ -409,8 +408,7 @@ namespace Unity.RenderStreaming
 
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
         {
-            Debug.Log($"{pc} SLD due to negotiationneeded");
-            // wait other setLocalDescription process
+            // waiting other setLocalDescription process
             yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
@@ -441,7 +439,7 @@ namespace Unity.RenderStreaming
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
             {
-                Debug.Log($"connectionId:{e.connectionId}, peerConnection not exist");
+                Debug.LogError($"connectionId:{e.connectionId}, peerConnection not exist");
                 return;
             }
 
@@ -454,13 +452,12 @@ namespace Unity.RenderStreaming
             description.type = RTCSdpType.Answer;
             description.sdp = sdp;
 
-            // wait other setLocalDescription process
+            // waiting other setLocalDescription process
             yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
 
             pc.waitingAnswer = false;
             pc.srdAnswerPending = true;
 
-            Debug.Log($"{pc} SRD {description.type} SignalingState {pc.peer.SignalingState}");
             var opRemoteDesc = pc.peer.SetRemoteDescription(ref description);
             yield return opRemoteDesc;
 
@@ -474,7 +471,6 @@ namespace Unity.RenderStreaming
             Assert.AreEqual(pc.peer.RemoteDescription.type, RTCSdpType.Answer, $"{pc} Answer was set");
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable, $"{pc} answered");
             pc.srdAnswerPending = false;
-            Debug.Log($"{pc} is negotiated in connectionId:{connectionId}");
 
             onGotAnswer?.Invoke(connectionId, sdp);
         }
@@ -520,15 +516,14 @@ namespace Unity.RenderStreaming
             pc.ignoreOffer = description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || !isStable);
             if (pc.ignoreOffer || pc.makingAnswer)
             {
-                Debug.Log($"{pc} glare - ignoreOffer {nameof(pc.peer.SignalingState)}:{pc.peer.SignalingState}, {nameof(pc.srdAnswerPending)}:{pc.srdAnswerPending}, {nameof(pc.makingOffer)}:{pc.makingOffer}, {nameof(pc.makingAnswer)}:{pc.makingAnswer}");
+                Debug.LogWarning($"{pc} glare - ignoreOffer {nameof(pc.peer.SignalingState)}:{pc.peer.SignalingState}");
                 yield break;
             }
 
-            // waiting ither setRemoteDescription process
+            // waiting other setRemoteDescription process
             yield return new WaitWhile(() => pc.srdAnswerPending);
             pc.waitingAnswer = false;
 
-            Debug.Log($"{pc} SRD {description.type} SignalingState {pc.peer.SignalingState}");
             var opRemoteDesc = pc.peer.SetRemoteDescription(ref description);
             yield return opRemoteDesc;
 
@@ -546,7 +541,6 @@ namespace Unity.RenderStreaming
 
         IEnumerator SendAnswerCoroutine(string connectionId, PeerConnection pc)
         {
-            Debug.Log($"{pc} SLD to get back to stable");
             pc.makingAnswer = true;
 
             var opLocalDesc = pc.peer.SetLocalDescription();
