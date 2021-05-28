@@ -23,6 +23,7 @@ brew install gettext
 
 # render template
 envsubst ' \
+  $BOKKEN_DEVICE_IP \
   $WEBAPP_DIR \
   $WEBAPP_NAME \
   $SCRIPTING_BACKEND \
