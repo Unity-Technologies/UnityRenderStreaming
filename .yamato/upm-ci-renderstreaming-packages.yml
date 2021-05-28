@@ -233,7 +233,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}_{{ gfx_type.name }}
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 
 {% else %} # platform.name == "macos" and param.platform != "standalone"
