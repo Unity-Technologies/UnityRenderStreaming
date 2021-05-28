@@ -208,7 +208,7 @@ namespace Unity.RenderStreaming
             if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
                 return false;
 
-            if (peer.makingOffer || peer.srdAnswerPending || peer.waitingAnswer)
+            if (peer.makingOffer || peer.waitingAnswer)
             {
                 return false;
             }
