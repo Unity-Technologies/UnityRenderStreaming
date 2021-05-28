@@ -30,6 +30,11 @@ namespace Unity.RenderStreaming.Samples
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
         }
 
+        void OnDestroy()
+        {
+            InputSystem.DisableDevice(Gyroscope.current);
+        }
+
         void Start()
         {
             if (renderStreaming.runOnAwake)
