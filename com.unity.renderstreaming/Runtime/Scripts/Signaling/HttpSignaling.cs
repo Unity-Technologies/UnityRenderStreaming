@@ -153,14 +153,7 @@ namespace Unity.RenderStreaming.Signaling
                     HTTPGetOffers();
                     HTTPGetAnswers();
                     HTTPGetCandidates();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Signaling: HTTP polling error : " + e);
-                }
 
-                try
-                {
                     Thread.Sleep((int)(m_timeout * 1000));
                 }
                 catch (ThreadAbortException e)
@@ -168,8 +161,11 @@ namespace Unity.RenderStreaming.Signaling
                     // Thread.Abort() called from main thread. Ignore
                     return;
                 }
+                catch (Exception e)
+                {
+                    Debug.LogError("Signaling: HTTP polling error : " + e);
+                }
             }
-
             HTTPDelete();
 
             Debug.Log("Signaling: HTTP polling thread ended");
