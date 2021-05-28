@@ -34,6 +34,10 @@ namespace Unity.RenderStreaming.Signaling
 
         public delegate void OnSignedInHandler(ISignaling sender);
 
+        public string Url { get { return string.Empty; } }
+
+        public float Interval { get { return m_timeout; } }
+
         public FurioosSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
         {
             m_timeout = timeout;

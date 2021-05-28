@@ -6,11 +6,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.ARFoundation;
 
-namespace Unity.RenderStreaming.Sample
+namespace Unity.RenderStreaming.Samples
 {
     internal class ARFoundationSample : MonoBehaviour
     {
 #pragma warning disable 0649
+        [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private Button startButton;
         [SerializeField] private Button stopButton;
         [SerializeField] private RawImage remoteVideoImage;
@@ -47,6 +48,13 @@ namespace Unity.RenderStreaming.Sample
 
         IEnumerator Start()
         {
+            if (!renderStreaming.runOnAwake)
+            {
+                renderStreaming.Run(
+                    hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
+                    signaling: RenderStreamingSettings.Signaling);
+            }
+
             if ((ARSession.state == ARSessionState.None ) ||
                 (ARSession.state == ARSessionState.CheckingAvailability))
             {
@@ -117,7 +125,7 @@ namespace Unity.RenderStreaming.Sample
         void CreateConnection()
         {
             _connectionId = System.Guid.NewGuid().ToString("N");
-            connection.CreateConnection(_connectionId, true);
+            connection.CreateConnection(_connectionId);
 
             startButton.gameObject.SetActive(false);
             stopButton.gameObject.SetActive(true);
