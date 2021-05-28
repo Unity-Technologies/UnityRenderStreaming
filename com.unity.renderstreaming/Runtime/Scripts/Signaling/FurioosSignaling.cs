@@ -62,8 +62,19 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            m_running = false;
-            m_webSocket?.Close();
+            if (m_running)
+            {
+                m_running = false;
+                if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
+                {
+                    m_signalingThread.Abort();
+                }
+                else
+                {
+                    m_signalingThread.Join(1000);
+                }
+                m_signalingThread = null;
+            }
         }
 
         //todo(kazuki):: remove warning CS0067
@@ -250,7 +261,7 @@ namespace Unity.RenderStreaming.Signaling
 
         private void WSClosed(object sender, CloseEventArgs e)
         {
-            Debug.LogError($"Signaling: WS connection closed, code: {e.Code}");
+            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
 
             m_wsCloseEvent.Set();
             m_webSocket = null;

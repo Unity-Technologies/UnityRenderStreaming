@@ -51,8 +51,14 @@ namespace Unity.RenderStreaming.Signaling
             if (m_running)
             {
                 m_running = false;
-                m_webSocket?.Close();
-                m_signalingThread.Join();
+                if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
+                {
+                    m_signalingThread.Abort();
+                }
+                else
+                {
+                    m_signalingThread.Join(1000);
+                }
                 m_signalingThread = null;
             }
         }
@@ -131,7 +137,15 @@ namespace Unity.RenderStreaming.Signaling
 
                 m_wsCloseEvent.WaitOne();
 
-                Thread.Sleep((int)(m_timeout * 1000));
+                try
+                {
+                    Thread.Sleep((int)(m_timeout * 1000));
+                }
+                catch (ThreadAbortException e)
+                {
+                    // Thread.Abort() called from main thread. Ignore
+                    return;
+                }
             }
 
             Debug.Log("Signaling: WS managing thread ended");

@@ -63,7 +63,14 @@ namespace Unity.RenderStreaming.Signaling
             if (m_running)
             {
                 m_running = false;
-                m_signalingThread?.Join();
+                if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
+                {
+                    m_signalingThread.Abort();
+                }
+                else
+                {
+                    m_signalingThread.Join(1000);
+                }
                 m_signalingThread = null;
             }
         }
@@ -127,7 +134,15 @@ namespace Unity.RenderStreaming.Signaling
             while (m_running && string.IsNullOrEmpty(m_sessionId))
             {
                 HTTPCreate();
-                Thread.Sleep((int)(m_timeout * 1000));
+                try
+                {
+                    Thread.Sleep((int)(m_timeout * 1000));
+                }
+                catch (ThreadAbortException e)
+                {
+                    // Thread.Abort() called from main thread. Ignore
+                    return;
+                }
             }
 
             while (m_running)
@@ -138,15 +153,19 @@ namespace Unity.RenderStreaming.Signaling
                     HTTPGetOffers();
                     HTTPGetAnswers();
                     HTTPGetCandidates();
+
+                    Thread.Sleep((int)(m_timeout * 1000));
+                }
+                catch (ThreadAbortException e)
+                {
+                    // Thread.Abort() called from main thread. Ignore
+                    return;
                 }
                 catch (Exception e)
                 {
                     Debug.LogError("Signaling: HTTP polling error : " + e);
                 }
-
-                Thread.Sleep((int)(m_timeout * 1000));
             }
-
             HTTPDelete();
 
             Debug.Log("Signaling: HTTP polling thread ended");
@@ -167,6 +186,10 @@ namespace Unity.RenderStreaming.Signaling
                     Debug.LogError($"Signaling: {response.ResponseUri} HTTP request failed ({response.StatusCode})");
                     response.Close();
                 }
+            }
+            catch (ThreadAbortException e)
+            {
+                // Thread.Abort() called from main thread. Ignore
             }
             catch (Exception e)
             {
