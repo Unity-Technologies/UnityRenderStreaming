@@ -50,7 +50,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 },
                 encoderType = EncoderType.Software,
                 startCoroutine = test.component.StartCoroutine,
-                resentOfferInterval = 0.1f,
+                resentOfferInterval = 1.0f,
             };
         }
 
