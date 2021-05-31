@@ -439,7 +439,7 @@ namespace Unity.RenderStreaming
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(e.connectionId, out var pc))
             {
-                Debug.LogError($"connectionId:{e.connectionId}, peerConnection not exist");
+                Debug.LogWarning($"connectionId:{e.connectionId}, peerConnection not exist");
                 return;
             }
 
