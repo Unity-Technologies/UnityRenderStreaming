@@ -325,7 +325,7 @@ namespace Unity.RenderStreaming
                     _signaling.SendOffer(pair.Key, pair.Value.peer.LocalDescription);
                 }
 
-                yield return new WaitForSecondsRealtime((int)(_resendInterval * 1000));
+                yield return new WaitForSeconds(_resendInterval);
             }
         }
 
@@ -444,7 +444,6 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            pc.waitingAnswer = false;
             _startCoroutine(GotAnswerCoroutine(e.connectionId, pc, e.sdp));
         }
 
@@ -456,6 +455,7 @@ namespace Unity.RenderStreaming
 
             yield return new WaitWhile(() => pc.makingOffer);
 
+            pc.waitingAnswer = false;
             pc.srdAnswerPending = true;
 
             Debug.Log($"{pc} SRD {description.type} SignalingState {pc.peer.SignalingState}");
@@ -502,7 +502,6 @@ namespace Unity.RenderStreaming
                 pc = CreatePeerConnection(connectionId, e.polite);
             }
 
-            pc.waitingAnswer = false;
             _startCoroutine(GotOfferCoroutine(connectionId, pc, e.sdp));
         }
 
@@ -524,6 +523,7 @@ namespace Unity.RenderStreaming
             }
 
             yield return new WaitWhile(() => pc.makingOffer);
+            pc.waitingAnswer = false;
 
             Debug.Log($"{pc} SRD {description.type} SignalingState {pc.peer.SignalingState}");
             var opRemoteDesc = pc.peer.SetRemoteDescription(ref description);

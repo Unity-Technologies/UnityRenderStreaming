@@ -10,15 +10,6 @@ const clients: Map<WebSocket, Set<string>> = new Map<WebSocket, Set<string>>();
 // [{connectionId:[sessionId1, sessionId2]}]
 const connectionPair: Map<string, [WebSocket, WebSocket]> = new Map<string, [WebSocket, WebSocket]>();
 
-// [{connectionId:Offer}]
-const offers: Map<string, Offer> = new Map<string, Offer>();
-
-// [{connectionId:Answer}]
-const answers: Map<string, Answer> = new Map<string, Answer>();
-
-// [{sessionId:[{connectionId:Candidate},...]}]
-const candidates: Map<WebSocket, Map<string, Candidate[]>> = new Map<WebSocket, Map<string, Candidate[]>>();
-
 function getOrCreateConnectionIds(settion: WebSocket): Set<string> {
   let connectionIds = null;
   if (!clients.has(settion)) {
@@ -47,13 +38,17 @@ export default class WSSignaling {
 
         const connectionIds = clients.get(ws);
         connectionIds.forEach(connectionId => {
+          const pair = connectionPair.get(connectionId);
+          if (pair) {
+            const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+            if (otherSessionWs) {
+              otherSessionWs.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
+            }
+          }
           connectionPair.delete(connectionId);
-          offers.delete(connectionId);
-          answers.delete(connectionId);
         });
 
         clients.delete(ws);
-        candidates.delete(ws);
       }
 
       ws.onmessage = (event: MessageEvent) => {
@@ -137,7 +132,6 @@ export default class WSSignaling {
   private onOffer(ws: WebSocket, message: any) {
     const connectionId = message.connectionId as string;
     let newOffer = new Offer(message.sdp, Date.now(), false);
-    offers.set(connectionId, newOffer);
 
     if (this.isPrivate) {
       const pair = connectionPair.get(connectionId);
@@ -165,7 +159,6 @@ export default class WSSignaling {
     const connectionIds = getOrCreateConnectionIds(ws);
     connectionIds.add(connectionId);
     const newAnswer = new Answer(message.sdp, Date.now());
-    answers.set(connectionId, newAnswer);
 
     let otherSessionWs = null;
 
@@ -176,14 +169,6 @@ export default class WSSignaling {
       const pair = connectionPair.get(connectionId);
       otherSessionWs = pair[0];
       connectionPair.set(connectionId, [otherSessionWs, ws]);
-    }
-
-    const mapCandidates = candidates.get(otherSessionWs);
-    if (mapCandidates) {
-      const arrayCandidates = mapCandidates.get(connectionId);
-      for (const candidate of arrayCandidates) {
-        candidate.datetime = Date.now();
-      }
     }
 
     if (this.isPrivate) {
@@ -201,17 +186,7 @@ export default class WSSignaling {
 
   private onCandidate(ws: WebSocket, message: any) {
     const connectionId = message.connectionId;
-
-    if (!candidates.has(ws)) {
-      candidates.set(ws, new Map<string, Candidate[]>());
-    }
-    const map = candidates.get(ws);
-    if (!map.has(connectionId)) {
-      map.set(connectionId, []);
-    }
-    const arr = map.get(connectionId);
     const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
-    arr.push(candidate);
 
     if (this.isPrivate) {
       const pair = connectionPair.get(connectionId);

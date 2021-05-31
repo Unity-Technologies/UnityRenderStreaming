@@ -4,9 +4,13 @@ import { getServerConfig } from "../../js/config.js";
 const localVideo = document.getElementById('local_video');
 const remoteVideo = document.getElementById('remote_video');
 const textForConnectionId = document.getElementById('text_for_connection_id');
+textForConnectionId.value = getRandom();
 
 let sendVideo = new SendVideo();
+sendVideo.ondisconnect = () => hangUp();
+
 let useWebSocket;
+let connectionId;
 
 let startButton = document.getElementById('startVideoButton');
 startButton.addEventListener('click', startVideo);
@@ -14,6 +18,10 @@ let setupButton = document.getElementById('setUpButton');
 setupButton.addEventListener('click', setUp);
 let hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
+
+window.addEventListener('beforeunload', async (e) => {
+  await sendVideo.stop();
+}, true);
 
 setupConfig();
 
@@ -40,13 +48,21 @@ async function startVideo() {
 async function setUp() {
   setupButton.disabled = true;
   hangUpButton.disabled = false;
-  await sendVideo.setupConnection(remoteVideo, textForConnectionId.value, useWebSocket);
+  connectionId = textForConnectionId.value;
+  await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket);
 }
 
 function hangUp() {
   hangUpButton.disabled = true;
   setupButton.disabled = false;
-  sendVideo.hangUp();
-  remoteVideo.pause();
-  remoteVideo.srcObject = null;
+  sendVideo.hangUp(connectionId);
+  textForConnectionId.value = getRandom();
+  connectionId = null;
+}
+
+function getRandom() {
+  const max = 99999;
+  const length = String(max).length;
+  const number = Math.floor(Math.random() * max);
+  return (Array(length).join('0') + number).slice(-length);
 }
