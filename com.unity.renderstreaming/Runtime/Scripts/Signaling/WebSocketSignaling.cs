@@ -135,10 +135,10 @@ namespace Unity.RenderStreaming.Signaling
             {
                 WSCreate();
 
-                m_wsCloseEvent.WaitOne();
-
                 try
                 {
+                    m_wsCloseEvent.WaitOne();
+
                     Thread.Sleep((int)(m_timeout * 1000));
                 }
                 catch (ThreadAbortException e)
