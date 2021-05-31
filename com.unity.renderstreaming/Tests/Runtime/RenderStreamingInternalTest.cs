@@ -39,6 +39,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.Destroy(test.gameObject);
         }
 
+        // workaround: More time for SetDescription process
+        const float ResendOfferInterval = 1.0f;
+
         private RenderStreamingDependencies CreateDependencies()
         {
             return new RenderStreamingDependencies
@@ -50,7 +53,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 },
                 encoderType = EncoderType.Software,
                 startCoroutine = test.component.StartCoroutine,
-                resentOfferInterval = 1.0f,
+                resentOfferInterval = ResendOfferInterval,
             };
         }
 
@@ -693,9 +696,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.SendAnswer(connectionId);
             yield return new WaitUntil(() => isGotAnswer1);
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(ResendOfferInterval * 2);
             var currentCount = countGotOffer2;
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(ResendOfferInterval * 2);
             Assert.That(countGotOffer2, Is.EqualTo(currentCount), $"{nameof(currentCount)} is not Equal {nameof(countGotOffer2)}");
 
             target1.DeleteConnection(connectionId);
