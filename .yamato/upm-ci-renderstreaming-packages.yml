@@ -177,10 +177,67 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
-
 {% endfor %}
-{% else -%}
+
+{% else %}
 {% for param in platform.test_params %}
+
+{% if param.platform == "standalone" %} # platform.name == "macos" and param.platform == "standalone"
+
+build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Build {{ package.packagename }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: Unity::VM::osx
+    image: package-ci/mac:latest
+    flavor: m1.mac
+  commands:
+    - |
+      find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
+    - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - unity-downloader-cli -c Editor -c {{ param.additional_component_arg }} -u {{ editor.version }} --fast -w
+    - curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-standalone/utr --output utr
+    - chmod +x ./utr
+    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only
+  artifacts:
+    players:
+      paths:
+        - "build/players/**"
+    logs:
+      paths:
+        - "build/logs/**"
+  dependencies:
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#pack_{{ package.name }}
+
+test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  variables:
+      TEMPLATE_FILE: BuildScripts~/template/remote.sh.template
+      PACKAGE_DIR: UnityRenderStreaming
+      PLAYER_LOAD_PATH: build/players
+      TEST_RESULT_DIR: upm-ci~/test-results/
+      WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
+      WEBAPP_NAME: {{ platform.packed_webapp_name }}
+      TEST_TARGET: {{ platform.name }}
+      TEST_PLATFORM: {{ param.platform }}
+      SCRIPTING_BACKEND: {{ param.backend }}  
+      EDITOR_VERSION: {{ editor.version }}
+      EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
+  commands:
+    - BuildScripts~/test_package_mac.sh
+  artifacts:
+    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+      paths:
+        - "upm-ci~/test-results/**"
+  dependencies:
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+
+{% else %} # platform.name == "macos" and param.platform != "standalone"
+
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
@@ -203,12 +260,14 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results: 
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+
+{% endif %}
 
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:

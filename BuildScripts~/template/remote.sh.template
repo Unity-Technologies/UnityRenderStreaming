@@ -13,17 +13,22 @@ platform=Editor
 architecture=x64
 suite=playmode
 
-if [ ${TEST_PLATFORM} = "standalone" ]; then
-  if [ ${TEST_TARGET} = "ios" ]; then
+if [ ${TEST_PLATFORM} = "standalone" ]
+then
+  if [ ${TEST_TARGET} = "ios" ]
+  then
     additional_component_arg="-c editor -c iOS"
     architecture=arm64
     platform=iOS
-  elif [ ${TEST_TARGET} = "iossimulator" ]; then
+  elif [ ${TEST_TARGET} = "iossimulator" ]
+  then
     additional_component_arg="-c editor -c iOS"
     platform=iOS
-  elif [ ${TEST_TARGET} = "macos" ]; then
+  elif [ ${TEST_TARGET} = "macos" ]
+  then
     platform=StandaloneOSX
-    if [ ${SCRIPTING_BACKEND} = "il2cpp" ]; then
+    if [ ${SCRIPTING_BACKEND} = "il2cpp" ]
+    then
       additional_component_arg="-c editor -c StandaloneSupport-IL2CPP"
     else
       additional_component_arg="-c editor -c StandaloneSupport-Mono"
@@ -31,7 +36,8 @@ if [ ${TEST_PLATFORM} = "standalone" ]; then
   fi
 fi
 
-if [ ${TEST_PLATFORM} = "editmode" ]; then
+if [ ${TEST_PLATFORM} = "editmode" ]
+then
   suite=editor
 fi
 
@@ -46,26 +52,38 @@ curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-stand
   --output utr
 chmod +x ./utr
 
-# download unity editor
-unity-downloader-cli          \
-  -u ${EDITOR_VERSION}        \
-  ${additional_component_arg} \
-  --wait                      \
-  --published
-
 export WEBAPP_PATH=${HOME}/${WEBAPP_DIR}/${WEBAPP_NAME}
 
-# run utr
-./utr                                                       \
-  --suite=${suite}                                          \
-  --platform=${platform}                                    \
-  --scripting-backend=${SCRIPTING_BACKEND}                  \
-  --testproject=${HOME}/${TEST_PROJECT_DIR}                 \
-  --editor-location=${HOME}/.Editor                         \
-  --artifacts_path=${ARTIFACT_DIR}                          \
-  --architecture=${architecture}                            \
-  ${EXTRA_UTR_ARG}
-result=$?
+if [ ${TEST_PLATFORM} = "standalone" ]
+then
+  # run utr
+  ./utr \
+    --suite=${suite} \
+    --platform=${platform} \
+    --player-load-path=${PLAYER_LOAD_PATH} \
+    --artifacts_path=${ARTIFACT_DIR} \
+    --player-connection-ip=${BOKKEN_DEVICE_IP}
+  result=$?
+else
+  # download unity editor
+  unity-downloader-cli \
+    -u ${EDITOR_VERSION} \
+    ${additional_component_arg} \
+    --wait \
+    --published
+
+  # run utr
+  ./utr \
+    --suite=${suite} \
+    --platform=${platform} \
+    --scripting-backend=${SCRIPTING_BACKEND} \
+    --testproject=${HOME}/${TEST_PROJECT_DIR} \
+    --editor-location=${HOME}/.Editor \
+    --artifacts_path=${ARTIFACT_DIR} \
+    --architecture=${architecture} \
+    ${EXTRA_UTR_ARG}
+  result=$?
+fi
 
 # return exit-code
 exit $result
