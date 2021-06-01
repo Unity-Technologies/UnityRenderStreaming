@@ -130,7 +130,7 @@ export class SendVideo {
   async stop() {
     if (this.signaling) {
       await this.signaling.stop();
-      this.signaling = null;  
+      this.signaling = null;
     }
   }
 }

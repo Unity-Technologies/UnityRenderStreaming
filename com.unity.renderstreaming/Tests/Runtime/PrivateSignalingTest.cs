@@ -518,13 +518,17 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling1.OnOffer += (s, e) => { offerRaised1 = true; };
             signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
-            yield return new WaitUntil(() => offerRaised2);
+            // check each signaling invoke onOffer
+            yield return new WaitForSeconds(signaling1.Interval * 5);
             Assert.That(offerRaised1, Is.False, () => "Receive own offer on private mode");
+            Assert.That(offerRaised2, Is.True);
 
             signaling1.OnAnswer += (s, e) => { answerRaised1 = true; };
             signaling2.OnAnswer += (s, e) => { answerRaised2 = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
-            yield return new WaitUntil(() => answerRaised1);
+            // check each signaling invoke onAnswer
+            yield return new WaitForSeconds(signaling2.Interval * 5);
+            Assert.That(answerRaised1, Is.True);
             Assert.That(answerRaised2, Is.False, () => "Receive own answer on private mode");
 
             signaling2.OnIceCandidate += (s, e) => { candidateRaised1 = true; };

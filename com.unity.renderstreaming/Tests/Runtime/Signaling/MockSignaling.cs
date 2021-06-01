@@ -162,7 +162,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 }
 
                 data.polite = true;
-                foreach (var signaling in list)
+                foreach (var signaling in list.Where(x => x != owner))
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
                 }
@@ -178,7 +178,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                     return;
                 }
 
-                foreach (var signaling in list)
+                foreach (var signaling in list.Where(x => x != owner))
                 {
                     signaling.OnAnswer?.Invoke(signaling, data);
                 }
@@ -217,7 +217,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public string Url { get { return string.Empty; } }
 
-        public float Interval { get { return 0; } }
+        public float Interval { get { return 0.1f; } }
 
         static MockSignaling()
         {
