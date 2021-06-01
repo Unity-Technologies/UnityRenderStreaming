@@ -627,9 +627,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.AddTrack(connectionId, TrackKind.Audio);
             target2.AddTrack(connectionId, TrackKind.Audio);
 
-            yield return new WaitUntil(() => isGotOffer1 || isGotOffer2);
             // check each target invoke onGotOffer
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(ResendOfferInterval * 5);
 
             // ignore offer because impolite peer
             Assert.That(isGotOffer1, Is.False, $"{nameof(isGotOffer1)} is not False.");

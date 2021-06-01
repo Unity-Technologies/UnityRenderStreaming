@@ -513,7 +513,7 @@ namespace Unity.RenderStreaming
             var isStable =
                 pc.peer.SignalingState == RTCSignalingState.Stable ||
                 (pc.peer.SignalingState == RTCSignalingState.HaveLocalOffer && pc.srdAnswerPending);
-            pc.ignoreOffer = description.type == RTCSdpType.Offer && !pc.polite && (pc.makingOffer || !isStable);
+            pc.ignoreOffer = !pc.polite && (pc.makingOffer || !isStable);
             if (pc.ignoreOffer || pc.makingAnswer)
             {
                 Debug.LogWarning($"{pc} glare - ignoreOffer {nameof(pc.peer.SignalingState)}:{pc.peer.SignalingState}");
