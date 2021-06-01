@@ -217,7 +217,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public string Url { get { return string.Empty; } }
 
-        public float Interval { get { return 0; } }
+        public float Interval { get { return 0.1f; } }
 
         static MockSignaling()
         {
