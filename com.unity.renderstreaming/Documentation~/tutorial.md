@@ -71,6 +71,16 @@ You can see logs on the commandline like below.
 
 ![Launch web server](images/launch_webserver_public_mode_on_windows.png)
 
+If you use it on macOS or Linux, please run the command below to give the execute permission.
+
+```
+# for Linux
+chmod a+x ./webserver
+
+# for macOS
+chmod a+x ./webserver_mac
+```
+
 ## Install samples
 
 You can import Samples from the bottom of the `com.unity.renderstreaming` package in the PackageManager Window.
