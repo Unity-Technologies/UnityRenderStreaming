@@ -183,7 +183,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
-            target.AddTrack(connectionId, track);
+            var transceiver = target.AddTrack(connectionId, track);
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target.RemoveTrack(connectionId, track);
 
             bool isDeletedConnection = false;
@@ -259,12 +260,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
-            target.AddTrack(connectionId, track);
+            var transceiver1 = target.AddTrack(connectionId, track);
+            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
-            target.AddTrack(connectionId, track2);
+            var transceiver2 = target.AddTrack(connectionId, track2);
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
@@ -363,6 +366,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after adding a Track
             var transceiver = target2.AddTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
             Assert.That(isAddReceiver1, Is.True);
@@ -433,7 +437,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target2.AddTrack(connectionId, track);
-            transceiver2.Direction = RTCRtpTransceiverDirection.SendOnly;
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
