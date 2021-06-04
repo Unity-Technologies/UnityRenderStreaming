@@ -80,6 +80,14 @@ export default class Peer extends EventTarget {
     this.pc = null;
   }
 
+  addTrack(connectionId, track) {
+    if (this.connectionId != connectionId) {
+      return;
+    }
+
+    this.pc.addTrack(track);
+  }
+
   addTransceiver(connectionId, trackOrKind, init) {
     if (this.connectionId != connectionId) {
       return;
