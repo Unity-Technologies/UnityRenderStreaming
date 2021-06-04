@@ -518,6 +518,7 @@ namespace Unity.RenderStreaming
                 public string name;
                 public string layout;
                 public int deviceId;
+                public string variants;
                 public InputDeviceDescription description;
             }
 
@@ -530,6 +531,7 @@ namespace Unity.RenderStreaming
                     name = device.name,
                     layout = device.layout,
                     deviceId = device.deviceId,
+                    variants = device.variants,
                     description = device.description
                 };
 
@@ -568,7 +570,7 @@ namespace Unity.RenderStreaming
                 try
                 {
                     ////REVIEW: this gives remote devices names the same way that local devices receive them; should we make remote status visible in the name?
-                    device = Receiver.m_LocalManager.AddDevice(data.layout);
+                    device = Receiver.m_LocalManager.AddDevice(data.layout, data.name, data.variants);
 
                     // todo(kazuki)::Avoid to use reflection
                     // device.m_ParticipantId = msg.participantId;

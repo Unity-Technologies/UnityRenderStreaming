@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InputSystemChannelReceiver : InputChannelReceiverBase
     {
         /// <summary>
@@ -13,7 +16,7 @@ namespace Unity.RenderStreaming
 
         private Receiver receiver;
         private InputRemoting receiverInput;
-        private IDisposable receiverDisposer;
+        private IDisposable subscriberDisposer;
 
         /// <summary>
         ///
@@ -23,26 +26,33 @@ namespace Unity.RenderStreaming
         {
             if (channel == null)
             {
-                receiverInput?.StopSending();
-                receiverDisposer?.Dispose();
-                receiver?.RemoveAllDevices();
-                receiver = null;
+                Dispose();
             }
             else
             {
                 receiver = new Receiver(channel);
                 receiver.onDeviceChange += onDeviceChange;
                 receiverInput = new InputRemoting(receiver);
-                receiverDisposer = receiverInput.Subscribe(receiverInput);
+                subscriberDisposer = receiverInput.Subscribe(receiverInput);
                 receiverInput.StartSending();
             }
             base.SetChannel(connectionId, channel);
         }
 
-        public void OnDestroy()
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            Dispose();
+        }
+
+        protected void Dispose()
         {
             receiverInput?.StopSending();
-            receiverDisposer?.Dispose();
+            subscriberDisposer?.Dispose();
+            receiver?.Dispose();
+            receiver = null;
         }
     }
 }

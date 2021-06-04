@@ -12,7 +12,7 @@ using UnityEngine.InputSystem.Utilities;
 // namespace Unity.WebRTC.InputSystem
 namespace Unity.RenderStreaming
 {
-    class Sender : InputManager
+    class Sender : InputManager, IDisposable
     {
         public override event Action<InputEventPtr, InputDevice> onEvent;
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
@@ -26,6 +26,11 @@ namespace Unity.RenderStreaming
         }
 
         ~Sender()
+        {
+            this.Dispose();
+        }
+
+        public void Dispose()
         {
             InputSystem.onEvent -= OnEvent;
             InputSystem.onDeviceChange -= OnDeviceChange;

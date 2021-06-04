@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
-    class Receiver : InputManager
+    class Receiver : InputManager, IDisposable
     {
         public override event Action<InputRemoting.Message> onMessage;
         public new event Action<InputDevice, InputDeviceChange> onDeviceChange;
@@ -34,6 +34,11 @@ namespace Unity.RenderStreaming
         }
 
         ~Receiver()
+        {
+            this.Dispose();
+        }
+
+        public void Dispose()
         {
             RemoveAllDevices();
         }
