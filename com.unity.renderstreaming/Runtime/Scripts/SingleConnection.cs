@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
-                AddTrack(data.connectionId, receiver.Kind);
+                AddTransceiver(data.connectionId, receiver.Kind);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
