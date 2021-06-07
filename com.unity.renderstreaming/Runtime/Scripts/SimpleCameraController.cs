@@ -140,6 +140,10 @@ namespace Unity.RenderStreaming
         private Touchscreen m_screen;
         private Gyroscope m_gyroscpe;
         private TrackedDevice m_tracker;
+
+        private List<Touchscreen> listScreen = new List<Touchscreen>();
+
+
 #if URS_USE_AR_SUBSYSTEMS
         private HandheldARInputDevice m_handheld;
 #endif
@@ -178,7 +182,11 @@ namespace Unity.RenderStreaming
                     m_keyboard = add ? keyboard : null;
                     return;
                 case Touchscreen screen:
-                    m_screen = add ? screen : null;
+                    //m_screen = add ? screen : null;
+                    if(add)
+                        listScreen.Add(screen);
+                    else
+                        listScreen.Remove(screen);
                     return;
                 case Gamepad pad:
                     m_gamepad = add ? pad : null;
@@ -270,14 +278,18 @@ namespace Unity.RenderStreaming
                 direction += new Vector3(axis.x, 0, axis.y);
             }
 
-            var touches = m_screen.GetTouches();
-            //Translation
-            if (touches?.Count() == 2)
+            foreach (var screen in listScreen)
             {
-                var activeTouches = touches.ToArray();
-                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
+                var touches = screen.GetTouches();
+                //Translation
+                if (touches?.Count() == 2)
+                {
+                    var activeTouches = touches.ToArray();
+                    direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
+                }
             }
-            else if (IsMouseDragged(m_mouse,true))
+
+            if (IsMouseDragged(m_mouse,true))
             {
                 direction = GetTranslationFromInput(m_mouse.delta.ReadValue());
             }
@@ -308,19 +320,22 @@ namespace Unity.RenderStreaming
                 return;
             }
 #endif
-            var touches = m_screen.GetTouches();
-
             // Rotation
             if (IsMouseDragged(m_mouse,false))
             {
                 UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
             }
-            else if (touches.Count() == 1)
+
+            foreach (var screen in listScreen)
             {
-                var activeTouches = touches.ToArray();
-                UpdateTargetCameraStateFromInput(activeTouches[0].delta);
+                var touches = screen.GetTouches();
+                if (touches.Count() == 1)
+                {
+                    var activeTouches = touches.ToArray();
+                    UpdateTargetCameraStateFromInput(activeTouches[0].delta);
+                }
             }
-            else if(m_gyroscpe != null && m_gyroscpe.enabled)
+            if (m_gyroscpe != null && m_gyroscpe.enabled)
             {
                 var v = m_gyroscpe.angularVelocity.ReadValue();
                 m_TargetCameraState.yaw += v.x;
