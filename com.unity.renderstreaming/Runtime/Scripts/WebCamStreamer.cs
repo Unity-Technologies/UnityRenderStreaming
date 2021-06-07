@@ -30,9 +30,13 @@ namespace Unity.RenderStreaming
         public override Texture SendTexture => m_webCamTexture;
         public IEnumerable<string> WebCamNameList => WebCamTexture.devices.Select(x => x.name);
 
-        public void SetDeviceIndex(int index)
+        public void OnDestroy()
         {
-            deviceIndex = index;
+            if (m_webCamTexture != null)
+            {
+                m_webCamTexture.Stop();
+                m_webCamTexture = null;
+            }
         }
 
         protected virtual void OnEnable()
@@ -79,6 +83,11 @@ namespace Unity.RenderStreaming
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
             m_startVideoCorutine = null;
+        }
+
+        public void SetDeviceIndex(int index)
+        {
+            deviceIndex = index;
         }
 
         protected override MediaStreamTrack CreateTrack()
