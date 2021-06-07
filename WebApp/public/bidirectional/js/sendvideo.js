@@ -10,10 +10,10 @@ export class SendVideo {
     this.ondisconnect = function () { };
   }
 
-  async startVideo(localVideo) {
+  async startVideo(localVideo, videoSource) {
     try {
       this.localVideo = localVideo;
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      this.localStream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: videoSource ? { exact: videoSource } : undefined } });
       this.localVideo.srcObject = this.localStream;
       await localVideo.play();
     } catch (err) {
