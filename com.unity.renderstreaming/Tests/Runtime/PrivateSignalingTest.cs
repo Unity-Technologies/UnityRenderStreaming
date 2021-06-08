@@ -288,12 +288,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => !string.IsNullOrEmpty(connectionId1));
 
             signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
-
-            if (m_SignalingType != typeof(MockSignaling))
-            {
-                LogAssert.Expect(LogType.Error, new Regex("."));
-            }
-
             signaling1.SendOffer(connectionId, m_DescOffer);
             yield return new WaitForSeconds(3);
             // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
