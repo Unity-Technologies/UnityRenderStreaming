@@ -189,7 +189,7 @@ router.delete('/connection', (req: Request, res: Response) => {
   offers.get(sessionId).delete(connectionId);
   answers.get(sessionId).delete(connectionId);
   candidates.get(sessionId).delete(connectionId);
-  res.sendStatus(200);
+  res.json({ connectionId: connectionId });
 });
 
 router.post('/offer', (req: Request, res: Response) => {

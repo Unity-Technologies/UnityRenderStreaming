@@ -39,7 +39,7 @@ export class SendVideo {
 
     this.signaling.addEventListener('disconnect', async (e) => {
       const data = e.detail;
-      if (_this.pc.connectionId == data.connectionId) {
+      if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
         _this.ondisconnect();
       }
     });
@@ -57,13 +57,17 @@ export class SendVideo {
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-      await _this.pc.onGotDescription(answer.connectionId, desc);
+      if (_this.pc != null) {
+        await _this.pc.onGotDescription(answer.connectionId, desc);
+      }
     });
 
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
       const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-      await _this.pc.onGotCandidate(candidate.connectionId, iceCandidate);
+      if (_this.pc != null) {
+        await _this.pc.onGotCandidate(candidate.connectionId, iceCandidate);
+      }
     });
 
     await this.signaling.start();

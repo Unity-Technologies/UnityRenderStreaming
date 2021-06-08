@@ -5,6 +5,7 @@ export default class Signaling extends EventTarget {
   constructor() {
     super();
     this.interval = 3000;
+    this.running = false;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
 
@@ -25,6 +26,7 @@ export default class Signaling extends EventTarget {
     const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
     const session = await createResponse.json();
     this.sessionId = session.sessionId;
+    this.running = true;
 
     this.loopGetOffer();
     this.loopGetAnswer();
@@ -34,7 +36,7 @@ export default class Signaling extends EventTarget {
   async loopGetOffer() {
     let lastTimeRequest = Date.now() - 30000;
 
-    while (true) {
+    while (this.running) {
       const res = await this.getOffer(lastTimeRequest);
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
@@ -54,7 +56,7 @@ export default class Signaling extends EventTarget {
     // receive answer message from 30secs ago
     let lastTimeRequest = Date.now() - 30000;
 
-    while (true) {
+    while (this.running) {
       const res = await this.getAnswer(lastTimeRequest);
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
@@ -74,7 +76,7 @@ export default class Signaling extends EventTarget {
     // receive answer message from 30secs ago
     let lastTimeRequest = Date.now() - 30000;
 
-    while (true) {
+    while (this.running) {
       const res = await this.getCandidate(lastTimeRequest);
       lastTimeRequest = Date.parse(res.headers.get('Date'));
 
@@ -93,6 +95,7 @@ export default class Signaling extends EventTarget {
   }
 
   async stop() {
+    this.running = false;
     await fetch(this.url(''), { method: 'DELETE', headers: this.headers() });
     this.sessionId = null;
   }

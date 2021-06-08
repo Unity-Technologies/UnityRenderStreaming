@@ -68,7 +68,7 @@ export default class Peer extends EventTarget {
   async loopResendOffer() {
 
     while (true) {
-      if(this.waitingAnswer) {
+      if(this.pc != null && this.waitingAnswer) {
         this.dispatchEvent(new CustomEvent('sendoffer', { detail: { connectionId: this.connectionId, sdp: this.pc.localDescription.sdp } }));
       }
       await this.sleep(this.interval);
