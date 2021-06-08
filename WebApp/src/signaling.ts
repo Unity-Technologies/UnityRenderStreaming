@@ -180,7 +180,9 @@ router.delete('/connection', (req: Request, res: Response) => {
     const pair = connectionPair.get(connectionId);
     const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
     if (otherSessionId) {
-      clients.get(otherSessionId).delete(connectionId);
+      if (clients.has(otherSessionId)) {
+        clients.get(otherSessionId).delete(connectionId);
+      }
     }
   }
   connectionPair.delete(connectionId);
