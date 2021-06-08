@@ -326,8 +326,7 @@ test_{{ package.name }}_{{ editor.version }}:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
 {% endfor %}
-    # todo(kazuki):workaround
-    # - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
 {% for target in test_targets_android %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
 {% endfor %}
