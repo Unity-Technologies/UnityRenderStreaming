@@ -134,13 +134,13 @@ export default class WSSignaling {
     let newOffer = new Offer(message.sdp, Date.now(), false);
 
     if (this.isPrivate) {
-      const pair = connectionPair.get(connectionId);
-      const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-      if (otherSessionWs) {
-        newOffer.polite = true;
-        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
-      } else {
-        ws.send(JSON.stringify({ type: "error", message: `${connectionId}: This connection id is not ready other session.` }));
+      if (connectionPair.has(connectionId)) {
+        const pair = connectionPair.get(connectionId);
+        const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+        if (otherSessionWs) {
+          newOffer.polite = true;
+          otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "offer", data: newOffer }));
+        }
       }
       return;
     }
@@ -160,28 +160,18 @@ export default class WSSignaling {
     connectionIds.add(connectionId);
     const newAnswer = new Answer(message.sdp, Date.now());
 
-    let otherSessionWs = null;
-
-    if (this.isPrivate) {
-      const pair = connectionPair.get(connectionId);
-      otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-    } else {
-      const pair = connectionPair.get(connectionId);
-      otherSessionWs = pair[0];
-      connectionPair.set(connectionId, [otherSessionWs, ws]);
-    }
-
-    if (this.isPrivate) {
-      otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
+    if (!connectionPair.has(connectionId)) {
       return;
     }
 
-    clients.forEach((_v, k) => {
-      if (k == ws) {
-        return;
-      }
-      k.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
-    });
+    const pair = connectionPair.get(connectionId);
+    const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+
+    if (!this.isPrivate) {
+      connectionPair.set(connectionId, [otherSessionWs, ws]);
+    }
+
+    otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
   }
 
   private onCandidate(ws: WebSocket, message: any) {
@@ -189,10 +179,12 @@ export default class WSSignaling {
     const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
 
     if (this.isPrivate) {
-      const pair = connectionPair.get(connectionId);
-      const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
-      if (otherSessionWs) {
-        otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+      if (connectionPair.has(connectionId)) {
+        const pair = connectionPair.get(connectionId);
+        const otherSessionWs = pair[0] == ws ? pair[1] : pair[0];
+        if (otherSessionWs) {
+          otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "candidate", data: candidate }));
+        }
       }
       return;
     }

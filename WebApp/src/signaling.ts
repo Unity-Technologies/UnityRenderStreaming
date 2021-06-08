@@ -197,20 +197,21 @@ router.post('/offer', (req: Request, res: Response) => {
   let polite = false;
 
   if (res.app.get('isPrivate')) {
-    const pair = connectionPair.get(connectionId);
-    keySessionId = pair[0] == sessionId ? pair[1] : pair[0];
-    if (keySessionId == null) {
-      const err = new Error(`${connectionId}: This connection id is not ready other session.`);
-      console.log(err);
-      res.status(400).send({ error: err });
-      return;
+    if (connectionPair.has(connectionId)) {
+      const pair = connectionPair.get(connectionId);
+      keySessionId = pair[0] == sessionId ? pair[1] : pair[0];
+      if (keySessionId != null) {
+        polite = true;
+        const map = offers.get(keySessionId);
+        map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite))
+      }
     }
-    polite = true;
-  } else {
-    connectionPair.set(connectionId, [sessionId, null]);
-    keySessionId = sessionId;
+    res.sendStatus(200);
+    return;
   }
 
+  connectionPair.set(connectionId, [sessionId, null]);
+  keySessionId = sessionId;
   const map = offers.get(keySessionId);
   map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite))
 
@@ -222,6 +223,11 @@ router.post('/answer', (req: Request, res: Response) => {
   const { connectionId } = req.body;
   const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
+
+  if (!connectionPair.has(connectionId)) {
+    res.sendStatus(200);
+    return;
+  }
 
   // add connectionPair
   const pair = connectionPair.get(connectionId);
