@@ -25,6 +25,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Device index of web camera")]
         private int deviceIndex = 0;
 
+        [SerializeField, Tooltip("Framerate of web camera")]
+        private int framerate = 30;
+
         private WebCamTexture m_webCamTexture;
         private Coroutine m_startVideoCorutine;
         public override Texture SendTexture => m_webCamTexture;
@@ -78,7 +81,7 @@ namespace Unity.RenderStreaming
             }
 
             WebCamDevice userCameraDevice = WebCamTexture.devices[deviceIndex];
-            m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y);
+            m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y, framerate);
             OnUpdateWebCamTexture?.Invoke(m_webCamTexture);
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
