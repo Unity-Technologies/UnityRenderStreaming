@@ -80,9 +80,14 @@ namespace Unity.RenderStreaming
             return m_handler.AddTrack(connectionId, track);
         }
 
-        public virtual RTCRtpTransceiver AddTrack(string connectionId, TrackKind kind)
+        public virtual RTCRtpTransceiver AddTransceiver(string connectionId, MediaStreamTrack track, RTCRtpTransceiverDirection direction = RTCRtpTransceiverDirection.SendRecv)
         {
-            return m_handler.AddTrack(connectionId, kind);
+            return m_handler.AddTransceiver(connectionId, track, direction);
+        }
+
+        public virtual RTCRtpTransceiver AddTransceiver(string connectionId, TrackKind kind, RTCRtpTransceiverDirection direction = RTCRtpTransceiverDirection.SendRecv)
+        {
+            return m_handler.AddTransceiver(connectionId, kind, direction);
         }
 
         /// <summary>
@@ -174,7 +179,7 @@ namespace Unity.RenderStreaming
         TrackKind Kind { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="track"></param>
         void SetReceiver(string connectionId, RTCRtpReceiver sender);

@@ -421,8 +421,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection1);
             Assert.That(isCreatedConnection1, Is.True);
 
-            var transceiver = target1.AddTrack(connectionId, TrackKind.Video);
-            transceiver.Direction = RTCRtpTransceiverDirection.RecvOnly;
+            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
 
             // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
@@ -628,8 +627,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
 
-            target1.AddTrack(connectionId, TrackKind.Audio);
-            target2.AddTrack(connectionId, TrackKind.Audio);
+            target1.AddTransceiver(connectionId, TrackKind.Audio, RTCRtpTransceiverDirection.SendRecv);
+            target2.AddTransceiver(connectionId, TrackKind.Audio, RTCRtpTransceiverDirection.SendRecv);
 
             // check each target invoke onGotOffer
             yield return new WaitForSeconds(ResendOfferInterval * 5);

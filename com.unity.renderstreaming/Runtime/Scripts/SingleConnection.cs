@@ -58,12 +58,12 @@ namespace Unity.RenderStreaming
 
             foreach (var source in streams.OfType<IStreamSource>())
             {
-                var transceiver = AddTrack(connectionId, source.Track);
+                var transceiver = AddTransceiver(connectionId, source.Track, RTCRtpTransceiverDirection.SendOnly);
                 source.SetSender(connectionId, transceiver.Sender);
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
-                AddTrack(data.connectionId, receiver.Kind);
+                AddTransceiver(data.connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {

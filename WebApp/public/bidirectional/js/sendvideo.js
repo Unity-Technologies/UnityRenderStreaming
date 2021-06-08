@@ -110,7 +110,8 @@ export class SendVideo {
 
   addTracks(connectionId) {
     const _this = this;
-    _this.localVideo.srcObject.getTracks().forEach(track => _this.pc.addTransceiver(connectionId, track));
+    const track = _this.localVideo.srcObject.getTracks().find(x => x.kind == 'video');
+    _this.pc.addTrack(connectionId, track);
   }
 
   async hangUp(connectionId) {
