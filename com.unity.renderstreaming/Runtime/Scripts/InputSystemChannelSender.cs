@@ -3,11 +3,14 @@ using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InputSystemChannelSender : DataChannelBase
     {
         private Sender sender;
         private InputRemoting senderInput;
-        private IDisposable senderDisposer;
+        private IDisposable suscriberDisposer;
 
         /// <summary>
         ///
@@ -17,23 +20,17 @@ namespace Unity.RenderStreaming
         {
             if (channel == null)
             {
-                senderInput?.StopSending();
-                senderDisposer?.Dispose();
-                sender = null;
-                return;
+                Dispose();
             }
-            sender = new Sender();
-            senderInput = new InputRemoting(sender);
-            senderDisposer = senderInput.Subscribe(new Observer(channel));
-            channel.OnOpen += OnOpen;
-            channel.OnClose += OnClose;
+            else
+            {
+                sender = new Sender();
+                senderInput = new InputRemoting(sender);
+                suscriberDisposer = senderInput.Subscribe(new Observer(channel));
+                channel.OnOpen += OnOpen;
+                channel.OnClose += OnClose;
+            }
             base.SetChannel(connectionId, channel);
-        }
-
-        public void OnDestroy()
-        {
-            senderInput?.StopSending();
-            senderDisposer?.Dispose();
         }
 
         void OnOpen()
@@ -45,5 +42,17 @@ namespace Unity.RenderStreaming
             senderInput.StopSending();
         }
 
+        protected virtual void OnDestroy()
+        {
+            this.Dispose();
+        }
+
+        protected void Dispose()
+        {
+            senderInput?.StopSending();
+            suscriberDisposer?.Dispose();
+            sender?.Dispose();
+            sender = null;
+        }
     }
 }
