@@ -134,14 +134,17 @@ namespace Unity.RenderStreaming
         readonly CameraState m_TargetCameraState = new CameraState();
         readonly CameraState m_InterpolatingCameraState = new CameraState();
         readonly CameraState m_InitialCameraState = new CameraState();
-        private Gamepad m_gamepad;
-        private Keyboard m_keyboard;
-        private Mouse m_mouse;
-        private Touchscreen m_screen;
-        private Gyroscope m_gyroscpe;
-        private TrackedDevice m_tracker;
+
+        private List<Gamepad> listGamepad = new List<Gamepad>();
+        private List<Keyboard> listKeyboard = new List<Keyboard>();
+        private List<Mouse> listMouse = new List<Mouse>();
+        private List<Gyroscope> listGyroscpe = new List<Gyroscope>();
+        private List<TrackedDevice> listTracker = new List<TrackedDevice>();
+        private List<Touchscreen> listScreen = new List<Touchscreen>();
+
+
 #if URS_USE_AR_SUBSYSTEMS
-        private HandheldARInputDevice m_handheld;
+        private List<HandheldARInputDevice> listHandheld = new List<HandheldARInputDevice>();
 #endif
         void Awake()
         {
@@ -172,26 +175,47 @@ namespace Unity.RenderStreaming
             switch (device)
             {
                 case Mouse mouse:
-                    m_mouse = add ? mouse : null;
+                    if (add)
+                        listMouse.Add(mouse);
+                    else
+                        listMouse.Remove(mouse);
                     return;
                 case Keyboard keyboard:
-                    m_keyboard = add ? keyboard : null;
+                    if (add)
+                        listKeyboard.Add(keyboard);
+                    else
+                        listKeyboard.Remove(keyboard);
                     return;
                 case Touchscreen screen:
-                    m_screen = add ? screen : null;
+                    if(add)
+                        listScreen.Add(screen);
+                    else
+                        listScreen.Remove(screen);
                     return;
                 case Gamepad pad:
-                    m_gamepad = add ? pad : null;
+                    if(add)
+                        listGamepad.Add(pad);
+                    else
+                        listGamepad.Remove(pad);
                     return;
                 case Gyroscope gyroscope:
-                    m_gyroscpe = add ? gyroscope : null;
+                    if (add)
+                        listGyroscpe.Add(gyroscope);
+                    else
+                        listGyroscpe.Remove(gyroscope);
                     return;
                 case TrackedDevice tracker:
-                    m_tracker = add ? tracker : null;
+                    if (add)
+                        listTracker.Add(tracker);
+                    else
+                        listTracker.Remove(tracker);
                     return;
 #if URS_USE_AR_SUBSYSTEMS
                 case HandheldARInputDevice handheld:
-                    m_handheld = handheld;
+                    if (add)
+                        listHandheld.Add(handheld);
+                    else
+                        listHandheld.Remove(handheld);
                     return;
 #endif
             }
@@ -235,110 +259,145 @@ namespace Unity.RenderStreaming
             Vector3 direction = new Vector3();
 
             // keyboard control
-            if (m_keyboard != null)
+            foreach (var keyboard in listKeyboard)
             {
-                if (m_keyboard.wKey.isPressed)
+                if (keyboard.wKey.isPressed)
                 {
                     direction += Vector3.forward;
                 }
-                if (m_keyboard.sKey.isPressed)
+                if (keyboard.sKey.isPressed)
                 {
                     direction += Vector3.back;
                 }
-                if (m_keyboard.aKey.isPressed)
+                if (keyboard.aKey.isPressed)
                 {
                     direction += Vector3.left;
                 }
-                if (m_keyboard.dKey.isPressed)
+                if (keyboard.dKey.isPressed)
                 {
                     direction += Vector3.right;
                 }
-                if (m_keyboard.qKey.isPressed)
+                if (keyboard.qKey.isPressed)
                 {
                     direction += Vector3.down;
                 }
-                if (m_keyboard.eKey.isPressed)
+                if (keyboard.eKey.isPressed)
                 {
                     direction += Vector3.up;
+                }
+
+                // Speed up movement when shift key held
+                if (keyboard.leftShiftKey.isPressed)
+                {
+                    direction *= 10.0f;
                 }
             }
 
             // gamepad right stick control
-            if (m_gamepad?.rightStick != null)
+            foreach (var gamepad in listGamepad)
             {
-                var axis = m_gamepad.rightStick.ReadValue();
-                direction += new Vector3(axis.x, 0, axis.y);
+                if (gamepad?.rightStick != null)
+                {
+                    var axis = gamepad.rightStick.ReadValue();
+                    direction += new Vector3(axis.x, 0, axis.y);
+                }
             }
 
-            var touches = m_screen.GetTouches();
-            //Translation
-            if (touches?.Count() == 2)
+            // touch
+            foreach (var screen in listScreen)
             {
-                var activeTouches = touches.ToArray();
-                direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
+                var touches = screen.GetTouches();
+                //Translation
+                if (touches?.Count() == 2)
+                {
+                    var activeTouches = touches.ToArray();
+                    direction = GetTranslationFromInput((activeTouches[0].delta + activeTouches[1].delta) / 2f);
+                }
             }
-            else if (IsMouseDragged(m_mouse,true))
+
+            // mouse
+            foreach (var mouse in listMouse)
             {
-                direction = GetTranslationFromInput(m_mouse.delta.ReadValue());
+                if (IsMouseDragged(mouse, true))
+                {
+                    direction = GetTranslationFromInput(mouse.delta.ReadValue());
+                }
             }
             return direction;
         }
 
         void FixedUpdate()
         {
-            if (m_keyboard != null && m_keyboard.uKey.isPressed)
+            foreach (var keyboard in listKeyboard)
             {
-                ResetCamera();
-                return;
+                if (keyboard.uKey.isPressed)
+                {
+                    ResetCamera();
+                    return;
+                }
             }
-            if (m_tracker != null && m_tracker.enabled)
+
+            foreach (var tracker in listTracker)
             {
-                m_TargetCameraState.UpdateTransform(transform);
-                transform.position += m_tracker.devicePosition.ReadValue();
-                transform.eulerAngles += m_tracker.deviceRotation.ReadValue().eulerAngles;
-                return;
+                if (tracker != null && tracker.enabled)
+                {
+                    m_TargetCameraState.UpdateTransform(transform);
+                    transform.position += tracker.devicePosition.ReadValue();
+                    transform.eulerAngles += tracker.deviceRotation.ReadValue().eulerAngles;
+                    return;
+                }
             }
 
 #if URS_USE_AR_SUBSYSTEMS
-            if (m_handheld != null && m_handheld.enabled)
+            foreach(var handheld in listHandheld)
             {
-                m_TargetCameraState.UpdateTransform(transform);
-                transform.position += m_handheld.devicePosition.ReadValue();
-                transform.eulerAngles += m_handheld.deviceRotation.ReadValue().eulerAngles;
-                return;
+                if (handheld != null && handheld.enabled)
+                {
+                    m_TargetCameraState.UpdateTransform(transform);
+                    transform.position += handheld.devicePosition.ReadValue();
+                    transform.eulerAngles += handheld.deviceRotation.ReadValue().eulerAngles;
+                    return;
+                }
             }
 #endif
-            var touches = m_screen.GetTouches();
-
             // Rotation
-            if (IsMouseDragged(m_mouse,false))
+            foreach (var mouse in listMouse)
             {
-                UpdateTargetCameraStateFromInput(m_mouse.delta.ReadValue());
+                if (IsMouseDragged(mouse, false))
+                {
+                    UpdateTargetCameraStateFromInput(mouse.delta.ReadValue());
+                }
             }
-            else if (touches.Count() == 1)
+
+            foreach (var screen in listScreen)
             {
-                var activeTouches = touches.ToArray();
-                UpdateTargetCameraStateFromInput(activeTouches[0].delta);
+                var touches = screen.GetTouches();
+                if (touches.Count() == 1)
+                {
+                    var activeTouches = touches.ToArray();
+                    UpdateTargetCameraStateFromInput(activeTouches[0].delta);
+                }
             }
-            else if(m_gyroscpe != null && m_gyroscpe.enabled)
+
+            foreach (var gyroscope in listGyroscpe)
             {
-                var v = m_gyroscpe.angularVelocity.ReadValue();
-                m_TargetCameraState.yaw += v.x;
-                m_TargetCameraState.pitch -= v.y;
-                m_TargetCameraState.roll += v.z;
+                if (gyroscope != null && gyroscope.enabled)
+                {
+                    var v = gyroscope.angularVelocity.ReadValue();
+                    m_TargetCameraState.yaw += v.x;
+                    m_TargetCameraState.pitch -= v.y;
+                    m_TargetCameraState.roll += v.z;
+                }
             }
 
             // Rotation from joystick
-            if(m_gamepad?.leftStick != null)
-                UpdateTargetCameraStateFromInput(m_gamepad.leftStick.ReadValue());
+            foreach (var gamepad in listGamepad)
+            {
+                if (gamepad.leftStick != null)
+                    UpdateTargetCameraStateFromInput(gamepad.leftStick.ReadValue());
+            }
             // Translation
             var translation = GetInputTranslationDirection() * Time.deltaTime;
-
-            // Speed up movement when shift key held
-            if (m_keyboard != null && m_keyboard.leftShiftKey.isPressed)
-            {
-                translation *= 10.0f;
-            }
 
             translation *= Mathf.Pow(2.0f, boost);
 
