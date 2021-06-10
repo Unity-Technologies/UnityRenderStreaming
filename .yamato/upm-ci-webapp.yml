@@ -57,11 +57,7 @@ test_{{ platform.name }}:
 trigger_webapp_test_{{ project.name }}:
   name : Trigger all WebApp test {{ project.packagename }}
   triggers:
-    branches:
-      only:
-      - "/.*/"
-      except:
-      - "master"
+    expression: pull_request.target eq "develop"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
