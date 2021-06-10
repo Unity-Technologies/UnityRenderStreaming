@@ -717,5 +717,69 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.Dispose();
             target2.Dispose();
         }
+
+        [UnityTest, Timeout(10000)]
+        public IEnumerator ReNegotiationAfterReceivingFirstOffer()
+        {
+            MockSignaling.Reset(true);
+
+            var dependencies1 = CreateDependencies();
+            var dependencies2 = CreateDependencies();
+            var target1 = new RenderStreamingInternal(ref dependencies1);
+            var target2 = new RenderStreamingInternal(ref dependencies2);
+
+            bool isStarted1 = false;
+            bool isStarted2 = false;
+            target1.onStart += () => { isStarted1 = true; };
+            target2.onStart += () => { isStarted2 = true; };
+            yield return new WaitUntil(() => isStarted1 && isStarted2);
+
+            bool isCreatedConnection1 = false;
+            bool isCreatedConnection2 = false;
+            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
+
+            var connectionId = "12345";
+
+            // target1 has impolite peer (request first)
+            target1.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection1);
+
+            // target2 has polite peer (request second)
+            target2.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection2);
+
+            bool isGotAnswer1 = false;
+            bool isGotAnswer2 = false;
+            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
+            target2.onGotOffer += (_, sdp) => { target2.SendAnswer(connectionId); };
+            target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
+            target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
+
+            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.SendOnly);
+            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
+            target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.SendOnly);
+            target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
+
+            yield return new WaitUntil(() => isGotAnswer1);
+            Assert.That(isGotAnswer1, Is.True, $"{nameof(isGotAnswer1)} is not True.");
+
+            yield return new WaitUntil(() => isGotAnswer2);
+            Assert.That(isGotAnswer2, Is.True, $"{nameof(isGotAnswer2)} is not True.");
+
+            target1.DeleteConnection(connectionId);
+            target2.DeleteConnection(connectionId);
+
+            bool isDeletedConnection1 = false;
+            bool isDeletedConnection2 = false;
+            target1.onDeletedConnection += _ => { isDeletedConnection1 = true; };
+            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
+            Assert.That(isDeletedConnection1, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+
+            target1.Dispose();
+            target2.Dispose();
+        }
     }
 }
