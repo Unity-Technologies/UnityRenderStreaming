@@ -390,6 +390,6 @@ publish_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
-    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_package_test_{{ package.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
 {% endfor %}
 {% endfor %}
