@@ -396,13 +396,18 @@ namespace Unity.RenderStreaming
             {
                 onAddReceiver?.Invoke(connectionId, trackEvent.Receiver);
             };
-            pc.OnNegotiationNeeded = () => OnNegotiationNeeded(connectionId);
+            pc.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded(connectionId));
             return peer;
         }
 
         void DeletePeerConnection(string connectionId)
         {
-            _mapConnectionIdAndPeer[connectionId].Dispose();
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
+            {
+                return;
+            }
+
+            peer.Dispose();
             _mapConnectionIdAndPeer.Remove(connectionId);
         }
 
@@ -424,15 +429,16 @@ namespace Unity.RenderStreaming
             }
         }
 
-        void OnNegotiationNeeded(string connectionId)
+        IEnumerator OnNegotiationNeeded(string connectionId)
         {
+            yield return new WaitWhile(() => !IsStable(connectionId));
             SendOffer(connectionId);
         }
 
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
         {
             // waiting other setLocalDescription process
-            yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
+            yield return new WaitWhile(() => !IsStable(connectionId));
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
                 $"{pc} negotiationneeded always fires in stable state");
