@@ -396,7 +396,7 @@ namespace Unity.RenderStreaming
             {
                 onAddReceiver?.Invoke(connectionId, trackEvent.Receiver);
             };
-            pc.OnNegotiationNeeded = () => OnNegotiationNeeded(connectionId);
+            pc.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded(connectionId));
             return peer;
         }
 
@@ -429,9 +429,10 @@ namespace Unity.RenderStreaming
             }
         }
 
-        void OnNegotiationNeeded(string connectionId)
+        IEnumerator OnNegotiationNeeded(string connectionId)
         {
-            _startCoroutine(SendOfferCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
+            yield return new WaitWhile(() => !IsStable(connectionId));
+            SendOffer(connectionId);
         }
 
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
