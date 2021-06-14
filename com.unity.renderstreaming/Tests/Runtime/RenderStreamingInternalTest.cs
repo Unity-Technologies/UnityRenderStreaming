@@ -159,7 +159,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -237,7 +237,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
         public IEnumerator AddTrackMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -318,7 +318,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -391,7 +391,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
@@ -701,7 +701,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitForSeconds(ResendOfferInterval * 2);
             var currentCount = countGotOffer2;
             yield return new WaitForSeconds(ResendOfferInterval * 2);
-            Assert.That(countGotOffer2, Is.EqualTo(currentCount), $"{nameof(currentCount)} is not Equal {nameof(countGotOffer2)}");
+            Assert.That(countGotOffer2, Is.EqualTo(currentCount),
+                $"{nameof(currentCount)} is not Equal {nameof(countGotOffer2)}");
 
             target1.DeleteConnection(connectionId);
             target2.DeleteConnection(connectionId);
@@ -749,10 +750,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
 
+            bool isGotOffer1 = false;
+            bool isGotOffer2 = false;
             bool isGotAnswer1 = false;
             bool isGotAnswer2 = false;
-            target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
-            target2.onGotOffer += (_, sdp) => { target2.SendAnswer(connectionId); };
+            target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
+            target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
@@ -761,8 +764,16 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.SendOnly);
             target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
 
+            yield return new WaitUntil(() => isGotOffer2);
+            Assert.That(isGotOffer2, Is.True, $"{nameof(isGotOffer2)} is not True.");
+            target2.SendAnswer(connectionId);
+
             yield return new WaitUntil(() => isGotAnswer1);
             Assert.That(isGotAnswer1, Is.True, $"{nameof(isGotAnswer1)} is not True.");
+
+            yield return new WaitUntil(() => isGotOffer1);
+            Assert.That(isGotOffer1, Is.True, $"{nameof(isGotOffer1)} is not True.");
+            target1.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isGotAnswer2);
             Assert.That(isGotAnswer2, Is.True, $"{nameof(isGotAnswer2)} is not True.");
