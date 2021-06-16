@@ -52,7 +52,7 @@ namespace Unity.RenderStreaming
                 m_camera.targetTexture = rt;
             }
 
-            return new VideoStreamTrack(m_camera.name, rt);
+            return new VideoStreamTrack(rt);
         }
     }
 }

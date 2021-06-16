@@ -147,7 +147,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var peer2 = new RTCPeerConnection(ref config);
             peer1.OnIceCandidate = candidate => { candidate_ = candidate; };
 
-            AudioStreamTrack track = new AudioStreamTrack("audio");
+            AudioStreamTrack track = new AudioStreamTrack();
             peer1.AddTrack(track);
 
             var op1 = peer1.CreateOffer();
