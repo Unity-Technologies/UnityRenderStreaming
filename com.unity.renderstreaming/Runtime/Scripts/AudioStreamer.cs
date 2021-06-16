@@ -16,10 +16,5 @@ namespace Unity.RenderStreaming
             track = new AudioStreamTrack(audioSource);
             return track;
         }
-
-        void OnAudioFilterRead(float[] data, int channels)
-        {
-            track.OnAudioRead(data, channels);
-        }
     }
 }

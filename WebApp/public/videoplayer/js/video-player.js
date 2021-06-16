@@ -144,6 +144,7 @@ export class VideoPlayer {
     this.pc.addTransceiver('video', { direction: 'recvonly' });
     this.pc.addTransceiver('video', { direction: 'recvonly' });
     this.pc.addTransceiver('audio', { direction: 'recvonly' });
+    this.pc.addTransceiver('audio', { direction: 'recvonly' });
 
     // create offer
     const offer = await this.pc.createOffer();
