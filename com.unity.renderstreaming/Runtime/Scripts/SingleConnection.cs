@@ -102,8 +102,6 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-            if (data.receiver.Track.Kind != TrackKind.Video)
-                return;
             var receiver = streams.OfType<IStreamReceiver>().
                 FirstOrDefault(r => r.Track == null);
             receiver?.SetReceiver(connectionId, data.receiver);

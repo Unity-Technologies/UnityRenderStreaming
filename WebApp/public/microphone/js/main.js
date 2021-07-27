@@ -13,7 +13,7 @@ hangupButton.disabled = true;
 callButton.onclick = call;
 hangupButton.onclick = hangup;
 
-let pc;
+let pc = new RTCPeerConnection(cfg);
 let localStream;
 let signaling;
 
@@ -26,7 +26,7 @@ function uuid4() {
 
 function gotDevices(deviceInfos) {
   while (audioInputSelect.firstChild) {
-    select.removeChild(select.firstChild);
+    audioInputSelect.removeChild(audioInputSelect.firstChild);
   }
   for (let i = 0; i !== deviceInfos.length; ++i) {
     const deviceInfo = deviceInfos[i];
@@ -46,7 +46,7 @@ function gotStream(stream) {
     console.log(`Using Audio device: ${audioTracks[0].label}`);
   }
 
-  localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
@@ -61,8 +61,12 @@ navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 
 async function call() {
   callButton.disabled = true;
+  hangupButton.disabled = false;
+
   console.log('Starting call');
-  pc = new RTCPeerConnection(cfg);
+  if(pc == null) {
+    pc = new RTCPeerConnection(cfg);
+  }
 
   pc.onsignalingstatechange = function (e) {
     Logger.log('signalingState changed:', e);
@@ -77,6 +81,12 @@ async function call() {
   pc.onicegatheringstatechange = function (e) {
     Logger.log('iceGatheringState changed:', e);
   };
+  pc.onicecandidate = function (e) {
+    console.log("candidate");
+    if (e.candidate != null) {
+      signaling.sendCandidate(connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
+    }
+  };  
 
   const connectionId = uuid4();
 
@@ -92,13 +102,10 @@ async function call() {
 function hangup() {
   console.log('Ending call');
   localStream.getTracks().forEach(track => track.stop());
-  pc1.close();
-  pc2.close();
-  pc1 = null;
-  pc2 = null;
+  pc.close();
+  pc = null;
   hangupButton.disabled = true;
   callButton.disabled = false;
-  codecSelector.disabled = false;
 }
 
 function start() {
