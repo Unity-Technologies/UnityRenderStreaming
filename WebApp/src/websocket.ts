@@ -131,7 +131,7 @@ export default class WSSignaling {
 
   private onOffer(ws: WebSocket, message: any) {
     const connectionId = message.connectionId as string;
-    let newOffer = new Offer(message.sdp, Date.now(), false);
+    const newOffer = new Offer(message.sdp, Date.now(), false);
 
     if (this.isPrivate) {
       if (connectionPair.has(connectionId)) {
