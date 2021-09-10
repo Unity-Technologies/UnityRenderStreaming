@@ -152,8 +152,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             var peer2 = new RTCPeerConnection(ref config);
             peer1.OnIceCandidate = candidate => { candidate_ = candidate; };
 
-            MediaStream stream = WebRTC.Audio.CaptureStream();
-            peer1.AddTrack(stream.GetTracks().First());
+            AudioStreamTrack track = new AudioStreamTrack();
+            peer1.AddTrack(track);
 
             var op1 = peer1.CreateOffer();
             yield return op1;
@@ -174,7 +174,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => candidate_ != null);
             m_candidate = candidate_;
 
-            stream.Dispose();
+            track.Dispose();
             peer1.Close();
             peer2.Close();
 

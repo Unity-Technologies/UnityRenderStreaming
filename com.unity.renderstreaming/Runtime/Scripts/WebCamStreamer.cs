@@ -95,7 +95,7 @@ namespace Unity.RenderStreaming
 
         protected override MediaStreamTrack CreateTrack()
         {
-            return new VideoStreamTrack(gameObject.name, m_webCamTexture);
+            return new VideoStreamTrack(m_webCamTexture);
         }
     }
 }

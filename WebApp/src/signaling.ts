@@ -65,7 +65,7 @@ router.get('/offer', (req: Request, res: Response) => {
         arrayOffers = Array.from(offers.get(sessionId));
       }
     } else {
-      let otherSessionMap = Array.from(offers).filter(x => x[0] != sessionId);
+      const otherSessionMap = Array.from(offers).filter(x => x[0] != sessionId);
       arrayOffers = [].concat(...Array.from(otherSessionMap, x => Array.from(x[1], y => [y[0], y[1]])));
     }
   }

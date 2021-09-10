@@ -36,7 +36,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.8",
+      "version": "2.0.11",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -63,12 +63,12 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "2.4.0-exp.3",
+        "com.unity.webrtc": "2.4.0-exp.4",
         "com.unity.inputsystem": "1.0.2"
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.24",
+      "version": "1.1.27",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -88,7 +88,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.4.0-exp.3",
+      "version": "2.4.0-exp.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

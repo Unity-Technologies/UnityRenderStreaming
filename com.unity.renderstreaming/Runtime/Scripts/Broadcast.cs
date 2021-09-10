@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     public class Broadcast : SignalingHandlerBase,
-        IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler
+        IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler,
+        IAddReceiverHandler
     {
         [SerializeField]
         private List<Component> streams = new List<Component>();
@@ -50,6 +51,14 @@ namespace Unity.RenderStreaming
             {
                 channel.SetChannel(connectionId, null);
             }
+        }
+
+        public void OnAddReceiver(SignalingEventData data)
+        {
+            Debug.Log("OnAddReceiver");
+            var receiver = streams.OfType<IStreamReceiver>().
+                FirstOrDefault(r => r.Track == null);
+            receiver?.SetReceiver(data.connectionId, data.receiver);
         }
 
         public void OnOffer(SignalingEventData data)

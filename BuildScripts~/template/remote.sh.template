@@ -48,7 +48,7 @@ pip3 install unity-downloader-cli                                               
   --user
 
 # install utr
-curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-standalone/utr \
+curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr \
   --output utr
 chmod +x ./utr
 

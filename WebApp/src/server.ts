@@ -7,7 +7,7 @@ import signaling from './signaling';
 import { log, LogLevel } from './log';
 import Options from './class/options';
 
-export const createServer = (config :Options): express.Application => {
+export const createServer = (config: Options): express.Application => {
   const app: express.Application = express();
   app.set('isPrivate', config.mode == "private");
   // logging http access

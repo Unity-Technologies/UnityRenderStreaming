@@ -1,29 +1,20 @@
-using System.Linq;
+using System;
 using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    [RequireComponent(typeof(AudioListener))]
+    [RequireComponent(typeof(AudioSource))]
     public class AudioStreamer : AudioStreamBase
     {
-        private MediaStream m_audioStream;
+        public AudioSource audioSource;
 
-        void OnDisable()
-        {
-            WebRTC.Audio.Stop();
-        }
+        private AudioStreamTrack track;
 
         protected override MediaStreamTrack CreateTrack()
         {
-            m_audioStream = Unity.WebRTC.Audio.CaptureStream();
-            return m_audioStream.GetTracks().First();
-        }
-
-        private void OnAudioFilterRead(float[] data, int channels)
-        {
-            WebRTC.Audio.Update(data, channels);
+            track = new AudioStreamTrack(audioSource);
+            return track;
         }
     }
-
 }
