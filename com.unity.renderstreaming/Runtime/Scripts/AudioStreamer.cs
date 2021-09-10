@@ -8,10 +8,30 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamer : AudioStreamBase
     {
-        public AudioSource audioSource;
-        public int sampleRate = 48000;
+        [SerializeField]
+        private AudioSource audioSource;
 
         private AudioStreamTrack track;
+        int _sampleRate = 0;
+
+        public AudioSource AudioSource
+        {
+            set
+            {
+                audioSource = value;
+                _sampleRate = audioSource.clip.samples;
+            }
+            get
+            {
+                return audioSource;
+            }
+        }
+
+        protected virtual void Awake()
+        {
+            if(audioSource != null && audioSource.clip != null)
+                _sampleRate = audioSource.clip.samples;
+        }
 
         protected override MediaStreamTrack CreateTrack()
         {
@@ -19,14 +39,9 @@ namespace Unity.RenderStreaming
             return track;
         }
 
-        protected virtual void OnDestroy()
-        {
-            track?.Dispose();
-        }
-
         protected virtual void OnEnable()
         {
-            if(track != null)
+            if (track != null)
                 track.Enabled = true;
         }
 
@@ -38,7 +53,7 @@ namespace Unity.RenderStreaming
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
-            track?.SetData(data, channels, sampleRate);
+            track?.SetData(data, channels, _sampleRate);
         }
     }
 }
