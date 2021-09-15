@@ -55,7 +55,6 @@ namespace Unity.RenderStreaming
 
         public void OnAddReceiver(SignalingEventData data)
         {
-            Debug.Log("OnAddReceiver");
             var receiver = streams.OfType<IStreamReceiver>().
                 FirstOrDefault(r => r.Track == null);
             receiver?.SetReceiver(data.connectionId, data.receiver);
