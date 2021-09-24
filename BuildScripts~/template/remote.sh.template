@@ -52,6 +52,12 @@ curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-stand
   --output utr
 chmod +x ./utr
 
+if [ ${TEST_TARGET} = "macos" ] && [ ${architecture} = "arm64" ]
+then
+  # install rosetta 2
+  softwareupdate --install-rosetta --agree-to-license
+fi
+
 export WEBAPP_PATH=${HOME}/${WEBAPP_DIR}/${WEBAPP_NAME}
 
 if [ ${TEST_PLATFORM} = "standalone" ]
@@ -77,11 +83,11 @@ else
     --suite=${suite} \
     --platform=${platform} \
     --scripting-backend=${SCRIPTING_BACKEND} \
+    --extra-editor-arg="-${EXTRA_EDITOR_ARG}" \
     --testproject=${HOME}/${TEST_PROJECT_DIR} \
     --editor-location=${HOME}/.Editor \
     --artifacts_path=${ARTIFACT_DIR} \
-    --architecture=${architecture} \
-    ${EXTRA_UTR_ARG}
+    --architecture=${architecture}
   result=$?
 fi
 
