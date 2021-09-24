@@ -13,6 +13,7 @@ platforms:
     flavor: b1.large
     model: rtx2080
     packed_webapp_name: webserver.exe
+    packed_webapp_platform: win
     test_params:
 # todo(kazuki) : this comment is workaround for avoiding template test error on Yamato.
 # "PackageTestSuite.PackageValidationTests.PackageHasTests" unittest is failed 
@@ -31,6 +32,7 @@ platforms:
     flavor: m1.mac
     architecture: x64
     packed_webapp_name: webserver_mac
+    packed_webapp_platform: macos
     test_params:
       - backend: mono
         additional_component_arg: StandaloneSupport-Mono
@@ -50,6 +52,7 @@ platforms:
     flavor: m1.mac
     architecture: arm64
     packed_webapp_name: webserver_mac
+    packed_webapp_platform: macos
     test_params:
       - backend: mono
         additional_component_arg: StandaloneSupport-Mono
@@ -69,6 +72,7 @@ platforms:
     flavor: b1.large
     model: rtx2080
     packed_webapp_name: webserver
+    packed_webapp_platform: linux
     test_params:
       - backend: mono
         platform: editmode
