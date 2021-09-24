@@ -5,6 +5,7 @@ intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi
 editors:
   - version: 2019.4
   - version: 2020.3
+  - version: 2021.1
 platforms:
   - name: win
     type: Unity::VM::GPU
