@@ -191,7 +191,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% else %}
 {% for param in platform.test_params %}
 
-{% if param.platform == "standalone" %} # platform.name == "macos" and platform.name == "macos-m1" and param.platform == "standalone"
+{% if param.platform == "standalone" %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform == "standalone"
 
 build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Build {{ package.packagename }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -230,7 +230,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
-      TEST_TARGET: {{ platform.name }}
+      TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
       TEST_ARCHITECTURE : {{ platform.architecture }}
       SCRIPTING_BACKEND: {{ param.backend }}  
@@ -246,7 +246,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
-{% else %} # platform.name == "macos" and param.platform != "standalone"
+{% else %} # platform.name == "macos" or platform.name == "macos" and param.platform != "standalone"
 
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -261,9 +261,10 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
-      TEST_TARGET: {{ platform.name }}
+      TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
-      SCRIPTING_BACKEND: {{ param.backend }}  
+      TEST_ARCHITECTURE : {{ target.architecture }}
+      SCRIPTING_BACKEND: {{ param.backend }}
       EDITOR_VERSION: {{ editor.version }}
       EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
