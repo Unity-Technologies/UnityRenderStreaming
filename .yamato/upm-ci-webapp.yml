@@ -1,4 +1,4 @@
-platforms:
+webapp_platforms:
   - name: win
     type: Unity::VM
     image: package-ci/win10:stable
@@ -25,7 +25,7 @@ projects:
     packagename: com.unity.webapp.renderstreaming
 ---
 {% for project in projects %}
-{% for platform in platforms %}
+{% for platform in webapp_platforms %}
 pack_{{ platform.name }}:
   name : Pack {{ project.packagename }} on {{ platform.name }}
   agent:
@@ -40,7 +40,7 @@ pack_{{ platform.name }}:
         - "WebApp/bin~/**/*"
 {% endfor %}
 
-{% for platform in platforms %}
+{% for platform in webapp_platforms %}
 test_{{ platform.name }}:
   name : Test {{ project.packagename }} on {{ platform.name }}
   agent:
@@ -79,7 +79,7 @@ trigger_webapp_test_{{ project.name }}:
   triggers:
     expression: pull_request.target eq "develop"
   dependencies:
-    {% for platform in platforms %}
+    {% for platform in webapp_platforms %}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
     - .yamato/upm-ci-webapp.yml#test_client_{{ platform.name }}
     {% endfor %}
