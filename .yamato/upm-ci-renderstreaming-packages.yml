@@ -232,7 +232,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
       TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
-      TEST_ARCHITECTURE : {{ platform.architecture }}
+      TEST_ARCHITECTURE: {{ platform.architecture }}
       SCRIPTING_BACKEND: {{ param.backend }}  
       EDITOR_VERSION: {{ editor.version }}
       EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
@@ -263,7 +263,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
       TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
-      TEST_ARCHITECTURE : {{ target.architecture }}
+      TEST_ARCHITECTURE: {{ platform.architecture }}
       SCRIPTING_BACKEND: {{ param.backend }}
       EDITOR_VERSION: {{ editor.version }}
       EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
