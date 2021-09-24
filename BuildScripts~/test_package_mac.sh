@@ -32,6 +32,7 @@ envsubst ' \
   $TEST_PROJECT_DIR \
   $TEST_TARGET \
   $TEST_PLATFORM \
+  $TEST_ARCHITECTURE \
   $EDITOR_VERSION' \
   < ${TEMPLATE_FILE} \
   > ~/remote.sh

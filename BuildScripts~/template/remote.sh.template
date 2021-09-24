@@ -10,7 +10,7 @@ export ARTIFACT_DIR=${PWD}/test-results
 # SCRIPTING_BACKEND = `il2cpp` or `mono`
 additional_component_arg="-c editor"
 platform=Editor
-architecture=x64
+architecture=${TEST_ARCHITECTURE}
 suite=playmode
 
 if [ ${TEST_PLATFORM} = "standalone" ]
