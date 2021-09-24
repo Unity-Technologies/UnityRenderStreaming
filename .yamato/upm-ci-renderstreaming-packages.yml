@@ -152,7 +152,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
@@ -184,7 +184,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 {% endfor %}
 {% endfor %}
 
@@ -244,7 +244,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% else %} # platform.name == "macos" and param.platform != "standalone"
 
@@ -275,7 +275,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% endif %}
 
@@ -306,7 +306,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 {% endfor %}
 {% endfor %}
 {% endif -%}
