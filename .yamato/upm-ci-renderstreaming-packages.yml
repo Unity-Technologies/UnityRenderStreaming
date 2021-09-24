@@ -327,7 +327,16 @@ test_{{ package.name }}_{{ editor.version }}:
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
+# todo(kazuki) :
+# editor/playmode test are not conducted on m1 mac 
+# XCode command line tools has not installed on m1 mac device (Standalone test don't need to install them)
+{% if platform.name == "macos-m1" %}
+{% if param.platform == "standalone" %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+{% endif %}
+{% else %}
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+{% endif %}
 {% endfor %}
 {% endfor %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
