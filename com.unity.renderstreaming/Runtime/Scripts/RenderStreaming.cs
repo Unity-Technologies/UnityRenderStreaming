@@ -84,6 +84,7 @@ namespace Unity.RenderStreaming
         /// <param name="hardwareEncoder"></param>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
+        /// <remarks> To use this method, Need to depend WebRTC package </remarks>
         public void Run(
             RTCConfiguration conf,
             bool? hardwareEncoder = null,

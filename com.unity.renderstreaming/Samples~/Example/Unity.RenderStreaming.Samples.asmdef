@@ -27,11 +27,6 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
             "define": "URS_USE_HDRP_RUNTIME"
-        },
-        {
-            "name": "com.unity.webrtc",
-            "expression": "",
-            "define": "URS_USE_WEBRTC"
         }
     ],
     "noEngineReferences": false
