@@ -104,6 +104,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button buttonReceiver;
         [SerializeField] private Button buttonWebBrowserInput;
         [SerializeField] private Button buttonAR;
+        [SerializeField] private Button buttonMultiplay;
 
         void Start()
         {
@@ -126,6 +127,7 @@ namespace Unity.RenderStreaming.Samples
             buttonReceiver.onClick.AddListener(OnPressedReceiver);
             buttonWebBrowserInput.onClick.AddListener(OnPressedWebBrowserInput);
             buttonAR.onClick.AddListener(OnPressedAR);
+            buttonMultiplay.onClick.AddListener(OnPressedMultiplay);
 
 #if UNITY_EDITOR
             buttonGyro.interactable = false;
@@ -233,6 +235,11 @@ namespace Unity.RenderStreaming.Samples
 #else
             SceneManager.LoadScene("ARFoundation2.1", LoadSceneMode.Single);
 #endif
+        }
+
+        private void OnPressedMultiplay()
+        {
+            SceneManager.LoadScene("Multiplay", LoadSceneMode.Single);
         }
     }
 }
