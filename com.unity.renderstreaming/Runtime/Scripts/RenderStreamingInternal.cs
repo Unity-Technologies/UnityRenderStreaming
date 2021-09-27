@@ -245,8 +245,6 @@ namespace Unity.RenderStreaming
             _mapConnectionIdAndPeer[connectionId].peer.RemoveTrack(sender);
         }
 
-
-
         /// <summary>
         ///
         /// </summary>

@@ -90,9 +90,9 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="name"></param>
+        /// <param name="label"></param>
         /// <returns></returns>
-        RTCDataChannel CreateChannel(string connectionId, string name = null);
+        RTCDataChannel CreateChannel(string connectionId, string label = null);
 
         /// <summary>
         ///

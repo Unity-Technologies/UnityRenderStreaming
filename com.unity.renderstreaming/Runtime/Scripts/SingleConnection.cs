@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
@@ -34,19 +33,7 @@ namespace Unity.RenderStreaming
         {
             if (this.connectionId != connectionId)
                 return;
-
-            foreach (var source in streams.OfType<IStreamSender>())
-            {
-                source.SetSender(connectionId, null);
-            }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                receiver.SetReceiver(connectionId, null);
-            }
-            foreach (var channel in streams.OfType<IDataChannel>())
-            {
-                channel.SetChannel(connectionId, null);
-            }
+            Disconnect(connectionId);
             base.DeleteConnection(connectionId);
             this.connectionId = null;
         }
@@ -62,7 +49,7 @@ namespace Unity.RenderStreaming
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
-                AddTransceiver(data.connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
+                AddReceiver(data.connectionId, receiver);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
@@ -74,6 +61,12 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
+            Disconnect(connectionId);
+            connectionId = null;
+        }
+
+        private void Disconnect(string connectionId)
+        {
             foreach (var sender in streams.OfType<IStreamSender>())
             {
                 RemoveSender(connectionId, sender);
@@ -86,7 +79,6 @@ namespace Unity.RenderStreaming
             {
                 RemoveChannel(connectionId, channel);
             }
-            connectionId = null;
         }
 
         public void OnOffer(SignalingEventData data)
