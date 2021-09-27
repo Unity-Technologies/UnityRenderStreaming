@@ -65,7 +65,6 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        /// <param name="conf"></param>
         /// <param name="hardwareEncoder"></param>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
