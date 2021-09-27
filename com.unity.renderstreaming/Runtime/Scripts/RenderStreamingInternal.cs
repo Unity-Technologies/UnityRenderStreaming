@@ -221,7 +221,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track)
+        public RTCRtpTransceiver AddSenderTrack(string connectionId, MediaStreamTrack track)
         {
             var peer = _mapConnectionIdAndPeer[connectionId];
             RTCRtpSender sender = peer.peer.AddTrack(track);
@@ -233,6 +233,19 @@ namespace Unity.RenderStreaming
             transceiver.Direction = RTCRtpTransceiverDirection.SendOnly;
             return transceiver;
         }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="track"></param>
+        public void RemoveSenderTrack(string connectionId, MediaStreamTrack track)
+        {
+            var sender = GetSenders(connectionId).First(s => s.Track == track);
+            _mapConnectionIdAndPeer[connectionId].peer.RemoveTrack(sender);
+        }
+
+
 
         /// <summary>
         ///
@@ -266,22 +279,13 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="track"></param>
-        public void RemoveTrack(string connectionId, MediaStreamTrack track)
-        {
-            var sender = GetSenders(connectionId).First(s => s.Track == track);
-            _mapConnectionIdAndPeer[connectionId].peer.RemoveTrack(sender);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         public RTCDataChannel CreateChannel(string connectionId, string name)
         {
             RTCDataChannelInit conf = new RTCDataChannelInit();
+            if (string.IsNullOrEmpty(name))
+                name = Guid.NewGuid().ToString();
             return _mapConnectionIdAndPeer[connectionId].peer.CreateDataChannel(name, conf);
         }
 

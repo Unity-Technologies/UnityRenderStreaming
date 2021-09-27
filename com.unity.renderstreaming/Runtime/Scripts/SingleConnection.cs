@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming
             if (this.connectionId != connectionId)
                 return;
 
-            foreach (var source in streams.OfType<IStreamSource>())
+            foreach (var source in streams.OfType<IStreamSender>())
             {
                 source.SetSender(connectionId, null);
             }
@@ -56,10 +56,9 @@ namespace Unity.RenderStreaming
             if (data.connectionId != connectionId)
                 return;
 
-            foreach (var source in streams.OfType<IStreamSource>())
+            foreach (var sender in streams.OfType<IStreamSender>())
             {
-                var transceiver = AddTransceiver(connectionId, source.Track, RTCRtpTransceiverDirection.SendOnly);
-                source.SetSender(connectionId, transceiver.Sender);
+                AddSender(connectionId, sender);
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
@@ -67,8 +66,7 @@ namespace Unity.RenderStreaming
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
-                var _channel = CreateChannel(connectionId, channel.Label);
-                channel.SetChannel(connectionId, _channel);
+                AddChannel(connectionId, channel);
             }
         }
 
@@ -76,17 +74,17 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-            foreach (var source in streams.OfType<IStreamSource>())
+            foreach (var sender in streams.OfType<IStreamSender>())
             {
-                source.SetSender(connectionId, null);
+                RemoveSender(connectionId, sender);
             }
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
-                receiver.SetReceiver(connectionId, null);
+                RemoveReceiver(connectionId, receiver);
             }
             foreach (var channel in streams.OfType<IDataChannel>())
             {
-                channel.SetChannel(connectionId, null);
+                RemoveChannel(connectionId, channel);
             }
             connectionId = null;
         }
