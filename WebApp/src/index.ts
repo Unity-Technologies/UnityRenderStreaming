@@ -1,3 +1,4 @@
+import { Command } from 'commander';
 import * as express from 'express';
 import * as https from 'https';
 import { Server } from 'http';
@@ -10,12 +11,12 @@ import Options from './class/options';
 
 export class RenderStreaming {
   public static run(argv: string[]): RenderStreaming {
-    const program = require('commander');
+    const program = new Command();
     const readOptions = (): Options => {
       if (Array.isArray(argv)) {
         program
           .usage('[options] <apps...>')
-          .option('-p, --port <n>', 'Port to start the server on', process.env.PORT || 80)
+          .option('-p, --port <n>', 'Port to start the server on', process.env.PORT || `80`)
           .option('-s, --secure', 'Enable HTTPS (you need server.key and server.cert)', process.env.SECURE || false)
           .option('-k, --keyfile <path>', 'https key file (default server.key)', process.env.KEYFILE || 'server.key')
           .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
@@ -23,14 +24,15 @@ export class RenderStreaming {
           .option('-m, --mode <type>', 'Choose Communication mode public or private (default public)', process.env.MODE || 'public')
           .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.(default dev)', process.env.LOGGING || 'dev')
           .parse(argv);
+        const option = program.opts();
         return {
-          port: program.port,
-          secure: program.secure == undefined ? false : program.secure,
-          keyfile: program.keyfile,
-          certfile: program.certfile,
-          websocket: program.websocket == undefined ? false : program.websocket,
-          mode: program.mode,
-          logging: program.logging,
+          port: option.port,
+          secure: option.secure == undefined ? false : option.secure,
+          keyfile: option.keyfile,
+          certfile: option.certfile,
+          websocket: option.websocket == undefined ? false : option.websocket,
+          mode: option.mode,
+          logging: option.logging,
         };
       }
     };
