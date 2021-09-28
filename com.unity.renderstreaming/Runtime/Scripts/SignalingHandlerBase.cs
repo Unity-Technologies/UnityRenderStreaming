@@ -92,6 +92,11 @@ namespace Unity.RenderStreaming
             sender.SetSender(connectionId, null);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
             var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);

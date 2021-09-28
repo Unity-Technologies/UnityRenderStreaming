@@ -134,7 +134,6 @@ namespace Unity.RenderStreaming
                 throw new InvalidOperationException("Handler list is empty.");
             foreach (var handler in _handlers)
             {
-                Debug.Log(handler == null);
                 handler.SetHandler(m_instance);
                 m_provider.Subscribe(handler);
             }
