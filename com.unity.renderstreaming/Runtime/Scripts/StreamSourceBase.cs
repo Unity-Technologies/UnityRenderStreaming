@@ -8,7 +8,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    public abstract class StreamSourceBase : MonoBehaviour, IStreamSource
+    public abstract class StreamSourceBase : MonoBehaviour, IStreamSender
     {
         /// <summary>
         /// 

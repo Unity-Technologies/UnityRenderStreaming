@@ -3,9 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
-        "Unity.RenderStreaming.Runtime",
-        "Unity.XR.ARFoundation",
-        "Unity.WebRTC"
+        "Unity.RenderStreaming.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -29,7 +27,7 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "",
             "define": "URS_USE_HDRP_RUNTIME"
-        }        
+        }
     ],
     "noEngineReferences": false
 }

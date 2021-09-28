@@ -183,9 +183,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
-            var transceiver = target.AddTrack(connectionId, track);
+            var transceiver = target.AddSenderTrack(connectionId, track);
             Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
-            target.RemoveTrack(connectionId, track);
+            target.RemoveSenderTrack(connectionId, track);
 
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
@@ -220,10 +220,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection);
             Assert.That(isCreatedConnection, Is.True);
 
-            Assert.That(() => target.AddTrack(null, null), Throws.TypeOf<ArgumentNullException>());
-            Assert.That(() => target.AddTrack(connectionId, null), Throws.TypeOf<ArgumentNullException>());
-            Assert.That(() => target.RemoveTrack(null, null), Throws.TypeOf<ArgumentNullException>());
-            Assert.That(() => target.RemoveTrack(connectionId, null), Throws.TypeOf<InvalidOperationException>());
+            Assert.That(() => target.AddSenderTrack(null, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.AddSenderTrack(connectionId, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.RemoveSenderTrack(null, null), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => target.RemoveSenderTrack(connectionId, null), Throws.TypeOf<InvalidOperationException>());
             target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
             target.onDeletedConnection += _ => { isDeletedConnection = true; };
@@ -260,13 +260,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
-            var transceiver1 = target.AddTrack(connectionId, track);
+            var transceiver1 = target.AddSenderTrack(connectionId, track);
             Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
-            var transceiver2 = target.AddTrack(connectionId, track2);
+            var transceiver2 = target.AddSenderTrack(connectionId, track2);
             Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             target.DeleteConnection(connectionId);
@@ -364,7 +364,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
             // send offer automatically after adding a Track
-            var transceiver = target2.AddTrack(connectionId, track);
+            var transceiver = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
             Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
@@ -435,7 +435,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
-            var transceiver2 = target2.AddTrack(connectionId, track);
+            var transceiver2 = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target2.SendAnswer(connectionId);
 

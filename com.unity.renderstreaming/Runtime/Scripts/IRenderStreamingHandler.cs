@@ -90,9 +90,9 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="name"></param>
+        /// <param name="label"></param>
         /// <returns></returns>
-        RTCDataChannel CreateChannel(string connectionId, string name);
+        RTCDataChannel CreateChannel(string connectionId, string label = null);
 
         /// <summary>
         ///
@@ -111,7 +111,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        RTCRtpTransceiver AddTrack(string connectionId, MediaStreamTrack track);
+        RTCRtpTransceiver AddSenderTrack(string connectionId, MediaStreamTrack track);
 
         /// <summary>
         ///
@@ -136,6 +136,6 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        void RemoveTrack(string connectionId, MediaStreamTrack track);
+        void RemoveSenderTrack(string connectionId, MediaStreamTrack track);
     }
 }

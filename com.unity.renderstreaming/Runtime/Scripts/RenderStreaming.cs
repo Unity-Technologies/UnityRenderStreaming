@@ -59,7 +59,22 @@ namespace Unity.RenderStreaming
             RTCConfiguration conf = new RTCConfiguration {iceServers = iceServers};
             ISignaling signaling = CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
-            Run(conf, hardwareEncoderSupport, signaling, handlers.ToArray());
+            _Run(conf, hardwareEncoderSupport, signaling, handlers.ToArray());
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="hardwareEncoder"></param>
+        /// <param name="signaling"></param>
+        /// <param name="handlers"></param>
+        public void Run(
+            bool? hardwareEncoder = null,
+            ISignaling signaling = null,
+            SignalingHandlerBase[] handlers = null
+            )
+        {
+            _Run(null, hardwareEncoderSupport, signaling, handlers);
         }
 
         /// <summary>
@@ -69,7 +84,18 @@ namespace Unity.RenderStreaming
         /// <param name="hardwareEncoder"></param>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
+        /// <remarks> To use this method, Need to depend WebRTC package </remarks>
         public void Run(
+            RTCConfiguration conf,
+            bool? hardwareEncoder = null,
+            ISignaling signaling = null,
+            SignalingHandlerBase[] handlers = null
+            )
+        {
+            _Run(conf, hardwareEncoderSupport, signaling, handlers);
+        }
+
+        private void _Run(
             RTCConfiguration? conf = null,
             bool? hardwareEncoder = null,
             ISignaling signaling = null,

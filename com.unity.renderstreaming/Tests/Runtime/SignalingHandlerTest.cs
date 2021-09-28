@@ -224,6 +224,29 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
+            var handler = container.test.component;
+            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
+            channel.SetLocal(true);
+            channel.SetLabel("test");
+
+            handler.AddComponent(channel);
+            handler.CreateConnection(connectionId);
+
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
+
+            Assert.That(channel.Channel, Is.Not.Null);
+            Assert.That(channel.Channel.Label, Is.EqualTo("test"));
+
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
+            container.Dispose();
+        }
+
+        [UnityTest, Timeout(10000)]
+        public IEnumerator AddSource()
+        {
+            string connectionId = "12345";
+            var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var channel = container.test.gameObject.AddComponent<DataChannelTest>();
 
             channel.SetLocal(true);
@@ -244,6 +267,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
             container.Dispose();
         }
+
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
