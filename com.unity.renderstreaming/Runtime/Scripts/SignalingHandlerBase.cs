@@ -62,17 +62,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public virtual RTCDataChannel CreateChannel(string connectionId, string name = null)
-        {
-            return m_handler.CreateChannel(connectionId, name);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)
@@ -92,6 +81,11 @@ namespace Unity.RenderStreaming
             sender.SetSender(connectionId, null);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
             var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
@@ -224,7 +218,7 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="track"></param>
-        void SetReceiver(string connectionId, RTCRtpReceiver sender);
+        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
     }
 
     public interface IDataChannel

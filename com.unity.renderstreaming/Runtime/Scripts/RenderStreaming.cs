@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -129,12 +130,13 @@ namespace Unity.RenderStreaming
             m_instance = new RenderStreamingInternal(ref dependencies);
             m_provider = new SignalingEventProvider(m_instance);
 
-            SignalingHandlerBase[] _handlers = handlers ?? this.handlers.ToArray();
-
-            foreach (var source in _handlers)
+            var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
+            if (_handlers.Count() == 0)
+                throw new InvalidOperationException("Handler list is empty.");
+            foreach (var handler in _handlers)
             {
-                source.SetHandler(m_instance);
-                m_provider.Subscribe(source);
+                handler.SetHandler(m_instance);
+                m_provider.Subscribe(handler);
             }
             m_running = true;
         }

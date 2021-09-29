@@ -25,7 +25,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class StreamSourceTest : StreamSourceBase
+    class StreamSender : StreamSenderBase
     {
         private Camera m_camera;
 
@@ -36,12 +36,12 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class VideoStreamReceiverTest : StreamReceiverBase
+    class VideoStreamReceiver : StreamReceiverBase
     {
         public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
-    class DataChannelTest : DataChannelBase
+    class DataChannel : DataChannelBase
     {
         public void SetLocal(bool isLocal)
         {
@@ -102,6 +102,40 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    class StreamSenderTest
+    {
+        [Test]
+        public void CreateAndDestroyStreamSender()
+        {
+            var obj = new GameObject("test");
+            var streamer = obj.AddComponent<StreamSender>();
+
+            Assert.That(streamer.Track, Is.Not.Null);
+            Assert.That(streamer.Senders, Is.Empty);
+
+            UnityEngine.Object.DestroyImmediate(streamer);
+            UnityEngine.Object.DestroyImmediate(obj);
+        }
+    }
+
+    class DataChannelTest
+    {
+        [Test]
+        public void CreateAndDestroyDataChannel()
+        {
+            var obj = new GameObject("test");
+            var channel = obj.AddComponent<DataChannel>();
+            channel.SetLabel("test");
+            channel.SetLocal(true);
+
+            Assert.That(channel.IsLocal, Is.True);
+            Assert.That(channel.Label, Is.EqualTo("test"));
+
+            UnityEngine.Object.DestroyImmediate(channel);
+            UnityEngine.Object.DestroyImmediate(obj);
+        }
+    }
+
     class BroadcastTest
     {
         [SetUp]
@@ -113,15 +147,14 @@ namespace Unity.RenderStreaming.RuntimeTest
         //todo:: crash in dispose process on standalone linux
         [Test]
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
-        public void AddStreamSource()
+        public void AddComponent()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
-            var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
-
-            Assert.That(streamer.Track, Is.Not.Null);
-            Assert.That(streamer.Senders, Is.Empty);
+            var streamer = container.test.gameObject.AddComponent<StreamSender>();
+            var channel = container.test.gameObject.AddComponent<DataChannel>();
 
             container.test.component.AddComponent(streamer);
+            container.test.component.AddComponent(channel);
             container.Dispose();
         }
 
@@ -129,7 +162,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void AddDataChannel()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
             channel.SetLabel("test");
             channel.SetLocal(true);
 
@@ -149,7 +181,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<StreamSender>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
@@ -157,7 +189,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiver>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
@@ -202,7 +234,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
-            var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container.test.gameObject.AddComponent<StreamSender>();
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Senders, Is.Empty);
@@ -225,7 +257,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var handler = container.test.component;
-            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
+            var channel = container.test.gameObject.AddComponent<DataChannel>();
             channel.SetLocal(true);
             channel.SetLabel("test");
 
@@ -247,7 +279,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
-            var channel = container.test.gameObject.AddComponent<DataChannelTest>();
+            var channel = container.test.gameObject.AddComponent<DataChannel>();
 
             channel.SetLocal(true);
             channel.SetLabel("test");
@@ -278,7 +310,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<StreamSender>();
             bool isStartedStream0 = false;
             bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
@@ -291,7 +323,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiver>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
@@ -330,7 +362,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var channel1 = container1.test.gameObject.AddComponent<DataChannelTest>();
+            var channel1 = container1.test.gameObject.AddComponent<DataChannel>();
             bool isStartedChannel1 = false;
             bool isStoppedChannel1 = false;
 
@@ -341,7 +373,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
 
-            var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
+            var channel2 = container2.test.gameObject.AddComponent<DataChannel>();
             bool isStartedChannel2 = false;
             bool isStoppedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
