@@ -89,8 +89,8 @@ namespace Unity.RenderStreaming.Samples
                 handlers: new SignalingHandlerBase[] { handler }
                 );
 
-            //handler.AddComponent(instance.GetComponent<IStreamReceiver>() as Component);
-            //handler.AddComponent(instance.GetComponent<IDataChannel>() as Component);
+            handler.AddComponent(instance.GetComponent<IStreamReceiver>() as Component);
+            handler.AddComponent(instance.GetComponent<IDataChannel>() as Component);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
@@ -98,10 +98,8 @@ namespace Unity.RenderStreaming.Samples
             handler.CreateConnection(connectionId);
             yield return new WaitUntil(() => handler.IsConnected(connectionId));
 
-            handler.AddReceiver(connectionId, instance.GetComponent<IStreamReceiver>());
-            handler.AddChannel(connectionId, instance.GetComponent<IDataChannel>());
-
-            Debug.Log("connected");
+            //handler.AddReceiver(connectionId, instance.GetComponent<IStreamReceiver>());
+            //handler.AddChannel(connectionId, instance.GetComponent<IDataChannel>());
         }
     }
 }
