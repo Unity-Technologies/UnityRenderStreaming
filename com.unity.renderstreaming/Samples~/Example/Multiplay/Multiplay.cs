@@ -52,7 +52,8 @@ namespace Unity.RenderStreaming.Samples
             }
             connectionIds.Add(data.connectionId);
 
-            var newObj = Instantiate(prefab);
+            var initialPosition = new Vector3(0, 3, 0);
+            var newObj = Instantiate(prefab, initialPosition, Quaternion.identity);
             dictObj.Add(data.connectionId, newObj);
 
             var sender = newObj.GetComponent<IStreamSender>();
@@ -68,8 +69,7 @@ namespace Unity.RenderStreaming.Samples
         {
             var obj = dictObj[data.connectionId];
             var channel = obj.GetComponent<IDataChannel>();
-            // todo::
-            // channel.SetChannel(data.connectionId, data.channel);
+            channel.SetChannel(data);
         }
     }
 }

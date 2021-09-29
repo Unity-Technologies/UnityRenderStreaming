@@ -12,7 +12,11 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] InputField inputFieldHostID;
         [SerializeField] Button buttonStart;
         [SerializeField] RenderStreaming renderStreaming;
+        [SerializeField] GameObject prefabHost;
         [SerializeField] GameObject prefabGuest;
+        [SerializeField] GameObject panel;
+        [SerializeField] RawImage videoImage;
+
         enum Role
         {
             Host = 0,
@@ -55,6 +59,8 @@ namespace Unity.RenderStreaming.Samples
             var username = inputFieldUsername.text;
             var connectionId = inputFieldHostID.text;
 
+            panel.SetActive(false);
+
             switch (role)
             {
                 case Role.Host:
@@ -69,7 +75,8 @@ namespace Unity.RenderStreaming.Samples
 
         void SetUpHost()
         {
-            var handler = gameObject.AddComponent<Broadcast>();
+            var instance = GameObject.Instantiate(prefabHost);
+            var handler = instance.GetComponent<Multiplay>();
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
@@ -92,14 +99,15 @@ namespace Unity.RenderStreaming.Samples
             handler.AddComponent(instance.GetComponent<IStreamReceiver>() as Component);
             handler.AddComponent(instance.GetComponent<IDataChannel>() as Component);
 
+            videoImage.gameObject.SetActive(true);
+            var receiveVideoViewer = handler.GetComponent<ReceiveVideoViewer>();
+            receiveVideoViewer.OnUpdateReceiveTexture += texture => videoImage.texture = texture;
+
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
 
             handler.CreateConnection(connectionId);
             yield return new WaitUntil(() => handler.IsConnected(connectionId));
-
-            //handler.AddReceiver(connectionId, instance.GetComponent<IStreamReceiver>());
-            //handler.AddChannel(connectionId, instance.GetComponent<IDataChannel>());
         }
     }
 }

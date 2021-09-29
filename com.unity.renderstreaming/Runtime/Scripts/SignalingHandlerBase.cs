@@ -254,5 +254,11 @@ namespace Unity.RenderStreaming
         ///// </summary>
         ///// <param name="track"></param>
         void SetChannel(string connectionId, RTCDataChannel channel);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        void SetChannel(SignalingEventData data);
     }
 }

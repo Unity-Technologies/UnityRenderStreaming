@@ -72,6 +72,15 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="data"></param>
+        public virtual void SetChannel(SignalingEventData data)
+        {
+            SetChannel(data.connectionId, data.channel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="bytes"></param>
         protected virtual void OnMessage(byte[] bytes)
         {
