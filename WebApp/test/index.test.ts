@@ -1,4 +1,9 @@
+// test for server
+
+import Offer from '../src/class/offer';
+
 test('basic', () => {
+    const offer = new Offer("", 1, false);
     expect('hello').toBe('hello');
 });
 
