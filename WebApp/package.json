@@ -5,7 +5,8 @@
   "scripts": {
     "prestart": "npm install",
     "build": "tsc -p tsconfig.json",
-    "test": "jest --colors",
+    "servertest": "jest --colors ./test/*.ts",
+    "clienttest": "jest --colors ./test/*.js",
     "newman": "newman run test/renderstreaming.postman_collection.json",
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
