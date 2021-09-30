@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { v4 as uuid } from 'uuid';
 import Offer from './offer';
 import Answer from './answer';
 import Candidate from './candidate';
@@ -33,7 +32,11 @@ function getOrCreateConnectionIds(sessionId: string): Set<string> {
 
 function reset(mode: string) {
     isPrivate = mode == "private";
-    console.log(`isPrivate is ${isPrivate}, mode:${mode}`);
+    clients.clear();
+    connectionPair.clear();
+    offers.clear();
+    answers.clear();
+    candidates.clear();
 }
 
 function checkSessionId(req: Request, res: Response, next) {
@@ -123,13 +126,12 @@ function getCandidate(req: Request, res: Response) {
   res.json({ candidates: arr });
 }
 
-function createSession(req: Request, res: Response) {
-  const id: string = uuid();
-  clients.set(id, new Set<string>());
-  offers.set(id, new Map<string, Offer>());
-  answers.set(id, new Map<string, Answer>());
-  candidates.set(id, new Map<string, Candidate[]>());
-  res.json({ sessionId: id });
+function createSession(sessionId: string, res: Response) {
+  clients.set(sessionId, new Set<string>());
+  offers.set(sessionId, new Map<string, Offer>());
+  answers.set(sessionId, new Map<string, Answer>());
+  candidates.set(sessionId, new Map<string, Candidate[]>());
+  res.json({ sessionId: sessionId });
 }
 
 function deleteSession(req: Request, res: Response) {
