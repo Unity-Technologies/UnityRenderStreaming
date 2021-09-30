@@ -71,10 +71,9 @@ namespace Unity.RenderStreaming
         public void Run(
             bool? hardwareEncoder = null,
             ISignaling signaling = null,
-            SignalingHandlerBase[] handlers = null
-            )
+            SignalingHandlerBase[] handlers = null)
         {
-            _Run(null, hardwareEncoderSupport, signaling, handlers);
+            _Run(null, hardwareEncoder, signaling, handlers);
         }
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace Unity.RenderStreaming
             SignalingHandlerBase[] handlers = null
             )
         {
-            _Run(conf, hardwareEncoderSupport, signaling, handlers);
+            _Run(conf, hardwareEncoder, signaling, handlers);
         }
 
         private void _Run(
