@@ -30,16 +30,16 @@ function getOrCreateConnectionIds(sessionId: string): Set<string> {
   return connectionIds;
 }
 
-function reset(mode: string) {
-    isPrivate = mode == "private";
-    clients.clear();
-    connectionPair.clear();
-    offers.clear();
-    answers.clear();
-    candidates.clear();
+function reset(mode: string): void {
+  isPrivate = mode == "private";
+  clients.clear();
+  connectionPair.clear();
+  offers.clear();
+  answers.clear();
+  candidates.clear();
 }
 
-function checkSessionId(req: Request, res: Response, next) {
+function checkSessionId(req: Request, res: Response, next): void {
   if (req.url === '/') {
     next();
     return;
@@ -52,14 +52,14 @@ function checkSessionId(req: Request, res: Response, next) {
   next();
 }
 
-function getConnection(req: Request, res: Response) {
+function getConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const arrayConnection = Array.from(clients.get(sessionId))
   const obj = arrayConnection.map((v) => ({ connectionId: v }));
   res.json({ connections: obj });
 }
 
-function getOffer(req: Request, res: Response) {
+function getOffer(req: Request, res: Response): void {
   // get `fromtime` parameter from request query
   const fromTime: number = req.query.fromtime ? Number(req.query.fromtime) : 0;
   const sessionId: string = req.header('session-id');
@@ -83,7 +83,7 @@ function getOffer(req: Request, res: Response) {
   res.json({ offers: obj });
 }
 
-function getAnswer(req: Request, res: Response) {
+function getAnswer(req: Request, res: Response): void {
   // get `fromtime` parameter from request query
   const fromTime: number = req.query.fromtime ? Number(req.query.fromtime) : 0;
   const sessionId: string = req.header('session-id');
@@ -100,7 +100,7 @@ function getAnswer(req: Request, res: Response) {
   res.json({ answers: obj });
 }
 
-function getCandidate(req: Request, res: Response) {
+function getCandidate(req: Request, res: Response): void {
   // get `fromtime` parameter from request query
   const fromTime: number = req.query.fromtime ? Number(req.query.fromtime) : 0;
   const sessionId: string = req.header('session-id');
@@ -126,7 +126,7 @@ function getCandidate(req: Request, res: Response) {
   res.json({ candidates: arr });
 }
 
-function createSession(sessionId: string, res: Response) {
+function createSession(sessionId: string, res: Response): void {
   clients.set(sessionId, new Set<string>());
   offers.set(sessionId, new Map<string, Offer>());
   answers.set(sessionId, new Map<string, Answer>());
@@ -134,7 +134,7 @@ function createSession(sessionId: string, res: Response) {
   res.json({ sessionId: sessionId });
 }
 
-function deleteSession(req: Request, res: Response) {
+function deleteSession(req: Request, res: Response): void {
   const id: string = req.header('session-id');
   offers.delete(id);
   answers.delete(id);
@@ -143,7 +143,7 @@ function deleteSession(req: Request, res: Response) {
   res.sendStatus(200);
 }
 
-function createConnection(req: Request, res: Response) {
+function createConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
   if (connectionId == null) {
@@ -176,7 +176,7 @@ function createConnection(req: Request, res: Response) {
   res.json({ connectionId: connectionId, polite: polite });
 }
 
-function deleteConnection(req: Request, res: Response) {
+function deleteConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
   clients.get(sessionId).delete(connectionId);
@@ -197,7 +197,7 @@ function deleteConnection(req: Request, res: Response) {
   res.json({ connectionId: connectionId });
 }
 
-function postOffer(req: Request, res: Response) {
+function postOffer(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
   let keySessionId = null;
@@ -225,7 +225,7 @@ function postOffer(req: Request, res: Response) {
   res.sendStatus(200);
 }
 
-function postAnswer(req: Request, res: Response) {
+function postAnswer(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
   const connectionIds = getOrCreateConnectionIds(sessionId);
@@ -260,7 +260,7 @@ function postAnswer(req: Request, res: Response) {
   res.sendStatus(200);
 }
 
-function postCandidate(req: Request, res: Response) {
+function postCandidate(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
 

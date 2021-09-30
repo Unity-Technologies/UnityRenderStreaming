@@ -20,15 +20,15 @@ function getOrCreateConnectionIds(session: WebSocket): Set<string> {
   return connectionIds;
 }
 
-function reset(mode: string) {
+function reset(mode: string): void {
   isPrivate = mode == "private";
 }
 
-function add(ws: WebSocket) {
+function add(ws: WebSocket): void {
   clients.set(ws, new Set<string>());
 }
 
-function remove(ws: WebSocket) {
+function remove(ws: WebSocket): void {
   const connectionIds = clients.get(ws);
   connectionIds.forEach(connectionId => {
     const pair = connectionPair.get(connectionId);
@@ -44,7 +44,7 @@ function remove(ws: WebSocket) {
   clients.delete(ws);
 }
 
-function onConnect(ws: WebSocket, connectionId: string) {
+function onConnect(ws: WebSocket, connectionId: string): void {
   let polite = true;
   if (isPrivate) {
     if (connectionPair.has(connectionId)) {
@@ -67,7 +67,7 @@ function onConnect(ws: WebSocket, connectionId: string) {
   ws.send(JSON.stringify({ type: "connect", connectionId: connectionId, polite: polite }));
 }
 
-function onDisconnect(ws: WebSocket, connectionId: string) {
+function onDisconnect(ws: WebSocket, connectionId: string): void {
   const connectionIds = clients.get(ws);
   connectionIds.delete(connectionId);
 
@@ -82,7 +82,7 @@ function onDisconnect(ws: WebSocket, connectionId: string) {
   ws.send(JSON.stringify({ type: "disconnect", connectionId: connectionId }));
 }
 
-function onOffer(ws: WebSocket, message: any) {
+function onOffer(ws: WebSocket, message: any): void {
   const connectionId = message.connectionId as string;
   const newOffer = new Offer(message.sdp, Date.now(), false);
 
@@ -107,7 +107,7 @@ function onOffer(ws: WebSocket, message: any) {
   });
 }
 
-function onAnswer(ws: WebSocket, message: any) {
+function onAnswer(ws: WebSocket, message: any): void {
   const connectionId = message.connectionId as string;
   const connectionIds = getOrCreateConnectionIds(ws);
   connectionIds.add(connectionId);
@@ -127,7 +127,7 @@ function onAnswer(ws: WebSocket, message: any) {
   otherSessionWs.send(JSON.stringify({ from: connectionId, to: "", type: "answer", data: newAnswer }));
 }
 
-function onCandidate(ws: WebSocket, message: any) {
+function onCandidate(ws: WebSocket, message: any): void {
   const connectionId = message.connectionId;
   const candidate = new Candidate(message.candidate, message.sdpMLineIndex, message.sdpMid, Date.now());
 
