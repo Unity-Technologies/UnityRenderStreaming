@@ -27,6 +27,7 @@
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
+    "@jest-mock/express": "^1.4.5",
     "@types/jest": "^27.0.2",
     "@types/morgan": "^1.9.3",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
@@ -55,9 +56,13 @@
     "extensionsToTreatAsEsm": [
       ".ts"
     ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
     "globals": {
       "ts-jest": {
-        "useESM": true
+        "useESM": true,
+        "tsConfigFile": "tsconfig.json"
       }
     },
     "moduleNameMapper": {
