@@ -6,10 +6,11 @@ import * as morgan from 'morgan';
 import signaling from './signaling';
 import { log, LogLevel } from './log';
 import Options from './class/options';
+import { reset as resetHandler }from './class/httphandler';
 
 export const createServer = (config: Options): express.Application => {
   const app: express.Application = express();
-  app.set('isPrivate', config.mode == "private");
+  resetHandler(config.mode);
   // logging http access
   if (config.logging != "none") {
     app.use(morgan(config.logging));
