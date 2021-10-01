@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -18,31 +19,32 @@ namespace Unity.RenderStreaming.Samples
         Vector2 inputMovement;
         Vector2 inputLook;
 
+        Vector3 initialPosition;
+
         private void Awake()
         {
-            //playerInput.neverAutoSwitchControlSchemes = true;
+            playerInput.neverAutoSwitchControlSchemes = true;
             receiver.onDeviceChange += OnDeviceChange;
+
+            initialPosition = transform.position;
         }
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
+            if (!playerInput.user.valid)
+                return;
+            var user = playerInput.user;
+
             switch (change)
             {
                 case InputDeviceChange.Added:
                 {
-                    var _devices = playerInput.devices.ToList();
-                    _devices.Add(device);
-                    var devices = _devices.ToArray();
-                    if (!playerInput.SwitchCurrentControlScheme(devices))
-                        Debug.LogError("SwitchCurrentControlScheme failed");
+                    InputUser.PerformPairingWithDevice(device, user);
                     return;
                 }
                 case InputDeviceChange.Removed:
                 {
-                    var _devices = playerInput.devices;
-                    var devices = _devices.Where(_ => _.deviceId != device.deviceId).ToArray();
-                    if (!playerInput.SwitchCurrentControlScheme(devices))
-                        Debug.LogError("SwitchCurrentControlScheme failed");
+                    user.UnpairDevice(device);
                     return;
                 }
             }
@@ -57,6 +59,13 @@ namespace Unity.RenderStreaming.Samples
             var moveAngles = new Vector3(-inputLook.y, inputLook.x);
             var newAngles = cameraPivot.transform.localEulerAngles + moveAngles * Time.deltaTime * rotateSpeed;
             cameraPivot.transform.localEulerAngles = new Vector3(Mathf.Clamp(newAngles.x, 0, 45), newAngles.y, 0); ;
+
+            // reset if the ball fall down from the floor
+            if (player.transform.position.y < -5)
+            {
+                player.transform.position = initialPosition;
+                player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            }
         }
 
         public void SetLabel(string text)
@@ -66,17 +75,17 @@ namespace Unity.RenderStreaming.Samples
 
         public void OnControlsChanged()
         {
-            Debug.Log("OnControlsChanged");
+            Debug.Log($"{label.text} OnControlsChanged");
         }
 
         public void OnDeviceLost()
         {
-            Debug.Log("OnDeviceLost");
+            Debug.Log($"{label.text} OnDeviceLost");
         }
 
         public void OnDeviceRegained()
         {
-            Debug.Log("OnDeviceRegained");
+            Debug.Log($"{label.text} OnDeviceRegained");
         }
 
         public void OnMovement(InputAction.CallbackContext value)

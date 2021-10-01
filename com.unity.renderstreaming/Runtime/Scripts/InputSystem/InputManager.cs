@@ -144,7 +144,7 @@ namespace Unity.RenderStreaming
 
         public virtual void RegisterLayout(string json, string name = null, InputDeviceMatcher? matches = null)
         {
-            InputSystem.RegisterLayout(json, name, matches);
+            //InputSystem.RegisterLayout(json, name, matches);
         }
 
         public virtual void RemoveLayout(string name)

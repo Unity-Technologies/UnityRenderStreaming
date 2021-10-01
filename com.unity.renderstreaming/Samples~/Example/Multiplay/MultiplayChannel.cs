@@ -27,7 +27,6 @@ namespace Unity.RenderStreaming
         protected override void OnMessage(byte[] bytes)
         {
             string str = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log($"OnMessage {str}");
             var message = JsonUtility.FromJson<Message>(str);
             switch(message.type)
             {
@@ -39,7 +38,6 @@ namespace Unity.RenderStreaming
 
         public void ChangeLabel(string text)
         {
-            Debug.Log($"ChangeLabel {text}");
             var msg = new Message()
             {
                 type = ActionType.ChangeLabel,

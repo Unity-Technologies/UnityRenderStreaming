@@ -90,10 +90,10 @@ namespace Unity.RenderStreaming
         /// </summary>
         public void RemoveAllDevices()
         {
-            while (_remoteDevices.Count > 0)
-            {
-                RemoveDevice(_remoteDevices[0]);
-            }
+            //while (_remoteDevices.Count > 0)
+            //{
+            //    RemoveDevice(_remoteDevices[0]);
+            //}
         }
 
         public override InputDevice AddDevice(string layout, string name = null, string variants = null)

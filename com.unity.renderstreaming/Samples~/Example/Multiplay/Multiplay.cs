@@ -29,18 +29,17 @@ namespace Unity.RenderStreaming.Samples
                 return;
             connectionIds.Remove(connectionId);
 
-            foreach (var sender in streams.OfType<IStreamSender>())
-            {
-                RemoveSender(connectionId, sender);
-            }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                RemoveReceiver(connectionId, receiver);
-            }
-            foreach (var channel in streams.OfType<IDataChannel>())
-            {
-                RemoveChannel(connectionId, channel);
-            }
+            var obj = dictObj[connectionId];
+            var sender = obj.GetComponentInChildren<IStreamSender>();
+            var inputChannel = obj.GetComponentInChildren<InputSystemChannelReceiver>();
+            var multiplayChannel = obj.GetComponentInChildren<MultiplayChannel>();
+
+            RemoveSender(connectionId, sender);
+            RemoveChannel(connectionId, inputChannel);
+            RemoveChannel(connectionId, multiplayChannel);
+
+            dictObj.Remove(connectionId);
+            Object.Destroy(obj);
         }
 
         public void OnOffer(SignalingEventData data)
