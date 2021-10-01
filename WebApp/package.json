@@ -59,6 +59,7 @@
       ".ts"
     ],
     "transform": {
+      "^.+\\.js$": "babel-jest",
       "^.+\\.ts$": "ts-jest"
     },
     "globals": {
