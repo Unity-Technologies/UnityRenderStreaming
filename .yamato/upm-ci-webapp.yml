@@ -21,7 +21,8 @@ platforms:
     test_command: ./test_webapp.sh
     client_test_command: ./test_webapp_client.sh
 projects:
-  - packagename: com.unity.webapp.renderstreaming
+  - name: renderstreaming
+    packagename: com.unity.webapp.renderstreaming
 ---
 {% for project in projects %}
 {% for platform in platforms %}
