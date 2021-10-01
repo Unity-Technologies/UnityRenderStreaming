@@ -6,8 +6,14 @@ namespace Unity.RenderStreaming.Samples
 {
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField] GameObject player;
+        [SerializeField] GameObject cameraPivot;
         [SerializeField] PlayerInput playerInput;
         [SerializeField] InputSystemChannelReceiver receiver;
+        [SerializeField] TextMesh label;
+
+        [SerializeField] float moveSpeed = 100f;
+        [SerializeField] float rotateSpeed = 10f;
 
         Vector2 inputMovement;
         Vector2 inputLook;
@@ -20,8 +26,6 @@ namespace Unity.RenderStreaming.Samples
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            Debug.Log("OnDeviceChange:" + change);
-
             switch (change)
             {
                 case InputDeviceChange.Added:
@@ -46,28 +50,23 @@ namespace Unity.RenderStreaming.Samples
 
         private void Update()
         {
-            float moveSpeed = 10f;
-            float rotateSpeed = 10f;
+            var moveForward = Quaternion.Euler(0, cameraPivot.transform.eulerAngles.y, 0) * new Vector3(inputMovement.x, 0, inputMovement.y);
+            //player.transform.position += moveForward * Time.deltaTime * moveSpeed;
+            player.GetComponent<Rigidbody>().AddForce(moveForward * Time.deltaTime * moveSpeed);
 
-            var moveForward = Quaternion.Euler(0, transform.eulerAngles.y, 0) * new Vector3(inputMovement.x, 0, inputMovement.y);
-            transform.position += moveForward * Time.deltaTime * moveSpeed;
+            var moveAngles = new Vector3(-inputLook.y, inputLook.x);
+            var newAngles = cameraPivot.transform.localEulerAngles + moveAngles * Time.deltaTime * rotateSpeed;
+            cameraPivot.transform.localEulerAngles = new Vector3(Mathf.Clamp(newAngles.x, 0, 45), newAngles.y, 0); ;
+        }
 
-            var moveAngles = new Vector3(-inputMovement.y, inputLook.x);
-            transform.localEulerAngles += moveAngles * Time.deltaTime * rotateSpeed;
+        public void SetLabel(string text)
+        {
+            label.text = text;
         }
 
         public void OnControlsChanged()
         {
             Debug.Log("OnControlsChanged");
-
-
-            //if (playerInput.currentControlScheme != currentControlScheme)
-            //{
-            //    currentControlScheme = playerInput.currentControlScheme;
-
-            //    //playerVisualsBehaviour.UpdatePlayerVisuals();
-            //    //RemoveAllBindingOverrides();
-            //}
         }
 
         public void OnDeviceLost()

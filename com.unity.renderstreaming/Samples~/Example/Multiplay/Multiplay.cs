@@ -56,8 +56,8 @@ namespace Unity.RenderStreaming.Samples
             var newObj = Instantiate(prefab, initialPosition, Quaternion.identity);
             dictObj.Add(data.connectionId, newObj);
 
-            var sender = newObj.GetComponent<IStreamSender>();
-            var channel = newObj.GetComponent<IDataChannel>();
+            var sender = newObj.GetComponentInChildren<IStreamSender>();
+            var channel = newObj.GetComponentInChildren<IDataChannel>();
 
             AddSender(data.connectionId, sender);
             AddChannel(data.connectionId, channel);

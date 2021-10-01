@@ -69,6 +69,16 @@ namespace Unity.RenderStreaming
             }
         }
 
+        public virtual void Send(byte[] msg)
+        {
+            Channel.Send(msg);
+        }
+
+        public virtual void Send(string msg)
+        {
+            Channel.Send(msg);
+        }
+
         /// <summary>
         /// 
         /// </summary>

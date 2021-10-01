@@ -9,11 +9,13 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] ToggleGroup toggleGroupRole;
         [SerializeField] InputField inputFieldUsername;
-        [SerializeField] InputField inputFieldHostID;
+        [SerializeField] InputField inputFieldUserID;
         [SerializeField] Button buttonStart;
         [SerializeField] RenderStreaming renderStreaming;
         [SerializeField] GameObject prefabHost;
         [SerializeField] GameObject prefabGuest;
+        [SerializeField] GameObject prefabPlayer;
+        [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
 
@@ -28,16 +30,16 @@ namespace Unity.RenderStreaming.Samples
         {
             buttonStart.onClick.AddListener(OnClickButtonStart);
             inputFieldUsername.text = UnityEngine.Random.Range(0, 99999).ToString("00000");
-            inputFieldHostID.text = Guid.NewGuid().ToString();
+            inputFieldUserID.text = Guid.NewGuid().ToString();
             inputFieldUsername.onValueChanged.AddListener(OnValueChangedUserName);
-            inputFieldHostID.onValueChanged.AddListener(OnValueChangedHostID);
+            inputFieldUserID.onValueChanged.AddListener(OnValueChangedHostID);
         }
 
         void OnValueChangedUserName(string value)
         {
             bool hasNullValue =
                 string.IsNullOrEmpty(inputFieldUsername.text) ||
-                string.IsNullOrEmpty(inputFieldHostID.text);
+                string.IsNullOrEmpty(inputFieldUserID.text);
             buttonStart.interactable = !hasNullValue;
         }
 
@@ -45,7 +47,7 @@ namespace Unity.RenderStreaming.Samples
         {
             bool hasNullValue =
                 string.IsNullOrEmpty(inputFieldUsername.text) ||
-                string.IsNullOrEmpty(inputFieldHostID.text);
+                string.IsNullOrEmpty(inputFieldUserID.text);
             buttonStart.interactable = !hasNullValue;
         }
 
@@ -57,7 +59,7 @@ namespace Unity.RenderStreaming.Samples
             Role role = (Role)indexRole;
 
             var username = inputFieldUsername.text;
-            var connectionId = inputFieldHostID.text;
+            var connectionId = inputFieldUserID.text;
 
             panel.SetActive(false);
 
@@ -70,13 +72,17 @@ namespace Unity.RenderStreaming.Samples
                     StartCoroutine(SetUpGuest(username, connectionId));
                     break;
             }
-
         }
 
         void SetUpHost()
         {
+            menuCamera.SetActive(false);
+
             var instance = GameObject.Instantiate(prefabHost);
             var handler = instance.GetComponent<Multiplay>();
+
+            // host player
+            GameObject.Instantiate(prefabPlayer);
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
@@ -95,9 +101,6 @@ namespace Unity.RenderStreaming.Samples
                 signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] { handler }
                 );
-
-            handler.AddComponent(instance.GetComponent<IStreamReceiver>() as Component);
-            handler.AddComponent(instance.GetComponent<IDataChannel>() as Component);
 
             videoImage.gameObject.SetActive(true);
             var receiveVideoViewer = handler.GetComponent<ReceiveVideoViewer>();
