@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -3789206479390473380}
   - component: {fileID: 5349509679622244369}
   - component: {fileID: 4784867876379884969}
+  - component: {fileID: 2309994222390268704}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -66,7 +67,7 @@ MonoBehaviour:
   cameraPivot: {fileID: 1474066182485874884}
   playerInput: {fileID: 4784867876379884969}
   receiver: {fileID: -3789206479390473380}
-  label: {fileID: 0}
+  label: {fileID: 6761489373774958269}
   moveSpeed: 200
   rotateSpeed: 100
 --- !u!114 &4784867876379884969
@@ -205,6 +206,36 @@ MonoBehaviour:
   m_DefaultActionMap: Player Controls
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &2309994222390268704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489449647258272010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11af0c7644036f84bb5d375f2560b63f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  local: 0
+  label: 
+  onChangeLabel:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5349509679622244369}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.PlayerController,
+          Unity.RenderStreaming.Sample
+        m_MethodName: SetLabel
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1361852189085019679
 GameObject:
   m_ObjectHideFlags: 0

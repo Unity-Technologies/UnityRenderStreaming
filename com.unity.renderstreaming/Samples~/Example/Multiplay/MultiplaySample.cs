@@ -66,7 +66,7 @@ namespace Unity.RenderStreaming.Samples
             switch (role)
             {
                 case Role.Host:
-                    SetUpHost();
+                    SetUpHost(username);
                     break;
                 case Role.Guest:
                     StartCoroutine(SetUpGuest(username, connectionId));
@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-        void SetUpHost()
+        void SetUpHost(string username)
         {
             menuCamera.SetActive(false);
 
@@ -82,7 +82,9 @@ namespace Unity.RenderStreaming.Samples
             var handler = instance.GetComponent<Multiplay>();
 
             // host player
-            GameObject.Instantiate(prefabPlayer);
+            var hostPlayer = GameObject.Instantiate(prefabPlayer);
+            var channel = hostPlayer.GetComponent<PlayerController>();
+            channel.SetLabel(username);
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
@@ -93,8 +95,8 @@ namespace Unity.RenderStreaming.Samples
 
         IEnumerator SetUpGuest(string username, string connectionId)
         {
-            var instance = GameObject.Instantiate(prefabGuest);
-            var handler = instance.GetComponent<SingleConnection>();
+            var guestPlayer = GameObject.Instantiate(prefabGuest);
+            var handler = guestPlayer.GetComponent<SingleConnection>();
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
@@ -103,8 +105,11 @@ namespace Unity.RenderStreaming.Samples
                 );
 
             videoImage.gameObject.SetActive(true);
-            var receiveVideoViewer = handler.GetComponent<ReceiveVideoViewer>();
+            var receiveVideoViewer = guestPlayer.GetComponent<ReceiveVideoViewer>();
             receiveVideoViewer.OnUpdateReceiveTexture += texture => videoImage.texture = texture;
+
+            var channel = guestPlayer.GetComponent<MultiplayChannel>();
+            channel.OnStartedChannel += _ => { channel.ChangeLabel(username); };
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);

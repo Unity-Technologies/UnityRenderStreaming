@@ -1026,7 +1026,7 @@ GameObject:
   - component: {fileID: 408735820}
   - component: {fileID: 408735819}
   m_Layer: 5
-  m_Name: UserID
+  m_Name: ConnectionID
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

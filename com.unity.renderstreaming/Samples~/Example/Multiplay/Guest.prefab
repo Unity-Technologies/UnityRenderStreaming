@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 489449647258272009}
   - component: {fileID: 2232263322929993776}
   - component: {fileID: 6766063150928624591}
+  - component: {fileID: 1206473709398235252}
   m_Layer: 0
   m_Name: Guest
   m_TagString: Untagged
@@ -46,8 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streams:
-  - {fileID: 2232263322929993776}
   - {fileID: 6766063150928624591}
+  - {fileID: 2232263322929993776}
+  - {fileID: 1206473709398235252}
 --- !u!114 &2232263322929993776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,3 +77,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
+--- !u!114 &1206473709398235252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489449647258272010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11af0c7644036f84bb5d375f2560b63f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  local: 1
+  label: 
+  onChangeLabel:
+    m_PersistentCalls:
+      m_Calls: []

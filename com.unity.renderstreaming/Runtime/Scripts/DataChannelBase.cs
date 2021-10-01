@@ -33,6 +33,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public bool IsConnected => Channel != null;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public RTCDataChannel Channel { get; protected set; }
 
         /// <summary>
