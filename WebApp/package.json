@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "npm install",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "servertest": "jest --colors ./test/*.ts",
     "clienttest": "jest --colors ./test/*.js",
     "newman": "newman run test/renderstreaming.postman_collection.json",
