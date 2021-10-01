@@ -15,7 +15,7 @@ platforms:
     client_test_command: ./test_webapp_client.sh
   - name: linux
     type: Unity::VM
-    image: cds-ops/ubuntu-18.04-base:stable
+    image: package-ci/ubuntu:latest
     flavor: b1.xlarge
     pack_command: ./pack_webapp.sh
     test_command: ./test_webapp.sh
