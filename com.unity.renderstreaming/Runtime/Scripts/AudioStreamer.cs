@@ -30,7 +30,13 @@ namespace Unity.RenderStreaming
         protected virtual void Awake()
         {
             if(audioSource != null && audioSource.clip != null)
+            {
                 _sampleRate = audioSource.clip.samples;
+            }
+            else
+            {
+                _sampleRate = AudioSettings.outputSampleRate;
+            }
         }
 
         protected override MediaStreamTrack CreateTrack()
