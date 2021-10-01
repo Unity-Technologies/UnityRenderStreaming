@@ -1,0 +1,12 @@
+{
+  "name": "webclient",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --colors test/*.js"
+  },
+  "devDependencies": {
+    "jest": "^27.2.0"
+  },
+  "type": "module"
+}

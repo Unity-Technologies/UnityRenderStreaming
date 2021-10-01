@@ -20,9 +20,9 @@ export const createServer = (config: Options): express.Application => {
   app.use(bodyParser.json());
   app.get('/config', (req, res) => res.json({ useWebSocket: config.websocket, startupMode: config.mode, logging: config.logging }));
   app.use('/signaling', signaling);
-  app.use(express.static(path.join(__dirname, '../public')));
+  app.use(express.static(path.join(__dirname, '../client/public')));
   app.get('/', (req, res) => {
-    const indexPagePath: string = path.join(__dirname, '../public/index.html');
+    const indexPagePath: string = path.join(__dirname, '../client/public/index.html');
     fs.access(indexPagePath, (err) => {
       if (err) {
         log(LogLevel.warn, `Can't find file ' ${indexPagePath}`);

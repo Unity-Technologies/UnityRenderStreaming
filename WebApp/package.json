@@ -5,8 +5,7 @@
   "scripts": {
     "prestart": "npm install",
     "build": "tsc -p tsconfig.build.json",
-    "servertest": "jest --colors test/*.ts",
-    "clienttest": "jest --colors test/*.js",
+    "test": "jest --colors test/*.ts",
     "newman": "newman run test/renderstreaming.postman_collection.json",
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
@@ -24,15 +23,11 @@
     "ws": "^7.5.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/preset-env": "^7.15.6",
-    "@babel/preset-typescript": "^7.15.0",
     "@jest-mock/express": "^1.4.5",
     "@types/jest": "^27.0.2",
     "@types/morgan": "^1.9.3",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
-    "babel-jest": "^27.2.2",
     "eslint": "^6.8.0",
     "jest": "^27.2.0",
     "jest-websocket-mock": "^2.2.1",
@@ -48,28 +43,10 @@
   },
   "pkg": {
     "assets": [
-      "public/**/*"
+      "client/public/**/*"
     ],
     "targets": [
       "node10"
     ]
-  },
-  "jest": {
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "transform": {
-      "^.+\\.js$": "babel-jest",
-      "^.+\\.ts$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "useESM": true,
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    }
   }
 }

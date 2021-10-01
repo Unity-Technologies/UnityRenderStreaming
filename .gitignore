@@ -354,6 +354,6 @@ Assets/Samples.meta
 Assets/Samples/
 
 # Exclude Webapp coverage result
-WebApp/coverage/*
+WebApp/**/coverage/*
 
 .DS_Store
