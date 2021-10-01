@@ -8,11 +8,10 @@ import * as wsHandler from '../src/class/websockethandler';
 describe('http signaling test in public mode', () => {
   const sessionId = "abcd1234";
   const headerMock = (): string => sessionId;
-  const isPrivateMock = (): boolean => false;
   const connectionId = "12345";
 
   const { res, mockClear } = getMockRes()
-  const req = getMockReq({ header: headerMock, body: { connectionId: connectionId }, app: { get: isPrivateMock } });
+  const req = getMockReq({ header: headerMock, body: { connectionId: connectionId } });
 
   beforeAll(() => {
     httpHandler.reset("public");
@@ -47,11 +46,10 @@ describe('http signaling test in public mode', () => {
 describe('http signaling test in private mode', () => {
   const sessionId = "abcd1234";
   const headerMock = (): string => sessionId;
-  const isPrivateMock = (): boolean => true;
   const connectionId = "12345";
 
   const { res, mockClear } = getMockRes()
-  const req = getMockReq({ header: headerMock, body: { connectionId: connectionId }, app: { get: isPrivateMock } });
+  const req = getMockReq({ header: headerMock, body: { connectionId: connectionId } });
 
   beforeAll(() => {
     httpHandler.reset("private");

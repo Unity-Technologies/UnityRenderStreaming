@@ -66,7 +66,7 @@ function getOffer(req: Request, res: Response): void {
   let arrayOffers: [string, Offer][] = [];
 
   if (offers.size != 0) {
-    if (req.app.get('isPrivate')) {
+    if (isPrivate) {
       if (offers.has(sessionId)) {
         arrayOffers = Array.from(offers.get(sessionId));
       }
@@ -151,7 +151,7 @@ function createConnection(req: Request, res: Response): void {
     return;
   }
   let polite = true;
-  if (req.app.get('isPrivate')) {
+  if (isPrivate) {
     if (connectionPair.has(connectionId)) {
       const pair = connectionPair.get(connectionId);
 
@@ -203,7 +203,7 @@ function postOffer(req: Request, res: Response): void {
   let keySessionId = null;
   let polite = false;
 
-  if (res.app.get('isPrivate')) {
+  if (isPrivate) {
     if (connectionPair.has(connectionId)) {
       const pair = connectionPair.get(connectionId);
       keySessionId = pair[0] == sessionId ? pair[1] : pair[0];
@@ -240,7 +240,7 @@ function postAnswer(req: Request, res: Response): void {
   const pair = connectionPair.get(connectionId);
   const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
 
-  if (!res.app.get('isPrivate')) {
+  if (!isPrivate) {
     connectionPair.set(connectionId, [otherSessionId, sessionId]);
   }
 
