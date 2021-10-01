@@ -2,7 +2,7 @@ import * as express from 'express';
 import { v4 as uuid } from 'uuid';
 import * as handler from'./class/httphandler';
 
-const router : express.Router = express.Router();
+const router: express.Router = express.Router();
 router.use(handler.checkSessionId);
 router.get('/connection', handler.getConnection);
 router.get('/offer', handler.getOffer);
