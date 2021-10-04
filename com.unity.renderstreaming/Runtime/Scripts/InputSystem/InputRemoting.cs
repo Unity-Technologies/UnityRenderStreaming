@@ -129,8 +129,7 @@ namespace Unity.RenderStreaming
 
             sending = true;
 
-            SendAllLayouts();
-            SendAllDevices();
+            SendInitialMessages();
         }
 
         public void StopSending()
@@ -202,6 +201,34 @@ namespace Unity.RenderStreaming
             return subscriber;
         }
 
+        private void SendInitialMessages()
+        {
+            SendAllGeneratedLayouts();
+            SendAllDevices();
+        }
+
+        private void SendAllGeneratedLayouts()
+        {
+            // todo(kazuki)::
+            // layputBuilders property is not published from InputSystem
+            // 
+            //foreach (var entry in m_LocalManager.m_Layouts.layoutBuilders)
+            //    SendLayout(entry.Key);
+
+            foreach (var layout in m_LocalManager.layouts)
+                SendLayout(layout);
+        }
+
+        private void SendLayout(string layoutName)
+        {
+            if (m_Subscribers == null)
+                return;
+
+            var message = NewLayoutMsg.Create(this, layoutName);
+            if (message != null)
+                Send(message.Value);
+        }
+
         private void SendAllDevices()
         {
             var devices = m_LocalManager.devices;
@@ -211,15 +238,20 @@ namespace Unity.RenderStreaming
 
         private void SendDevice(InputDevice device)
         {
-            var message = NewDeviceMsg.Create(device);
-            Send(message);
-        }
+            if (m_Subscribers == null)
+                return;
 
-        private void SendAllLayouts()
-        {
-            var layouts = m_LocalManager.layouts.ToArray();
-            foreach(var layout in layouts)
-                SendLayoutChange(layout, InputControlLayoutChange.Added);
+            // Don't mirror remote devices to other remotes.
+            if (device.remote)
+                return;
+
+            var newDeviceMessage = NewDeviceMsg.Create(device);
+            Send(newDeviceMessage);
+
+            // Send current state. We do this here in this case as the device
+            // may have been added some time ago and thus have already received events.
+            var stateEventMessage = NewEventsMsg.CreateStateEvent(device);
+            Send(stateEventMessage);
         }
 
         private unsafe void SendEvent(InputEventPtr eventPtr, InputDevice device)
@@ -615,6 +647,19 @@ namespace Unity.RenderStreaming
         // Tell remote system there's new input events.
         private static class NewEventsMsg
         {
+            // todo(kazuki):: not found DeviceResetEvent
+            //public static unsafe Message CreateResetEvent(InputDevice device, bool isHardReset)
+            //{
+            //    var resetEvent = DeviceResetEvent.Create(device.deviceId, isHardReset);
+            //    return Create((InputEvent*)UnsafeUtility.AddressOf(ref resetEvent), 1);
+            //}
+
+            public static unsafe Message CreateStateEvent(InputDevice device)
+            {
+                using (StateEvent.From(device, out var eventPtr))
+                    return Create(eventPtr.data, 1);
+            }
+
             public static unsafe Message Create(InputEvent* events, int eventCount)
             {
                 // Find total size of event buffer we need.

@@ -41,10 +41,7 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                // note:: InputRemoting class rejects remote devices when sending device information to the remote peer.
-                // Avoid to get assert "Device being sent to remotes should be a local device, not a remote one"
-                var localDevices = InputSystem.devices.Where(device => !device.remote);
-                return new ReadOnlyArray<InputDevice>(localDevices.ToArray());
+                return InputSystem.devices;
             }
         }
 
@@ -53,7 +50,8 @@ namespace Unity.RenderStreaming
             get
             {
                 // todo(kazuki):: filter layout
-                return InputSystem.ListLayouts();
+                //return InputSystem.ListLayouts();
+                return Enumerable.Empty<string>();
             }
         }
 

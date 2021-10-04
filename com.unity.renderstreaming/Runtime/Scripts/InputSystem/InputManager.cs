@@ -129,7 +129,8 @@ namespace Unity.RenderStreaming
 
         public virtual void RemoveDevice(InputDevice device)
         {
-            InputSystem.RemoveDevice(device);
+            if(InputSystem.GetDeviceById(device.deviceId) != null)
+                InputSystem.RemoveDevice(device);
         }
 
         public virtual void SetDeviceUsage(InputDevice device, string usage)
@@ -144,7 +145,10 @@ namespace Unity.RenderStreaming
 
         public virtual void RegisterControlLayout(string json, string name = null, bool isOverride = false)
         {
-            InputSystem.RegisterLayout(json, name);
+            if(isOverride)
+                InputSystem.RegisterLayoutOverride(json, name);
+            else
+                InputSystem.RegisterLayout(json, name);
         }
 
         public virtual void RemoveLayout(string name)
