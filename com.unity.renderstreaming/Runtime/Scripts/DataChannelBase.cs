@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public bool IsConnected => Channel != null;
+        public bool IsConnected => Channel != null && Channel.ReadyState == RTCDataChannelState.Open;
 
         /// <summary>
         /// 
@@ -74,11 +74,19 @@ namespace Unity.RenderStreaming
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
         public virtual void Send(byte[] msg)
         {
             Channel.Send(msg);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
         public virtual void Send(string msg)
         {
             Channel.Send(msg);

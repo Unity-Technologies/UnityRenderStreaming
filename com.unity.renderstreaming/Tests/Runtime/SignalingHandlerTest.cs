@@ -43,6 +43,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
     class DataChannelTest : DataChannelBase
     {
+        public Action<string> OnReceiveMessage;
+
         public void SetLocal(bool isLocal)
         {
             Type myClass = typeof(DataChannelBase);
@@ -57,6 +59,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             FieldInfo fieldLabel = myClass.GetField("label",
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             fieldLabel.SetValue(this, label);
+        }
+
+        protected override void OnMessage(byte[] bytes)
+        {
+            OnReceiveMessage(System.Text.Encoding.UTF8.GetString(bytes));
         }
     }
 
@@ -135,6 +142,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(channel.IsLocal, Is.True);
             Assert.That(channel.Label, Is.EqualTo("test"));
+            Assert.That(channel.IsConnected, Is.False);
 
             container.test.component.AddComponent(channel);
             container.Dispose();
@@ -234,8 +242,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
-            Assert.That(channel.Channel, Is.Not.Null);
-            Assert.That(channel.Channel.Label, Is.EqualTo("test"));
+            Assert.That(channel.IsLocal, Is.True);
+            Assert.That(channel.Label, Is.EqualTo("test"));
 
             container.test.component.DeleteConnection(connectionId);
             yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
@@ -252,16 +260,17 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel.SetLocal(true);
             channel.SetLabel("test");
 
-            Assert.That(channel.Channel, Is.Null);
             Assert.That(channel.IsLocal, Is.True);
+            Assert.That(channel.IsConnected, Is.False);
             Assert.That(channel.Label, Is.EqualTo("test"));
 
             container.test.component.AddComponent(channel);
             container.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
-            Assert.That(channel.Channel, Is.Not.Null);
-            Assert.That(channel.Channel.Label, Is.EqualTo("test"));
+            Assert.That(channel.IsLocal, Is.True);
+            Assert.That(channel.IsConnected, Is.False);
+            Assert.That(channel.Label, Is.EqualTo("test"));
 
             container.test.component.DeleteConnection(connectionId);
             yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
@@ -350,7 +359,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             channel2.SetLocal(true);
             channel2.SetLabel("test");
 
-            Assert.That(channel2.Channel, Is.Null);
+            Assert.That(channel2.IsConnected, Is.False);
             Assert.That(channel2.IsLocal, Is.True);
             Assert.That(channel2.Label, Is.EqualTo("test"));
 
@@ -361,9 +370,26 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(isStartedChannel1, Is.True);
             Assert.That(isStartedChannel2, Is.True);
 
-            Assert.That(channel1.Channel, Is.Not.Null);
             Assert.That(channel1.IsLocal, Is.False);
             Assert.That(channel1.Label, Is.EqualTo("test"));
+
+            Assert.That(channel1.IsConnected, Is.True);
+            Assert.That(channel2.IsConnected, Is.True);
+
+            // send message from channel1 to channel2
+            string sendMessage = "hello";
+            string receivedMessage = null;
+            channel2.OnReceiveMessage = message => { receivedMessage = message; };
+            channel1.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
+
+            // send message from channel2 to channel1
+            receivedMessage = null;
+            channel1.OnReceiveMessage = message => { receivedMessage = message; };
+            channel2.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
