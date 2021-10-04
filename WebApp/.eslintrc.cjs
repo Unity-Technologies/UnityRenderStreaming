@@ -8,9 +8,10 @@ module.exports = {
   parserOptions: {
     sourceType: "module",
     project: "./tsconfig.lint.json",
-  },
+  },  
   plugins: ["@typescript-eslint"],
   rules: {
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-explicit-any": "off",
   }
 };

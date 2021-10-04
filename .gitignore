@@ -353,6 +353,7 @@ Plugin/webrtc
 Assets/Samples.meta
 Assets/Samples/
 
-
+# Exclude Webapp coverage result
+WebApp/**/coverage/*
 
 .DS_Store

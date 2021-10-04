@@ -5,20 +5,24 @@ platforms:
     flavor: b1.xlarge
     pack_command: pack_webapp.cmd
     test_command: test_webapp.cmd
+    client_test_command: test_webapp_client.cmd
   - name: macos
     type: Unity::VM::osx
     image: package-ci/mac:latest
     flavor: m1.mac
     pack_command: ./pack_webapp.sh
     test_command: ./test_webapp.sh
+    client_test_command: ./test_webapp_client.sh
   - name: linux
     type: Unity::VM
-    image: cds-ops/ubuntu-18.04-base:stable
+    image: package-ci/ubuntu:latest
     flavor: b1.xlarge
     pack_command: ./pack_webapp.sh
     test_command: ./test_webapp.sh
+    client_test_command: ./test_webapp_client.sh
 projects:
-  - packagename: com.unity.webapp.renderstreaming
+  - name: renderstreaming
+    packagename: com.unity.webapp.renderstreaming
 ---
 {% for project in projects %}
 {% for platform in platforms %}
@@ -52,6 +56,22 @@ test_{{ platform.name }}:
         - "WebApp/coverage/**/*"
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+
+test_client_{{ platform.name }}:
+  name : Test Client {{ project.packagename }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  commands:
+    - {{ platform.client_test_command }}
+  artifacts:
+    logs:
+      paths:
+        - "WebApp/output.log"
+        - "WebApp/coverage/**/*"
+  dependencies:
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
 
 trigger_webapp_test_{{ project.name }}:
@@ -61,6 +81,7 @@ trigger_webapp_test_{{ project.name }}:
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#test_client_{{ platform.name }}
     {% endfor %}
 
 {% endfor %}

@@ -1,0 +1,12 @@
+{
+  "name": "webclient",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "devDependencies": {
+    "jest": "^27.2.0"
+  },
+  "type": "module"
+}
