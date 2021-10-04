@@ -74,17 +74,14 @@ namespace Unity.RenderStreaming.Samples
 
         public void OnControlsChanged()
         {
-            Debug.Log($"{label.text} OnControlsChanged");
         }
 
         public void OnDeviceLost()
         {
-            Debug.Log($"{label.text} OnDeviceLost");
         }
 
         public void OnDeviceRegained()
         {
-            Debug.Log($"{label.text} OnDeviceRegained");
         }
 
         public void OnMovement(InputAction.CallbackContext value)

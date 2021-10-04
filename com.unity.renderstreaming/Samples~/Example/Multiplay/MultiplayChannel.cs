@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class MultiplayChannel : DataChannelBase
     {
-        public UnityEvent<string> onChangeLabel;
+        public UnityEvent<string> OnChangeLabel;
 
 
         protected override void OnMessage(byte[] bytes)
@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming
             switch(message.type)
             {
                 case ActionType.ChangeLabel:
-                    onChangeLabel?.Invoke(message.argument);
+                    OnChangeLabel?.Invoke(message.argument);
                     return;
             }
         }

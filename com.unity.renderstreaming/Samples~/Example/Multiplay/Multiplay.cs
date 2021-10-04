@@ -58,6 +58,9 @@ namespace Unity.RenderStreaming.Samples
             var sender = newObj.GetComponentInChildren<IStreamSender>();
             var inputChannel = newObj.GetComponentInChildren<InputSystemChannelReceiver>();
             var multiplayChannel = newObj.GetComponentInChildren<MultiplayChannel>();
+            var playerController = newObj.GetComponentInChildren<PlayerController>();
+
+            multiplayChannel.OnChangeLabel.AddListener(playerController.SetLabel);
 
             AddSender(data.connectionId, sender);
             AddChannel(data.connectionId, inputChannel);
