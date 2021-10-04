@@ -111,9 +111,9 @@ namespace Unity.RenderStreaming
             onDeviceChange?.Invoke(device, InputDeviceChange.Removed);
         }
 
-        public override void RegisterLayout(string json, string name = null, InputDeviceMatcher? matches = null)
+        public override void RegisterControlLayout(string json, string name = null, bool isOverride = false)
         {
-            base.RegisterLayout(json, name, matches);
+            base.RegisterControlLayout(json, name, isOverride);
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Added);
         }
 
