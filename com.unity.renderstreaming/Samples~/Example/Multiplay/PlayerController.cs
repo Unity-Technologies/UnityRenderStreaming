@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
@@ -52,13 +51,13 @@ namespace Unity.RenderStreaming.Samples
 
         private void Update()
         {
-            var moveForward = Quaternion.Euler(0, cameraPivot.transform.eulerAngles.y, 0) * new Vector3(inputMovement.x, 0, inputMovement.y);
-            //player.transform.position += moveForward * Time.deltaTime * moveSpeed;
+            var forwardDirection = Quaternion.Euler(0, cameraPivot.transform.eulerAngles.y, 0);
+            var moveForward = forwardDirection * new Vector3(inputMovement.x, 0, inputMovement.y);
             player.GetComponent<Rigidbody>().AddForce(moveForward * Time.deltaTime * moveSpeed);
 
             var moveAngles = new Vector3(-inputLook.y, inputLook.x);
             var newAngles = cameraPivot.transform.localEulerAngles + moveAngles * Time.deltaTime * rotateSpeed;
-            cameraPivot.transform.localEulerAngles = new Vector3(Mathf.Clamp(newAngles.x, 0, 45), newAngles.y, 0); ;
+            cameraPivot.transform.localEulerAngles = new Vector3(Mathf.Clamp(newAngles.x, 0, 45), newAngles.y, 0);
 
             // reset if the ball fall down from the floor
             if (player.transform.position.y < -5)
