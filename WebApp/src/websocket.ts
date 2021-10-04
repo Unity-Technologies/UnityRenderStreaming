@@ -15,11 +15,11 @@ export default class WSSignaling {
 
       handler.add(ws);
 
-      ws.onclose = (_event: CloseEvent) => {
+      ws.onclose = (): void => {
         handler.remove(ws);
       }
 
-      ws.onmessage = (event: MessageEvent) => {
+      ws.onmessage = (event: MessageEvent): void => {
 
         // type: connect, disconnect JSON Schema
         // connectionId: connect or disconnect connectionId

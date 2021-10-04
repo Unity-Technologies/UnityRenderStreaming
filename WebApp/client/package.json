@@ -3,10 +3,9 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --colors test/*.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "jest": "^27.2.0"
   },
   "type": "module"
