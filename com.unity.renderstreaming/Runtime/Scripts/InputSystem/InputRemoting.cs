@@ -435,8 +435,6 @@ namespace Unity.RenderStreaming
         {
             public static void Process(InputRemoting Receiver, Message msg)
             {
-                Debug.Log("DisconnectMsg.Process");
-
                 Receiver.RemoveRemoteDevices(msg.participantId);
                 Receiver.StopSending();
             }
@@ -445,6 +443,14 @@ namespace Unity.RenderStreaming
         // Tell remote input system that there's a new layout.
         private static class NewLayoutMsg
         {
+            [Serializable]
+            public struct Data
+            {
+                public string name;
+                public string layoutJson;
+                public bool isOverride;
+            }
+
             public static Message? Create(InputRemoting sender, string layoutName)
             {
                 // Try to load the layout. Ignore the layout if it couldn't
@@ -469,23 +475,28 @@ namespace Unity.RenderStreaming
                     return null;
                 }
 
-                var json = layout.ToJson();
-                var bytes = Encoding.UTF8.GetBytes(json);
+                var data = new Data
+                {
+                    name = layoutName,
+                    layoutJson = layout.ToJson(),
+                    isOverride = layout.isOverride
+                };
 
                 return new Message
                 {
                     type = MessageType.NewLayout,
-                    data = bytes
+                    data = SerializeData(data)
                 };
             }
 
             public static void Process(InputRemoting Receiver, Message msg)
             {
-                var json = Encoding.UTF8.GetString(msg.data);
+                var data = DeserializeData<Data>(msg.data);
                 var senderIndex = Receiver.FindOrCreateSenderRecord(msg.participantId);
 
-                Receiver.m_LocalManager.RegisterLayout(json);
-                ArrayHelpers.Append(ref Receiver.m_Senders[senderIndex].layouts, json);
+                var internedLayoutName = new InternedString(data.name);
+                Receiver.m_LocalManager.RegisterControlLayout(data.layoutJson, data.name, data.isOverride);
+                ArrayHelpers.Append(ref Receiver.m_Senders[senderIndex].layouts, internedLayoutName);
             }
         }
 
