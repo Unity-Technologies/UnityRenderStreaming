@@ -3,9 +3,12 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint public/**/*.js test/**/*.js"
   },
   "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-plugin-jest": "^24.5.2",
     "jest": "^27.2.0"
   },
   "type": "module"

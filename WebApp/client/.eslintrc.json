@@ -1,0 +1,22 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:jest/recommended"
+  ],
+  "plugins": [
+    "jest"
+  ],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2016
+  },
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+  "rules": {
+    "semi": "error",
+    "no-extra-semi": "error"
+  }
+}
