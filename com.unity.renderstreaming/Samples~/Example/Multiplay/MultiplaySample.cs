@@ -9,7 +9,6 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] ToggleGroup toggleGroupRole;
         [SerializeField] InputField inputFieldUsername;
-        [SerializeField] InputField inputFieldUserID;
         [SerializeField] Button buttonStart;
         [SerializeField] RenderStreaming renderStreaming;
         [SerializeField] GameObject prefabHost;
@@ -30,24 +29,13 @@ namespace Unity.RenderStreaming.Samples
         {
             buttonStart.onClick.AddListener(OnClickButtonStart);
             inputFieldUsername.text = UnityEngine.Random.Range(0, 99999).ToString("00000");
-            inputFieldUserID.text = Guid.NewGuid().ToString();
             inputFieldUsername.onValueChanged.AddListener(OnValueChangedUserName);
-            inputFieldUserID.onValueChanged.AddListener(OnValueChangedHostID);
         }
 
         void OnValueChangedUserName(string value)
         {
             bool hasNullValue =
-                string.IsNullOrEmpty(inputFieldUsername.text) ||
-                string.IsNullOrEmpty(inputFieldUserID.text);
-            buttonStart.interactable = !hasNullValue;
-        }
-
-        void OnValueChangedHostID(string value)
-        {
-            bool hasNullValue =
-                string.IsNullOrEmpty(inputFieldUsername.text) ||
-                string.IsNullOrEmpty(inputFieldUserID.text);
+                string.IsNullOrEmpty(inputFieldUsername.text);
             buttonStart.interactable = !hasNullValue;
         }
 
@@ -59,7 +47,7 @@ namespace Unity.RenderStreaming.Samples
             Role role = (Role)indexRole;
 
             var username = inputFieldUsername.text;
-            var connectionId = inputFieldUserID.text;
+            var connectionId = Guid.NewGuid().ToString();
 
             panel.SetActive(false);
 
