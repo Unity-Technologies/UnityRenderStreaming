@@ -126,12 +126,13 @@ namespace Unity.RenderStreaming
                 startCoroutine = StartCoroutine,
                 resentOfferInterval = interval,
             };
-            m_instance = new RenderStreamingInternal(ref dependencies);
-            m_provider = new SignalingEventProvider(m_instance);
-
             var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
             if (_handlers.Count() == 0)
                 throw new InvalidOperationException("Handler list is empty.");
+
+            m_instance = new RenderStreamingInternal(ref dependencies);
+            m_provider = new SignalingEventProvider(m_instance);
+
             foreach (var handler in _handlers)
             {
                 handler.SetHandler(m_instance);
