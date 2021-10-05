@@ -8,7 +8,7 @@ describe('http signaling test in public mode', () => {
   const connectionId2 = "67890";
   const testsdp = "test sdp";
 
-  const { res, next, mockClear } = getMockRes()
+  const { res, next, mockClear } = getMockRes();
   const req = getMockReq({ header: (): string => sessionId });
   const req2 = getMockReq({ header: (): string => sessionId2 });
 
@@ -113,7 +113,7 @@ describe('http signaling test in public mode', () => {
     expect(res.json).toBeCalledWith({ connectionId: connectionId });
   });
 
-  test('get connection from session1', async () => {
+  test('no connection get from session1', async () => {
     await httpHandler.getConnection(req, res);
     expect(res.json).toBeCalledWith({ connections: [] });
   });
@@ -127,13 +127,13 @@ describe('http signaling test in public mode', () => {
 
   test('delete session1', async () => {
     const req = getMockReq({ header: (): string => sessionId });
-    await httpHandler.deleteSession(req, res)
+    await httpHandler.deleteSession(req, res);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
   test('delete session2', async () => {
     const req2 = getMockReq({ header: (): string => sessionId2 });
-    await httpHandler.deleteSession(req2, res)
+    await httpHandler.deleteSession(req2, res);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 });
@@ -144,7 +144,7 @@ describe('http signaling test in private mode', () => {
   const connectionId = "12345";
   const testsdp = "test sdp";
 
-  const { res, next, mockClear } = getMockRes()
+  const { res, next, mockClear } = getMockRes();
   const req = getMockReq({ header: (): string => sessionId });
   const req2 = getMockReq({ header: (): string => sessionId2 });
 
@@ -187,7 +187,7 @@ describe('http signaling test in private mode', () => {
   });
 
   test('response status 400 if connecctionId does not set', async () => {
-    const req3 = getMockReq({ header: (): string => sessionId })
+    const req3 = getMockReq({ header: (): string => sessionId });
     await httpHandler.createConnection(req3, res);
     expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({ error: new Error(`connectionId is required`) });
@@ -197,14 +197,14 @@ describe('http signaling test in private mode', () => {
     const sessionId3 = "session3";
     await httpHandler.createSession(sessionId3, res);
     const body = { connectionId: connectionId };
-    const req3 = getMockReq({ header: (): string => sessionId3 })
+    const req3 = getMockReq({ header: (): string => sessionId3 });
     req3.body = body;
     await httpHandler.createConnection(req3, res);
     expect(res.status).toBeCalledWith(400);
     expect(res.send).toBeCalledWith({ error: new Error(`${connectionId}: This connection id is already used.`) });
   });
 
-  test('get connection from session1', async () => {
+  test('not connection get from session1', async () => {
     await httpHandler.getConnection(req, res);
     expect(res.json).toBeCalledWith({ connections: [{ connectionId: connectionId }] });
   });
@@ -281,13 +281,13 @@ describe('http signaling test in private mode', () => {
 
   test('delete session1', async () => {
     const req = getMockReq({ header: (): string => sessionId });
-    await httpHandler.deleteSession(req, res)
+    await httpHandler.deleteSession(req, res);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 
   test('delete session2', async () => {
     const req2 = getMockReq({ header: (): string => sessionId2 });
-    await httpHandler.deleteSession(req2, res)
+    await httpHandler.deleteSession(req2, res);
     expect(res.sendStatus).toBeCalledWith(200);
   });
 });

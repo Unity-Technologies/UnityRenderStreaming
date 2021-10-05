@@ -28,10 +28,12 @@ describe('websocket signaling test in public mode', () => {
   });
 
   test('create session1', async () => {
+    expect(client).not.toBeNull();
     await wsHandler.add(client);
   });
 
   test('create session2', async () => {
+    expect(client2).not.toBeNull();
     await wsHandler.add(client2);
   });
 
@@ -86,15 +88,17 @@ describe('websocket signaling test in public mode', () => {
   });
 
   test('delete session2', async () => {
+    expect(client).not.toBeNull();
     await wsHandler.remove(client2);
   });
 
   test('delete session1', async () => {
+    expect(client2).not.toBeNull();
     await wsHandler.remove(client);
   });
 });
 
-describe('websocket signaling test in public mode', () => {
+describe('websocket signaling test in private mode', () => {
   let server: WS;
   let client: WebSocket;
   let client2: WebSocket;
@@ -115,10 +119,12 @@ describe('websocket signaling test in public mode', () => {
   });
 
   test('create session1', async () => {
+    expect(client).not.toBeNull();
     await wsHandler.add(client);
   });
 
   test('create session2', async () => {
+    expect(client2).not.toBeNull();
     await wsHandler.add(client2);
   });
 
@@ -173,10 +179,12 @@ describe('websocket signaling test in public mode', () => {
   });
 
   test('delete session2', async () => {
+    expect(client).not.toBeNull();
     await wsHandler.remove(client2);
   });
 
   test('delete session1', async () => {
+    expect(client2).not.toBeNull();
     await wsHandler.remove(client);
   });
 });
