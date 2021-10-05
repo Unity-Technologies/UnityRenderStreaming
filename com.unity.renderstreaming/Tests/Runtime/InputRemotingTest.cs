@@ -221,7 +221,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             senderInput.StopSending();
             receiverInput.StopSending();
 
-            receiver.RemoveAllDevices();
+            receiver.RemoveAllRemoteDevices();
 
             Assert.That(receiver.layouts, Is.Empty);
             Assert.That(receiver.remoteDevices, Is.Empty);

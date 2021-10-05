@@ -109,13 +109,19 @@ namespace Unity.RenderStreaming.Samples
             receiveVideoViewer.OnUpdateReceiveTexture += texture => videoImage.texture = texture;
 
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
-            channel.OnStartedChannel += _ => { channel.ChangeLabel(username); };
+            channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
 
             handler.CreateConnection(connectionId);
             yield return new WaitUntil(() => handler.IsConnected(connectionId));
+        }
+
+        IEnumerator ChangeLabel(MultiplayChannel channel, string username)
+        {
+            yield return new WaitForSeconds(1f);
+            channel.ChangeLabel(username);
         }
     }
 }

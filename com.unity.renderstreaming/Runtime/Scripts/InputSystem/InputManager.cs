@@ -129,8 +129,7 @@ namespace Unity.RenderStreaming
 
         public virtual void RemoveDevice(InputDevice device)
         {
-            if(InputSystem.GetDeviceById(device.deviceId) != null)
-                InputSystem.RemoveDevice(device);
+            InputSystem.RemoveDevice(device);
         }
 
         public virtual void SetDeviceUsage(InputDevice device, string usage)
