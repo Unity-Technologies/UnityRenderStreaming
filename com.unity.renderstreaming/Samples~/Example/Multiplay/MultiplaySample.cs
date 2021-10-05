@@ -108,7 +108,7 @@ namespace Unity.RenderStreaming.Samples
 
         IEnumerator ChangeLabel(MultiplayChannel channel, string username)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.1f);
             channel.ChangeLabel(username);
         }
     }
