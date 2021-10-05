@@ -34,12 +34,12 @@ namespace Unity.RenderStreaming.Samples
             var inputChannel = obj.GetComponentInChildren<InputSystemChannelReceiver>();
             var multiplayChannel = obj.GetComponentInChildren<MultiplayChannel>();
 
+            dictObj.Remove(connectionId);
+            Object.Destroy(obj);
+
             RemoveSender(connectionId, sender);
             RemoveChannel(connectionId, inputChannel);
             RemoveChannel(connectionId, multiplayChannel);
-
-            dictObj.Remove(connectionId);
-            Object.Destroy(obj);
         }
 
         public void OnOffer(SignalingEventData data)

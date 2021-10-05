@@ -24,6 +24,7 @@ namespace Unity.RenderStreaming
         private readonly List<InputDevice> _remoteDevices = new List<InputDevice>();
 
         private readonly Dictionary<string, string> _remoteLayouts = new Dictionary<string, string>();
+        private readonly List<string> _registeredRemoteLayout = new List<string>();
 
         /// <summary>
         ///
@@ -88,6 +89,14 @@ namespace Unity.RenderStreaming
             }
         }
 
+        public ReadOnlyArray<string> remoteLayouts
+        {
+            get
+            {
+                return new ReadOnlyArray<string>(_remoteLayouts.Keys.ToArray());
+            }
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -110,17 +119,12 @@ namespace Unity.RenderStreaming
 
         public override InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
-            if(InputSystem.devices.Count(_ => _.name == name) > 0)
-            {
-                UnityEngine.Debug.Log(name + " is already exists");
-                return null;
-            }
-
             if (InputSystem.ListLayouts().Count(_ => _ == layout) == 0)
             {
                 if (!_remoteLayouts.TryGetValue(layout, out string value))
                     throw new InvalidOperationException();
                 base.RegisterControlLayout(layout, value);
+                _registeredRemoteLayout.Add(layout);
             }
             var device = base.AddDevice(layout, name, variants);
             _remoteDevices.Add(device);
@@ -146,9 +150,11 @@ namespace Unity.RenderStreaming
 
         public override void RemoveLayout(string name)
         {
-            if (InputSystem.ListLayouts().Count(_ => _ == name) > 0)
+            if(_registeredRemoteLayout.Contains(name))
+            {
                 base.RemoveLayout(name);
-
+                _registeredRemoteLayout.Remove(name);
+            }
             _remoteLayouts.Remove(name);
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Removed);
         }

@@ -50,8 +50,7 @@ namespace Unity.RenderStreaming
             get
             {
                 // todo(kazuki):: filter layout
-                //return InputSystem.ListLayouts();
-                return Enumerable.Empty<string>();
+                return InputSystem.ListLayouts();
             }
         }
 
@@ -75,17 +74,13 @@ namespace Unity.RenderStreaming
     class Observer : IObserver<InputRemoting.Message>
     {
         private RTCDataChannel _channel;
-        private bool _isOpen;
         public Observer(RTCDataChannel channel)
         {
             _channel = channel ?? throw new ArgumentNullException("channel is null");
-            _channel.OnOpen += () => { _isOpen = true; };
-            _channel.OnClose += () => { _isOpen = false; };
-            _isOpen = _channel.ReadyState == RTCDataChannelState.Open;
         }
         public void OnNext(InputRemoting.Message value)
         {
-            if (!_isOpen)
+            if (_channel.ReadyState != RTCDataChannelState.Open)
                 return;
             byte[] bytes = MessageSerializer.Serialize(ref value);
             _channel.Send(bytes);
