@@ -71,9 +71,9 @@ describe('websocket signaling test in public mode', () => {
 
   test('delete connection from session2', async () => {
     await wsHandler.onDisconnect(client2, connectionId);
-    // disconnecto send to client
+    // disconnect send to client
     await expect(server).toReceiveMessage({ type: "disconnect", connectionId: connectionId });
-    // disconnecto send to client2
+    // disconnect send to client2
     await expect(server).toReceiveMessage({ type: "disconnect", connectionId: connectionId });
     // server received total 2 disconnect messages
     expect(server).toHaveReceivedMessages([{ type: "disconnect", connectionId: connectionId }, { type: "disconnect", connectionId: connectionId }]);
@@ -158,9 +158,9 @@ describe('websocket signaling test in public mode', () => {
 
   test('delete connection from session2', async () => {
     await wsHandler.onDisconnect(client2, connectionId);
-    // disconnecto send to client
+    // disconnect send to client
     await expect(server).toReceiveMessage({ type: "disconnect", connectionId: connectionId });
-    // disconnecto send to client2
+    // disconnect send to client2
     await expect(server).toReceiveMessage({ type: "disconnect", connectionId: connectionId });
     // server received total 2 disconnect messages
     expect(server).toHaveReceivedMessages([{ type: "disconnect", connectionId: connectionId }, { type: "disconnect", connectionId: connectionId }]);
