@@ -51,15 +51,14 @@ namespace Unity.RenderStreaming.Editor
 
         static void ShowSignalingTypes(SerializedProperty signalingType){
 
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             List<string> options = new List<string>();
             List<string> types = new List<string>();
 
             int selected = 0;
             int i = 0;
 
-            foreach (var referencedAssembly in assembly.GetReferencedAssemblies()) {
-                foreach (System.Type type in System.Reflection.Assembly.Load(referencedAssembly).GetTypes()) {
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()){
+                foreach (System.Type type in assembly.GetTypes()) {
                     if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
                         if(type.FullName == signalingType.stringValue){
                             selected = i;
