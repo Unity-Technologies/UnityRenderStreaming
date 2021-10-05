@@ -13,6 +13,6 @@ const displayConfig = async () => {
 
   const mode = res.startupMode.replace(/^./, res.startupMode[0].toUpperCase());
   startupDiv.innerHTML += `<li>Signaling Mode : <b>${mode}</b></li>`;
-}
+};
 
 displayConfig();

@@ -7,6 +7,7 @@
     "lint": "eslint public/**/*.js test/**/*.js"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-jest": "^24.5.2",
     "jest": "^27.2.0"

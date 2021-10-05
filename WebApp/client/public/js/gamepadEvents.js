@@ -72,19 +72,21 @@ function gameLoop() {
     gamepad.buttons.forEach(function (button, index) {
       var buttonStatus = navigator.webkitGetGamepads ? button == 1 : (button.value > 0 || button.pressed == true);
       var previousButtonStatus = navigator.webkitGetGamepads ? previousButtons[index].value == 1 : (previousButtons[index].value > 0 || previousButtons[index].pressed == true);
+      var event;
       if (buttonStatus != previousButtonStatus) {
-        var event;
-        if (buttonStatus)
+        if (buttonStatus) {
           event = new GamepadButtonEvent('gamepadButtonDown', { id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: button.value });
-        else
+        }
+        else {
           event = new GamepadButtonEvent('gamepadButtonUp', { id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: 0 });
-
+        }
         document.dispatchEvent(event);
       }
       else if (buttonStatus) {
-        var event = new GamepadButtonEvent('gamepadButtonPressed', { id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: button.value });
+        event = new GamepadButtonEvent('gamepadButtonPressed', { id: gamepadsConnectedTimeStamp[gamepad.index], index: index, value: button.value });
         document.dispatchEvent(event);
       }
+
     });
     checkAxes(gamepad, gamepadsPreviousAxesStates[gamepadIndex]);
     storePreviousState(gamepad);

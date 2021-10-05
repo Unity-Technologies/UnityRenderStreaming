@@ -220,7 +220,7 @@ export function registerGamepadEvents(videoPlayer) {
   window.addEventListener("gamepaddisconnected", gamepadDisconnected, false);
 }
 
-export function unregisterGamepadEvents(videoPlayer) {
+export function unregisterGamepadEvents() {
 
   document.removeEventListener("gamepadButtonDown", sendGamepadButtonDown, false);
   document.removeEventListener("gamepadButtonUp", sendGamepadButtonUp, false);
@@ -262,7 +262,7 @@ export function registerKeyboardEvents(videoPlayer) {
 }
 
 
-export function unregisterKeyboardEvents(videoPlayer) {
+export function unregisterKeyboardEvents() {
 
   //Stop listening to keyboard events
   document.removeEventListener('keyup', sendKeyUp, false);
@@ -401,7 +401,7 @@ export function registerMouseEvents(videoPlayer, playerElement) {
 }
 
 
-export function unregisterMouseEvents(videoPlayer, playerElement) {
+export function unregisterMouseEvents(playerElement) {
 
   // Stop listening to mouse events
   playerElement.removeEventListener('click', sendMouse, false);

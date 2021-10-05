@@ -16,11 +16,11 @@ export default class Signaling extends EventTarget {
     else {
       return { 'Content-Type': 'application/json' };
     }
-  };
+  }
 
   url(method) {
     return location.origin + '/signaling/' + method;
-  };
+  }
 
   async start() {
     const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
@@ -106,26 +106,27 @@ export default class Signaling extends EventTarget {
     const json = await res.json();
     this.dispatchEvent(new CustomEvent('connect', { detail: json }));
     return json;
-  };
+  }
+
   async deleteConnection(connectionId) {
     const data = { 'connectionId': connectionId };
     const res = await fetch(this.url('connection'), { method: 'DELETE', headers: this.headers(), body: JSON.stringify(data) });
     const json = await res.json();
     this.dispatchEvent(new CustomEvent('disconnect', { detail: json }));
     return json;
-  };
+  }
 
   async sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
     Logger.log('sendOffer:', data);
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
-  };
+  }
 
   async sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
     Logger.log('sendAnswer:', data);
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
-  };
+  }
 
   async sendCandidate(connectionId, candidate, sdpMid, sdpMLineIndex) {
     const data = {
@@ -136,17 +137,19 @@ export default class Signaling extends EventTarget {
     };
     Logger.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
-  };
+  }
 
   async getOffer(fromTime = 0) {
     return await fetch(this.url(`offer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  };
+  }
+
   async getAnswer(fromTime = 0) {
     return await fetch(this.url(`answer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  };
+  }
+
   async getCandidate(fromTime = 0) {
     return await fetch(this.url(`candidate?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  };
+  }
 }
 
 export class WebSocketSignaling extends EventTarget {
@@ -155,10 +158,11 @@ export class WebSocketSignaling extends EventTarget {
     super();
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
+    let websocketUrl;
     if (location.protocol === "https:") {
-      var websocketUrl = "wss://" + location.host;
+      websocketUrl = "wss://" + location.host;
     } else {
-      var websocketUrl = "ws://" + location.host;
+      websocketUrl = "ws://" + location.host;
     }
 
     this.websocket = new WebSocket(websocketUrl);
@@ -166,11 +170,11 @@ export class WebSocketSignaling extends EventTarget {
 
     this.websocket.onopen = () => {
       this.isWsOpen = true;
-    }
+    };
 
     this.websocket.onclose = () => {
       this.isWsOpen = false;
-    }
+    };
 
     this.websocket.onmessage = (event) => {
       const msg = JSON.parse(event.data);
@@ -199,7 +203,7 @@ export class WebSocketSignaling extends EventTarget {
         default:
           break;
       }
-    }
+    };
   }
 
   async start() {
@@ -219,13 +223,13 @@ export class WebSocketSignaling extends EventTarget {
     const sendJson = JSON.stringify({ type: "connect", connectionId: connectionId });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
-  };
+  }
 
   deleteConnection(connectionId) {
     const sendJson = JSON.stringify({ type: "disconnect", connectionId: connectionId });
     Logger.log(sendJson);
     this.websocket.send(sendJson);
-  };
+  }
 
   sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
