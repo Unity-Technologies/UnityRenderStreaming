@@ -54,7 +54,7 @@ function checkSessionId(req: Request, res: Response, next): void {
 
 function getConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
-  const arrayConnection = Array.from(clients.get(sessionId))
+  const arrayConnection = Array.from(clients.get(sessionId));
   const obj = arrayConnection.map((v) => ({ connectionId: v }));
   res.json({ connections: obj });
 }
@@ -210,7 +210,7 @@ function postOffer(req: Request, res: Response): void {
       if (keySessionId != null) {
         polite = true;
         const map = offers.get(keySessionId);
-        map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite))
+        map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
       }
     }
     res.sendStatus(200);
@@ -220,7 +220,7 @@ function postOffer(req: Request, res: Response): void {
   connectionPair.set(connectionId, [sessionId, null]);
   keySessionId = sessionId;
   const map = offers.get(keySessionId);
-  map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite))
+  map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
 
   res.sendStatus(200);
 }
@@ -274,4 +274,4 @@ function postCandidate(req: Request, res: Response): void {
   res.sendStatus(200);
 }
 
-export { reset, checkSessionId, getConnection, getOffer, getAnswer, getCandidate, createSession, deleteSession, createConnection, deleteConnection, postOffer, postAnswer, postCandidate }
+export { reset, checkSessionId, getConnection, getOffer, getAnswer, getCandidate, createSession, deleteSession, createConnection, deleteConnection, postOffer, postAnswer, postCandidate };

@@ -150,4 +150,4 @@ function onCandidate(ws: WebSocket, message: any): void {
   });
 }
 
-export { reset, add, remove, onConnect, onDisconnect, onOffer, onAnswer, onCandidate }
+export { reset, add, remove, onConnect, onDisconnect, onOffer, onAnswer, onCandidate };
