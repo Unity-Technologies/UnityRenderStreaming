@@ -14,9 +14,7 @@ export default class Peer extends EventTarget {
     this.ignoreOffer = false;
     this.srdAnswerPending = false;
     this.log = str => void Logger.log(`[${_this.polite ? 'POLITE' : 'IMPOLITE'}] ${str}`);
-    this.assert_equals = !window.assert_equals ?
-      (a, b, msg) => a === b || void fail(new Error(`${msg} expected ${b} but got ${a}`)) :
-      window.assert_equals;
+    this.assert_equals = window.assert_equals ? window.assert_equals : (a, b, msg) => { if (a === b) { return; } throw new Error(`${msg} expected ${b} but got ${a}`); };
     this.interval = 5000;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
@@ -66,9 +64,8 @@ export default class Peer extends EventTarget {
   }
 
   async loopResendOffer() {
-
-    while (true) {
-      if(this.pc != null && this.waitingAnswer) {
+    while (this.connectionId) {
+      if (this.pc != null && this.waitingAnswer) {
         this.dispatchEvent(new CustomEvent('sendoffer', { detail: { connectionId: this.connectionId, sdp: this.pc.localDescription.sdp } }));
       }
       await this.sleep(this.interval);

@@ -1,13 +1,11 @@
-// test for client
-
 import { default as Signaling, WebSocketSignaling } from "../public/js/signaling.js";
 
 test('basic', () => {
   var http = new Signaling();
-  var ws = new WebSocketSignaling();
-  expect('hello').toBe('hello');
+  expect(http).not.toBeNull();
 });
 
 test('basic2', () => {
-  expect(1 + 1).toBe(2);
+  var ws = new WebSocketSignaling();
+  expect(ws).not.toBeNull();
 });

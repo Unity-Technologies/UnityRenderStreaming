@@ -10,13 +10,13 @@ let useWebSocket;
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
-}
+};
 
 window.addEventListener('resize', function () {
   videoPlayer.resizeVideo();
 }, true);
 
-window.addEventListener('beforeunload', async (e) => {
+window.addEventListener('beforeunload', async () => {
   await videoPlayer.stop();
 }, true);
 
@@ -30,7 +30,7 @@ async function setup() {
 function showWarningIfNeeded(startupMode) {
   const warningDiv = document.getElementById("warning");
   if (startupMode == "private") {
-    warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Private Mode."
+    warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Private Mode.";
     warningDiv.hidden = false;
   }
 }
@@ -117,7 +117,7 @@ function onClickPlayButton() {
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   document.addEventListener('fullscreenchange', onFullscreenChange);
 
-  function onFullscreenChange(e) {
+  function onFullscreenChange() {
     if (document.webkitFullscreenElement || document.fullscreenElement) {
       playerDiv.style.position = "absolute";
       elementFullscreenButton.style.display = 'none';
@@ -142,7 +142,7 @@ async function setupVideoPlayer(elements) {
 }
 
 function onDisconnect() {
-  const playerDiv = document.getElementById('player')
+  const playerDiv = document.getElementById('player');
   clearChildren(playerDiv);
   videoPlayer = null;
   showPlayButton();

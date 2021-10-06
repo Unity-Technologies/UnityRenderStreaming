@@ -12,7 +12,7 @@ function uuid4() {
   var temp_url = URL.createObjectURL(new Blob());
   var uuid = temp_url.toString();
   URL.revokeObjectURL(temp_url);
-  return uuid.split(/[:\/]/g).pop().toLowerCase(); // remove prefixes
+  return uuid.split(/[:/]/g).pop().toLowerCase(); // remove prefixes
 }
 
 export class VideoPlayer {
@@ -152,7 +152,7 @@ export class VideoPlayer {
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
     await this.signaling.sendOffer(this.connectionId, offer.sdp);
-  };
+  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
@@ -218,7 +218,7 @@ export class VideoPlayer {
       this.pc.close();
       this.pc = null;
     }
-  };
+  }
 
   sendMsg(msg) {
     if (this.channel == null) {
@@ -238,7 +238,7 @@ export class VideoPlayer {
         Logger.log('Attempt to sendMsg message while connection closed.');
         break;
     }
-  };
+  }
 
   async stop() {
     await this.signaling.stop();

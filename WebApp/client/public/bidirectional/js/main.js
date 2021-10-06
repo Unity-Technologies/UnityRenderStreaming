@@ -22,7 +22,7 @@ setupButton.addEventListener('click', setUp);
 let hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
-window.addEventListener('beforeunload', async (e) => {
+window.addEventListener('beforeunload', async () => {
   await sendVideo.stop();
 }, true);
 
@@ -37,7 +37,7 @@ async function setupConfig() {
 function showWarningIfNeeded(startupMode) {
   const warningDiv = document.getElementById("warning");
   if (startupMode == "public") {
-    warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Public Mode."
+    warningDiv.innerHTML = "<h4>Warning</h4> This sample is not working on Public Mode.";
     warningDiv.hidden = false;
   }
 }
