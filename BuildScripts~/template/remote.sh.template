@@ -83,11 +83,11 @@ else
     --suite=${suite} \
     --platform=${platform} \
     --scripting-backend=${SCRIPTING_BACKEND} \
-    --extra-editor-arg="-${EXTRA_EDITOR_ARG}" \
     --testproject=${HOME}/${TEST_PROJECT_DIR} \
     --editor-location=${HOME}/.Editor \
     --artifacts_path=${ARTIFACT_DIR} \
-    --architecture=${architecture}
+    --architecture=${architecture} \
+    ${EXTRA_UTR_ARG}
   result=$?
 fi
 
