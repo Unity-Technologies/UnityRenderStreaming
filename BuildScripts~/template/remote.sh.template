@@ -68,7 +68,8 @@ then
     --platform=${platform} \
     --player-load-path=${PLAYER_LOAD_PATH} \
     --artifacts_path=${ARTIFACT_DIR} \
-    --player-connection-ip=${BOKKEN_DEVICE_IP}
+    --player-connection-ip=${BOKKEN_DEVICE_IP} \
+    ${EXTRA_UTR_ARG}
   result=$?
 else
   # download unity editor

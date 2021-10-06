@@ -246,7 +246,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
-{% else %} # platform.name == "macos" or platform.name == "macos" and param.platform != "standalone"
+{% else %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform != "standalone"
 
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
