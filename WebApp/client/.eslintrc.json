@@ -7,10 +7,9 @@
   "plugins": [
     "jest"
   ],
-  "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 2016
+    "ecmaVersion": "latest"
   },
   "env": {
     "browser": true,
