@@ -64,7 +64,7 @@ export class VideoPlayer {
     this.connectionId = uuid4();
 
     // Create peerConnection with proxy server and set up handlers
-    this.pc = new Peer(this.connectionId, false);
+    this.pc = new Peer(this.connectionId, true);
     this.pc.addEventListener('disconnect', () => {
       _this.ondisconnect();
     });
@@ -152,14 +152,7 @@ export class VideoPlayer {
 
     // setup signaling
     await this.signaling.start();
-
-    // Add transceivers to receive multi stream.
-    // It can receive two video tracks and one audio track from Unity app.
-    // This operation is required to generate offer SDP correctly.
-    this.pc.addTransceiver(this.connectionId, 'video', { direction: 'recvonly' });
-    this.pc.addTransceiver(this.connectionId, 'video', { direction: 'recvonly' });
-    this.pc.addTransceiver(this.connectionId, 'audio', { direction: 'recvonly' });
-  };
+  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
@@ -243,6 +236,11 @@ export class VideoPlayer {
     if (this.signaling) {
       await this.signaling.stop();
       this.signaling = null;
+    }
+
+    if (this.pc) {
+      this.pc.close();
+      this.pc = null;
     }
   }
 }

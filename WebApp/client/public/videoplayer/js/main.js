@@ -144,6 +144,7 @@ async function setupVideoPlayer(elements) {
 function onDisconnect() {
   const playerDiv = document.getElementById('player');
   clearChildren(playerDiv);
+  videoPlayer.stop();
   videoPlayer = null;
   showPlayButton();
 }

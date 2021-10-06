@@ -76,6 +76,7 @@ export default class Peer extends EventTarget {
   }
 
   close() {
+    this.connectionId = null;
     if (this.pc != null) {
       this.pc.close();
       this.pc = null;
