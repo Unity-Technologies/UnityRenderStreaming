@@ -726,10 +726,10 @@ MonoBehaviour:
     click:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 644105488}
-          m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-          m_MethodName: Play
-          m_Mode: 1
+        - m_Target: {fileID: 705507993}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2982,7 +2982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045786cf504bd7347842d6948241cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  urlSignaling: ws://192.168.11.11
+  urlSignaling: ws://localhost
   signalingType: Unity.RenderStreaming.Signaling.WebSocketSignaling
   iceServers:
   - credential: 
