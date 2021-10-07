@@ -1,3 +1,5 @@
+import { sleep } from "./testutils";
+
 let manager;
 
 export function reset(isPrivate) {
@@ -5,6 +7,10 @@ export function reset(isPrivate) {
 }
 
 export class MockSignaling extends EventTarget {
+
+  get interval() {
+    return 0.1;
+  }
 
   async start() {
     await manager.add(this);
@@ -46,7 +52,7 @@ export class MockSignaling extends EventTarget {
 class MockPublicSignalingManager {
   constructor() {
     this.list = new Set();
-    this.delay = () => new Promise(resolve => setTimeout(resolve, 10));
+    this.delay = async () => await sleep(10);
   }
 
   async add(signaling) {
@@ -73,7 +79,6 @@ class MockPublicSignalingManager {
     for (const element of this.list) {
       element.dispatchEvent(new CustomEvent("disconnect", { detail: data }));
     }
-    signaling.dispatchEvent(new CustomEvent("disconnect", { detail: data }));
   }
 
   async offer(owner, data) {
@@ -126,13 +131,14 @@ class MockPrivateSignalingManager {
     await this.delay();
     const peerExists = this.connectionIds.has(connectionId);
     if (!peerExists) {
-      this.connectionIds.Add(connectionId, new Set());
+      this.connectionIds.set(connectionId, new Set());
     }
 
     const list = this.connectionIds.get(connectionId);
     list.add(signaling);
 
-    signaling.dispatchEvent(new CustomEvent("connect", { connectionId: connectionId, polite: peerExists }));
+    const data = { connectionId: connectionId, polite: peerExists };
+    signaling.dispatchEvent(new CustomEvent("connect", { detail: data }));
   }
 
   async closeConnection(signaling, connectionId) {
@@ -143,13 +149,14 @@ class MockPrivateSignalingManager {
       console.error(`${connectionId} This connection id is not used.`);
     }
 
+    const data = { connectionId: connectionId };
     for (const element of list) {
-      element.dispatchEvent(new CustomEvent("disconnect", { connectionId: connectionId }));
+      element.dispatchEvent(new CustomEvent("disconnect", { detail: data }));
     }
 
     list.delete(signaling);
     if (list.size == 0) {
-      this.connectionIds.Remove(connectionId);
+      this.connectionIds.delete(connectionId);
     }
   }
 
@@ -178,7 +185,7 @@ class MockPrivateSignalingManager {
     data.polite = true;
     for (const signaling of list) {
       if (signaling != owner) {
-        signaling.dispatchEvent(new CustomEvent("offer", data));
+        signaling.dispatchEvent(new CustomEvent("offer", { detail: data }));
       }
     }
   }
@@ -193,7 +200,7 @@ class MockPrivateSignalingManager {
 
     for (const signaling of list) {
       if (signaling != owner) {
-        signaling.dispatchEvent(new CustomEvent("answer", data));
+        signaling.dispatchEvent(new CustomEvent("answer", { detail: data }));
       }
     }
   }
@@ -208,7 +215,7 @@ class MockPrivateSignalingManager {
 
     for (const signaling of list) {
       if (signaling != owner) {
-        signaling.dispatchEvent(new CustomEvent("candidate", data));
+        signaling.dispatchEvent(new CustomEvent("candidate", { detail: data }));
       }
     }
   }

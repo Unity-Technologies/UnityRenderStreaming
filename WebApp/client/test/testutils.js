@@ -7,3 +7,7 @@ export function waitFor(conditionFunction) {
 
   return new Promise(poll);
 }
+
+export async function sleep(milisecond) {
+  return new Promise(resolve => setTimeout(resolve, milisecond));
+}
