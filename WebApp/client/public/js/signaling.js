@@ -1,6 +1,6 @@
 import * as Logger from "./logger.js";
 
-export default class Signaling extends EventTarget {
+export class Signaling extends EventTarget {
 
   constructor() {
     super();
@@ -16,6 +16,10 @@ export default class Signaling extends EventTarget {
     else {
       return { 'Content-Type': 'application/json' };
     }
+  }
+
+  get interval() {
+    return this.interval;
   }
 
   url(method) {
@@ -204,6 +208,10 @@ export class WebSocketSignaling extends EventTarget {
           break;
       }
     };
+  }
+
+  get interval() {
+    return 0.1;
   }
 
   async start() {
