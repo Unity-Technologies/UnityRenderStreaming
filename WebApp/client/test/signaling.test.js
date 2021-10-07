@@ -1,9 +1,12 @@
+// import { Signaling, WebSocketSignaling } from "../public/js/signaling";
 import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep } from "./testutils";
 
-describe('signaling test in public mode on mocksingaling', () => {
-  let signaling1;
-  let signaling2;
+describe.each([
+  { signaling1: new MockSignaling(), signaling2: new MockSignaling() },
+  //  { signaling1: new Signaling(), signaling2: new Signaling() },
+  //  { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
+])('signaling test in public mode', ({ signaling1, signaling2 }) => {
   const connectionId1 = "12345";
   const connectionId2 = "67890";
   const testsdp = "test sdp";
@@ -14,17 +17,13 @@ describe('signaling test in public mode on mocksingaling', () => {
   });
 
   beforeEach(async () => {
-    signaling1 = new MockSignaling();
     await signaling1.start();
-    signaling2 = new MockSignaling();
     await signaling2.start();
   });
 
   afterEach(async () => {
     await signaling1.stop();
-    signaling1 = null;
     await signaling2.stop();
-    signaling2 = null;
   });
 
   test('onConnect', async () => {
@@ -164,9 +163,11 @@ describe('signaling test in public mode on mocksingaling', () => {
   });
 });
 
-describe('signaling test in private mode on mocksingaling', () => {
-  let signaling1;
-  let signaling2;
+describe.each([
+  { signaling1: new MockSignaling(), signaling2: new MockSignaling() },
+  //  { signaling1: new Signaling(), signaling2: new Signaling() },
+  //  { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
+])('signaling test in private mode', ({ signaling1, signaling2 }) => {
   const connectionId = "12345";
   const testsdp = "test sdp";
   const testcandidate = "test candidate";
