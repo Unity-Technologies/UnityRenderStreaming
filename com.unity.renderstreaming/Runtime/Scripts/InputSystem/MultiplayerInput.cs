@@ -159,6 +159,8 @@ namespace Unity.RenderStreaming
 
         public void UnpairDevices(InputDevice device)
         {
+            if (!m_InputUser.valid)
+                return;
             m_InputUser.UnpairDevice(device);
         }
 
