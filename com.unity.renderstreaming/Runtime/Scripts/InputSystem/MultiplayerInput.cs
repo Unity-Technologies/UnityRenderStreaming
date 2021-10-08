@@ -195,6 +195,14 @@ namespace Unity.RenderStreaming
             if (m_Actions == null)
                 return;
 
+            var oldActions = m_Actions;
+            m_Actions = Instantiate(m_Actions);
+            for (var actionMap = 0; actionMap < oldActions.actionMaps.Count; actionMap++)
+            {
+                for (var binding = 0; binding < oldActions.actionMaps[actionMap].bindings.Count; binding++)
+                    m_Actions.actionMaps[actionMap].ApplyBindingOverride(binding, oldActions.actionMaps[actionMap].bindings[binding]);
+            }
+
             // Hook up all action events.
             if (m_ActionEvents != null)
             {
