@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
@@ -20,9 +21,12 @@ namespace Unity.RenderStreaming.Samples
 
         Vector3 initialPosition;
 
+        List<InputDevice> devices = new List<InputDevice>();
+
         private void Awake()
         {
-            playerInput.neverAutoSwitchControlSchemes = true;
+            Debug.Log("PlayerController " + gameObject.name);
+            //playerInput.neverAutoSwitchControlSchemes = true;
             receiver.onDeviceChange += OnDeviceChange;
 
             initialPosition = transform.position;
@@ -30,20 +34,29 @@ namespace Unity.RenderStreaming.Samples
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            if (!playerInput.user.valid)
-                return;
-            var user = playerInput.user;
+            //if (!playerInput.user.valid)
+            //{
+            //    playerInput.enabled = true;
+            //}
+            Debug.Log("OnDeviceChange " + device.name + " change:" + change + " id:" + playerInput.user.id + " valid:" + playerInput.user.valid);
+
+            //var user = playerInput.user;
 
             switch (change)
             {
                 case InputDeviceChange.Added:
                 {
-                    InputUser.PerformPairingWithDevice(device, user);
+                    Debug.Log("OnDeviceChange2 " +device.name + " remote" + device.remote);
+                    //InputUser.PerformPairingWithDevice(device, user);
+                    devices.Add(device);
+                    playerInput.SwitchCurrentControlScheme(devices.ToArray());
                     return;
                 }
                 case InputDeviceChange.Removed:
                 {
-                    user.UnpairDevice(device);
+                    //user.UnpairDevice(device);
+                    devices.Remove(device);
+                    playerInput.SwitchCurrentControlScheme(devices.ToArray());
                     return;
                 }
             }

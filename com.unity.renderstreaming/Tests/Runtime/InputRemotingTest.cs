@@ -1,6 +1,11 @@
+using System;
+using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.Users;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
@@ -257,4 +262,214 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiver.Dispose();
         }
     }
+
+    class MultiplayInputManager
+    {
+        private Action<InputControl, InputEventPtr> m_UnpairedDeviceUsedDelegate;
+
+        // Key: InputUser.id, value
+        private Dictionary<InputDevice, uint> devices = new Dictionary<InputDevice, uint>();
+
+        static MultiplayInputManager()
+        {
+            instance = new MultiplayInputManager();
+        }
+
+        private MultiplayInputManager()
+        {
+        }
+
+        public static MultiplayInputManager instance { get; private set; }
+
+        ~MultiplayInputManager()
+        {
+            DisableJoining();
+        }
+
+        public void EnableJoining()
+        {
+            if (m_UnpairedDeviceUsedDelegate == null)
+                m_UnpairedDeviceUsedDelegate = OnUnpairedDeviceUsed;
+            InputUser.onUnpairedDeviceUsed += m_UnpairedDeviceUsedDelegate;
+            ++InputUser.listenForUnpairedDeviceActivity;
+        }
+
+        public void DisableJoining()
+        {
+            InputUser.onUnpairedDeviceUsed -= m_UnpairedDeviceUsedDelegate;
+            --InputUser.listenForUnpairedDeviceActivity;
+        }
+
+        public void AddDevice(InputDevice device, uint id)
+        {
+            devices.Add(device, id);
+        }
+
+        public void RemoveDevice(InputDevice device, uint id)
+        {
+            if (devices[device] != id)
+                throw new InvalidOperationException($"user {id} is not owner of {device}.");
+            devices.Remove(device);
+        }
+
+        private void OnUnpairedDeviceUsed(InputControl control, InputEventPtr eventPtr)
+        {
+            //Debug.Log("OnUnpairedDeviceUsed");
+            uint id = devices[control.device];
+            //var playerInput = PlayerInput.all.FirstOrDefault(_ => _.user.id == id);
+            //var result = playerInput.SwitchCurrentControlScheme(control.device);
+
+            InputUser user = InputUser.all.First(_ => _.id == id);
+            InputUser.PerformPairingWithDevice(control.device, user);
+            //user.ActivateControlScheme(controlScheme);
+        }
+    }
+
+    static class PlayerInputExtension
+    {
+        public static void AddDevice(this PlayerInput owner, InputDevice device)
+        {
+            MultiplayInputManager.instance.AddDevice(device, owner.user.id);
+        }
+        public static void RemoveDevice(this PlayerInput owner, InputDevice device)
+        {
+            MultiplayInputManager.instance.RemoveDevice(device, owner.user.id);
+        }
+    }
+
+    class PlayerInputTest : InputTestFixture
+    {
+        [Test]
+        public void Test()
+        {
+            var actions = ScriptableObject.CreateInstance<InputActionAsset>();
+            var playActions = new InputActionMap("play");
+            var fireAction = playActions.AddAction("fire");
+            fireAction.AddBinding("<Gamepad>/<Button>"); // Match multiple controls in single binding to make sure that isn't throwing PlayerInput off.
+            fireAction.AddBinding("<Keyboard>/space");
+            actions.AddActionMap(playActions);
+
+            var go = new GameObject();
+            go.SetActive(false);
+            var playerInput1 = go.AddComponent<PlayerInput>();
+            playerInput1.actions = actions;
+            go.SetActive(true);
+
+            Assert.That(playerInput1.devices, Is.Empty);
+        }
+
+        private void OnUnpairedDeviceUsed(InputControl control, InputEventPtr eventPtr)
+        {
+        }
+
+        [Test]
+        public void ControlScheme()
+        {
+            var gamepad1 = InputSystem.AddDevice<Gamepad>();
+            var gamepad2 = InputSystem.AddDevice<Gamepad>();
+            var gamepad3 = InputSystem.AddDevice<Gamepad>();
+            var gamepad4 = InputSystem.AddDevice<Gamepad>();
+            var scheme1 = new InputControlScheme("test1").WithRequiredDevice(gamepad1.name);
+            var scheme2 = new InputControlScheme("test2").WithRequiredDevice(gamepad2.name);
+            var scheme3 = new InputControlScheme("test3").WithRequiredDevice(gamepad3.name);
+            var scheme4 = new InputControlScheme("test4").WithRequiredDevice(gamepad4.name);
+
+            MultiplayInputManager manager = MultiplayInputManager.instance;
+            manager.EnableJoining();
+
+            var actions1 = ScriptableObject.CreateInstance<InputActionAsset>();
+            actions1.AddControlScheme(scheme1);
+            actions1.AddControlScheme(scheme2);
+            var actions2 = ScriptableObject.CreateInstance<InputActionAsset>();
+            actions2.AddControlScheme(scheme3);
+            actions2.AddControlScheme(scheme4);
+
+            var go1 = new GameObject();
+            var playerInput1 = go1.AddComponent<PlayerInput>();
+            playerInput1.actions = actions1;
+            var go2 = new GameObject();
+            var playerInput2 = go2.AddComponent<PlayerInput>();
+            playerInput2.actions = actions2;
+
+            //playerInput1.AddDevice(gamepad1);
+            //playerInput1.AddDevice(gamepad2);
+            //playerInput2.AddDevice(gamepad3);
+            //playerInput2.AddDevice(gamepad4);
+
+            Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test1"));
+            Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            Press(gamepad1.buttonSouth);
+            Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test1"));
+            Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            Press(gamepad2.buttonSouth);
+            Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test2"));
+            Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            Press(gamepad4.buttonSouth);
+            Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test2"));
+            Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test4"));
+
+            manager.DisableJoining();
+        }
+
+        [Test]
+        public void InputUserTest()
+        {
+            var gamepad1 = InputSystem.AddDevice<Gamepad>();
+            var gamepad2 = InputSystem.AddDevice<Gamepad>();
+            var gamepad3 = InputSystem.AddDevice<Gamepad>();
+            var gamepad4 = InputSystem.AddDevice<Gamepad>();
+            var scheme1 = new InputControlScheme("test1").WithRequiredDevice(gamepad1.name);
+            var scheme2 = new InputControlScheme("test2").WithRequiredDevice(gamepad2.name);
+            var scheme3 = new InputControlScheme("test3").WithRequiredDevice(gamepad3.name);
+            var scheme4 = new InputControlScheme("test4").WithRequiredDevice(gamepad4.name);
+
+            MultiplayInputManager manager = MultiplayInputManager.instance;
+            manager.EnableJoining();
+
+            var actions1 = ScriptableObject.CreateInstance<InputActionAsset>();
+            actions1.AddControlScheme(scheme1);
+            actions1.AddControlScheme(scheme2);
+            var actions2 = ScriptableObject.CreateInstance<InputActionAsset>();
+            actions2.AddControlScheme(scheme3);
+            actions2.AddControlScheme(scheme4);
+
+            InputUser user1 = InputUser.CreateUserWithoutPairedDevices();
+            InputUser user2 = InputUser.CreateUserWithoutPairedDevices();
+            user1.AssociateActionsWithUser(actions1);
+            user2.AssociateActionsWithUser(actions2);
+
+            InputUser.PerformPairingWithDevice(gamepad1, user1);
+            InputUser.PerformPairingWithDevice(gamepad2, user1);
+            InputUser.PerformPairingWithDevice(gamepad3, user2);
+            InputUser.PerformPairingWithDevice(gamepad4, user2);
+
+            //manager.AddDevice(gamepad1, user1.id);
+            //manager.AddDevice(gamepad2, user1.id);
+            //manager.AddDevice(gamepad3, user2.id);
+            //manager.AddDevice(gamepad4, user2.id);
+            //playerInput1.AddDevice(gamepad1);
+            //playerInput1.AddDevice(gamepad2);
+            //playerInput1.UpdateAssociatedInputActions();
+            //playerInput2.AddDevice(gamepad3);
+            //playerInput2.AddDevice(gamepad4);
+
+            //PlayerInput.
+            //Debug.Log(playerInput1.user.pairedDevices);
+
+
+            Press(gamepad1.buttonSouth);
+            //Assert.That(user1.pairedDevices, Is.EquivalentTo(new[] { gamepad1 }));
+            //Assert.That(user2.pairedDevices, Is.EquivalentTo(new InputDevice[] {}));
+
+            Press(gamepad2.buttonSouth);
+            //Assert.That(user1.pairedDevices, Is.EquivalentTo(new[] { gamepad1 }));
+            //Assert.That(user2.pairedDevices, Is.EquivalentTo(new InputDevice[] { }));
+
+            //manager.DisableJoining();
+        }
+    }
+
 }
