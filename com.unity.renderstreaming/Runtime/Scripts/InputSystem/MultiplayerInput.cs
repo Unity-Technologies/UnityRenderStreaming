@@ -7,6 +7,11 @@ using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// Represents a separate player in the game complete with a set of actions exclusive
+    /// to the player and a set of paired device.
+    /// It is the simple version of UnityEngine.InputSystem.PlayerInput that removing dependency of InputControlScheme.
+    /// </summary>
     public class MultiplayerInput : MonoBehaviour
     {
         /// <summary>
@@ -61,7 +66,9 @@ namespace Unity.RenderStreaming
         /// </summary>
         public ReadOnlyArray<InputDevice> devices => m_InputUser.pairedDevices;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public InputActionMap currentActionMap
         {
             get => m_CurrentActionMap;
@@ -73,12 +80,18 @@ namespace Unity.RenderStreaming
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string defaultActionMap
         {
             get => m_DefaultActionMap;
             set => m_DefaultActionMap = value;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void OnEnable()
         {
             m_Enabled = true;
@@ -89,6 +102,9 @@ namespace Unity.RenderStreaming
             ActivateInput();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void OnDisable()
         {
             m_Enabled = false;
@@ -98,6 +114,9 @@ namespace Unity.RenderStreaming
             UninitializeActions();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ActivateInput()
         {
             m_InputActive = true;
@@ -110,6 +129,9 @@ namespace Unity.RenderStreaming
                 m_CurrentActionMap?.Enable();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void DeactivateInput()
         {
             m_CurrentActionMap?.Disable();
@@ -117,6 +139,10 @@ namespace Unity.RenderStreaming
             m_InputActive = false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mapNameOrId"></param>
         public void SwitchCurrentActionMap(string mapNameOrId)
         {
             // Must be enabled.
@@ -144,11 +170,18 @@ namespace Unity.RenderStreaming
             currentActionMap = actionMap;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="device"></param>
         public void PerformPairingWithDevice(InputDevice device)
         {
             m_InputUser = InputUser.PerformPairingWithDevice(device, m_InputUser);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void PerformPairingWithAllLocalDevices()
         {
             foreach (var device in InputSystem.devices.Where(_ => !_.remote))
@@ -157,6 +190,10 @@ namespace Unity.RenderStreaming
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="device"></param>
         public void UnpairDevices(InputDevice device)
         {
             if (!m_InputUser.valid)
