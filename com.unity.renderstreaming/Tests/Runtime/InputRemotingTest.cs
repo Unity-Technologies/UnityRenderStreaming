@@ -363,6 +363,69 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void PlayerInput()
+        {
+            //var gamepad1 = InputSystem.AddDevice<Gamepad>();
+            //var gamepad2 = InputSystem.AddDevice<Gamepad>();
+            //var gamepad3 = InputSystem.AddDevice<Gamepad>();
+            //var gamepad4 = InputSystem.AddDevice<Gamepad>();
+            //var scheme1 = new InputControlScheme("test1").WithRequiredDevice(gamepad1.name);
+            //var scheme2 = new InputControlScheme("test2").WithRequiredDevice(gamepad2.name);
+            //var scheme3 = new InputControlScheme("test3").WithRequiredDevice(gamepad3.name);
+            //var scheme4 = new InputControlScheme("test4").WithRequiredDevice(gamepad4.name);
+
+            MultiplayInputManager manager = MultiplayInputManager.instance;
+            manager.EnableJoining();
+
+            var actions1 = ScriptableObject.CreateInstance<InputActionAsset>();
+            //actions1.AddControlScheme(scheme1);
+            //actions1.AddControlScheme(scheme2);
+            var actions2 = ScriptableObject.CreateInstance<InputActionAsset>();
+            //actions2.AddControlScheme(scheme3);
+            //actions2.AddControlScheme(scheme4);
+
+            var go1 = new GameObject();
+            var playerInput1 = go1.AddComponent<PlayerInput>();
+            playerInput1.neverAutoSwitchControlSchemes = true;
+            playerInput1.actions = actions1;
+            var go2 = new GameObject();
+            var playerInput2 = go2.AddComponent<PlayerInput>();
+            playerInput2.neverAutoSwitchControlSchemes = true;
+            playerInput2.actions = actions2;
+
+            var gamepad1 = InputSystem.AddDevice<Gamepad>();
+            var gamepad2 = InputSystem.AddDevice<Gamepad>();
+            var gamepad3 = InputSystem.AddDevice<Gamepad>();
+            var gamepad4 = InputSystem.AddDevice<Gamepad>();
+
+            //playerInput1.AddDevice(gamepad1);
+            //playerInput1.AddDevice(gamepad2);
+            //playerInput2.AddDevice(gamepad3);
+            //playerInput2.AddDevice(gamepad4);
+
+            Assert.That(playerInput1.user.valid, Is.False);
+            Assert.That(playerInput2.user.valid, Is.False);
+
+            //Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test1"));
+            //Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            //Press(gamepad1.buttonSouth);
+            //Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test1"));
+            //Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            //Press(gamepad2.buttonSouth);
+            //Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test2"));
+            //Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test3"));
+
+            //Press(gamepad4.buttonSouth);
+            //Assert.That(playerInput1.currentControlScheme, Is.EqualTo("test2"));
+            //Assert.That(playerInput2.currentControlScheme, Is.EqualTo("test4"));
+
+            //manager.DisableJoining();
+        }
+
+
+        [Test]
         public void ControlScheme()
         {
             var gamepad1 = InputSystem.AddDevice<Gamepad>();
@@ -468,6 +531,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             //Assert.That(user1.pairedDevices, Is.EquivalentTo(new[] { gamepad1 }));
             //Assert.That(user2.pairedDevices, Is.EquivalentTo(new InputDevice[] { }));
 
+            //
             //manager.DisableJoining();
         }
     }

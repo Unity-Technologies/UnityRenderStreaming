@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;
-        [SerializeField] PlayerInput playerInput;
+        [SerializeField] MultiplayerInput playerInput;
         [SerializeField] InputSystemChannelReceiver receiver;
         [SerializeField] TextMesh label;
 
@@ -18,45 +18,26 @@ namespace Unity.RenderStreaming.Samples
 
         Vector2 inputMovement;
         Vector2 inputLook;
-
         Vector3 initialPosition;
 
-        List<InputDevice> devices = new List<InputDevice>();
-
-        private void Awake()
+        protected void Awake()
         {
-            Debug.Log("PlayerController " + gameObject.name);
-            //playerInput.neverAutoSwitchControlSchemes = true;
             receiver.onDeviceChange += OnDeviceChange;
-
             initialPosition = transform.position;
         }
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
-            //if (!playerInput.user.valid)
-            //{
-            //    playerInput.enabled = true;
-            //}
-            Debug.Log("OnDeviceChange " + device.name + " change:" + change + " id:" + playerInput.user.id + " valid:" + playerInput.user.valid);
-
-            //var user = playerInput.user;
-
             switch (change)
             {
                 case InputDeviceChange.Added:
                 {
-                    Debug.Log("OnDeviceChange2 " +device.name + " remote" + device.remote);
-                    //InputUser.PerformPairingWithDevice(device, user);
-                    devices.Add(device);
-                    playerInput.SwitchCurrentControlScheme(devices.ToArray());
+                    playerInput.PerformPairingWithDevice(device);
                     return;
                 }
                 case InputDeviceChange.Removed:
                 {
-                    //user.UnpairDevice(device);
-                    devices.Remove(device);
-                    playerInput.SwitchCurrentControlScheme(devices.ToArray());
+                    playerInput.UnpairDevices(device);
                     return;
                 }
             }

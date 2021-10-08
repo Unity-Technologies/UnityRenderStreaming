@@ -1,0 +1,207 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEditor;
+using Unity.RenderStreaming;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
+using UnityEngine.InputSystem.Utilities;
+
+namespace UnityEngine.RenderStreaming.Editor
+{
+    [CustomEditor(typeof(MultiplayerInput))]
+    internal class MultiplayerInputEditor : UnityEditor.Editor
+    {
+        public void OnEnable()
+        {
+            InputUser.onChange += OnUserChange;
+
+            m_ActionsProperty = serializedObject.FindProperty("m_Actions");
+            m_ActionEventsProperty = serializedObject.FindProperty("m_ActionEvents");
+            m_DefaultActionMapProperty = serializedObject.FindProperty("m_DefaultActionMap");
+        }
+        private void OnUserChange(InputUser user, InputUserChange change, InputDevice device)
+        {
+            Repaint();
+        }
+
+        public override void OnInspectorGUI()
+        {
+            EditorGUI.BeginChangeCheck();
+
+            // Action config section.
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(m_ActionsProperty);
+            if (EditorGUI.EndChangeCheck() || !m_ActionAssetInitialized)
+                OnActionAssetChange();
+            ++EditorGUI.indentLevel;
+            if (m_ActionMapOptions != null && m_ActionMapOptions.Length > 0)
+            {
+                // Default action map picker.
+
+                var selected = EditorGUILayout.Popup(m_DefaultActionMapText, m_SelectedDefaultActionMap,
+                    m_ActionMapOptions);
+                if (selected != m_SelectedDefaultActionMap)
+                {
+                    if (selected == 0)
+                    {
+                        m_DefaultActionMapProperty.stringValue = null;
+                    }
+                    else
+                    {
+                        // Use ID rather than name.
+                        var asset = (InputActionAsset)m_ActionsProperty.objectReferenceValue;
+                        var actionMap = asset.FindActionMap(m_ActionMapOptions[selected].text);
+                        if (actionMap != null)
+                            m_DefaultActionMapProperty.stringValue = actionMap.id.ToString();
+                    }
+                    m_SelectedDefaultActionMap = selected;
+                }
+            }
+            --EditorGUI.indentLevel;
+
+            // Notifications/event section.
+            m_EventsGroupUnfolded = EditorGUILayout.Foldout(m_EventsGroupUnfolded, m_EventsGroupText, toggleOnLabelClick: true);
+            if (m_EventsGroupUnfolded)
+            {
+                // Action events. Group by action map.
+                if (m_ActionNames != null)
+                {
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        for (var n = 0; n < m_NumActionMaps; ++n)
+                        {
+                            m_ActionMapEventsUnfolded[n] = EditorGUILayout.Foldout(m_ActionMapEventsUnfolded[n],
+                                m_ActionMapNames[n], toggleOnLabelClick: true);
+                            using (new EditorGUI.IndentLevelScope())
+                            {
+                                if (m_ActionMapEventsUnfolded[n])
+                                {
+                                    for (var i = 0; i < m_ActionNames.Length; ++i)
+                                    {
+                                        if (m_ActionMapIndices[i] != n)
+                                            continue;
+
+                                        EditorGUILayout.PropertyField(m_ActionEventsProperty.GetArrayElementAtIndex(i), m_ActionNames[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+        }
+
+        private void OnActionAssetChange()
+        {
+            serializedObject.ApplyModifiedProperties();
+            m_ActionAssetInitialized = true;
+
+            var playerInput = (MultiplayerInput)target;
+            var asset = (InputActionAsset)m_ActionsProperty.objectReferenceValue;
+            if (asset == null)
+            {
+                m_ActionMapOptions = null;
+                return;
+            }
+
+            var newActionNames = new List<GUIContent>();
+            var newActionEvents = new List<PlayerInput.ActionEvent>();
+            var newActionMapIndices = new List<int>();
+
+            void AddEntry(InputAction action, PlayerInput.ActionEvent actionEvent)
+            {
+                newActionNames.Add(new GUIContent(action.name));
+                newActionEvents.Add(actionEvent);
+
+                var actionMapIndex = asset.actionMaps.IndexOfReference(action.actionMap);
+                newActionMapIndices.Add(actionMapIndex);
+
+                if (actionMapIndex >= m_NumActionMaps)
+                    m_NumActionMaps = actionMapIndex + 1;
+
+                ArrayHelpers.PutAtIfNotSet(ref m_ActionMapNames, actionMapIndex,
+                    () => new GUIContent(action.actionMap.name));
+            }
+
+            // Bring over any action events that we already have and that are still in the asset.
+            var oldActionEvents = playerInput.m_ActionEvents;
+            if (oldActionEvents != null)
+            {
+                foreach (var entry in oldActionEvents)
+                {
+                    var guid = entry.actionId;
+                    var action = asset.FindAction(guid);
+                    if (action != null)
+                        AddEntry(action, entry);
+                }
+            }
+
+            // Add any new actions.
+            foreach (var action in asset)
+            {
+                // Skip if it was already in there.
+                if (oldActionEvents != null && oldActionEvents.Any(x => x.actionId == action.id.ToString()))
+                    continue;
+
+                ////FIXME: adds bindings to the name
+                AddEntry(action, new PlayerInput.ActionEvent(action.id, action.ToString()));
+            }
+
+            m_ActionNames = newActionNames.ToArray();
+            m_ActionMapIndices = newActionMapIndices.ToArray();
+            Array.Resize(ref m_ActionMapEventsUnfolded, m_NumActionMaps);
+            playerInput.m_ActionEvents = newActionEvents.ToArray();
+
+            // Read out action maps.
+            var selectedDefaultActionMap = !string.IsNullOrEmpty(playerInput.defaultActionMap)
+                ? asset.FindActionMap(playerInput.defaultActionMap)
+                : null;
+            m_SelectedDefaultActionMap = asset.actionMaps.Count > 0 ? 1 : 0;
+            var actionMaps = asset.actionMaps;
+            m_ActionMapOptions = new GUIContent[actionMaps.Count + 1];
+            m_ActionMapOptions[0] = new GUIContent(EditorGUIUtility.TrTextContent("<None>"));
+            ////TODO: sort alphabetically
+            for (var i = 0; i < actionMaps.Count; ++i)
+            {
+                var actionMap = actionMaps[i];
+                m_ActionMapOptions[i + 1] = new GUIContent(actionMap.name);
+
+                if (selectedDefaultActionMap != null && actionMap == selectedDefaultActionMap)
+                    m_SelectedDefaultActionMap = i + 1;
+            }
+            if (m_SelectedDefaultActionMap <= 0)
+                playerInput.defaultActionMap = null;
+            else
+                playerInput.defaultActionMap = m_ActionMapOptions[m_SelectedDefaultActionMap].text;
+
+            serializedObject.Update();
+        }
+
+        [SerializeField] private bool m_EventsGroupUnfolded;
+        [SerializeField] private bool[] m_ActionMapEventsUnfolded;
+
+        [NonSerialized]
+        private readonly GUIContent m_EventsGroupText =
+            EditorGUIUtility.TrTextContent("Events", "UnityEvents triggered by the PlayerInput component");
+        [NonSerialized]
+        private readonly GUIContent m_DefaultActionMapText =
+            EditorGUIUtility.TrTextContent("Default Map", "Action map to enable by default. If not set, no actions will be enabled by default.");
+
+        [NonSerialized] private GUIContent[] m_ActionNames;
+        [NonSerialized] private GUIContent[] m_ActionMapNames;
+        [NonSerialized] private int[] m_ActionMapIndices;
+        [NonSerialized] private int m_NumActionMaps;
+
+        [NonSerialized] private SerializedProperty m_ActionEventsProperty;
+        [NonSerialized] private int m_SelectedDefaultActionMap;
+        [NonSerialized] private GUIContent[] m_ActionMapOptions;
+
+        [NonSerialized] private SerializedProperty m_ActionsProperty;
+        [NonSerialized] private SerializedProperty m_DefaultActionMapProperty;
+        [NonSerialized] private bool m_ActionAssetInitialized;
+    }
+}

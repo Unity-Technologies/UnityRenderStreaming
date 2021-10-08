@@ -12,6 +12,13 @@ namespace Unity.RenderStreaming
 {
     internal static class ArrayHelpers
     {
+        public static int LengthSafe<TValue>(this TValue[] array)
+        {
+            if (array == null)
+                return 0;
+            return array.Length;
+        }
+
         public static int Append<TValue>(ref TValue[] array, TValue value)
         {
             if (array == null)
@@ -89,6 +96,15 @@ namespace Unity.RenderStreaming
                 Array.Copy(array, index + 1, array, index, length - index - 1);
 
             Array.Resize(ref array, length - 1);
+        }
+
+        public static void PutAtIfNotSet<TValue>(ref TValue[] array, int index, Func<TValue> valueFn)
+        {
+            if (array.LengthSafe() < index + 1)
+                Array.Resize(ref array, index + 1);
+
+            if (EqualityComparer<TValue>.Default.Equals(array[index], default(TValue)))
+                array[index] = valueFn();
         }
     }
 }
