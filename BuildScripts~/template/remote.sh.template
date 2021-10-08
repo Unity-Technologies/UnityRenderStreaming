@@ -10,7 +10,7 @@ export ARTIFACT_DIR=${PWD}/test-results
 # SCRIPTING_BACKEND = `il2cpp` or `mono`
 additional_component_arg="-c editor"
 platform=Editor
-architecture=x64
+architecture=${TEST_ARCHITECTURE}
 suite=playmode
 
 if [ ${TEST_PLATFORM} = "standalone" ]
@@ -52,6 +52,12 @@ curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-stand
   --output utr
 chmod +x ./utr
 
+if [ ${TEST_TARGET} = "macos" ] && [ ${architecture} = "arm64" ]
+then
+  # install rosetta 2
+  softwareupdate --install-rosetta --agree-to-license
+fi
+
 export WEBAPP_PATH=${HOME}/${WEBAPP_DIR}/${WEBAPP_NAME}
 
 if [ ${TEST_PLATFORM} = "standalone" ]
@@ -62,7 +68,8 @@ then
     --platform=${platform} \
     --player-load-path=${PLAYER_LOAD_PATH} \
     --artifacts_path=${ARTIFACT_DIR} \
-    --player-connection-ip=${BOKKEN_DEVICE_IP}
+    --player-connection-ip=${BOKKEN_DEVICE_IP} \
+    ${EXTRA_UTR_ARG}
   result=$?
 else
   # download unity editor

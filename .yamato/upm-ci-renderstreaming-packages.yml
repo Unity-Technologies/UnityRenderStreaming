@@ -124,7 +124,7 @@ test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
 {% endfor %}
 
 {% for platform in platforms %}
-{% if platform.name != "macos" %}
+{% if platform.name != "macos" and platform.name != "macos-m1" %}
 {% for param in platform.test_params %}
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -152,7 +152,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% for project in test_projects %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
@@ -184,14 +184,14 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 {% endfor %}
 {% endfor %}
 
 {% else %}
 {% for param in platform.test_params %}
 
-{% if param.platform == "standalone" %} # platform.name == "macos" and param.platform == "standalone"
+{% if param.platform == "standalone" %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform == "standalone"
 
 build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Build {{ package.packagename }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -206,7 +206,7 @@ build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.na
     - unity-downloader-cli -c Editor -c {{ param.additional_component_arg }} -u {{ editor.version }} --fast -w
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr --output utr
     - chmod +x ./utr
-    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only
+    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only --timeout=3000 --testfilter=!HttpSignaling
   artifacts:
     players:
       paths:
@@ -230,11 +230,11 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
-      TEST_TARGET: {{ platform.name }}
+      TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
+      TEST_ARCHITECTURE: {{ platform.architecture }}
       SCRIPTING_BACKEND: {{ param.backend }}  
       EDITOR_VERSION: {{ editor.version }}
-      EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
     - BuildScripts~/test_package_mac.sh
   artifacts:
@@ -243,9 +243,9 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
-{% else %} # platform.name == "macos" and param.platform != "standalone"
+{% else %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform != "standalone"
 
 test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -260,9 +260,10 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
-      TEST_TARGET: {{ platform.name }}
+      TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
-      SCRIPTING_BACKEND: {{ param.backend }}  
+      TEST_ARCHITECTURE: {{ platform.architecture }}
+      SCRIPTING_BACKEND: {{ param.backend }}
       EDITOR_VERSION: {{ editor.version }}
       EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
@@ -274,7 +275,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
         - "upm-ci~/test-results/**"
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% endif %}
 
@@ -305,7 +306,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 {% endfor %}
 {% endfor %}
 {% endif -%}
@@ -325,7 +326,16 @@ test_{{ package.name }}_{{ editor.version }}:
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
+# todo(kazuki) :
+# editor/playmode test are not conducted on m1 mac 
+# XCode command line tools has not installed on m1 mac device (Standalone test don't need to install them)
+{% if platform.name == "macos-m1" %}
+{% if param.platform == "standalone" %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+{% endif %}
+{% else %}
+    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+{% endif %}
 {% endfor %}
 {% endfor %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
