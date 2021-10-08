@@ -4,8 +4,8 @@ import { waitFor, sleep } from "./testutils";
 
 describe.each([
   { signaling1: new MockSignaling(), signaling2: new MockSignaling() },
-  //  { signaling1: new Signaling(), signaling2: new Signaling() },
-  //  { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
+  // { signaling1: new Signaling(), signaling2: new Signaling() },
+  // { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
 ])('signaling test in public mode', ({ signaling1, signaling2 }) => {
   const connectionId1 = "12345";
   const connectionId2 = "67890";
@@ -142,19 +142,19 @@ describe.each([
     expect(answerRes1.connectionId).toBe(connectionId1);
     expect(answerRes1.sdp).toBe(testsdp);
 
-    await signaling2.sendCandidate(connectionId1, testcandidate, 1, "1");
+    await signaling2.sendCandidate(connectionId1, testcandidate, 1, 1);
     await waitFor(() => candidateRes1 != null);
     expect(candidateRes1.connectionId).toBe(connectionId1);
     expect(candidateRes1.candidate).toBe(testcandidate);
+    expect(candidateRes1.sdpMid).toBe(1);
     expect(candidateRes1.sdpMLineIndex).toBe(1);
-    expect(candidateRes1.sdpMid).toBe("1");
 
-    await signaling1.sendCandidate(connectionId1, testcandidate, 1, "1");
+    await signaling1.sendCandidate(connectionId1, testcandidate, 1, 1);
     await waitFor(() => candidateRes2 != null);
     expect(candidateRes2.connectionId).toBe(connectionId1);
     expect(candidateRes2.candidate).toBe(testcandidate);
+    expect(candidateRes2.sdpMid).toBe(1);
     expect(candidateRes2.sdpMLineIndex).toBe(1);
-    expect(candidateRes2.sdpMid).toBe("1");
 
     await signaling1.deleteConnection(connectionId1);
     await waitFor(() => disconnectRes1 != null);
@@ -328,19 +328,19 @@ describe.each([
     expect(answerRes1.connectionId).toBe(connectionId);
     expect(answerRes1.sdp).toBe(testsdp);
 
-    await signaling2.sendCandidate(connectionId, testcandidate, 1, "1");
+    await signaling2.sendCandidate(connectionId, testcandidate, 1, 1);
     await waitFor(() => candidateRes1 != null);
     expect(candidateRes1.connectionId).toBe(connectionId);
     expect(candidateRes1.candidate).toBe(testcandidate);
     expect(candidateRes1.sdpMLineIndex).toBe(1);
-    expect(candidateRes1.sdpMid).toBe("1");
+    expect(candidateRes1.sdpMid).toBe(1);
 
-    await signaling1.sendCandidate(connectionId, testcandidate, 1, "1");
+    await signaling1.sendCandidate(connectionId, testcandidate, 1, 1);
     await waitFor(() => candidateRes2 != null);
     expect(candidateRes2.connectionId).toBe(connectionId);
     expect(candidateRes2.candidate).toBe(testcandidate);
     expect(candidateRes2.sdpMLineIndex).toBe(1);
-    expect(candidateRes2.sdpMid).toBe("1");
+    expect(candidateRes2.sdpMid).toBe(1);
 
     await signaling1.deleteConnection(connectionId);
     await waitFor(() => disconnectRes1 != null && disconnectRes2 != null);

@@ -4,7 +4,6 @@ export class Signaling extends EventTarget {
 
   constructor() {
     super();
-    this.interval = 3000;
     this.running = false;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
@@ -19,7 +18,7 @@ export class Signaling extends EventTarget {
   }
 
   get interval() {
-    return this.interval;
+    return 1000;
   }
 
   url(method) {
@@ -89,8 +88,10 @@ export class Signaling extends EventTarget {
       Logger.log('get candidates:', candidates);
 
       if (candidates.length > 0) {
+        const connectionId = candidates[0].connectionId;
         for (let candidate of candidates[0].candidates) {
-          this.dispatchEvent(new CustomEvent('candidate', { detail: candidate }));
+          const dispatch = { connectionId: connectionId, candidate: candidate.candidate, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid };
+          this.dispatchEvent(new CustomEvent('candidate', { detail: dispatch }));
         }
       }
 
