@@ -21,25 +21,24 @@ describe.each([
       reset(false);
       signaling1 = new MockSignaling();
       signaling2 = new MockSignaling();
-      return;
-    }
+    } else {
+      const path = Path.resolve(`../bin~/${serverExeName()}`);
+      let cmd = `${path} -p 8080`;
+      if (mode == "websocket") {
+        cmd += " -w";
+      }
 
-    const path = Path.resolve(`../bin~/${serverExeName()}`);
-    let cmd = `${path} -p 8080`;
-    if (mode == "websocket") {
-      cmd += " -w";
-    }
+      await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
 
-    await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
+      if (mode == "http") {
+        signaling1 = new Signaling();
+        signaling2 = new Signaling();
+      }
 
-    if (mode == "http") {
-      signaling1 = new Signaling();
-      signaling2 = new Signaling();
-    }
-
-    if (mode == "websocket") {
-      signaling1 = new WebSocketSignaling();
-      signaling2 = new WebSocketSignaling();
+      if (mode == "websocket") {
+        signaling1 = new WebSocketSignaling();
+        signaling2 = new WebSocketSignaling();
+      }
     }
 
     await signaling1.start();
