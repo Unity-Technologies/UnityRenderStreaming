@@ -68,8 +68,8 @@ test_client_{{ platform.name }}:
   artifacts:
     logs:
       paths:
-        - "WebApp/output.log"
-        - "WebApp/coverage/**/*"
+        - "WebApp/client/output.log"
+        - "WebApp/client/coverage/**/*"
   dependencies:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
