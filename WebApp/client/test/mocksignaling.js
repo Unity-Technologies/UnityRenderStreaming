@@ -17,7 +17,7 @@ export class MockSignaling extends EventTarget {
   }
 
   async stop() {
-    await manager.add(this);
+    await manager.remove(this);
   }
 
   async createConnection(connectionId) {
@@ -63,7 +63,7 @@ class MockPublicSignalingManager {
 
   async remove(signaling) {
     await this.delay();
-    this.list.remove(signaling);
+    this.list.delete(signaling);
     signaling.dispatchEvent(new Event("end"));
   }
 
