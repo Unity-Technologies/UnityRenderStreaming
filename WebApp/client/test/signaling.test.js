@@ -58,6 +58,8 @@ describe.each([
     }
 
     await teardown();
+    // work around for linux, waitng kill server process
+    await sleep(1000);
   });
 
   test(`onConnect using ${mode}`, async () => {
@@ -249,6 +251,8 @@ describe.each([
     }
 
     await teardown();
+    // work around for linux, waitng kill server process
+    await sleep(1000);
   });
 
   test(`onConnect using ${mode}`, async () => {
