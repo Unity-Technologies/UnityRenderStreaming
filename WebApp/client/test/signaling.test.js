@@ -3,17 +3,30 @@ import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep } from "./testutils";
 
 describe.each([
-  { signaling1: new MockSignaling(), signaling2: new MockSignaling() },
-  // { signaling1: new Signaling(), signaling2: new Signaling() },
-  // { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
-])('signaling test in public mode', ({ signaling1, signaling2 }) => {
+  { mode:"mock", signaling1: new MockSignaling(), signaling2: new MockSignaling() },
+  // { mode:"http", signaling1: new Signaling(), signaling2: new Signaling() },
+  // { mode:"websocket", signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
+])('signaling test in public mode', ({ mode, signaling1, signaling2 }) => {
   const connectionId1 = "12345";
   const connectionId2 = "67890";
   const testsdp = "test sdp";
   const testcandidate = "test candidate";
 
-  beforeAll(() => {
-    reset(false);
+  beforeAll(async () => {
+    if (mode == "mock") {
+      reset(false);
+      return;
+    }
+
+    // ToDO: on http/websocket mode, run webserver process
+  });
+
+  afterAll(async () => {
+    if (mode == "mock") {
+      return;
+    }
+
+    // ToDO: on http/websocket mode, kill webserver process
   });
 
   beforeEach(async () => {
@@ -164,16 +177,29 @@ describe.each([
 });
 
 describe.each([
-  { signaling1: new MockSignaling(), signaling2: new MockSignaling() },
-  //  { signaling1: new Signaling(), signaling2: new Signaling() },
-  //  { signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
-])('signaling test in private mode', ({ signaling1, signaling2 }) => {
+  { mode:"mock", signaling1: new MockSignaling(), signaling2: new MockSignaling() },
+  // { mode:"http", signaling1: new Signaling(), signaling2: new Signaling() },
+  // { mode:"websocket", signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
+])('signaling test in private mode', ({ mode, signaling1, signaling2 }) => {
   const connectionId = "12345";
   const testsdp = "test sdp";
   const testcandidate = "test candidate";
 
-  beforeAll(() => {
-    reset(true);
+  beforeAll(async () => {
+    if (mode == "mock") {
+      reset(false);
+      return;
+    }
+
+    // ToDO: on http/websocket mode, run webserver process
+  });
+
+  afterAll(async () => {
+    if (mode == "mock") {
+      return;
+    }
+
+    // ToDO: on http/websocket mode, kill webserver process
   });
 
   beforeEach(async () => {
