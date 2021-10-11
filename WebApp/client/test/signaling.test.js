@@ -262,13 +262,15 @@ describe.each([
 
     await signaling1.createConnection(connectionId);
     await waitFor(() => connectRes1 != null);
+    expect(connectRes1.connectionId).toBe(connectionId);
+    expect(connectRes1.polite).toBe(false);
+
     await signaling2.createConnection(connectionId);
     await waitFor(() => connectRes2 != null);
-
-    expect(connectRes1.connectionId).toBe(connectionId);
     expect(connectRes2.connectionId).toBe(connectionId);
-    expect(connectRes1.polite).toBe(false);
     expect(connectRes2.polite).toBe(true);
+
+    await sleep(signaling1.interval * 2);
 
     await signaling1.deleteConnection(connectionId);
     await waitFor(() => disconnectRes1 != null && disconnectRes2 != null);
@@ -298,7 +300,7 @@ describe.each([
     expect(connectRes1.connectionId).toBe(connectionId);
 
     signaling1.sendOffer(connectionId, testsdp);
-    await sleep(signaling1.interval * 5);
+    await sleep(signaling1.interval * 2);
     // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
     expect(offerRes2).toBeUndefined();
 
@@ -439,7 +441,7 @@ describe.each([
     signaling1.addEventListener('offer', (e) => offerRes1 = e.detail);
     signaling2.addEventListener('offer', (e) => offerRes2 = e.detail);
     await signaling1.sendOffer(connectionId, testsdp);
-    await sleep(signaling1.interval * 5);
+    await sleep(signaling1.interval * 2);
     expect(offerRes1).toBeUndefined();
     expect(offerRes2).not.toBeUndefined();
     expect(offerRes2.connectionId).toBe(connectionId);
@@ -448,7 +450,7 @@ describe.each([
     signaling1.addEventListener('answer', (e) => answerRes1 = e.detail);
     signaling2.addEventListener('answer', (e) => answerRes2 = e.detail);
     await signaling2.sendAnswer(connectionId, testsdp);
-    await sleep(signaling2.interval * 5);
+    await sleep(signaling2.interval * 2);
     expect(answerRes1).not.toBeUndefined();
     expect(answerRes1.connectionId).toBe(connectionId);
     expect(answerRes1.sdp).toBe(testsdp);
