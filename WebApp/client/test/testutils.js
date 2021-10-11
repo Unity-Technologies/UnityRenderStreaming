@@ -1,3 +1,5 @@
+import process from "process";
+
 export function waitFor(conditionFunction) {
 
   const poll = resolve => {
@@ -10,4 +12,17 @@ export function waitFor(conditionFunction) {
 
 export async function sleep(milisecond) {
   return new Promise(resolve => setTimeout(resolve, milisecond));
+}
+
+export function serverExeName() {
+  switch (process.platform) {
+    case 'win32':
+      return 'webserver.exe';
+    case 'darwin':
+      return 'webserver_mac';
+    case 'linux':
+      return 'webserver';
+    default:
+      return null;
+  }
 }

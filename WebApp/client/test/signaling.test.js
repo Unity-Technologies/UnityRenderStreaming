@@ -1,12 +1,16 @@
-// import { Signaling, WebSocketSignaling } from "../public/js/signaling";
+import * as Path from 'path';
+import { setup, teardown } from 'jest-dev-server';
+import { Signaling, WebSocketSignaling } from "../public/js/signaling";
 import { MockSignaling, reset } from "./mocksignaling";
-import { waitFor, sleep } from "./testutils";
+import { waitFor, sleep, serverExeName } from "./testutils";
 
 describe.each([
-  { mode:"mock", signaling1: new MockSignaling(), signaling2: new MockSignaling() },
-  // { mode:"http", signaling1: new Signaling(), signaling2: new Signaling() },
-  // { mode:"websocket", signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
-])('signaling test in public mode', ({ mode, signaling1, signaling2 }) => {
+  { mode: "mock" },
+  { mode: "http" },
+  { mode: "websocket" },
+])('signaling test in public mode', ({ mode }) => {
+  let signaling1;
+  let signaling2;
   const connectionId1 = "12345";
   const connectionId2 = "67890";
   const testsdp = "test sdp";
@@ -15,31 +19,47 @@ describe.each([
   beforeAll(async () => {
     if (mode == "mock") {
       reset(false);
+      signaling1 = new MockSignaling();
+      signaling2 = new MockSignaling();
       return;
     }
 
-    // ToDO: on http/websocket mode, run webserver process
-  });
-
-  afterAll(async () => {
-    if (mode == "mock") {
-      return;
+    const path = Path.resolve(`../bin~/${serverExeName()}`);
+    let cmd = `${path} -p 8080`;
+    if (mode == "websocket") {
+      cmd += " -w";
     }
 
-    // ToDO: on http/websocket mode, kill webserver process
-  });
+    await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
 
-  beforeEach(async () => {
+    if (mode == "http") {
+      signaling1 = new Signaling();
+      signaling2 = new Signaling();
+    }
+
+    if (mode == "websocket") {
+      signaling1 = new WebSocketSignaling();
+      signaling2 = new WebSocketSignaling();
+    }
+
     await signaling1.start();
     await signaling2.start();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await signaling1.stop();
     await signaling2.stop();
+    signaling1 = null;
+    signaling2 = null;
+
+    if (mode == "mock") {
+      return;
+    }
+
+    await teardown();
   });
 
-  test('onConnect', async () => {
+  test(`onConnect using ${mode}`, async () => {
     let connectRes;
     let disconnectRes;
     signaling1.addEventListener('connect', (e) => connectRes = e.detail);
@@ -55,7 +75,7 @@ describe.each([
     expect(disconnectRes.connectionId).toBe(connectionId1);
   });
 
-  test('onOffer', async () => {
+  test(`onOffer using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     signaling1.addEventListener('connect', (e) => connectRes1 = e.detail);
@@ -87,7 +107,7 @@ describe.each([
     expect(disconnectRes2.connectionId).toBe(connectionId2);
   });
 
-  test('onAnswer', async () => {
+  test(`onAnswer using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     let answerRes1;
@@ -122,7 +142,7 @@ describe.each([
     await waitFor(() => disconnectRes2 != null);
   });
 
-  test('onCandidate', async () => {
+  test(`onCandidate using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     let answerRes1;
@@ -177,46 +197,60 @@ describe.each([
 });
 
 describe.each([
-  { mode:"mock", signaling1: new MockSignaling(), signaling2: new MockSignaling() },
-  // { mode:"http", signaling1: new Signaling(), signaling2: new Signaling() },
-  // { mode:"websocket", signaling1: new WebSocketSignaling(), signaling2: new WebSocketSignaling() },
-])('signaling test in private mode', ({ mode, signaling1, signaling2 }) => {
+  { mode: "mock" },
+  { mode: "http" },
+  { mode: "websocket" },
+])('signaling test in private mode', ({ mode }) => {
+  let signaling1;
+  let signaling2;
   const connectionId = "12345";
   const testsdp = "test sdp";
   const testcandidate = "test candidate";
 
   beforeAll(async () => {
     if (mode == "mock") {
-      reset(false);
+      reset(true);
+      signaling1 = new MockSignaling();
+      signaling2 = new MockSignaling();
       return;
     }
 
-    // ToDO: on http/websocket mode, run webserver process
+    const path = Path.resolve(`../bin~/${serverExeName()}`);
+    let cmd = `${path} -p 8080 -m private`;
+    if (mode == "websocket") {
+      cmd += " -w";
+    }
+
+    await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
+
+    if (mode == "http") {
+      signaling1 = new Signaling();
+      signaling2 = new Signaling();
+    }
+
+    if (mode == "websocket") {
+      signaling1 = new WebSocketSignaling();
+      signaling2 = new WebSocketSignaling();
+    }
+
+    await signaling1.start();
+    await signaling2.start();
   });
 
   afterAll(async () => {
+    await signaling1.stop();
+    await signaling2.stop();
+    signaling1 = null;
+    signaling2 = null;
+
     if (mode == "mock") {
       return;
     }
 
-    // ToDO: on http/websocket mode, kill webserver process
+    await teardown();
   });
 
-  beforeEach(async () => {
-    signaling1 = new MockSignaling();
-    await signaling1.start();
-    signaling2 = new MockSignaling();
-    await signaling2.start();
-  });
-
-  afterEach(async () => {
-    await signaling1.stop();
-    signaling1 = null;
-    await signaling2.stop();
-    signaling2 = null;
-  });
-
-  test('onConnect', async () => {
+  test(`onConnect using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     signaling1.addEventListener('connect', (e) => connectRes1 = e.detail);
@@ -242,10 +276,12 @@ describe.each([
     expect(disconnectRes1.connectionId).toBe(connectionId);
     expect(disconnectRes2.connectionId).toBe(connectionId);
 
+    disconnectRes2 = null;
     await signaling2.deleteConnection(connectionId);
+    await waitFor(() => disconnectRes2 != null);
   });
 
-  test('onOffer', async () => {
+  test(`onOffer using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     signaling1.addEventListener('connect', (e) => connectRes1 = e.detail);
@@ -263,7 +299,7 @@ describe.each([
     expect(connectRes1.connectionId).toBe(connectionId);
 
     signaling1.sendOffer(connectionId, testsdp);
-    await sleep(signaling1.interval * 10);
+    await sleep(signaling1.interval * 5);
     // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
     expect(offerRes2).toBeUndefined();
 
@@ -281,10 +317,12 @@ describe.each([
     expect(disconnectRes1.connectionId).toBe(connectionId);
     expect(disconnectRes2.connectionId).toBe(connectionId);
 
+    disconnectRes2 = null;
     await signaling2.deleteConnection(connectionId);
+    await waitFor(() => disconnectRes2 != null);
   });
 
-  test('onAnswer', async () => {
+  test(`onAnswer using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     let answerRes1;
@@ -318,10 +356,12 @@ describe.each([
     expect(disconnectRes1.connectionId).toBe(connectionId);
     expect(disconnectRes2.connectionId).toBe(connectionId);
 
+    disconnectRes2 = null;
     await signaling2.deleteConnection(connectionId);
+    await waitFor(() => disconnectRes2 != null);
   });
 
-  test('onCandidate', async () => {
+  test(`onCandidate using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     let answerRes1;
@@ -373,10 +413,12 @@ describe.each([
     expect(disconnectRes1.connectionId).toBe(connectionId);
     expect(disconnectRes2.connectionId).toBe(connectionId);
 
+    disconnectRes2 = null;
     await signaling2.deleteConnection(connectionId);
+    await waitFor(() => disconnectRes2 != null);
   });
 
-  test('notReceiveOwnOfferAnswer', async () => {
+  test(`notReceiveOwnOfferAnswer using ${mode}`, async () => {
     let connectRes1;
     let disconnectRes1;
     let offerRes1;
@@ -400,6 +442,7 @@ describe.each([
     await signaling1.sendOffer(connectionId, testsdp);
     await sleep(signaling1.interval * 5);
     expect(offerRes1).toBeUndefined();
+    expect(offerRes2).not.toBeUndefined();
     expect(offerRes2.connectionId).toBe(connectionId);
     expect(offerRes2.sdp).toBe(testsdp);
 
@@ -407,6 +450,7 @@ describe.each([
     signaling2.addEventListener('answer', (e) => answerRes2 = e.detail);
     await signaling2.sendAnswer(connectionId, testsdp);
     await sleep(signaling2.interval * 5);
+    expect(answerRes1).not.toBeUndefined();
     expect(answerRes1.connectionId).toBe(connectionId);
     expect(answerRes1.sdp).toBe(testsdp);
     expect(answerRes2).toBeUndefined();
@@ -416,6 +460,8 @@ describe.each([
     expect(disconnectRes1.connectionId).toBe(connectionId);
     expect(disconnectRes2.connectionId).toBe(connectionId);
 
+    disconnectRes2 = null;
     await signaling2.deleteConnection(connectionId);
+    await waitFor(() => disconnectRes2 != null);
   });
 });
