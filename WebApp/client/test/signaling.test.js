@@ -4,6 +4,8 @@ import { Signaling, WebSocketSignaling } from "../public/js/signaling";
 import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep, serverExeName } from "./testutils";
 
+const portNumber = 8081;
+
 describe.each([
   { mode: "mock" },
   { mode: "http" },
@@ -23,12 +25,12 @@ describe.each([
       signaling2 = new MockSignaling();
     } else {
       const path = Path.resolve(`../bin~/${serverExeName()}`);
-      let cmd = `${path} -p 8080`;
+      let cmd = `${path} -p ${portNumber}`;
       if (mode == "websocket") {
         cmd += " -w";
       }
 
-      await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
+      await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
       if (mode == "http") {
         signaling1 = new Signaling();
@@ -215,12 +217,12 @@ describe.each([
     }
 
     const path = Path.resolve(`../bin~/${serverExeName()}`);
-    let cmd = `${path} -p 8080 -m private`;
+    let cmd = `${path} -p ${portNumber} -m private`;
     if (mode == "websocket") {
       cmd += " -w";
     }
 
-    await setup({ command: cmd, port: 8080, usedPortAction: 'kill' });
+    await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
     if (mode == "http") {
       signaling1 = new Signaling();
