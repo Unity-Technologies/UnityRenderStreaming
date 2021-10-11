@@ -31,9 +31,31 @@ export class Signaling extends EventTarget {
     this.sessionId = session.sessionId;
     this.running = true;
 
+    this.loopGetConnection();
     this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
+  }
+
+  async loopGetConnection() {
+    let currentConnections = new Set();
+    while (this.running) {
+      const res = await this.getConnection();
+      const data = await res.json();
+      const connections = data.connections;
+      Logger.log('get connections:', connections);
+
+      const newSet = new Set([...connections]);
+      const deleteConnection = new Set([...currentConnections].filter(e => (!newSet.has(e))));
+
+      deleteConnection.forEach(connection => {
+        this.dispatchEvent(new CustomEvent('disconnect', { detail: connection }));
+      });
+
+      currentConnections = newSet;
+
+      await this.sleep(this.interval);
+    }
   }
 
   async loopGetOffer() {
@@ -142,6 +164,10 @@ export class Signaling extends EventTarget {
     };
     Logger.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
+  }
+
+  async getConnection() {
+    return await fetch(this.url(`connection`), { method: 'GET', headers: this.headers() });
   }
 
   async getOffer(fromTime = 0) {
