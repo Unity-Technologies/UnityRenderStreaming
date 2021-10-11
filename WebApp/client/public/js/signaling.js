@@ -212,7 +212,7 @@ export class WebSocketSignaling extends EventTarget {
   }
 
   get interval() {
-    return 0.1;
+    return 100;
   }
 
   async start() {

@@ -9,7 +9,7 @@ export function reset(isPrivate) {
 export class MockSignaling extends EventTarget {
 
   get interval() {
-    return 0.1;
+    return 100;
   }
 
   async start() {
