@@ -30,13 +30,16 @@ describe(`InputRemoting`, () => {
       observer = new Observer(dc);
   });
   test('startSending', () => {
+    expect.assertions(0);
     inputRemoting.startSending();
   });
   test('stopSending', () => {
+    expect.assertions(0);
     inputRemoting.startSending();
     inputRemoting.stopSending();
   });
   test('subscribe', () => {
+    expect.assertions(0);
     inputRemoting.subscribe(observer);
   });
 });
@@ -52,8 +55,9 @@ test('create NewDeviceMsg', () => {
 
 describe('create NewEventMsg', () => {
   test('using MouseState', () => {
-    const event = new MouseState(null);
-    const msg = NewEventsMsg.create(event);
+    const event = new MouseEvent('click', { buttons:0, clientX:0, clientY:0} );
+    const state = new MouseState(event);
+    const msg = NewEventsMsg.create(state);
     expect(msg.participant_id).toBe(0);
     expect(msg.type).toBe(MessageType.NewEvents);
     expect(msg.data).toBeInstanceOf(ArrayBuffer);
@@ -69,16 +73,19 @@ describe('create NewEventMsg', () => {
     expect(msg.data.byteLength).toBeGreaterThan(0);
   });
   test('using TouchscreenState', () => {
-    const event = new TouchscreenState(null);
-    const msg = NewEventsMsg.create(event);
+    const event = new TouchEvent('touchstart', { changedTouches: [], touches: [] });
+    const state = new TouchscreenState(event);
+    const msg = NewEventsMsg.create(state);
     expect(msg.participant_id).toBe(0);
     expect(msg.type).toBe(MessageType.NewEvents);
     expect(msg.data).toBeInstanceOf(ArrayBuffer);
     expect(msg.data.byteLength).toBeGreaterThan(0);
   });
   test('using GamepadState', () => {
-    const event = new GamepadState(null);
-    const msg = NewEventsMsg.create(event);
+    class GamepadEvent extends CustomEvent {} // todo
+    const event = new GamepadEvent('connect', {});
+    const state = new GamepadState(event);
+    const msg = NewEventsMsg.create(state);
     expect(msg.participant_id).toBe(0);
     expect(msg.type).toBe(MessageType.NewEvents);
     expect(msg.data).toBeInstanceOf(ArrayBuffer);

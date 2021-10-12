@@ -7,13 +7,15 @@ import {
   Observer
 } from "../public/js/sender";
 
-import {jest} from '@jest/globals'
+import {jest} from '@jest/globals';
 
 // mock
+
 class RTCDataChannel {
   get readyState() {
     return "open";
   }
+  /* eslint-disable no-unused-vars */
   send(message) {
   }
 }
@@ -104,14 +106,7 @@ describe(`Sender`, () => {
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });
   });
-  // describe('gamepad', () => {
-  //   test('touchstart', () => {
-  //     jest.spyOn(dc, 'send');
-  //     inputRemoting.subscribe(observer);
-  //     inputRemoting.startSending();
-  //     events.touchstart(
-  //       new GamepadEvent('touchstart', { changedTouches: [], touches: [] }));
-  //     expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
-  //   });
-  // });
+  describe('gamepad', () => {
+    //todo
+  });
 });

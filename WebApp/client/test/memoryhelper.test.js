@@ -3,7 +3,7 @@ import {
 } from "../public/js/memoryhelper";
 
 describe(`MemoryHelper.writeSingleBit`, () => {
-  test('turn off with offset 0', () => {
+  test('turn on with offset 0', () => {
     let bytes = new ArrayBuffer(3);
     MemoryHelper.writeSingleBit(bytes, 0, false);
 

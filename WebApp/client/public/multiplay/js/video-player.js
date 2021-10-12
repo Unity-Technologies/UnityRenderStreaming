@@ -19,13 +19,13 @@ import * as Logger from "../../js/logger.js";
 /** @enum {number} */
 const ActionType = {
   ChangeLabel: 0
-}
+};
 
 function uuid4() {
   var temp_url = URL.createObjectURL(new Blob());
   var uuid = temp_url.toString();
   URL.revokeObjectURL(temp_url);
-  return uuid.split(/[:\/]/g).pop().toLowerCase(); // remove prefixes
+  return uuid.split(/[:/]/g).pop().toLowerCase(); // remove prefixes
 }
 
 export class VideoPlayer {
@@ -125,7 +125,7 @@ export class VideoPlayer {
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
     await this.signaling.sendOffer(this.connectionId, offer.sdp);
-  };
+  }
 
   resizeVideo() {
     const clientRect = this.video.getBoundingClientRect();
@@ -165,13 +165,13 @@ export class VideoPlayer {
       this.pc.close();
       this.pc = null;
     }
-  };
+  }
 
   async _onOpenMultiplayChannel() {
     await new Promise(resolve => setTimeout(resolve, 100));
     const num = Math.floor(Math.random() * 100000);
     this._changeLabel(String(num));
-  };
+  }
 
   async _onOpenInputSenderChannel() {
     await new Promise(resolve => setTimeout(resolve, 100));

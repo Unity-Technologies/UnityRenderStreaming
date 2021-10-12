@@ -3,13 +3,13 @@ import {
 } from "./inputdevice.js";
 
 export class LocalInputManager {
-  #_onevent;
+  // _onevent;
   constructor() {
-    this.#_onevent = new EventTarget();
+    this._onevent = new EventTarget();
   }
 
   get onevent() {
-    return this.#_onevent;
+    return this._onevent;
   }
 
   get devices() {
@@ -18,29 +18,30 @@ export class LocalInputManager {
 }
 
 export class InputRemoting {
-  #localManager;
-  #subscribers;
-  #sending = false;
+  // _localManager;
+  // _subscribers;
+  // _sending = false;
 
   constructor(manager) {
-    this.#localManager = manager;
-    this.#subscribers = new Array();
+    this._localManager = manager;
+    this._subscribers = new Array();
+    this._sending = false;
   }
 
   startSending() {
-    if(this.#sending) {
+    if(this._sending) {
       return;
     }
-    this.#sending = true;
-    this.#localManager.onevent.addEventListener("event", this._onsendEvent.bind(this));
+    this._sending = true;
+    this._localManager.onevent.addEventListener("event", this._onsendEvent.bind(this));
     this._sendInitialMessages();
   }
 
   stopSending() {
-    if (!this.#sending) {
+    if (!this._sending) {
       return;
     }
-    this.#sending = false;
+    this._sending = false;
   }
 
   /**
@@ -48,7 +49,7 @@ export class InputRemoting {
    * @param {Observer} observer 
    */
   subscribe(observer) {
-    this.#subscribers.push(observer);
+    this._subscribers.push(observer);
   }
 
   _sendInitialMessages() {
@@ -60,7 +61,7 @@ export class InputRemoting {
   }
 
   _sendAllDevices() {
-    var devices = this.#localManager.devices;
+    var devices = this._localManager.devices;
     if(devices == null)
       return;
     for (const device of devices) {
@@ -82,7 +83,6 @@ export class InputRemoting {
 
   _onsendEvent(e) {
     const stateEvent = e.detail.event;
-    const device = e.detail.device;
     const message = NewEventsMsg.create(stateEvent);
     this._send(message);
   }
@@ -92,7 +92,7 @@ export class InputRemoting {
    * @param {Message} message 
    */
   _send(message) {
-    for(let subscriber of this.#subscribers) {
+    for(let subscriber of this._subscribers) {
       subscriber.onNext(message);
     }
   }
@@ -112,14 +112,19 @@ export const MessageType = {
 };
 
 export class Message {
-  // field offset 0
-  participant_id;
-  // field offset 4
-  type;
-  // field offset 8
-  length;
-  // field offset 12
-  data;
+  /**
+   * field offset 0
+   * {Number} participant_id;
+   * 
+   * field offset 4
+   * {Number} type;
+   * 
+   * field offset 8
+   * {Number} length;
+   * 
+   * field offset 12
+   * {ArrayBuffer} data;
+   */
 
   /**
    * 
@@ -160,7 +165,7 @@ export class NewDeviceMsg {
       deviceId: device.deviceId,
       variants: device.variants,
       description: device.description
-    }
+    };
     const json = JSON.stringify(data);
     let buffer = new ArrayBuffer(json.length*2); // 2 bytes for each char
     let view = new Uint8Array(buffer);

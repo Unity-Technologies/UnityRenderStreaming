@@ -66,13 +66,18 @@ describe(`TouchscreenState`, () => {
 });
 
 describe(`GamepadState`, () => {
+  class GamepadEvent extends CustomEvent {} // todo
+  let event;
+  beforeEach(() => {
+    event = new GamepadEvent("connect", {});
+  });
   test('format', () => {
-    const format = new GamepadState(null).format;
+    const format = new GamepadState(event).format;
     expect(format).toBe(0x47504144);
   });  
   test('buffer', () => {
     //const event = new GamepadEvent("gamepadconnected", { /* todo */ }); //todo::
-    const state = new GamepadState(null);
+    const state = new GamepadState(event);
     expect(state.buffer.byteLength).toBeGreaterThan(0);
   });
 });
@@ -102,23 +107,27 @@ describe(`TextEvent`, () => {
 describe(`Mouse`, () => {
   test('alignedSizeInBytes', () => {
     let device = new Mouse("Mouse", "Mouse", 1, null, null);
+    expect(device).toBeInstanceOf(Mouse);
   });
 });
 
 describe(`Keyboard`, () => {
   test('alignedSizeInBytes', () => {
     let device = new Keyboard("Keyboard", "Keyboard", 1, null, null);
+    expect(device).toBeInstanceOf(Keyboard);
   });
 });
 
 describe(`Touchscreen`, () => {
   test('alignedSizeInBytes', () => {
     let device = new Touchscreen("Touchscreen", "Touchscreen", 1, null, null);
+    expect(device).toBeInstanceOf(Touchscreen);
   });
 });
 
 describe(`Gamepad`, () => {
   test('alignedSizeInBytes', () => {
     let device = new Gamepad("Gamepad", "Gamepad", 1, null, null);
+    expect(device).toBeInstanceOf(Gamepad);
   });
 });

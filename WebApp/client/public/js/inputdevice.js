@@ -3,7 +3,17 @@ import {
 } from "./memoryhelper.js";
 
 export class FourCC {
-  _code;
+  /**
+   * {Number} _code;
+   */
+
+  /**
+   * 
+   * @param {String} a 
+   * @param {String} b 
+   * @param {String} c 
+   * @param {String} d 
+   */
   constructor(a, b, c, d) {
     this._code = (a.charCodeAt() << 24) 
     | (b.charCodeAt() << 16) 
@@ -11,6 +21,10 @@ export class FourCC {
     | d.charCodeAt();
   }
 
+  /**
+   * 
+   * @returns {Number}
+   */
   toInt32() {
     return this._code;
   }
@@ -18,14 +32,26 @@ export class FourCC {
 
 
 export class InputDevice {
-  name;
-  layout;
-  deviceId;
-  variants;
-  description;
 
-  _inputState;
-
+  /**
+   * 
+   * name;
+   * layout;
+   * deviceId;
+   * variants;
+   * description;
+   * 
+   * _inputState;
+   */
+  
+  /**
+   * 
+   * @param {Number} name 
+   * @param {String} layout 
+   * @param {Number} deviceId 
+   * @param {String} variants 
+   * @param {Object} description 
+   */
   constructor(name, layout, deviceId, variants, description) {
     this.name = name;
     this.layout = layout;
@@ -34,12 +60,16 @@ export class InputDevice {
     this.description = description;
   }
 
+  /**
+   * 
+   * @param {IInputState} state 
+   */
   updateState(state) {
     this._inputState = state;
   }
 
-  queueEvent(e) {
-    throw new Error('Please implement this method');
+  queueEvent(event) {
+    throw new Error(`Please implement this method. event:${event}`);
   }
   
   /**
@@ -51,13 +81,14 @@ export class InputDevice {
 }
 
 export class Mouse extends InputDevice {
-  queueEvent(e) {
-    this.updateState(new MouseState(e));
+  queueEvent(event) {
+    this.updateState(new MouseState(event));
   }
 }
 
 export class Keyboard extends InputDevice {
-  static keycount = 110;
+  static get keycount() { return 110; }
+
   /**
    * 
    * @param {KeyboardEvent} event 
@@ -68,59 +99,37 @@ export class Keyboard extends InputDevice {
 }
 
 export class Touchscreen extends InputDevice {
-  queueEvent(e) {
-    this.updateState(new TouchscreenState(e));
+  queueEvent(event) {
+    this.updateState(new TouchscreenState(event));
   }
 }
 
 export class Gamepad extends InputDevice {
-  queueEvent(e) {
-    this.updateState(new GamepadState(e));
-  }
-}
-
-class NativeInputEvent {
-  static size = 20;
-  // field offset 0
-  type;
-  // field offset 4
-  sizeInBytes;
-  // field offset 6
-  deviceId;
-  // field offset 8
-  time;
-  // field offset 16
-  eventId;
-
-  /**
-   * 
-   * @param {Number} type 
-   * @param {Number} sizeInBytes 
-   * @param {Number} deviceId 
-   * @param {Number} time 
-   */
-  constructor(type, sizeInBytes, deviceId, time) {
-    this.type = type;
-    this.sizeInBytes = sizeInBytes;
-    this.deviceId = deviceId;
-    this.time = time;
+  queueEvent(event) {
+    this.updateState(new GamepadState(event));
   }
 }
 
 export class InputEvent {
-  static invalidEventId = 0;
-  static size = 20;
+  static get invalidEventId() { return 0; }
+  static get size() { return 20; }
 
-  // field offset 0
-  type;
-  // field offset 4
-  sizeInBytes;
-  // field offset 6
-  deviceId;
-  // field offset 8
-  time;
-  // field offset 16
-  eventId;
+  /** 
+   * field offset 0
+   * @member {Number} type;
+   * 
+   * field offset 4
+   * @member {Number} sizeInBytes;
+   * 
+   * field offset 6
+   * @member {Number} deviceId;
+   * 
+   * field offset 8
+   * @member {Number} time;
+   * 
+   * field offset 16
+   * @member {Number} eventId;
+   */
 
   /**
    * 
@@ -135,13 +144,6 @@ export class InputEvent {
     this.deviceId = deviceId;
     this.time = time;
     this.eventId = InputEvent.invalidEventId;
-  }
-
-  /**
-   * @returns {Number}
-   */
-  get type() {
-    return this.type;
   }
 
   /**
@@ -178,26 +180,37 @@ export class IInputState {
 }
 
 export class MouseState extends IInputState {
-  static size = 30;
-  static format = new FourCC('M', 'O', 'U', 'S').toInt32();
-  // field offset 0
-  position;
-  // field offset 8
-  delta;
-  // field offset 16
-  scroll;
-  // field offset 24
-  buttons;
-  // field offset 26
-  displayIndex;
-  // field offset 28
-  clickCount;
+  static get size() { return 30; }
+  static get format() { return new FourCC('M', 'O', 'U', 'S').toInt32(); }
 
+  /**
+   * field offset 0
+   * @member {Array} position;
+   * 
+   * field offset 8
+   * @member {Array} delta;
+   * 
+   * field offset 16
+   * @member {Array} scroll;
+   * 
+   * field offset 24
+   * @member {ArrayBuffer} buttons;
+   * 
+   * field offset 26
+   * @member {Array} displayIndex;
+   * 
+   * field offset 28
+   * @member {Array} clickCount;
+   */
+
+  /**
+   * @param {MouseEvent} event 
+   */
   constructor(event) {
     super();
-    this.position = [0, 0];
-    this.delta = [0, 0];
-    this.scroll = [0, 0];
+    this.position = [event.clientX, event.clientY];  // todo
+    this.delta = [0, 0];  // todo
+    this.scroll = [event.screenX, event.screenY];  // todo
     this.buttons = new ArrayBuffer(2);
   }
 
@@ -232,13 +245,16 @@ export class MouseState extends IInputState {
 }
 
 export class KeyboardState extends IInputState {
-  static sizeInBits = Keyboard.keycount;
-  static sizeInBytes = (KeyboardState.sizeInBits + 7) / 8;
-  static format = new FourCC('K', 'E', 'Y', 'S').toInt32();
-  keys;
+  static get sizeInBits() { return Keyboard.keycount; }
+  static get sizeInBytes() { return (KeyboardState.sizeInBits + 7) / 8; }
+  static get format() { return new FourCC('K', 'E', 'Y', 'S').toInt32(); }
 
   /**
-   * 
+   * field offset 0
+   * @number {ArrayBuffer} keys;
+   */
+
+  /**
    * @param {KeyboardEvent} event 
    */
   constructor(event) {
@@ -277,13 +293,16 @@ export class KeyboardState extends IInputState {
 }
 
 export class TouchscreenState extends IInputState {
-  static size = 56;  // todo
-  static maxTouches = 10;
-  static format = new FourCC('T', 'S', 'C', 'R').toInt32();
-  // field offset 0
-  primaryTouchData;
-  // field offset 56
-  touchData;
+  static get size() { return 56; }  // todo
+  static get maxTouches() { return 10; } 
+  static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
+
+  /**
+   * field offset 0
+   * @number {Array} primaryTouchData;
+   * field offset 56
+   * @number {Array} touchData;
+   */
 
   /**
    * 
@@ -291,6 +310,7 @@ export class TouchscreenState extends IInputState {
    */
   constructor(event) {
     super();
+    this.touchData = event.touches; // todo
   }
 
   /**
@@ -299,7 +319,7 @@ export class TouchscreenState extends IInputState {
    get buffer() {
     const size = TouchscreenState.size; // todo
     let _buffer = new ArrayBuffer(size);
-    let _data = new DataView(_buffer); //todo
+//    let _data = new DataView(_buffer); //todo
     return _buffer;
   }
 
@@ -315,28 +335,40 @@ export class TouchscreenState extends IInputState {
 }
 
 export class GamepadState extends IInputState {
-  static sizeInBytes = 28;
-  static format = new FourCC('G', 'P', 'A', 'D').toInt32();
-  // field offset 0
-  buttons;
-  // field offset 4
-  leftStick;
-  // field offset 12
-  rightStick;
-  // field offset 20
-  leftTrigger;
-  // field offset 24
-  rightTrigger;
+  static get size() { return 28; }
+  static get format() { return new FourCC('G', 'P', 'A', 'D').toInt32(); }
+  
+  /**
+   * field offset 0
+   * @member buttons;
+   * 
+   * field offset 4
+   * @member leftStick;
+   * 
+   * field offset 12
+   * @member rightStick;
+   * 
+   * field offset 20
+   * @member leftTrigger;
+   * 
+   * field offset 24
+   * @member rightTrigger;
+   */
 
+  /**
+   * 
+   * @param {GamepadEvent} event 
+   */
   constructor(event) {
     super();
+    this.rightStick = event.rightStick; // todo
   }
 
   /**
    * @returns {ArrayBuffer}
    */
    get buffer() {
-    const size = GamepadState.sizeInBytes;
+    const size = GamepadState.size;
     let _buffer = new ArrayBuffer(size);
     let view = new DataView(_buffer);
     view.setInt32(this.buttons);
@@ -355,16 +387,20 @@ export class GamepadState extends IInputState {
   }
 
   get sizeInBits() {
-    return GamepadState.sizeInBytes * 8;
+    return GamepadState.size * 8;
   }
 }
 
 export class TextEvent {
-  static format = new FourCC('T', 'E', 'X', 'T').toInt32();
-  // field offset 0
-  baseEvent;
-  // field offset 20
-  character;
+  static get format() { return new FourCC('T', 'E', 'X', 'T').toInt32(); }
+
+  /**
+   * field offset 0
+   * @member {InputEvent} baseEvent;
+   * 
+   * field offset 20
+   * @member {Number} character;
+   */
 
   /**
    * 
@@ -384,6 +420,9 @@ export class TextEvent {
     return event;
   }
 
+  /**
+   * @returns {ArrayBuffer}
+   */
   get buffer() {
     const sizeOfInt = 4;
     const size = InputEvent.size + sizeOfInt;
@@ -397,13 +436,18 @@ export class TextEvent {
 }
 
 export class StateEvent {
-  static format = new FourCC('S', 'T', 'A', 'T').toInt32();
-  // field offset 0
-  baseEvent;
-  // field offset 20
-  stateFormat;
-  // field offset 24
-  stateData;
+  static get format() { return new FourCC('S', 'T', 'A', 'T').toInt32(); }
+
+  /**
+   * field offset 0
+   * @member {InputEvent} baseEvent;
+   * 
+   * field offset 20
+   * @member {Number} stateFormat;
+   * 
+   * field offset 24
+   * @member {ArrayBuffer} stateData;
+   */
 
   /**
    * 

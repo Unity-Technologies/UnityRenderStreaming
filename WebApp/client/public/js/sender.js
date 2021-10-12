@@ -8,7 +8,6 @@ import {
 } from "./inputdevice.js";
 
 import { 
-  Message,
   LocalInputManager
 } from "./input-remoting.js";
 
