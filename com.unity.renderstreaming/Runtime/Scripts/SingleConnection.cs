@@ -102,7 +102,7 @@ namespace Unity.RenderStreaming
             if (data.connectionId != connectionId)
                 return;
             var channel = streams.OfType<IDataChannel>().
-                FirstOrDefault(r => r.Channel == null && !r.IsLocal);
+                FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
             channel?.SetChannel(connectionId, data.channel);
         }
     }

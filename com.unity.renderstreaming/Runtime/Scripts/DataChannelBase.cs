@@ -33,6 +33,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public bool IsConnected => Channel != null && Channel.ReadyState == RTCDataChannelState.Open;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public RTCDataChannel Channel { get; protected set; }
 
         /// <summary>
@@ -67,6 +72,33 @@ namespace Unity.RenderStreaming
             {
                 OnStartedChannel?.Invoke(connectionId);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        public virtual void Send(byte[] msg)
+        {
+            Channel.Send(msg);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="msg"></param>
+        public virtual void Send(string msg)
+        {
+            Channel.Send(msg);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        public virtual void SetChannel(SignalingEventData data)
+        {
+            SetChannel(data.connectionId, data.channel);
         }
 
         /// <summary>

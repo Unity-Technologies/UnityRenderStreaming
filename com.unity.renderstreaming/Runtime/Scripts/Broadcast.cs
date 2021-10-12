@@ -83,7 +83,7 @@ namespace Unity.RenderStreaming
         public void OnAddChannel(SignalingEventData data)
         {
             var channel = streams.OfType<IDataChannel>().
-                FirstOrDefault(r => r.Channel == null && !r.IsLocal);
+                FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
             channel?.SetChannel(data.connectionId, data.channel);
         }
     }

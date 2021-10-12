@@ -1,7 +1,9 @@
 {
     "name": "Unity.RenderStreaming.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:40a5acf76f04c4c8ebb69605e4b0d5c7",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
         "GUID:457756d89b35d2941b3e7b37b4ece6f1",
         "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],

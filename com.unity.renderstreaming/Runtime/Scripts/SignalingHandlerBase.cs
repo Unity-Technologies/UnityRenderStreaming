@@ -92,6 +92,11 @@ namespace Unity.RenderStreaming
             sender.SetSender(connectionId, null);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
             var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
@@ -118,8 +123,11 @@ namespace Unity.RenderStreaming
         /// <param name="channel"></param>
         public virtual void AddChannel(string connectionId, IDataChannel channel)
         {
-            var _channel = m_handler.CreateChannel(connectionId, channel.Label);
-            channel.SetChannel(connectionId, _channel);
+            if(channel.IsLocal)
+            {
+                var _channel = m_handler.CreateChannel(connectionId, channel.Label);
+                channel.SetChannel(connectionId, _channel);
+            }
         }
 
         /// <summary>
@@ -235,6 +243,11 @@ namespace Unity.RenderStreaming
         bool IsLocal { get; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        bool IsConnected { get;  }
+
+        /// <summary>
         ///
         /// </summary>
         string Label { get; }
@@ -249,5 +262,11 @@ namespace Unity.RenderStreaming
         ///// </summary>
         ///// <param name="track"></param>
         void SetChannel(string connectionId, RTCDataChannel channel);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        void SetChannel(SignalingEventData data);
     }
 }

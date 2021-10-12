@@ -41,10 +41,7 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                // note:: InputRemoting class rejects remote devices when sending device information to the remote peer.
-                // Avoid to get assert "Device being sent to remotes should be a local device, not a remote one"
-                var localDevices = InputSystem.devices.Where(device => !device.remote);
-                return new ReadOnlyArray<InputDevice>(localDevices.ToArray());
+                return InputSystem.devices;
             }
         }
 
@@ -77,17 +74,13 @@ namespace Unity.RenderStreaming
     class Observer : IObserver<InputRemoting.Message>
     {
         private RTCDataChannel _channel;
-        private bool _isOpen;
         public Observer(RTCDataChannel channel)
         {
             _channel = channel ?? throw new ArgumentNullException("channel is null");
-            _channel.OnOpen += () => { _isOpen = true; };
-            _channel.OnClose += () => { _isOpen = false; };
-            _isOpen = _channel.ReadyState == RTCDataChannelState.Open;
         }
         public void OnNext(InputRemoting.Message value)
         {
-            if (!_isOpen)
+            if (_channel.ReadyState != RTCDataChannelState.Open)
                 return;
             byte[] bytes = MessageSerializer.Serialize(ref value);
             _channel.Send(bytes);

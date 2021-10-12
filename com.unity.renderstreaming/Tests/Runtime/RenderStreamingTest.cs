@@ -34,23 +34,42 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void Run()
         {
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            var handlers = new SignalingHandlerBase[] { handler };
             ISignaling mock = new MockSignaling();
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
-            component.Run(signaling:mock);
+            component.Run(signaling: mock, handlers: handlers);
         }
 
-        [UnityTest]
-        public IEnumerator RunAgain()
+        [Test]
+        public void ThrowExceptionIfHandlerIsNullOrEmpty()
         {
             ISignaling mock = new MockSignaling();
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
-            component.Run(signaling: mock);
+            Assert.That(() => component.Run(signaling: mock),
+                Throws.InvalidOperationException);
+
+            var handlers = new SignalingHandlerBase[] {};
+            Assert.That(() => component.Run(signaling: mock, handlers:handlers),
+                Throws.InvalidOperationException);
+        }
+
+
+        [UnityTest]
+        public IEnumerator RunAgain()
+        {
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            var handlers = new SignalingHandlerBase[] { handler };
+            ISignaling mock = new MockSignaling();
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+            component.Run(signaling:mock, handlers:handlers);
             yield return 0;
             component.Stop();
             yield return 0;
-            component.Run(signaling: mock);
+            component.Run(signaling:mock, handlers:handlers);
         }
     }
 }

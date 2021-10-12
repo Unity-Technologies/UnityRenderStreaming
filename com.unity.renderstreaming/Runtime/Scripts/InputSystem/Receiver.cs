@@ -23,6 +23,9 @@ namespace Unity.RenderStreaming
         private RTCDataChannel _channel;
         private readonly List<InputDevice> _remoteDevices = new List<InputDevice>();
 
+        private readonly Dictionary<string, string> _remoteLayouts = new Dictionary<string, string>();
+        private readonly List<string> _registeredRemoteLayout = new List<string>();
+
         /// <summary>
         ///
         /// </summary>
@@ -40,7 +43,8 @@ namespace Unity.RenderStreaming
 
         public void Dispose()
         {
-            RemoveAllDevices();
+            RemoveAllRemoteDevices();
+            RemoveAllRemoteLayouts();
         }
 
         private void OnMessage(byte[] bytes)
@@ -85,10 +89,18 @@ namespace Unity.RenderStreaming
             }
         }
 
+        public ReadOnlyArray<string> remoteLayouts
+        {
+            get
+            {
+                return new ReadOnlyArray<string>(_remoteLayouts.Keys.ToArray());
+            }
+        }
+
         /// <summary>
         ///
         /// </summary>
-        public void RemoveAllDevices()
+        public void RemoveAllRemoteDevices()
         {
             while (_remoteDevices.Count > 0)
             {
@@ -96,8 +108,24 @@ namespace Unity.RenderStreaming
             }
         }
 
+        public void RemoveAllRemoteLayouts()
+        {
+            while (_remoteLayouts.Count > 0)
+            {
+                RemoveLayout(_remoteLayouts.First().Key);
+            }
+        }
+
+
         public override InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
+            if (InputSystem.ListLayouts().Count(_ => _ == layout) == 0)
+            {
+                if (!_remoteLayouts.TryGetValue(layout, out string value))
+                    throw new InvalidOperationException();
+                base.RegisterControlLayout(layout, value);
+                _registeredRemoteLayout.Add(layout);
+            }
             var device = base.AddDevice(layout, name, variants);
             _remoteDevices.Add(device);
             onDeviceChange?.Invoke(device, InputDeviceChange.Added);
@@ -111,15 +139,23 @@ namespace Unity.RenderStreaming
             onDeviceChange?.Invoke(device, InputDeviceChange.Removed);
         }
 
-        public override void RegisterLayout(string json, string name = null, InputDeviceMatcher? matches = null)
+        public override void RegisterControlLayout(string json, string name = null, bool isOverride = false)
         {
-            base.RegisterLayout(json, name, matches);
+            // todo(kazuki):: not call base class 
+            // base.RegisterControlLayout(json, name, isOverride);
+
+            _remoteLayouts.Add(name, json);
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Added);
         }
 
         public override void RemoveLayout(string name)
         {
-            base.RemoveLayout(name);
+            if(_registeredRemoteLayout.Contains(name))
+            {
+                base.RemoveLayout(name);
+                _registeredRemoteLayout.Remove(name);
+            }
+            _remoteLayouts.Remove(name);
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Removed);
         }
     }

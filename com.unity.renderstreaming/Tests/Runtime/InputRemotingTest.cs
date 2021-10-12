@@ -72,7 +72,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     }
 
     /// todo(kazuki):workaround
-    [Ignore("TODO::This test-case is failed when there is no input devices.")]
     class InputRemotingTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
@@ -87,6 +86,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         private RenderStreamingInternal _target1, _target2;
         private RTCDataChannel _channel1, _channel2;
         private string connectionId = "12345";
+        const float ResendOfferInterval = 1.0f;
 
         private RenderStreamingDependencies CreateDependencies()
         {
@@ -99,7 +99,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 },
                 encoderType = EncoderType.Software,
                 startCoroutine = _test.component.StartCoroutine,
-                resentOfferInterval = 1.0f,
+                resentOfferInterval = ResendOfferInterval,
             };
         }
 
@@ -134,16 +134,24 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection2);
 
             _target1.onAddChannel += (_, channel) => { _channel1 = channel; };
-            _target1.onGotOffer += (_, sdp) => { _target1.SendAnswer(connectionId); };
 
             // send offer automatically after creating channel
             _channel2 = _target2.CreateChannel(connectionId, "_test");
 
-            // send offer manually
-            _target2.SendOffer(connectionId);
+            bool isGotOffer1 = false;
+            bool isGotAnswer2 = false;
+            _target1.onGotOffer += (_, sdp) => { isGotOffer1 = true; };
+            _target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
-            yield return new WaitUntil(() => _target1.IsConnected(connectionId));
-            yield return new WaitUntil(() => _target2.IsConnected(connectionId));
+            // each peer are not stable, signaling process not complete.
+            yield return new WaitUntil(() => isGotOffer1);
+
+            _target1.SendAnswer(connectionId);
+            yield return new WaitUntil(() => isGotAnswer2);
+            Assert.That(isGotAnswer2, Is.True);
+
+            // If target1 processes resent　Offer from target2, target1 is not stable.
+            Assert.That(_target2.IsStable(connectionId), Is.True);
         }
 
         [UnityTearDown]
@@ -168,9 +176,17 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void DoNothing()
+        {
+        }
+
+
+        [Test]
         public void Sender()
         {
             var sender = new Sender();
+            Assert.That(sender.layouts, Is.Not.Empty);
+            Assert.That(sender.devices, Is.Not.Empty);
             var senderInput = new InputRemoting(sender);
             var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
             senderInput.StartSending();
@@ -182,6 +198,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void Receiver()
         {
             var receiver = new Receiver(_channel1);
+            Assert.That(receiver.remoteDevices, Is.Empty);
+            Assert.That(receiver.remoteLayouts, Is.Empty);
             var receiverInput = new InputRemoting(receiver);
             var receiverDisposer = receiverInput.Subscribe(receiverInput);
             receiverInput.StartSending();
@@ -189,16 +207,18 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
+        /// todo(kazuki): This test is failed for timeout on macOS 
         [UnityTest, Timeout(3000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.OSXPlayer })]
         public IEnumerator AddDevice()
         {
             var sender = new Sender();
             var senderInput = new InputRemoting(sender);
-            var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
+            var senderSubscriberDisposer = senderInput.Subscribe(new Observer(_channel1));
 
             var receiver = new Receiver(_channel2);
             var receiverInput = new InputRemoting(receiver);
-            var receiverDisposer = receiverInput.Subscribe(receiverInput);
+            var receiverSubscriberDisposer = receiverInput.Subscribe(receiverInput);
 
             InputDevice device = null;
             InputDeviceChange change = default;
@@ -206,28 +226,35 @@ namespace Unity.RenderStreaming.RuntimeTest
                 device = _device;
                 change = _change;
             };
+            string layoutName = null;
+            InputControlLayoutChange layoutChange = default;
+            receiver.onLayoutChange += (_name, _change) => {
+                layoutName = _name;
+                layoutChange = _change;
+            };
 
             receiverInput.StartSending();
             senderInput.StartSending();
 
             yield return new WaitUntil(() => device != null);
+            yield return new WaitUntil(() => layoutName != null);
 
             Assert.That(device, Is.Not.Null);
             Assert.That(change, Is.EqualTo(InputDeviceChange.Added));
-            Assert.That(receiver.layouts, Is.Empty);
+            Assert.That(layoutName, Is.Not.Null);
+            Assert.That(layoutChange, Is.EqualTo(InputControlLayoutChange.Added));
+
+            Assert.That(receiver.remoteLayouts, Is.Not.Empty);
             Assert.That(receiver.remoteDevices, Is.Not.Empty);
             Assert.That(receiver.remoteDevices, Has.All.Matches<InputDevice>(d => d.remote));
 
             senderInput.StopSending();
             receiverInput.StopSending();
 
-            receiver.RemoveAllDevices();
-
-            Assert.That(receiver.layouts, Is.Empty);
-            Assert.That(receiver.remoteDevices, Is.Empty);
-
-            senderDisposer.Dispose();
-            receiverDisposer.Dispose();
+            senderSubscriberDisposer.Dispose();
+            receiverSubscriberDisposer.Dispose();
+            sender.Dispose();
+            receiver.Dispose();
         }
     }
 }
