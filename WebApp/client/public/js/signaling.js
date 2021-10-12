@@ -1,10 +1,9 @@
 import * as Logger from "./logger.js";
 
-export default class Signaling extends EventTarget {
+export class Signaling extends EventTarget {
 
   constructor() {
     super();
-    this.interval = 3000;
     this.running = false;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
@@ -18,6 +17,10 @@ export default class Signaling extends EventTarget {
     }
   }
 
+  get interval() {
+    return 1000;
+  }
+
   url(method) {
     return location.origin + '/signaling/' + method;
   }
@@ -28,9 +31,31 @@ export default class Signaling extends EventTarget {
     this.sessionId = session.sessionId;
     this.running = true;
 
+    this.loopGetConnection();
     this.loopGetOffer();
     this.loopGetAnswer();
     this.loopGetCandidate();
+  }
+
+  async loopGetConnection() {
+    let currentConnections = new Set();
+    while (this.running) {
+      const res = await this.getConnection();
+      const data = await res.json();
+      const connections = data.connections;
+      Logger.log('get connections:', connections);
+
+      const newSet = new Set([...connections]);
+      const deleteConnection = new Set([...currentConnections].filter(e => (!newSet.has(e))));
+
+      deleteConnection.forEach(connection => {
+        this.dispatchEvent(new CustomEvent('disconnect', { detail: connection }));
+      });
+
+      currentConnections = newSet;
+
+      await this.sleep(this.interval);
+    }
   }
 
   async loopGetOffer() {
@@ -85,8 +110,10 @@ export default class Signaling extends EventTarget {
       Logger.log('get candidates:', candidates);
 
       if (candidates.length > 0) {
+        const connectionId = candidates[0].connectionId;
         for (let candidate of candidates[0].candidates) {
-          this.dispatchEvent(new CustomEvent('candidate', { detail: candidate }));
+          const dispatch = { connectionId: connectionId, candidate: candidate.candidate, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid };
+          this.dispatchEvent(new CustomEvent('candidate', { detail: dispatch }));
         }
       }
 
@@ -137,6 +164,10 @@ export default class Signaling extends EventTarget {
     };
     Logger.log('sendCandidate:', data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
+  }
+
+  async getConnection() {
+    return await fetch(this.url(`connection`), { method: 'GET', headers: this.headers() });
   }
 
   async getOffer(fromTime = 0) {
@@ -204,6 +235,10 @@ export class WebSocketSignaling extends EventTarget {
           break;
       }
     };
+  }
+
+  get interval() {
+    return 100;
   }
 
   async start() {

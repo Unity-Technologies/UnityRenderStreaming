@@ -1,5 +1,5 @@
-import Peer from "./peer.js";
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import Peer from "../../js/peer.js";
 import * as Logger from "../../js/logger.js";
 
 export class SendVideo {
@@ -85,7 +85,9 @@ export class SendVideo {
 
     // Create peerConnection with proxy server and set up handlers
     this.pc = new Peer(connectionId, polite);
-
+    this.pc.addEventListener('disconnect', () => {
+      _this.ondisconnect();
+    });
     this.pc.addEventListener('trackevent', (e) => {
       const trackEvent = e.detail;
       if (trackEvent.track.kind != "video") {

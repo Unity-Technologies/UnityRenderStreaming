@@ -1,5 +1,5 @@
-import * as Config from "../../js/config.js";
-import * as Logger from "../../js/logger.js";
+import * as Config from "./config.js";
+import * as Logger from "./logger.js";
 
 export default class Peer extends EventTarget {
   constructor(connectionId, polite) {
@@ -54,6 +54,9 @@ export default class Peer extends EventTarget {
 
     this.pc.oniceconnectionstatechange = e => {
       _this.log(`iceConnectionState changed:${e}`);
+      if (_this.pc.iceConnectionState === 'disconnected') {
+        this.dispatchEvent(new Event('disconnect'));
+      }
     };
 
     this.pc.onicegatheringstatechange = e => {
@@ -73,8 +76,11 @@ export default class Peer extends EventTarget {
   }
 
   close() {
-    this.pc.close();
-    this.pc = null;
+    this.connectionId = null;
+    if (this.pc != null) {
+      this.pc.close();
+      this.pc = null;
+    }
   }
 
   addTrack(connectionId, track) {
@@ -91,6 +97,14 @@ export default class Peer extends EventTarget {
     }
 
     this.pc.addTransceiver(trackOrKind, init);
+  }
+
+  createDataChannel(connectionId, label) {
+    if (this.connectionId != connectionId) {
+      return null;
+    }
+
+    return this.pc.createDataChannel(label);
   }
 
   async onGotDescription(connectionId, description) {

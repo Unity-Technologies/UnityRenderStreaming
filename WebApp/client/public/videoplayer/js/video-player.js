@@ -1,5 +1,5 @@
 import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
-import * as Config from "../../js/config.js";
+import Peer from "../../js/peer.js";
 import * as Logger from "../../js/logger.js";
 
 
@@ -18,7 +18,6 @@ function uuid4() {
 export class VideoPlayer {
   constructor(elements) {
     const _this = this;
-    this.cfg = Config.getRTCConfiguration();
     this.pc = null;
     this.channel = null;
     this.connectionId = null;
@@ -62,39 +61,40 @@ export class VideoPlayer {
       this.signaling = new Signaling();
     }
 
+    this.connectionId = uuid4();
+
     // Create peerConnection with proxy server and set up handlers
-    this.pc = new RTCPeerConnection(this.cfg);
-    this.pc.onsignalingstatechange = function (e) {
-      Logger.log('signalingState changed:', e);
-    };
-    this.pc.oniceconnectionstatechange = function (e) {
-      Logger.log('iceConnectionState changed:', e);
-      Logger.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
-      if (_this.pc.iceConnectionState === 'disconnected') {
-        _this.ondisconnect();
+    this.pc = new Peer(this.connectionId, true);
+    this.pc.addEventListener('disconnect', () => {
+      _this.ondisconnect();
+    });
+    this.pc.addEventListener('trackevent', (e) => {
+      const data = e.detail;
+      if (data.track.kind == 'video') {
+        _this.videoTrackList.push(data.track);
       }
-    };
-    this.pc.onicegatheringstatechange = function (e) {
-      Logger.log('iceGatheringState changed:', e);
-    };
-    this.pc.ontrack = function (e) {
-      if (e.track.kind == 'video') {
-        _this.videoTrackList.push(e.track);
-      }
-      if (e.track.kind == 'audio') {
-        _this.localStream.addTrack(e.track);
+      if (data.track.kind == 'audio') {
+        _this.localStream.addTrack(data.track);
       }
       if (_this.videoTrackList.length == _this.maxVideoTrackLength) {
         _this.switchVideo(_this.videoTrackIndex);
       }
-    };
-    this.pc.onicecandidate = function (e) {
-      if (e.candidate != null) {
-        _this.signaling.sendCandidate(_this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
-      }
-    };
+    });
+    this.pc.addEventListener('sendoffer', (e) => {
+      const offer = e.detail;
+      _this.signaling.sendOffer(offer.connectionId, offer.sdp);
+    });
+    this.pc.addEventListener('sendanswer', (e) => {
+      const answer = e.detail;
+      _this.signaling.sendAnswer(answer.connectionId, answer.sdp);
+    });
+    this.pc.addEventListener('sendcandidate', (e) => {
+      const candidate = e.detail;
+      _this.signaling.sendCandidate(candidate.connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
+    });
+
     // Create data channel with proxy server and set up handlers
-    this.channel = this.pc.createDataChannel('data');
+    this.channel = this.pc.createDataChannel(this.connectionId, 'data');
     this.channel.onopen = function () {
       Logger.log('Datachannel connected.');
     };
@@ -122,36 +122,36 @@ export class VideoPlayer {
       }
     };
 
+    this.signaling.addEventListener('disconnect', async (e) => {
+      const data = e.detail;
+      if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
+        _this.ondisconnect();
+      }
+    });
+    this.signaling.addEventListener('offer', async (e) => {
+      const offer = e.detail;
+      const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
+      if (_this.pc != null) {
+        await _this.pc.onGotDescription(offer.connectionId, desc);
+      }
+    });
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-      await _this.pc.setRemoteDescription(desc);
+      if (_this.pc != null) {
+        await _this.pc.onGotDescription(answer.connectionId, desc);
+      }
     });
-
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
       const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-      await _this.pc.addIceCandidate(iceCandidate);
+      if (_this.pc != null) {
+        await _this.pc.onGotCandidate(candidate.connectionId, iceCandidate);
+      }
     });
 
     // setup signaling
     await this.signaling.start();
-    this.connectionId = uuid4();
-
-    // Add transceivers to receive multi stream.
-    // It can receive two video tracks and one audio track from Unity app.
-    // This operation is required to generate offer SDP correctly.
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
-    this.pc.addTransceiver('audio', { direction: 'recvonly' });
-
-    // create offer
-    const offer = await this.pc.createOffer();
-
-    // set local sdp
-    const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-    await this.pc.setLocalDescription(desc);
-    await this.signaling.sendOffer(this.connectionId, offer.sdp);
   }
 
   resizeVideo() {
@@ -212,14 +212,6 @@ export class VideoPlayer {
     return this._videoScale;
   }
 
-  close() {
-    if (this.pc) {
-      Logger.log('Close current PeerConnection');
-      this.pc.close();
-      this.pc = null;
-    }
-  }
-
   sendMsg(msg) {
     if (this.channel == null) {
       return;
@@ -241,6 +233,14 @@ export class VideoPlayer {
   }
 
   async stop() {
-    await this.signaling.stop();
+    if (this.signaling) {
+      await this.signaling.stop();
+      this.signaling = null;
+    }
+
+    if (this.pc) {
+      this.pc.close();
+      this.pc = null;
+    }
   }
 }
