@@ -2,6 +2,10 @@ import {
   MemoryHelper,
 } from "./memoryhelper.js";
 
+import {
+  Keymap
+} from "./keymap.js";
+
 export class FourCC {
   /**
    * {Number} _code;
@@ -246,7 +250,7 @@ export class MouseState extends IInputState {
 
 export class KeyboardState extends IInputState {
   static get sizeInBits() { return Keyboard.keycount; }
-  static get sizeInBytes() { return (KeyboardState.sizeInBits + 7) / 8; }
+  static get sizeInBytes() { return (KeyboardState.sizeInBits + 7) >> 3; }
   static get format() { return new FourCC('K', 'E', 'Y', 'S').toInt32(); }
 
   /**
@@ -271,7 +275,8 @@ export class KeyboardState extends IInputState {
       default:
         throw new Error(`unknown event type ${event.type})`);
     }
-    MemoryHelper.writeSingleBit(this.keys, event.keyCode, value);
+    const key = Keymap[event.code];
+    MemoryHelper.writeSingleBit(this.keys, key, value);
   }
 
   /**
@@ -491,9 +496,6 @@ export class StateEvent {
     uint8View.set(new Uint8Array(this.baseEvent.buffer), 0);
     dataView.setInt32(InputEvent.size, this.stateFormat, true);
     uint8View.set(new Uint8Array(this.stateData), InputEvent.size+sizeOfInt);
-
-    // const array = new Uint8Array(_buffer);
-    // console.log(`${String.fromCharCode(array[0])} ${String.fromCharCode(array[1])} ${String.fromCharCode(array[2])} ${String.fromCharCode(array[3])}`);
     return _buffer;
   }
 }

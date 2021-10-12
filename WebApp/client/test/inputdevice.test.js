@@ -38,7 +38,7 @@ describe(`MouseState`, () => {
 describe(`KeyboardState`, () => {
   let event;
   beforeEach(() => {
-    event = new KeyboardEvent('keydown', { key: 'A', keyCode: 0x41 });
+    event = new KeyboardEvent('keydown', { code: 'KeyA' });
   });
   test('format', () => {
     const format = new KeyboardState(event).format;
@@ -85,7 +85,7 @@ describe(`GamepadState`, () => {
 describe(`StateEvent`, () => {
   let state;
   beforeEach(() => {
-    const event = new KeyboardEvent('keydown', { key: 'A', keyCode: 0x41 });
+    const event = new KeyboardEvent('keydown', { code: 'KeyA' });
     state = new KeyboardState(event);
   });
   test('buffer', () => {

@@ -11,6 +11,10 @@ import {
   LocalInputManager
 } from "./input-remoting.js";
 
+import {
+  Keymap
+} from "./keymap.js";
+
 
 export class Sender extends LocalInputManager {
   constructor(elem) {
@@ -105,8 +109,9 @@ export class Sender extends LocalInputManager {
         this.keyboard.queueEvent(event);
         this._queueStateEvent(this.keyboard);
       }else{
-        this._queueTextEvent(this.keyboard, event.code);
-      }  
+        const key = event.key.charCodeAt(0);
+        this._queueTextEvent(this.keyboard, key);
+      }
     }
     else if(event.type == 'keyup') {
       this.keyboard.queueEvent(event);
@@ -151,6 +156,6 @@ export class Observer {
     if(this.channel == null || this.channel.readyState != 'open') {
       return;
     }
-    this.channel.send(message.serialize());
+    this.channel.send(message.buffer);
   }
 }

@@ -143,7 +143,7 @@ export class Message {
    * 
    * @returns {ArrayBuffer}
    */
-  serialize() {
+  get buffer() {
     const sizeOfInt = 4;
     const totalSize = sizeOfInt + sizeOfInt + sizeOfInt + this.data.byteLength;
     let buffer = new ArrayBuffer(totalSize);

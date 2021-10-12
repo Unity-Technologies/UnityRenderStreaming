@@ -84,7 +84,7 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.keydown(
-        new KeyboardEvent('keydown', { key: 'Enter' }));
+        new KeyboardEvent('keydown', { code: 'KeyA' }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });
     test('keydown repeat', () => {
@@ -92,7 +92,7 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.keydown(
-        new KeyboardEvent('keydown', { key: 'Enter', repeat: true }));
+        new KeyboardEvent('keydown', { code: 'KeyA', repeat: true }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });    
   });

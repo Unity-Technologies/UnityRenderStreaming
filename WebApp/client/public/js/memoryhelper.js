@@ -6,8 +6,8 @@ export class MemoryHelper {
    */
   static writeSingleBit(buffer, bitOffset, value) {
     let view = new Uint8Array(buffer);
-    const index = Math.floor(bitOffset / 32);
-    bitOffset = bitOffset % 32;
+    const index = Math.floor(bitOffset / 8);
+    bitOffset = bitOffset % 8;
     const byte = view[index];
     let newByte = 1 << bitOffset;
     if(value) {

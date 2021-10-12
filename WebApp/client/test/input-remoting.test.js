@@ -64,7 +64,7 @@ describe('create NewEventMsg', () => {
     expect(msg.data.byteLength).toBeGreaterThan(0);
   });
   test('using KeyboardState', () => {
-    const event = new KeyboardEvent("keydown", { keyCode: 39 });
+    const event = new KeyboardEvent("keydown", { code: 'KeyA' });
     const state = new KeyboardState(event);
     const msg = NewEventsMsg.create(state);
     expect(msg.participant_id).toBe(0);

@@ -1,5 +1,5 @@
-import
-  Signaling, {
+import {
+  Signaling,
   WebSocketSignaling 
 } from "../../js/signaling.js";
 
