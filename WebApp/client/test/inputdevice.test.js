@@ -107,7 +107,7 @@ describe(`GamepadState`, () => {
       type: 'gamepadupdated',
       gamepad : {
         id: 1,
-        buttons: Array(16).fill().map(_=>({ pressed: false, value: 0 })),
+        buttons: Array(16).fill({ pressed: false, value: 1 }),
         axes:[0, 0, 0, 0]
     }};
   });

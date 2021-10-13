@@ -359,7 +359,7 @@ export class TouchState {
       phaseId = TouchPhase.Began; break;
       case 'touchend':
       phaseId = TouchPhase.Ended; break;
-      case 'toucnmove':
+      case 'touchmove':
       phaseId = TouchPhase.Moved; break;
       case 'touchcancel':
       phaseId = TouchPhase.Canceled; break;

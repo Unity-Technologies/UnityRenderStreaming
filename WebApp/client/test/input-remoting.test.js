@@ -105,7 +105,7 @@ describe('create NewEventMsg', () => {
       type: 'gamepadupdated',
       gamepad : {
         id: 1,
-        buttons: Array(16).fill().map(_=>({ pressed: false, value: 1 })),
+        buttons: Array(16).fill({ pressed: false, value: 1 }),
         axes:[1, 1, 1, 1]
     }};
     const state = new GamepadState(event);
