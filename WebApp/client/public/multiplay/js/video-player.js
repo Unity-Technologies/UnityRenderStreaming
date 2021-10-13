@@ -10,7 +10,7 @@ import {
 
 import { 
   InputRemoting 
-} from "../../js/input-remoting.js";
+} from "../../js/inputremoting.js";
 
 
 import * as Config from "../../js/config.js";

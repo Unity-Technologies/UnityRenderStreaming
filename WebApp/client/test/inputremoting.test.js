@@ -4,7 +4,7 @@ import {
   KeyboardState,
   TouchscreenState,
   GamepadState
-} from "../public/js/inputdevice";
+} from "../public/js/inputdevice.js";
 
 import { 
   MessageType,
@@ -12,21 +12,24 @@ import {
   NewEventsMsg,
   RemoveDeviceMsg,
   InputRemoting,
-  LocalInputManager,
-} from "../public/js/input-remoting";
+} from "../public/js/inputremoting.js";
+
+import {
+  Sender
+} from "../public/js/sender.js";
 
 import {
   Observer
 } from "../public/js/sender";
 
 describe(`InputRemoting`, () => {
-  let manager = null;
+  let sender = null;
   let inputRemoting = null;
   let observer = null;
   beforeEach(async () => {
-      manager = new LocalInputManager();
-      inputRemoting = new InputRemoting(manager);
-      let dc = null; // todo::RTCDataChannel is not defined 
+      sender = new Sender(document);
+      inputRemoting = new InputRemoting(sender);
+      let dc = null;
       observer = new Observer(dc);
   });
   test('startSending', () => {

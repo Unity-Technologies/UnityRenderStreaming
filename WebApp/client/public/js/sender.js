@@ -7,7 +7,7 @@ import {
   TextEvent
 } from "./inputdevice.js";
 
-import { LocalInputManager } from "./input-remoting.js";
+import { LocalInputManager } from "./inputremoting.js";
 import { GamepadHandler } from "./gamepadhandler.js";
 
 export class Sender extends LocalInputManager {
@@ -140,16 +140,22 @@ export class Sender extends LocalInputManager {
     }
   }
 
-
   _queueStateEvent(device) {
     const stateEvent = StateEvent.from(device, Date.now());
-    const e = new CustomEvent('event', {detail: { event: stateEvent, device: device}});
-    super.onevent.dispatchEvent(e);
+    const e = new CustomEvent(
+      'event', {detail: { event: stateEvent, device: device}});
+    super.onEvent.dispatchEvent(e);
   }
   _queueTextEvent(device, character) {
     const textEvent = TextEvent.create(device.deviceId, character, Date.now());
-    const e = new CustomEvent('event', {detail: { event: textEvent, device: device}});
-    super.onevent.dispatchEvent(e);
+    const e = new CustomEvent(
+      'event', {detail: { event: textEvent, device: device}});
+    super.onEvent.dispatchEvent(e);
+  }
+  _queueDeviceChange(device, usage) {
+    const e = new CustomEvent(
+      'changedeviceusage', {detail: { device: device, usage: usage }});
+    super.onEvent.dispatchEvent(e);
   }
 }
 

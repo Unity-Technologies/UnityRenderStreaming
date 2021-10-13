@@ -603,8 +603,7 @@ export class TextEvent {
 
    */
   static create(deviceId, character, time) {
-    const sizeOfInt = 4;
-    const eventSize = InputEvent.size + sizeOfInt;
+    const eventSize = InputEvent.size + MemoryHelper.sizeOfInt;
 
     let event = new TextEvent();
     event.baseEvent = new InputEvent(TextEvent.format, eventSize, deviceId, time); 
@@ -616,8 +615,7 @@ export class TextEvent {
    * @returns {ArrayBuffer}
    */
   get buffer() {
-    const sizeOfInt = 4;
-    const size = InputEvent.size + sizeOfInt;
+    const size = InputEvent.size + MemoryHelper.sizeOfInt;
     let _buffer = new ArrayBuffer(size);
     let arrayView = new Uint8Array(_buffer);
     let dataView = new DataView(_buffer);
@@ -658,10 +656,9 @@ export class StateEvent {
    * @param {Number} time 
    */
   static fromState(state, deviceId, time) {
-    const sizeOfInt = 4;
     const stateData = state.buffer;
     const stateSize = stateData.byteLength;
-    const eventSize = InputEvent.size + sizeOfInt + stateSize;
+    const eventSize = InputEvent.size + MemoryHelper.sizeOfInt + stateSize;
     
     let stateEvent = new StateEvent();
     stateEvent.baseEvent = new InputEvent(StateEvent.format, eventSize, deviceId, time);
@@ -674,15 +671,14 @@ export class StateEvent {
    * @returns {ArrayBuffer}
    */
   get buffer() {
-    const sizeOfInt = 4;
     const stateSize = this.stateData.byteLength;
-    const size = InputEvent.size + sizeOfInt + stateSize;
+    const size = InputEvent.size + MemoryHelper.sizeOfInt + stateSize;
     let _buffer = new ArrayBuffer(size);
     let uint8View = new Uint8Array(_buffer);
     let dataView = new DataView(_buffer);
     uint8View.set(new Uint8Array(this.baseEvent.buffer), 0);
     dataView.setInt32(InputEvent.size, this.stateFormat, true);
-    uint8View.set(new Uint8Array(this.stateData), InputEvent.size+sizeOfInt);
+    uint8View.set(new Uint8Array(this.stateData), InputEvent.size+MemoryHelper.sizeOfInt);
     return _buffer;
   }
 }

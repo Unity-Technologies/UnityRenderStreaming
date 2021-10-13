@@ -1,9 +1,5 @@
 
 export class GamepadHandler extends EventTarget {
-
-  /**
-   * 
-   */
   constructor() {
     super();
     this._controllers = {};
@@ -11,7 +7,6 @@ export class GamepadHandler extends EventTarget {
   }
 
   /**
-   * 
    * @param {Gamepad} gamepad 
    */
   addGamepad(gamepad) {
@@ -19,7 +14,6 @@ export class GamepadHandler extends EventTarget {
   }
 
   /**
-   * 
    * @param {Gamepad} gamepad 
    */
   removeGamepad(gamepad) {
@@ -30,6 +24,8 @@ export class GamepadHandler extends EventTarget {
     this._scanGamepad();
     for(let i in this._controllers) {
       const controller = this._controllers[i];
+
+      // gamepadupdated event type is own definition
       this.dispatchEvent(new GamepadEvent('gamepadupdated', {
         gamepad: controller
       }));

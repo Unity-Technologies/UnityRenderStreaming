@@ -18,4 +18,11 @@ export class MemoryHelper {
     }
     view[index] = newByte;
   }
+
+  /**
+   * @return {Number}
+   */
+  static get sizeOfInt() {
+    return 4;
+  }
 }

@@ -2,26 +2,47 @@ import {
   StateEvent,
 } from "./inputdevice.js";
 
+import {
+  MemoryHelper
+} from "./memoryhelper.js";
+
 export class LocalInputManager {
-  // _onevent;
   constructor() {
     this._onevent = new EventTarget();
   }
 
-  get onevent() {
+  /**
+   * event type 'event', 'changedeviceusage'
+   * @return {Event}
+   */
+  get onEvent() {
     return this._onevent;
   }
 
-  get devices() {
-    return null;
+  /**
+   * @return {Event}
+   */
+   get devices() {
+    throw new Error(`Please implement this method.`);
   }
 }
 
-export class InputRemoting {
-  // _localManager;
-  // _subscribers;
-  // _sending = false;
+export const InputDeviceChange = {
+  Added: 0,
+  Removed: 1,
+  Disconnected: 2,
+  Reconnected: 3,
+  Enabled: 4,
+  Disabled: 5,
+  UsageChanged: 6,
+  ConfigurationChanged: 7,
+  Destroyed: 8, 
+};
 
+export class InputRemoting {
+  /**
+   * @param {LocalInputManager} manager 
+   */
   constructor(manager) {
     this._localManager = manager;
     this._subscribers = new Array();
@@ -33,7 +54,17 @@ export class InputRemoting {
       return;
     }
     this._sending = true;
-    this._localManager.onevent.addEventListener("event", this._onsendEvent.bind(this));
+
+    const onEvent = e => {
+      this._sendEvent(e.detail.event);
+    };
+
+    const onDeviceChange = e => {
+      this._sendDeviceChange(e.detail.device, e.detail.change);
+    };
+
+    this._localManager.onEvent.addEventListener("event", onEvent);
+    this._localManager.onEvent.addEventListener("changedeviceusage", onDeviceChange);
     this._sendInitialMessages();
   }
 
@@ -58,6 +89,7 @@ export class InputRemoting {
   }
 
   _sendAllGeneratedLayouts() {
+    // todo:
   }
 
   _sendAllDevices() {
@@ -73,24 +105,40 @@ export class InputRemoting {
     const newDeviceMessage = NewDeviceMsg.create(device);
     this._send(newDeviceMessage);
 
-    // todo:
     // Send current state. We do this here in this case as the device
     // may have been added some time ago and thus have already received events.
 
+    // todo:
     // const stateEventMessage = NewEventsMsg.createStateEvent(device);
     // this._send(stateEventMessage);
   }
 
-  _onsendEvent(e) {
-    const stateEvent = e.detail.event;
-    const message = NewEventsMsg.create(stateEvent);
+  _sendEvent(event) {
+    const message = NewEventsMsg.create(event);
     this._send(message);
   }
 
-  /**
-   * 
-   * @param {Message} message 
-   */
+  _sendDeviceChange(device, change) {
+    if (this._subscribers == null)
+      return;
+
+    let msg = null;
+    switch (change) {
+      case InputDeviceChange.Added:
+        msg = NewDeviceMsg.Create(device);
+        break;
+      case InputDeviceChange.Removed:
+        msg = RemoveDeviceMsg.Create(device);
+        break;
+      case InputDeviceChange.UsageChanged:
+        msg = ChangeUsageMsg.Create(device);
+        break;
+      default:
+        return;
+    }
+    this._send(msg);
+  }  
+
   _send(message) {
     for(let subscriber of this._subscribers) {
       subscriber.onNext(message);
@@ -144,8 +192,12 @@ export class Message {
    * @returns {ArrayBuffer}
    */
   get buffer() {
-    const sizeOfInt = 4;
-    const totalSize = sizeOfInt + sizeOfInt + sizeOfInt + this.data.byteLength;
+    const totalSize = 
+      MemoryHelper.sizeOfInt + // size of this.participant_id
+      MemoryHelper.sizeOfInt + // size of this.type
+      MemoryHelper.sizeOfInt + // size of this.length
+      this.data.byteLength;    // size of this.data
+
     let buffer = new ArrayBuffer(totalSize);
     let dataView = new DataView(buffer);
     let uint8view =  new Uint8Array(buffer);
@@ -158,6 +210,10 @@ export class Message {
 }
 
 export class NewDeviceMsg {
+  /**
+   * @param {InputDevice} device 
+   * @returns {Message}
+   */
   static create(device) {
     const data = {
       name: device.name,
@@ -180,7 +236,7 @@ export class NewDeviceMsg {
 export class NewEventsMsg {
   /**
    * 
-   * @param {InputDevice} device 
+   * @param {InputDevice} device
    * @returns {Message}
    */
   static createStateEvent(device) {
@@ -205,10 +261,17 @@ export class RemoveDeviceMsg {
    * @returns {Message}
    */
    static create(device) {
-    const sizeOfInt = 4;
-    let buffer = new ArrayBuffer(sizeOfInt);
+    let buffer = new ArrayBuffer(MemoryHelper.sizeOfInt);
     let view = new DataView(buffer);
     view.setInt32(device.deviceId);
     return new Message(0, MessageType.RemoveDevice, buffer);
+  }
+}
+
+export class ChangeUsageMsg {
+
+  static create(device) {
+    // todo:
+    throw new Error(`ChangeUsageMsg class is not implemented. device=${device}`);
   }
 }
