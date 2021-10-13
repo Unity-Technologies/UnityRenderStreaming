@@ -102,7 +102,26 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.touchstart(
-        new TouchEvent('touchstart', { changedTouches: [], touches: [] }));
+        new TouchEvent("touchstart", { 
+          touches: [{ // InputInit
+            identifier: 0,
+            target: null,
+            clientX: 0,
+            clientY: 0,
+            screenX: 0,
+            screenY: 0,
+            pageX: 0,
+            pageY: 0,
+            radiusX: 0,
+            radiusY: 0,
+            rotationAngle: 0,
+            force: 0,
+            altitudeAngle: 0,
+            azimuthAngle:0,
+            touchType: "direct"
+          }], 
+          changedTouches: [] 
+        }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });
   });

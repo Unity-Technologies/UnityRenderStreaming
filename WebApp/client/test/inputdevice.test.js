@@ -69,14 +69,33 @@ describe(`KeyboardState`, () => {
 describe(`TouchscreenState`, () => {
   let event;
   beforeEach(() => {
-    event = new TouchEvent("touchstart", { changedTouches: [], touches: [] });
+    event = new TouchEvent("touchstart", { 
+      touches: [{ // InputInit
+        identifier: 0,
+        target: null,
+        clientX: 0,
+        clientY: 0,
+        screenX: 0,
+        screenY: 0,
+        pageX: 0,
+        pageY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+        altitudeAngle: 0,
+        azimuthAngle:0,
+        touchType: "direct"
+      }], 
+      changedTouches: [] 
+    });
   });  
   test('format', () => {
-    const format = new TouchscreenState(event).format;
+    const format = new TouchscreenState(event, null, Date.now()).format;
     expect(format).toBe(0x54534352);
   });
   test('buffer', () => {
-    const state = new TouchscreenState(event);
+    const state = new TouchscreenState(event, null, Date.now());
     expect(state.buffer.byteLength).toBeGreaterThan(0);
   });
 });

@@ -5,6 +5,7 @@ import {
 import { Keymap } from "./keymap.js";
 import { MouseButton } from "./mousebutton.js";
 import { GamepadButton } from "./gamepadbutton.js";
+import { TouchPhase } from "./touchphase.js";
 
 export class FourCC {
   /**
@@ -61,6 +62,8 @@ export class InputDevice {
     this.deviceId = deviceId;
     this.variants = variants;
     this.description = description;
+
+    this._inputState = null;
   }
 
   /**
@@ -107,8 +110,8 @@ export class Touchscreen extends InputDevice {
   /**
    * @param {TouchScreenEvent} event 
    */
-  queueEvent(event) {
-    this.updateState(new TouchscreenState(event));
+  queueEvent(event, time) {
+    this.updateState(new TouchscreenState(event, this.currentState, time));
   }
 }
 
@@ -312,34 +315,184 @@ export class KeyboardState extends IInputState {
   }
 }
 
-export class TouchscreenState extends IInputState {
-  static get size() { return 56; }  // todo
-  static get maxTouches() { return 10; } 
-  static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
+export class TouchState {
+  static get format() { return new FourCC('T', 'O', 'U', 'C').toInt32(); }
+  static get size() { return 56; }
 
   /**
    * field offset 0
-   * @number {Array} primaryTouchData;
-   * field offset 56
-   * @number {Array} touchData;
+   * @number {Number} touchId;
+   * field offset 4
+   * @number {Number[]} position;
+   * field offset 12
+   * @number {Number[]} delta;
+   * field offset 20
+   * @number {Number} pressure;
+   * field offset 24
+   * @number {Number[]} radius;
+   * field offset 32
+   * @number {Number} phase;
+   * field offset 33
+   * @number {Number} tapCount;
+   * field offset 34
+   * @number {Number} displayIndex;
+   * field offset 35
+   * @number {Number} flag;
+   * field offset 36
+   * @number {Number} padding;
+   * field offset 40
+   * @number {Number} startTime;
+   * field offset 48
+   * @number {Number} startPosition;
    */
 
+
   /**
-   * @param {TouchEvent} event 
+   * @param {Touch} touch
+   * @param {TouchState} state
+   * @param {String} type
    */
-  constructor(event) {
-    super();
-    this.touchData = event.touches; // todo
+  constructor(touch, state, type, time) {
+    let phaseId = TouchPhase.Stationary;
+    switch(type) {
+      case 'touchstart': 
+      phaseId = TouchPhase.Began; break;
+      case 'touchend':
+      phaseId = TouchPhase.Ended; break;
+      case 'toucnmove':
+      phaseId = TouchPhase.Moved; break;
+      case 'touchcancel':
+      phaseId = TouchPhase.Canceled; break;
+    }  
+
+    if(touch != null) {
+      this.touchId = touch.identifier;
+      this.position = [touch.pageX, touch.pageY];
+      if(state == null)
+        this.delta = [0, 0];
+      else
+        this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
+      this.pressure = touch.force;
+      this.radius = [touch.radiusX, touch.radiusY];
+      this.phaseId = phaseId;
+      this.tapCount = 0;
+      this.displayIndex = 0;
+      this.flags = 0;
+      this.padding = 0;
+      if(type == 'touchstart') {
+        this.startTime = time;
+        this.startPosition = this.position.slice();
+      } else {
+        this.startTime = state.startTime;
+        this.startPosition = state.startPosition.slice();
+      }
+    }
+    else {
+      this.touchId = state.touchId;
+      this.position = state.position.slice();
+      this.delta = [0, 0];
+      this.pressure = state.pressure;
+      this.radius = state.radius.slice();
+      this.phaseId = phaseId;
+      this.tapCount = 0;
+      this.displayIndex = 0;
+      this.flags = 0;
+      this.padding = 0;
+      this.startTime = state.startTime;
+      this.startPosition = state.startPosition.slice();
+    }
   }
 
   /**
    * @returns {ArrayBuffer}
    */
    get buffer() {
-    const size = TouchscreenState.size; // todo
+    const size = TouchState.size; // todo
     let _buffer = new ArrayBuffer(size);
-//    let _data = new DataView(_buffer); //todo
+    let view = new DataView(_buffer);
+
+    view.setInt32(0, this.touchId, true);
+    view.setFloat32(4, this.position[0], true);
+    view.setFloat32(8, this.position[1], true);
+    view.setFloat32(12, this.delta[0], true);
+    view.setFloat32(16, this.delta[1], true);
+    view.setFloat32(20, this.pressure, true);
+    view.setFloat32(24, this.radius[0], true);
+    view.setFloat32(28, this.radius[1], true);
+    view.setInt8(32, this.phaseId, true);
+    view.setInt8(33, this.tapCount, true);
+    view.setInt8(34, this.displayIndex, true);
+    view.setInt8(35, this.flags, true);
+    view.setInt32(36, this.padding, true);
+    view.setFloat64(40, this.startTime, true);
+    view.setFloat32(48, this.startPosition[0], true);
+    view.setFloat32(52, this.startPosition[1], true);
     return _buffer;
+  }
+}
+
+export class TouchscreenState extends IInputState {
+  static get maxTouches() { return 10; } 
+  static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
+
+  /**
+   * field offset 0
+   * @number {TouchState[]} touchData;
+   */
+
+  /**
+   * @param {TouchEvent} event
+   * @param {TouchScreenState} state
+   * @param {Date} time
+   */
+  constructor(event, state, time) {
+    super();
+
+    const touches = event.touches;
+    switch(event.type) {
+      case 'touchend': {
+        this.touchData = new Array(state.touchData.length);
+        for(let i = 0; i < state.touchData.length; i++) {
+          const j = touches.length == 0 ? -1 : touches.findIndex(_ => _.identifier == state.touchData[i].touchId);
+          const touch = j == -1 ? null : touches[j];
+          this.touchData[i] = new TouchState(touch, state.touchData[i], event.type, time);
+        }
+        break;
+      }
+      case 'touchstart': {
+        this.touchData = new Array(touches.length);
+        for(let i = 0; i < touches.length; i++) {
+          const j = state == null ? -1 : state.touchData.findIndex(_ => _.touchId == touches[i].identifier);
+          const prevState = j == -1 ? null : state.touchData[j];
+          this.touchData[i] = new TouchState(touches[i], prevState, event.type, time);
+        }
+        break;
+      }
+      default: {
+        this.touchData = new Array(touches.length);
+        for(let i = 0; i < touches.length; i++) {
+          this.touchData[i] = new TouchState(touches[i], state.touchData[i], event.type, time);
+        }
+        break;
+      }
+    }
+  }
+
+  /**
+   * @returns {ArrayBuffer}
+   */
+   get buffer() {
+    const size = TouchState.size * this.touchData.length;
+    let _buffer = new ArrayBuffer(size);
+    let view = new Uint8Array(_buffer);
+    for(let i in this.touchData) {
+      view.set(new Uint8Array(this.touchData[i].buffer), TouchState.size * i);
+    }
+    return _buffer;
+  }
+
+  get size() {
+    return TouchState.size; // todo
   }
 
   /**

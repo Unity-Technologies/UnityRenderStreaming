@@ -119,7 +119,7 @@ export class Sender extends LocalInputManager {
     }
   }
   _onTouchEvent(event) {
-    this.touchscreen.queueEvent(event);
+    this.touchscreen.queueEvent(event, Date.now());
     this._queueStateEvent(this.touchscreen);
   }
   _onGamepadEvent(event) {
