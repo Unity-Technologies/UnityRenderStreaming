@@ -2,7 +2,7 @@ import * as Config from "./config.js";
 import * as Logger from "./logger.js";
 
 export default class Peer extends EventTarget {
-  constructor(connectionId, polite) {
+  constructor(connectionId, polite, resendIntervalMsec = 5000) {
     super();
     const _this = this;
     this.connectionId = connectionId;
@@ -15,7 +15,7 @@ export default class Peer extends EventTarget {
     this.srdAnswerPending = false;
     this.log = str => void Logger.log(`[${_this.polite ? 'POLITE' : 'IMPOLITE'}] ${str}`);
     this.assert_equals = window.assert_equals ? window.assert_equals : (a, b, msg) => { if (a === b) { return; } throw new Error(`${msg} expected ${b} but got ${a}`); };
-    this.interval = 5000;
+    this.interval = resendIntervalMsec;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
     this.pc.ontrack = e => {
