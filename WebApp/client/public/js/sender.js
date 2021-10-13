@@ -7,14 +7,8 @@ import {
   TextEvent
 } from "./inputdevice.js";
 
-import { 
-  LocalInputManager
-} from "./input-remoting.js";
-
-import {
-  Keymap
-} from "./keymap.js";
-
+import { LocalInputManager } from "./input-remoting.js";
+import { GamepadHandler } from "./gamepadhandler.js";
 
 export class Sender extends LocalInputManager {
   constructor(elem) {
@@ -82,7 +76,10 @@ export class Sender extends LocalInputManager {
     document.addEventListener('keydown', this._onKeyEvent.bind(this), false);
 
     // gamepad
-    // todo:
+    window.addEventListener("gamepadconnected", this._onGamepadEvent.bind(this), false);
+    window.addEventListener("gamepaddisconnected", this._onGamepadEvent.bind(this), false);
+    this._gamepadHandler = new GamepadHandler(); 
+    this._gamepadHandler.addEventListener("gamepadupdated", this._onGamepadEvent.bind(this), false);
 
     // touchscreen
     elem.addEventListener('touchend', this._onTouchEvent.bind(this), false);
@@ -91,6 +88,9 @@ export class Sender extends LocalInputManager {
     elem.addEventListener('touchmove', this._onTouchEvent.bind(this), false);
   }
 
+  /**
+   * @returns {InputDevice[]}
+   */
   get devices() {
     return this._devices;
   }
@@ -105,10 +105,10 @@ export class Sender extends LocalInputManager {
   }
   _onKeyEvent(event) {
     if(event.type == 'keydown') {
-      if(!event.repeat) {
+      if(!event.repeat) { // StateEvent
         this.keyboard.queueEvent(event);
         this._queueStateEvent(this.keyboard);
-      }else{
+      } else { //TextEvent
         const key = event.key.charCodeAt(0);
         this._queueTextEvent(this.keyboard, key);
       }
@@ -123,8 +123,21 @@ export class Sender extends LocalInputManager {
     this._queueStateEvent(this.touchscreen);
   }
   _onGamepadEvent(event) {
-    this.gamepad.queueEvent(event);
-    this._queueStateEvent(this.gamepad);
+    switch(event.type) {
+      case 'gamepadconnected': {
+        this._gamepadHandler.addGamepad(event.gamepad);
+        break;
+      }
+      case 'gamepaddisconnected': {
+        this._gamepadHandler.removeGamepad(event.gamepad);
+        break;
+      }
+      case 'gamepadupdated': {
+        this.gamepad.queueEvent(event);
+        this._queueStateEvent(this.gamepad);    
+        break;
+      }
+    }
   }
 
 

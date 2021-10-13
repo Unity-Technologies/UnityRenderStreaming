@@ -2,9 +2,9 @@ import {
   MemoryHelper,
 } from "./memoryhelper.js";
 
-import {
-  Keymap
-} from "./keymap.js";
+import { Keymap } from "./keymap.js";
+import { MouseButton } from "./mousebutton.js";
+import { GamepadButton } from "./gamepadbutton.js";
 
 export class FourCC {
   /**
@@ -26,7 +26,6 @@ export class FourCC {
   }
 
   /**
-   * 
    * @returns {Number}
    */
   toInt32() {
@@ -85,6 +84,9 @@ export class InputDevice {
 }
 
 export class Mouse extends InputDevice {
+  /**
+   * @param {(MouseEvent|WheelEvent)} event 
+   */
   queueEvent(event) {
     this.updateState(new MouseState(event));
   }
@@ -92,7 +94,6 @@ export class Mouse extends InputDevice {
 
 export class Keyboard extends InputDevice {
   static get keycount() { return 110; }
-
   /**
    * 
    * @param {KeyboardEvent} event 
@@ -103,12 +104,18 @@ export class Keyboard extends InputDevice {
 }
 
 export class Touchscreen extends InputDevice {
+  /**
+   * @param {TouchScreenEvent} event 
+   */
   queueEvent(event) {
     this.updateState(new TouchscreenState(event));
   }
 }
 
 export class Gamepad extends InputDevice {
+  /**
+   * @param {GamepadButtonEvent | GamepadAxisEvent} event 
+   */
   queueEvent(event) {
     this.updateState(new GamepadState(event));
   }
@@ -166,21 +173,18 @@ export class InputEvent {
 }
 
 export class IInputState {
-
   /**
    * @returns {ArrayBuffer}
    */
   get buffer() {
     throw new Error('Please implement this field');
   }
-
   /**
    * @returns {Number}
    */
    get format() {
     throw new Error('Please implement this field');    
   }
-
 }
 
 export class MouseState extends IInputState {
@@ -208,14 +212,30 @@ export class MouseState extends IInputState {
    */
 
   /**
-   * @param {MouseEvent} event 
+   * @param {MouseEvent | WheelEvent} event 
    */
   constructor(event) {
     super();
-    this.position = [event.clientX, event.clientY];  // todo
-    this.delta = [0, 0];  // todo
-    this.scroll = [event.screenX, event.screenY];  // todo
+    
+    this.position = [event.clientX, event.clientY];
+    this.delta = [event.movementX, -event.movementY];
+    this.scroll = [0, 0];
+    if(event.type === 'wheel') {
+      this.scroll = [event.deltaX, event.deltaY];
+    }
     this.buttons = new ArrayBuffer(2);
+
+    const left = event.buttons & 1 << 0;
+    const right = event.buttons & 1 << 1;
+    const middle = event.buttons & 1 << 2;
+    const back = event.buttons & 1 << 3;
+    const forward = event.buttons & 1 << 4;
+
+    MemoryHelper.writeSingleBit(this.buttons, MouseButton.Left, left);
+    MemoryHelper.writeSingleBit(this.buttons, MouseButton.Right, right);
+    MemoryHelper.writeSingleBit(this.buttons, MouseButton.Middle, middle);
+    MemoryHelper.writeSingleBit(this.buttons, MouseButton.Forward, forward);
+    MemoryHelper.writeSingleBit(this.buttons, MouseButton.Back, back);
   }
 
   /**
@@ -223,6 +243,7 @@ export class MouseState extends IInputState {
    */
   get buffer() {
     const size = MouseState.size;
+    const buttons = new Uint16Array(this.buttons)[0];
     let _buffer = new ArrayBuffer(size);
     let view = new DataView(_buffer);
     view.setFloat32(0, this.position[0], true);
@@ -231,9 +252,9 @@ export class MouseState extends IInputState {
     view.setFloat32(12, this.delta[1], true);
     view.setFloat32(16, this.scroll[0], true);
     view.setFloat32(20, this.scroll[1], true);
-    new Uint8Array(_buffer).set(new Uint8Array(this.buttons), 24);
-//    view.setFloat32(16, displayIndex, true); //todo
-//    view.setFloat32(20, clickCount, true); //todo
+    view.setUint16(24, buttons, true);
+    view.setUint16(26, this.displayIndex, true);
+    view.setUint16(28, this.clickCount, true);
     return _buffer;
   }
 
@@ -242,9 +263,6 @@ export class MouseState extends IInputState {
    */
   get format() {
     return MouseState.format;
-  }  
-  get sizeInBits() {
-    return MouseState.size * 8; // todo
   }
 }
 
@@ -291,9 +309,6 @@ export class KeyboardState extends IInputState {
    */
    get format() {
     return KeyboardState.format;
-  }  
-  get sizeInBits() {
-    return KeyboardState.sizeInBits;
   }
 }
 
@@ -310,7 +325,6 @@ export class TouchscreenState extends IInputState {
    */
 
   /**
-   * 
    * @param {TouchEvent} event 
    */
   constructor(event) {
@@ -333,9 +347,6 @@ export class TouchscreenState extends IInputState {
    */
    get format() {
     return TouchscreenState.format;
-  }
-  get sizeInBits() {
-    return TouchscreenState.size * 8;
   }
 }
 
@@ -362,11 +373,36 @@ export class GamepadState extends IInputState {
 
   /**
    * 
-   * @param {GamepadEvent} event 
+   * @param {GamepadButtonEvent | GamepadAxisEvent} event 
    */
   constructor(event) {
     super();
-    this.rightStick = event.rightStick; // todo
+    const gamepad = event.gamepad;
+    const buttons = event.gamepad.buttons;
+
+    this.buttons = new ArrayBuffer(4);
+    this.leftStick = [ gamepad.axes[0], -gamepad.axes[1] ];
+    this.rightStick = [ gamepad.axes[2], -gamepad.axes[3] ];
+    this.leftTrigger = buttons[6].value;
+    this.rightTrigger = buttons[7].value;
+    
+    // see https://w3c.github.io/gamepad/#remapping
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.A, buttons[0].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.B, buttons[1].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.X, buttons[2].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.Y, buttons[3].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.LeftShoulder, buttons[4].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.RightShoulder, buttons[5].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.LeftTrigger, buttons[6].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.RightTrigger, buttons[7].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.Select, buttons[8].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.Start, buttons[9].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.LeftStick, buttons[10].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.RightStick, buttons[11].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadUp, buttons[12].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadDown, buttons[13].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadLeft, buttons[14].pressed);
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadRight, buttons[15].pressed);    
   }
 
   /**
@@ -376,11 +412,13 @@ export class GamepadState extends IInputState {
     const size = GamepadState.size;
     let _buffer = new ArrayBuffer(size);
     let view = new DataView(_buffer);
-    view.setInt32(this.buttons);
-    view.setFloat64(this.leftStick);
-    view.setFloat64(this.rightStick);
-    view.setInt32(this.leftTrigger);
-    view.setInt32(this.rightTrigger);
+    view.setUint32(0, new Uint32Array(this.buttons)[0], true);
+    view.setFloat32(4, this.leftStick[0], true);
+    view.setFloat32(8, this.leftStick[1], true);
+    view.setFloat32(12, this.rightStick[0], true);
+    view.setFloat32(16, this.rightStick[1], true);
+    view.setFloat32(20, this.leftTrigger, true);
+    view.setFloat32(24, this.rightTrigger, true);
     return _buffer;
   }
 
@@ -389,10 +427,6 @@ export class GamepadState extends IInputState {
    */
    get format() {
     return GamepadState.format;
-  }
-
-  get sizeInBits() {
-    return GamepadState.size * 8;
   }
 }
 

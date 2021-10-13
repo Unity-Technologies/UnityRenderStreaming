@@ -58,7 +58,7 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.click(
-        new MouseEvent('click', { buttons:0, clientX:0, clientY:0} ));
+        new MouseEvent('click', { buttons:1, clientX:0, clientY:0} ));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });
     test('mousemove', () => {
@@ -66,7 +66,7 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.mousemove(
-        new MouseEvent('mousemove', { deltaX:0, deltaY:0 }));
+        new MouseEvent('mousemove', { buttons:1, deltaX:0, deltaY:0 }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });    
     test('wheel', () => {
@@ -74,7 +74,7 @@ describe(`Sender`, () => {
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.wheel(
-        new MouseEvent('wheel', { wheelDelta:0, deltaX:0, deltaY:0 }));
+        new WheelEvent('wheel', { wheelDelta:0, deltaX:0, deltaY:0 }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });
   });

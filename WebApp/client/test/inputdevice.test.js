@@ -21,17 +21,33 @@ describe(`FourCC`, () => {
 });
 
 describe(`MouseState`, () => {
-  let event;
-  beforeEach(() => {
-    event = new MouseEvent('click', { buttons:0, clientX:0, clientY:0});
-  });  
-  test('format', () => {
-    const format = new MouseState(event).format;
-    expect(format).toBe(0x4d4f5553);
-  });  
-  test('buffer', () => {
-    const state = new MouseState(event);
-    expect(state.buffer.byteLength).toBeGreaterThan(0);
+  describe(`with MouseEvent`, () => {
+    let event;
+    beforeEach(() => {
+      event = new MouseEvent('click', { buttons:1, clientX:0, clientY:0});
+    });  
+    test('format', () => {
+      const format = new MouseState(event).format;
+      expect(format).toBe(0x4d4f5553);
+    });  
+    test('buffer', () => {
+      const state = new MouseState(event);
+      expect(state.buffer.byteLength).toBeGreaterThan(0);
+    });  
+  });
+  describe(`with WheelEvent`, () => {
+    let event;
+    beforeEach(() => {
+      event = new WheelEvent('wheel', { deltaX:0, deltaY:0 });
+    });
+    test('format', () => {
+      const format = new MouseState(event).format;
+      expect(format).toBe(0x4d4f5553);
+    });  
+    test('buffer', () => {
+      const state = new MouseState(event);
+      expect(state.buffer.byteLength).toBeGreaterThan(0);
+    });  
   });
 });
 
@@ -66,17 +82,21 @@ describe(`TouchscreenState`, () => {
 });
 
 describe(`GamepadState`, () => {
-  class GamepadEvent extends CustomEvent {} // todo
   let event;
   beforeEach(() => {
-    event = new GamepadEvent("connect", {});
+    event = {
+      type: 'gamepadupdated',
+      gamepad : {
+        id: 1,
+        buttons: Array(16).fill().map(_=>({ pressed: false, value: 0 })),
+        axes:[0, 0, 0, 0]
+    }};
   });
   test('format', () => {
     const format = new GamepadState(event).format;
     expect(format).toBe(0x47504144);
   });  
   test('buffer', () => {
-    //const event = new GamepadEvent("gamepadconnected", { /* todo */ }); //todo::
     const state = new GamepadState(event);
     expect(state.buffer.byteLength).toBeGreaterThan(0);
   });

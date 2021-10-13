@@ -82,8 +82,13 @@ describe('create NewEventMsg', () => {
     expect(msg.data.byteLength).toBeGreaterThan(0);
   });
   test('using GamepadState', () => {
-    class GamepadEvent extends CustomEvent {} // todo
-    const event = new GamepadEvent('connect', {});
+    const event = {
+      type: 'gamepadupdated',
+      gamepad : {
+        id: 1,
+        buttons: Array(16).fill().map(_=>({ pressed: false, value: 1 })),
+        axes:[1, 1, 1, 1]
+    }};
     const state = new GamepadState(event);
     const msg = NewEventsMsg.create(state);
     expect(msg.participant_id).toBe(0);
