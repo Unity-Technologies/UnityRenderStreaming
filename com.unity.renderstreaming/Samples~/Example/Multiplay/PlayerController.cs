@@ -60,8 +60,8 @@ namespace Unity.RenderStreaming.Samples
 
             if (inputJump && cooldownJumpDelta <= 0.0f)
             {
-                var jumpForward = forwardDirection * new Vector3(0, jumpSpeed, 0);
-                player.GetComponent<Rigidbody>().AddForce(jumpForward * Time.deltaTime * moveSpeed);
+                var jumpForward = forwardDirection * new Vector3(0, 1f, 0);
+                player.GetComponent<Rigidbody>().AddForce(jumpForward * jumpSpeed);
 
                 cooldownJumpDelta = CooldownJump;
             }

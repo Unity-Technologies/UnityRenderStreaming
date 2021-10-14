@@ -70,7 +70,7 @@ MonoBehaviour:
   label: {fileID: 6761489373774958269}
   moveSpeed: 200
   rotateSpeed: 100
-  jumpSpeed: 500
+  jumpSpeed: 300
 --- !u!114 &2309994222390268704
 MonoBehaviour:
   m_ObjectHideFlags: 0
