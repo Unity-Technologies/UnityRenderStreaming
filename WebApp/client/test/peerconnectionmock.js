@@ -18,6 +18,7 @@ export default class PeerConnectionMock extends EventTarget {
     this.candidates = [];
     this.signalingState = "stable";
     this.iceConnectionState = "new";
+    this.iceGatheringState = "new";
     this.audioTracks = new Map();
     this.videoTracks = new Map();
     this.channels = new Map();
@@ -40,6 +41,17 @@ export default class PeerConnectionMock extends EventTarget {
   }
 
   close() {
+    this.ontrack = undefined;
+    this.onicecandidate = undefined;
+    this.onnegotiationneeded = undefined;
+    this.onsignalingstatechange = undefined;
+    this.oniceconnectionstatechange = undefined;
+    this.onicegatheringstatechange = undefined;
+    this.pendingLocalDescription = null;
+    this.currentLocalDescription = null;
+    this.pendingRemoteDescription = null;
+    this.currentRemoteDescription = null;
+    this.candidates = [];
     this.signalingState = "close";
     this.iceConnectionState = "closed";
     this.audioTracks.clear();
@@ -124,6 +136,11 @@ export default class PeerConnectionMock extends EventTarget {
           this.pendingRemoteDescription = description;
           this.signalingState = "have-remote-offer";
           this.onsignalingstatechange(this.signalingState);
+          // if sdp contains track string, create dummy track
+          if (description.sdp.includes("track")) {
+            const track = { id: getUniqueId(), kind: "video" };
+            this.videoTracks.set(track.id, track);
+          }
         }
         if (description.type == "answer") {
           this.currentRemoteDescription = description;
@@ -151,6 +168,11 @@ export default class PeerConnectionMock extends EventTarget {
           this.pendingRemoteDescription = null;
           this.signalingState = "stable";
           this.onsignalingstatechange(this.signalingState);
+          // if sdp contains track string, create dummy track
+          if (description.sdp.includes("track")) {
+            const track = { id: getUniqueId(), kind: "audio" };
+            this.audioTracks.set(track.id, track);
+          }
         }
         if (description.type == "pranswer") {
           this.pendingLocalDescription = description;
@@ -164,10 +186,45 @@ export default class PeerConnectionMock extends EventTarget {
       this.signalingState = "stable";
       this.onsignalingstatechange(this.signalingState);
     }
+
+    if (this.videoTracks.size != 0 || this.audioTracks.size != 0) {
+      this.mockGatheringIceCandidate(this.videoTracks.size + this.audioTracks.size);
+    }
+
+    //fire ontrack with new tracks, after using tracks clear.
+    if (this.ontrack) {
+      for (const track of this.videoTracks.values()) {
+        this.ontrack({ track: track });
+      }
+      this.videoTracks.clear();
+
+      for (const track of this.audioTracks.values()) {
+        this.ontrack({ track: track });
+      }
+      this.audioTracks.clear();
+    }
+  }
+
+  async mockGatheringIceCandidate(count) {
+    this.iceGatheringState = "gathering";
+    this.onicegatheringstatechange(this.iceGatheringState);
+    if (this.onicecandidate) {
+      for (let index = 0; index < count; index++) {
+        await this.delay();
+        const newCandidate = { candidate: getUniqueId(), sdpMLineIndex: index, sdpMid: index };
+        this.onicecandidate(newCandidate);
+      }
+    }
+    this.iceGatheringState = "complete";
+    this.onicegatheringstatechange(this.iceGatheringState);
+    this.onicecandidate({ candidate: null, sdpMLineIndex: null, sdpMid: null });
   }
 
   async addIceCandidate(candidate) {
     await this.delay();
+    if (this.remoteDescription == null) {
+      throw "InvalidStateError";
+    }
     this.candidates.push(candidate);
   }
 }
