@@ -1,5 +1,5 @@
 {
-    "name": "InputActions_Player",
+    "name": "Player",
     "maps": [
         {
             "name": "Player Controls",
@@ -22,7 +22,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Attack",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "10fecf58-9483-40e0-ae20-15c8d01a4288",
                     "expectedControlType": "",
@@ -129,23 +129,23 @@
                 },
                 {
                     "name": "",
-                    "id": "3e6d6425-a990-4434-b58d-57464db363d4",
-                    "path": "<Gamepad>/buttonSouth",
+                    "id": "b12426a0-38ab-4d90-95e0-6840fcd30db6",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Attack",
+                    "groups": "Keyboard And Mouse",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b12426a0-38ab-4d90-95e0-6840fcd30db6",
-                    "path": "<Keyboard>/e",
+                    "id": "3e6d6425-a990-4434-b58d-57464db363d4",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard And Mouse",
-                    "action": "Attack",
+                    "groups": "Gamepad",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
