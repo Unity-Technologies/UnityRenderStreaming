@@ -76,10 +76,15 @@ namespace Unity.RenderStreaming.Samples
 
             // host player
             var hostPlayer = GameObject.Instantiate(prefabPlayer);
-            var channel = hostPlayer.GetComponent<PlayerController>();
-            channel.SetLabel(username);
+            var playerController = hostPlayer.GetComponent<PlayerController>();
+            playerController.SetLabel(username);
             var playerInput = hostPlayer.GetComponent<SimplePlayerInput>();
             playerInput.PerformPairingWithAllLocalDevices();
+
+#if UNITY_EDITOR
+            int display = DisplayManager.UseDisplay(playerInput.user.id);
+            playerController.cameraDisplay = display;
+#endif
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,

@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -84,6 +82,21 @@ namespace Unity.RenderStreaming.Samples
         public void SetLabel(string text)
         {
             label.text = text;
+        }
+
+        public int cameraDisplay
+        {
+            set
+            {
+                Camera camera = GetComponentInChildren<Camera>();
+                camera.targetDisplay = value;
+                Debug.Log("camera.targetDisplay " + camera.targetDisplay);
+            }
+            get
+            {
+                Camera camera = GetComponentInChildren<Camera>();
+                return camera.targetDisplay;
+            }
         }
 
         public void OnControlsChanged()
