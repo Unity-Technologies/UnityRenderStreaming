@@ -36,6 +36,10 @@ export class VideoPlayer {
     this.multiplayChannel = null;
     this.connectionId = null;
     this.sender = new Sender(elements[0]);
+    this.sender.addMouse();
+    this.sender.addKeyboard();
+    this.sender.addTouchscreen();
+    this.sender.addGamepad();
     this.inputRemoting = new InputRemoting(this.sender);
 
     // main video
