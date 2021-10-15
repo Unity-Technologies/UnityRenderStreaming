@@ -9,8 +9,8 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace UnityEngine.RenderStreaming.Editor
 {
-    [CustomEditor(typeof(MultiplayerInput))]
-    internal class MultiplayerInputEditor : UnityEditor.Editor
+    [CustomEditor(typeof(SimplePlayerInput))]
+    internal class SimplePlayerInputEditor : UnityEditor.Editor
     {
         public void OnEnable()
         {
@@ -100,7 +100,7 @@ namespace UnityEngine.RenderStreaming.Editor
             serializedObject.ApplyModifiedProperties();
             m_ActionAssetInitialized = true;
 
-            var playerInput = (MultiplayerInput)target;
+            var playerInput = (SimplePlayerInput)target;
             var asset = (InputActionAsset)m_ActionsProperty.objectReferenceValue;
             if (asset == null)
             {

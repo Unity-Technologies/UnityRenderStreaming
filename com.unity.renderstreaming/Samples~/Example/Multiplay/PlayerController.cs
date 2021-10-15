@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;
-        [SerializeField] MultiplayerInput playerInput;
+        [SerializeField] SimplePlayerInput playerInput;
         [SerializeField] InputSystemChannelReceiver receiver;
         [SerializeField] TextMesh label;
 
