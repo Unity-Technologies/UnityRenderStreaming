@@ -1,0 +1,26 @@
+export const GamepadButton = {
+  DpadUp: 0,
+  DpadDown: 1,
+  DpadLeft: 2,
+  DpadRight: 3,
+  North: 4,
+  East: 5,
+  South: 6,
+  West: 7,
+  LeftStick: 8,
+  RightStick: 9,
+  LeftShoulder: 10,
+  RightShoulder: 11,
+  Start: 12,
+  Select: 13,
+  LeftTrigger: 32,
+  RightTrigger: 33,
+  X: 7, // West
+  Y: 4, // North
+  A: 6, // South,
+  B: 5, // East,
+  Cross: 6, // South,
+  Square: 7, // West,
+  Triangle: 4, //North,
+  Circle: 5 // East,
+};

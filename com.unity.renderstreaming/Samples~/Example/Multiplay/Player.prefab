@@ -70,6 +70,7 @@ MonoBehaviour:
   label: {fileID: 6761489373774958269}
   moveSpeed: 200
   rotateSpeed: 100
+  jumpSpeed: 300
 --- !u!114 &2309994222390268704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +138,20 @@ MonoBehaviour:
     m_ActionId: 8ebbde1f-3044-41bc-bdac-430e0eae1a68
     m_ActionName: Player Controls/Look[/Mouse/delta,/XInputControllerWindows/rightStick]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5349509679622244369}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.PlayerController,
+          Unity.RenderStreaming.Sample
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 10fecf58-9483-40e0-ae20-15c8d01a4288
     m_ActionName: Player Controls/Attack[/XInputControllerWindows/buttonSouth,/Keyboard/e]
   - m_PersistentCalls:

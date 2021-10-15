@@ -17,6 +17,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
+        [SerializeField] GameObject mobileUI;
 
         enum Role
         {
@@ -50,6 +51,10 @@ namespace Unity.RenderStreaming.Samples
             var connectionId = Guid.NewGuid().ToString();
 
             panel.SetActive(false);
+
+#if UNITY_IOS || UNITY_ANDROID
+            mobileUI.SetActive(true);
+#endif
 
             switch (role)
             {
