@@ -102,17 +102,17 @@ export class Sender extends LocalInputManager {
 
   _onMouseEvent(event) {
     this.mouse.queueEvent(event);
-    this._queueStateEvent(this.mouse);
+    this._queueStateEvent(this.mouse.currentState, this.mouse);
   }
   _onWheelEvent(event) {
     this.mouse.queueEvent(event);
-    this._queueStateEvent(this.mouse);
+    this._queueStateEvent(this.mouse.currentState, this.mouse);
   }
   _onKeyEvent(event) {
     if(event.type == 'keydown') {
       if(!event.repeat) { // StateEvent
         this.keyboard.queueEvent(event);
-        this._queueStateEvent(this.keyboard);
+        this._queueStateEvent(this.keyboard.currentState, this.keyboard);
       } else { //TextEvent
         const key = event.key.charCodeAt(0);
         this._queueTextEvent(this.keyboard, key);
@@ -120,12 +120,13 @@ export class Sender extends LocalInputManager {
     }
     else if(event.type == 'keyup') {
       this.keyboard.queueEvent(event);
-      this._queueStateEvent(this.keyboard);
+      this._queueStateEvent(this.keyboard.currentState, this.keyboard);
     }
   }
   _onTouchEvent(event) {
-    this.touchscreen.queueEvent(event, Date.now());
-    this._queueStateEvent(this.touchscreen);
+    this.touchscreen.queueEvent(event, this.timeSinceStartup);
+    for(let touch of this.touchscreen.currentState.touchData)
+      this._queueStateEvent(touch, this.touchscreen);
   }
   _onGamepadEvent(event) {
     switch(event.type) {
@@ -139,20 +140,21 @@ export class Sender extends LocalInputManager {
       }
       case 'gamepadupdated': {
         this.gamepad.queueEvent(event);
-        this._queueStateEvent(this.gamepad);    
+        this._queueStateEvent(this.gamepad.currentState, this.gamepad);    
         break;
       }
     }
   }
 
-  _queueStateEvent(device) {
-    const stateEvent = StateEvent.from(device, Date.now());
+  _queueStateEvent(state, device) {
+    const stateEvent = 
+      StateEvent.fromState(state, device.deviceId, this.timeSinceStartup);
     const e = new CustomEvent(
       'event', {detail: { event: stateEvent, device: device}});
     super.onEvent.dispatchEvent(e);
   }
   _queueTextEvent(device, character) {
-    const textEvent = TextEvent.create(device.deviceId, character, Date.now());
+    const textEvent = TextEvent.create(device.deviceId, character, this.timeSinceStartup);
     const e = new CustomEvent(
       'event', {detail: { event: textEvent, device: device}});
     super.onEvent.dispatchEvent(e);

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -10,6 +11,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] SimplePlayerInput playerInput;
         [SerializeField] InputSystemChannelReceiver receiver;
         [SerializeField] TextMesh label;
+        [SerializeField] GameObject captionForMobile;
+        [SerializeField] GameObject captionForDesktop;
 
         [SerializeField] float moveSpeed = 100f;
         [SerializeField] float rotateSpeed = 10f;
@@ -36,14 +39,25 @@ namespace Unity.RenderStreaming.Samples
                 case InputDeviceChange.Added:
                 {
                     playerInput.PerformPairingWithDevice(device);
+                    CheckPairedDevices();
                     return;
                 }
                 case InputDeviceChange.Removed:
                 {
                     playerInput.UnpairDevices(device);
+                    CheckPairedDevices();
                     return;
                 }
             }
+        }
+
+        public void CheckPairedDevices()
+        {
+            bool hasTouchscreenDevice =
+                playerInput.user.pairedDevices.Count(_ => _.path.Contains("Touchscreen")) > 0;
+
+            captionForMobile.SetActive(hasTouchscreenDevice);
+            captionForDesktop.SetActive(!hasTouchscreenDevice);
         }
 
         private void Update()

@@ -320,6 +320,19 @@ export class KeyboardState extends IInputState {
 export class TouchState {
   static get format() { return new FourCC('T', 'O', 'U', 'C').toInt32(); }
   static get size() { return 56; }
+  static incrementTouchId() { 
+    if(TouchState._currentTouchId === undefined) {
+      TouchState._currentTouchId = 0;
+    }
+    return ++TouchState._currentTouchId;
+  }
+  static prevTouches() {
+    if(TouchState._prevTouches === undefined) {
+      // max touch count is 10
+      TouchState._prevTouches = new Array(10); 
+    }
+    return TouchState._prevTouches;
+  }
 
   /**
    * field offset 0
@@ -345,7 +358,7 @@ export class TouchState {
    * field offset 40
    * @number {Number} startTime;
    * field offset 48
-   * @number {Number} startPosition;
+   * @number {Number[]} startPosition;
    */
 
 
@@ -354,7 +367,7 @@ export class TouchState {
    * @param {TouchState} state
    * @param {String} type
    */
-  constructor(touch, state, type, time) {
+  constructor(touch, type, time) {
     let phaseId = TouchPhase.Stationary;
     switch(type) {
       case 'touchstart': 
@@ -365,9 +378,19 @@ export class TouchState {
       phaseId = TouchPhase.Moved; break;
       case 'touchcancel':
       phaseId = TouchPhase.Canceled; break;
-    }  
+    }
 
-    this.touchId = touch.identifier;
+    let touchId = 0;
+    let state = null;
+    if(phaseId == TouchPhase.Began) {
+      touchId = TouchState.incrementTouchId();
+    }
+    else {
+      state = TouchState.prevTouches[touch.identifier];
+      touchId = state.touchId;
+    }
+
+    this.touchId = touchId;
     this.position = [touch.pageX, -touch.pageY];
     if(phaseId == TouchPhase.Moved) {
       this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
@@ -388,6 +411,9 @@ export class TouchState {
       this.startTime = state.startTime;
       this.startPosition = state.startPosition.slice();
     }
+
+    // cache state
+    TouchState.prevTouches[touch.identifier] = this;
   }
 
   /**
@@ -416,16 +442,18 @@ export class TouchState {
     view.setFloat32(52, this.startPosition[1], true);
     return _buffer;
   }
+
+  /**
+   * @returns {Number}
+   */
+  get format() {
+    return TouchState.format;
+  }  
 }
 
 export class TouchscreenState extends IInputState {
   static get maxTouches() { return 10; } 
   static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
-
-  /**
-   * field offset 0
-   * @number {TouchState[]} touchData;
-   */
 
   /**
    * @param {TouchEvent} event
@@ -447,32 +475,11 @@ export class TouchscreenState extends IInputState {
         }
         break;
       }
-      case 'touchend': {
-        let touches = TouchscreenState.touchListToArray(event.touches);
-        touches = touches.concat(TouchscreenState.touchListToArray(event.changedTouches));
-        this.touchData = new Array(touches.length);
-        for(let i = 0; i < state.touchData.length; i++) {
-          const j = touches.length == 0 ? -1 : touches.findIndex(_ => _.identifier == state.touchData[i].touchId);
-          const touch = touches[j];
-          this.touchData[i] = new TouchState(touch, state.touchData[i], event.type, time);
-        }
-        break;
-      }
-      case 'touchstart': {
-        let touches = event.touches;
-        this.touchData = new Array(touches.length);
-        for(let i = 0; i < touches.length; i++) {
-          const j = state == null ? -1 : state.touchData.findIndex(_ => _.touchId == touches[i].identifier);
-          const prevState = j == -1 ? null : state.touchData[j];
-          this.touchData[i] = new TouchState(touches[i], prevState, event.type, time);
-        }
-        break;
-      }
       default: {
-        let touches = event.touches;
+        let touches = event.changedTouches;
         this.touchData = new Array(touches.length);
         for(let i = 0; i < touches.length; i++) {
-          this.touchData[i] = new TouchState(touches[i], state.touchData[i], event.type, time);
+          this.touchData[i] = new TouchState(touches[i], event.type, time);
         }
         break;
       }
