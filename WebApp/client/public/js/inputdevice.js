@@ -113,7 +113,6 @@ export class Touchscreen extends InputDevice {
    */
   queueEvent(event, time) {
     this.updateState(new TouchscreenState(event, this.currentState, time));
-    this.tap = false;
   }
 }
 
@@ -484,14 +483,6 @@ export class TouchscreenState extends IInputState {
         break;
       }
     }
-  }
-
-  static touchListToArray(touches) {
-    let array = new Array(touches.length);
-    for(let i = 0; i < touches.length; i++) {
-      array[i] = touches[i];
-    }
-    return array;
   }
 
   /**
