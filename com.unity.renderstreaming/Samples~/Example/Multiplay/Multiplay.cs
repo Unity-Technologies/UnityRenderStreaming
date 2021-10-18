@@ -4,47 +4,6 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
-
-#if UNITY_EDITOR
-    public class DisplayManager
-    {
-        static uint[] displays = new uint[8];
-
-        public static void UseDisplay(int display, uint userId)
-        {
-            if (displays[display] != 0)
-                throw new System.InvalidOperationException();
-            displays[display] = userId;
-        }
-
-        public static int UseDisplay(uint userId)
-        {
-            int display = FindUnusedDisplay();
-            UseDisplay(display, userId);
-            return display;
-        }
-
-        public static void ReleaseDisplay(int display)
-        {
-            if (displays[display] == 0)
-                throw new System.InvalidOperationException();
-            displays[display] = 0;
-        }
-
-        public static int FindUnusedDisplay()
-        {
-            for (int i = 0; i < displays.Length; i++)
-            {
-                if(displays[i] == 0)
-                {
-                    return i;
-                }
-            }
-            throw new System.InvalidOperationException();
-        }
-    }
-#endif
-
     public class Multiplay : SignalingHandlerBase,
         IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler
     {
@@ -75,12 +34,6 @@ namespace Unity.RenderStreaming.Samples
             var inputChannel = obj.GetComponentInChildren<InputSystemChannelReceiver>();
             var multiplayChannel = obj.GetComponentInChildren<MultiplayChannel>();
 
-#if UNITY_EDITOR
-            var playerController = obj.GetComponentInChildren<PlayerController>();
-            int display = playerController.cameraDisplay;
-            DisplayManager.ReleaseDisplay(display);
-#endif
-
             dictObj.Remove(connectionId);
             Object.Destroy(obj);
 
@@ -109,11 +62,6 @@ namespace Unity.RenderStreaming.Samples
 
             multiplayChannel.OnChangeLabel.AddListener(playerController.SetLabel);
 
-#if UNITY_EDITOR
-            var playerInput = newObj.GetComponent<SimplePlayerInput>();
-            int display = DisplayManager.UseDisplay(playerInput.user.id);
-            playerController.cameraDisplay = display;
-#endif
             AddSender(data.connectionId, sender);
             AddChannel(data.connectionId, inputChannel);
             AddChannel(data.connectionId, multiplayChannel);

@@ -53,6 +53,9 @@ namespace Unity.RenderStreaming.Samples
 
         public void CheckPairedDevices()
         {
+            if (!playerInput.user.valid)
+                return;
+
             bool hasTouchscreenDevice =
                 playerInput.user.pairedDevices.Count(_ => _.path.Contains("Touchscreen")) > 0;
 
@@ -96,21 +99,6 @@ namespace Unity.RenderStreaming.Samples
         public void SetLabel(string text)
         {
             label.text = text;
-        }
-
-        public int cameraDisplay
-        {
-            set
-            {
-                Camera camera = GetComponentInChildren<Camera>();
-                camera.targetDisplay = value;
-                Debug.Log("camera.targetDisplay " + camera.targetDisplay);
-            }
-            get
-            {
-                Camera camera = GetComponentInChildren<Camera>();
-                return camera.targetDisplay;
-            }
         }
 
         public void OnControlsChanged()

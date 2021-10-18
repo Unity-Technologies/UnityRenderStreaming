@@ -77,11 +77,6 @@ namespace Unity.RenderStreaming.Samples
             playerInput.PerformPairingWithAllLocalDevices();
             playerController.CheckPairedDevices();
 
-#if UNITY_EDITOR
-            int display = DisplayManager.UseDisplay(playerInput.user.id);
-            playerController.cameraDisplay = display;
-#endif
-
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling,
