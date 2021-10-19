@@ -70,7 +70,7 @@ describe(`TouchscreenState`, () => {
   let event;
   beforeEach(() => {
     event = new TouchEvent("touchstart", { 
-      touches: [{ // InputInit
+      changedTouches: [{ // InputInit
         identifier: 0,
         target: null,
         clientX: 0,
@@ -86,8 +86,7 @@ describe(`TouchscreenState`, () => {
         altitudeAngle: 0,
         azimuthAngle:0,
         touchType: "direct"
-      }], 
-      changedTouches: [] 
+      }]
     });
   });  
   test('format', () => {

@@ -114,7 +114,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.touchstart(
         new TouchEvent("touchstart", { 
-          touches: [{ // InputInit
+          changedTouches: [{ // InputInit
             identifier: 0,
             target: null,
             clientX: 0,
@@ -130,8 +130,7 @@ describe(`Sender`, () => {
             altitudeAngle: 0,
             azimuthAngle:0,
             touchType: "direct"
-          }], 
-          changedTouches: [] 
+          }]
         }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });

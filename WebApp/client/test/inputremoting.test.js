@@ -77,7 +77,7 @@ describe('create NewEventMsg', () => {
   });
   test('using TouchscreenState', () => {
     const event = new TouchEvent("touchstart", { 
-      touches: [{ // InputInit
+      changedTouches: [{ // InputInit
         identifier: 0,
         target: null,
         clientX: 0,
@@ -93,11 +93,12 @@ describe('create NewEventMsg', () => {
         altitudeAngle: 0,
         azimuthAngle:0,
         touchType: "direct"
-      }], 
-      changedTouches: [] 
+      }]
     });
     const state = new TouchscreenState(event, null, Date.now());
-    const msg = NewEventsMsg.create(state);
+    expect(state.touchData).not.toBeNull();
+    expect(state.touchData).toHaveLength(1);
+    const msg = NewEventsMsg.create(state.touchData[0]);
     expect(msg.participant_id).toBe(0);
     expect(msg.type).toBe(MessageType.NewEvents);
     expect(msg.data).toBeInstanceOf(ArrayBuffer);
