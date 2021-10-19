@@ -1,4 +1,4 @@
-import Signaling, { WebSocketSignaling } from "../../js/signaling.js";
+import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
 import Peer from "../../js/peer.js";
 import * as Logger from "../../js/logger.js";
 
