@@ -17,9 +17,11 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage localVideoImage;
         [SerializeField] private RawImage remoteVideoImage;
+        [SerializeField] private AudioSource receiveAudioSource;
         [SerializeField] private WebCamStreamer webCamStreamer;
-        [SerializeField] private MicrophoneStreamer microphoneStreamer;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
+        [SerializeField] private MicrophoneStreamer microphoneStreamer;
+        [SerializeField] private ReceiveAudioViewer receiveAudioViewer;
         [SerializeField] private SingleConnection singleConnection;
 #pragma warning restore 0649
 
@@ -59,6 +61,12 @@ namespace Unity.RenderStreaming.Samples
             microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));
             microphoneSelectDropdown.options =
                 microphoneStreamer.MicrophoneNameList.Select(x => new Dropdown.OptionData(x)).ToList();
+            microphoneStreamer.OnStartedStream += id => receiveAudioViewer.enabled = true;
+            receiveAudioViewer.OnUpdateReceiveAudioClip += clip =>
+            {
+                receiveAudioSource.clip = clip;
+                receiveAudioSource.Play();
+            };
         }
 
         void Start()

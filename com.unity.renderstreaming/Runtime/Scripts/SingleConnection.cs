@@ -92,9 +92,11 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-            var receiver = streams.OfType<IStreamReceiver>().
-                FirstOrDefault(r => r.Track == null);
-            receiver?.SetReceiver(connectionId, data.receiver);
+            foreach (var receiver in streams.OfType<IStreamReceiver>()
+                .Where((r => r.Track == null && r.Kind == data.receiver.Track.Kind)))
+            {
+                receiver.SetReceiver(connectionId, data.receiver);
+            }
         }
 
         public void OnAddChannel(SignalingEventData data)
