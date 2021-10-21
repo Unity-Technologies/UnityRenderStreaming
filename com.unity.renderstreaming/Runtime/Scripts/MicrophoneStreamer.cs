@@ -66,9 +66,5 @@ namespace Unity.RenderStreaming
             return track;
         }
 
-        private void OnAudioFilterRead(float[] data, int channels)
-        {
-            track?.SetData(data, channels, sampleRate);
-        }
     }
 }

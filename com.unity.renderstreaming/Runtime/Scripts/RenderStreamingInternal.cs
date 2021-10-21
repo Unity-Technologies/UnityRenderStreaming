@@ -230,7 +230,7 @@ namespace Unity.RenderStreaming
             // note:: This line is needed to stream video to other peers with hardware codec.
             // The exchanging SDP is failed if remove the line because the hardware decoder currently is not supported.
             // Please remove the line after supporting the hardware decoder.
-            transceiver.Direction = RTCRtpTransceiverDirection.SendOnly;
+            // transceiver.Direction = RTCRtpTransceiverDirection.SendOnly;
             return transceiver;
         }
 

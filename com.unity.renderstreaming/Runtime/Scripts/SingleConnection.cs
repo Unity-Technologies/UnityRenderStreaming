@@ -47,10 +47,10 @@ namespace Unity.RenderStreaming
             {
                 AddSender(connectionId, sender);
             }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                AddReceiver(data.connectionId, receiver);
-            }
+            // foreach (var receiver in streams.OfType<IStreamReceiver>())
+            // {
+            //     AddReceiver(data.connectionId, receiver);
+            // }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
                 AddChannel(connectionId, channel);
@@ -92,11 +92,10 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-            foreach (var receiver in streams.OfType<IStreamReceiver>()
-                .Where((r => r.Track == null && r.Kind == data.receiver.Track.Kind)))
-            {
-                receiver.SetReceiver(connectionId, data.receiver);
-            }
+
+            var receiver = streams.OfType<IStreamReceiver>()
+                .FirstOrDefault((r => r.Track == null && r.Kind == data.receiver.Track.Kind));
+            receiver?.SetReceiver(connectionId, data.receiver);
         }
 
         public void OnAddChannel(SignalingEventData data)
