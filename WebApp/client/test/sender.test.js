@@ -44,10 +44,15 @@ describe(`Sender`, () => {
       observer = new Observer(dc);
   });
   test('devices', () => {
-    expect(sender.devices.length).toBeGreaterThan(0);
+    sender.addMouse();
+    expect(sender.devices.length).toBe(1);
+    sender.addKeyboard();
+    expect(sender.devices.length).toBe(2);
   });
   test('send messages while called startSending', () => {
     jest.spyOn(dc, 'send');
+    sender.addMouse();
+    sender.addKeyboard();
     inputRemoting.subscribe(observer);
     inputRemoting.startSending();
     expect(dc.send).toHaveBeenCalled();
@@ -55,6 +60,7 @@ describe(`Sender`, () => {
   describe('mouse', () => {
     test('click', () => {
       jest.spyOn(dc, 'send');
+      sender.addMouse();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.click(
@@ -63,6 +69,7 @@ describe(`Sender`, () => {
     });
     test('mousemove', () => {
       jest.spyOn(dc, 'send');
+      sender.addMouse();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.mousemove(
@@ -71,6 +78,7 @@ describe(`Sender`, () => {
     });    
     test('wheel', () => {
       jest.spyOn(dc, 'send');
+      sender.addMouse();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.wheel(
@@ -81,6 +89,7 @@ describe(`Sender`, () => {
   describe('keyboard', () => {
     test('keydown', () => {
       jest.spyOn(dc, 'send');
+      sender.addKeyboard();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.keydown(
@@ -89,6 +98,7 @@ describe(`Sender`, () => {
     });
     test('keydown repeat', () => {
       jest.spyOn(dc, 'send');
+      sender.addKeyboard();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.keydown(
@@ -99,11 +109,12 @@ describe(`Sender`, () => {
   describe('touchscreen', () => {
     test('touchstart', () => {
       jest.spyOn(dc, 'send');
+      sender.addTouchscreen();
       inputRemoting.subscribe(observer);
       inputRemoting.startSending();
       events.touchstart(
         new TouchEvent("touchstart", { 
-          touches: [{ // InputInit
+          changedTouches: [{ // InputInit
             identifier: 0,
             target: null,
             clientX: 0,
@@ -119,8 +130,7 @@ describe(`Sender`, () => {
             altitudeAngle: 0,
             azimuthAngle:0,
             touchType: "direct"
-          }], 
-          changedTouches: [] 
+          }]
         }));
       expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
     });

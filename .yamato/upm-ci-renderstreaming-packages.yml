@@ -98,7 +98,7 @@ test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
   name: Test {{ package.packagename }} with {{ editor.version }} on android device {{ target.name }}
   agent:
     type: Unity::mobile::shield
-    image: mobile/android-execution-base:stable
+    image: mobile/android-execution-base:v0.0.2-791667
     flavor: b1.medium
   skip_checkout: true
   dependencies:

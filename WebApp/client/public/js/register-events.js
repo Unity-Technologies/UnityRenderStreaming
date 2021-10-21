@@ -1,6 +1,6 @@
 import { gamepadHandler } from "./gamepadEvents.js";
 import * as Logger from "./logger.js";
-import { Keymap } from ".keymap.js";
+import { Keymap } from "./keymap.js";
 
 const InputEvent = {
   Keyboard: 0,

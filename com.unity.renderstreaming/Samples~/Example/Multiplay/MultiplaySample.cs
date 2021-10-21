@@ -17,7 +17,6 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
-        [SerializeField] GameObject mobileUI;
 
         enum Role
         {
@@ -52,10 +51,6 @@ namespace Unity.RenderStreaming.Samples
 
             panel.SetActive(false);
 
-#if UNITY_IOS || UNITY_ANDROID
-            mobileUI.SetActive(true);
-#endif
-
             switch (role)
             {
                 case Role.Host:
@@ -76,10 +71,11 @@ namespace Unity.RenderStreaming.Samples
 
             // host player
             var hostPlayer = GameObject.Instantiate(prefabPlayer);
-            var channel = hostPlayer.GetComponent<PlayerController>();
-            channel.SetLabel(username);
-            var playerInput = hostPlayer.GetComponent<MultiplayerInput>();
+            var playerController = hostPlayer.GetComponent<PlayerController>();
+            playerController.SetLabel(username);
+            var playerInput = hostPlayer.GetComponent<SimplePlayerInput>();
             playerInput.PerformPairingWithAllLocalDevices();
+            playerController.CheckPairedDevices();
 
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,

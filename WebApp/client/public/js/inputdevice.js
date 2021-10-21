@@ -6,6 +6,7 @@ import { Keymap } from "./keymap.js";
 import { MouseButton } from "./mousebutton.js";
 import { GamepadButton } from "./gamepadbutton.js";
 import { TouchPhase } from "./touchphase.js";
+import { TouchFlags } from "./touchflags.js";
 
 export class FourCC {
   /**
@@ -318,6 +319,19 @@ export class KeyboardState extends IInputState {
 export class TouchState {
   static get format() { return new FourCC('T', 'O', 'U', 'C').toInt32(); }
   static get size() { return 56; }
+  static incrementTouchId() { 
+    if(TouchState._currentTouchId === undefined) {
+      TouchState._currentTouchId = 0;
+    }
+    return ++TouchState._currentTouchId;
+  }
+  static prevTouches() {
+    if(TouchState._prevTouches === undefined) {
+      // max touch count is 10
+      TouchState._prevTouches = new Array(10); 
+    }
+    return TouchState._prevTouches;
+  }
 
   /**
    * field offset 0
@@ -343,7 +357,7 @@ export class TouchState {
    * field offset 40
    * @number {Number} startTime;
    * field offset 48
-   * @number {Number} startPosition;
+   * @number {Number[]} startPosition;
    */
 
 
@@ -352,7 +366,7 @@ export class TouchState {
    * @param {TouchState} state
    * @param {String} type
    */
-  constructor(touch, state, type, time) {
+  constructor(touch, type, time) {
     let phaseId = TouchPhase.Stationary;
     switch(type) {
       case 'touchstart': 
@@ -363,44 +377,42 @@ export class TouchState {
       phaseId = TouchPhase.Moved; break;
       case 'touchcancel':
       phaseId = TouchPhase.Canceled; break;
-    }  
+    }
 
-    if(touch != null) {
-      this.touchId = touch.identifier;
-      this.position = [touch.pageX, touch.pageY];
-      if(state == null)
-        this.delta = [0, 0];
-      else
-        this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
-      this.pressure = touch.force;
-      this.radius = [touch.radiusX, touch.radiusY];
-      this.phaseId = phaseId;
-      this.tapCount = 0;
-      this.displayIndex = 0;
-      this.flags = 0;
-      this.padding = 0;
-      if(type == 'touchstart') {
-        this.startTime = time;
-        this.startPosition = this.position.slice();
-      } else {
-        this.startTime = state.startTime;
-        this.startPosition = state.startPosition.slice();
-      }
+    let touchId = 0;
+    let state = null;
+    if(phaseId == TouchPhase.Began) {
+      touchId = TouchState.incrementTouchId();
     }
     else {
-      this.touchId = state.touchId;
-      this.position = state.position.slice();
+      state = TouchState.prevTouches[touch.identifier];
+      touchId = state.touchId;
+    }
+
+    this.touchId = touchId;
+    this.position = [touch.pageX, -touch.pageY];
+    if(phaseId == TouchPhase.Moved) {
+      this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
+    } else {
       this.delta = [0, 0];
-      this.pressure = state.pressure;
-      this.radius = state.radius.slice();
-      this.phaseId = phaseId;
-      this.tapCount = 0;
-      this.displayIndex = 0;
-      this.flags = 0;
-      this.padding = 0;
+    }
+    this.pressure = touch.force;
+    this.radius = [touch.radiusX, touch.radiusY];
+    this.phaseId = phaseId;
+    this.tapCount = 0;
+    this.displayIndex = 0;
+    this.flags = 0;
+    this.padding = 0;
+    if(phaseId == TouchPhase.Began) {
+      this.startTime = time;
+      this.startPosition = this.position.slice();
+    } else {
       this.startTime = state.startTime;
       this.startPosition = state.startPosition.slice();
     }
+
+    // cache state
+    TouchState.prevTouches[touch.identifier] = this;
   }
 
   /**
@@ -429,16 +441,18 @@ export class TouchState {
     view.setFloat32(52, this.startPosition[1], true);
     return _buffer;
   }
+
+  /**
+   * @returns {Number}
+   */
+  get format() {
+    return TouchState.format;
+  }  
 }
 
 export class TouchscreenState extends IInputState {
   static get maxTouches() { return 10; } 
   static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
-
-  /**
-   * field offset 0
-   * @number {TouchState[]} touchData;
-   */
 
   /**
    * @param {TouchEvent} event
@@ -448,30 +462,23 @@ export class TouchscreenState extends IInputState {
   constructor(event, state, time) {
     super();
 
-    const touches = event.touches;
     switch(event.type) {
-      case 'touchend': {
+      case 'click' : {
         this.touchData = new Array(state.touchData.length);
         for(let i = 0; i < state.touchData.length; i++) {
-          const j = touches.length == 0 ? -1 : touches.findIndex(_ => _.identifier == state.touchData[i].touchId);
-          const touch = j == -1 ? null : touches[j];
-          this.touchData[i] = new TouchState(touch, state.touchData[i], event.type, time);
-        }
-        break;
-      }
-      case 'touchstart': {
-        this.touchData = new Array(touches.length);
-        for(let i = 0; i < touches.length; i++) {
-          const j = state == null ? -1 : state.touchData.findIndex(_ => _.touchId == touches[i].identifier);
-          const prevState = j == -1 ? null : state.touchData[j];
-          this.touchData[i] = new TouchState(touches[i], prevState, event.type, time);
+          this.touchData[i] = state.touchData[i];
+          if(this.touchData[i].phaseId == TouchPhase.Ended) {
+            this.touchData[i].tapCount = 1;
+            this.touchData[i].flags |= TouchFlags.Tap;
+          }
         }
         break;
       }
       default: {
+        let touches = event.changedTouches;
         this.touchData = new Array(touches.length);
         for(let i = 0; i < touches.length; i++) {
-          this.touchData[i] = new TouchState(touches[i], state.touchData[i], event.type, time);
+          this.touchData[i] = new TouchState(touches[i], event.type, time);
         }
         break;
       }
@@ -485,14 +492,10 @@ export class TouchscreenState extends IInputState {
     const size = TouchState.size * this.touchData.length;
     let _buffer = new ArrayBuffer(size);
     let view = new Uint8Array(_buffer);
-    for(let i in this.touchData) {
+    for(let i = 0; i < this.touchData.length; i++) {
       view.set(new Uint8Array(this.touchData[i].buffer), TouchState.size * i);
     }
     return _buffer;
-  }
-
-  get size() {
-    return TouchState.size; // todo
   }
 
   /**

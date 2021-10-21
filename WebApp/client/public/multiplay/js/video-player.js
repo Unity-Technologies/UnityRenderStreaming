@@ -28,6 +28,12 @@ function uuid4() {
   return uuid.split(/[:/]/g).pop().toLowerCase(); // remove prefixes
 }
 
+function isTouchDevice() {
+  return (('ontouchstart' in window) ||
+     (navigator.maxTouchPoints > 0) ||
+     (navigator.msMaxTouchPoints > 0));
+}
+
 export class VideoPlayer {
   constructor(elements) {
     const _this = this;
@@ -36,6 +42,12 @@ export class VideoPlayer {
     this.multiplayChannel = null;
     this.connectionId = null;
     this.sender = new Sender(elements[0]);
+    this.sender.addMouse();
+    this.sender.addKeyboard();
+    if(isTouchDevice()) {
+      this.sender.addTouchscreen();
+    }
+    this.sender.addGamepad();
     this.inputRemoting = new InputRemoting(this.sender);
 
     // main video

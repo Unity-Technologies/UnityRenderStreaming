@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
     /// to the player and a set of paired device.
     /// It is the simple version of UnityEngine.InputSystem.PlayerInput that removing dependency of InputControlScheme.
     /// </summary>
-    public class MultiplayerInput : MonoBehaviour
+    public class SimplePlayerInput : MonoBehaviour
     {
         /// <summary>
         /// 

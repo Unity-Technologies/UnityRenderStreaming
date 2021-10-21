@@ -22,8 +22,29 @@ export class LocalInputManager {
   /**
    * @return {Event}
    */
-   get devices() {
+  get devices() {
     throw new Error(`Please implement this method.`);
+  }
+
+  /**
+   * @return {Number} time (sec)
+   */
+  get startTime() {
+    return this._startTime;
+  }
+
+  /**
+   * @return {Number} time (sec)
+   */
+  get timeSinceStartup() {
+    return Date.now()/1000 - this.startTime;
+  }
+
+  /**
+   * @param {Number} time (sec)
+   */
+  setStartTime(time) {
+    this._startTime = time;
   }
 }
 
@@ -63,6 +84,7 @@ export class InputRemoting {
       this._sendDeviceChange(e.detail.device, e.detail.change);
     };
 
+    this._localManager.setStartTime(Date.now()/1000);
     this._localManager.onEvent.addEventListener("event", onEvent);
     this._localManager.onEvent.addEventListener("changedeviceusage", onDeviceChange);
     this._sendInitialMessages();

@@ -107,6 +107,17 @@
                 },
                 {
                     "name": "",
+                    "id": "be6b2b51-d13a-4040-bb92-a825e7d4f764",
+                    "path": "<Touchscreen>/primaryTouch/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.3,y=0.3)",
+                    "groups": "Touchscreen",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "42716e15-291c-4c71-8ded-0d03279959df",
                     "path": "<Keyboard>/p",
                     "interactions": "",
@@ -151,6 +162,17 @@
                 },
                 {
                     "name": "",
+                    "id": "faa12d77-e42c-4d9f-9871-56381a35ba8f",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touchscreen",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "43d1488b-4ff2-4456-b1bf-a368a70fb680",
                     "path": "<Mouse>/delta",
                     "interactions": "",
@@ -167,6 +189,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "48bc601e-db29-4e46-8a0f-3698ec3025a4",
+                    "path": "<Touchscreen>/touch1/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.3,y=0.3)",
+                    "groups": "Touchscreen",
                     "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
