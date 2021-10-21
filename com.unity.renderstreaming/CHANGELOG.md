@@ -4,6 +4,36 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.2] - 2021-11-20
+
+### Added
+
+- Upgraded WebRTC package to `2.4.0-exp.4`.
+- M1 Mac native support.
+- Added the `Multiplay` scene into samples.
+- Added components for streaming.
+  - `MicrophoneSender`
+  - `AudioClipReceiver`
+  - `DisplaySender`
+  - `TextureSender`
+  - `ArraySender`
+  - `ArrayReceiver`
+- Added components for controlling user input.
+  - `SimplePlayerInput`
+  - `RemotePlayerInput`
+
+### Changed
+
+- Renamed components.
+  - `CameraStreamer` -> `CameraSender`
+  - `ReceiveVideoViewer` -> `TextureReceiver`
+  - `WebCamStreamer` -> `WebCamSender`
+  - `AudioStreamer` -> `AudioClipSender`
+  - `InputSystemChannnelSender` -> `InputSender`
+  - `InputSystemChannnelReceiver` -> `InputReceiver`
+- Improved controlling user input from browsers.
+- Updated manual documents.
+
 ## [3.1.0-exp.1] - 2021-06-15
 
 ### Added
