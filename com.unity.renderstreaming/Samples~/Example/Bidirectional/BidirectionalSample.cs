@@ -10,8 +10,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private Dropdown webcamSelectDropdown;
         [SerializeField] private Dropdown microphoneSelectDropdown;
-        [SerializeField] private Button startVideoButton;
-        [SerializeField] private Button startMicButton;
+        [SerializeField] private Button startButton;
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
         [SerializeField] private InputField connectionIdInput;
@@ -29,22 +28,17 @@ namespace Unity.RenderStreaming.Samples
 
         void Awake()
         {
-            startVideoButton.interactable = true;
+            startButton.interactable = true;
             webcamSelectDropdown.interactable = true;
             setUpButton.interactable = false;
             hangUpButton.interactable = false;
             connectionIdInput.interactable = true;
-            startVideoButton.onClick.AddListener(() =>
+            startButton.onClick.AddListener(() =>
             {
                 webCamStreamer.enabled = true;
-                startVideoButton.interactable = false;
+                startButton.interactable = false;
                 webcamSelectDropdown.interactable = false;
-                setUpButton.interactable = true;
-            });
-            startMicButton.onClick.AddListener(() =>
-            {
                 microphoneStreamer.enabled = true;
-                startMicButton.interactable = false;
                 microphoneSelectDropdown.interactable = false;
                 setUpButton.interactable = true;
             });

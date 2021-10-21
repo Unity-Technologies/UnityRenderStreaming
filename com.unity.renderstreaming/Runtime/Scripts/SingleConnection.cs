@@ -47,10 +47,6 @@ namespace Unity.RenderStreaming
             {
                 AddSender(connectionId, sender);
             }
-            // foreach (var receiver in streams.OfType<IStreamReceiver>())
-            // {
-            //     AddReceiver(data.connectionId, receiver);
-            // }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
                 AddChannel(connectionId, channel);
@@ -94,7 +90,7 @@ namespace Unity.RenderStreaming
                 return;
 
             var receiver = streams.OfType<IStreamReceiver>()
-                .FirstOrDefault((r => r.Track == null && r.Kind == data.receiver.Track.Kind));
+                .FirstOrDefault((r => r.Track == null && r.Kind == data.receiver.Track.Kind && data.receiver.Track.Enabled));
             receiver?.SetReceiver(connectionId, data.receiver);
         }
 
