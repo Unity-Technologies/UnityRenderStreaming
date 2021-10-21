@@ -2756,7 +2756,6 @@ GameObject:
   - component: {fileID: 1221238574}
   - component: {fileID: 1221238573}
   - component: {fileID: 1221238575}
-  - component: {fileID: 1221238576}
   m_Layer: 5
   m_Name: RemoteImage
   m_TagString: Untagged
@@ -2914,19 +2913,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1221238576
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1221238571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b20e412a14611457cb1900676c72764f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 1221238575}
 --- !u!1 &1258234879
 GameObject:
   m_ObjectHideFlags: 0

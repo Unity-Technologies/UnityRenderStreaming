@@ -65,6 +65,7 @@ namespace Unity.RenderStreaming.Samples
             receiveAudioViewer.OnUpdateReceiveAudioClip += clip =>
             {
                 receiveAudioSource.clip = clip;
+                receiveAudioSource.loop = true;
                 receiveAudioSource.Play();
             };
         }
