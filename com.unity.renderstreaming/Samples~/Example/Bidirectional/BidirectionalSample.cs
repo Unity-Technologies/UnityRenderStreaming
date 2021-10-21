@@ -45,7 +45,7 @@ namespace Unity.RenderStreaming.Samples
             {
                 microphoneStreamer.enabled = true;
                 startMicButton.interactable = false;
-                startMicButton.interactable = false;
+                microphoneSelectDropdown.interactable = false;
                 setUpButton.interactable = true;
             });
             setUpButton.onClick.AddListener(SetUp);
