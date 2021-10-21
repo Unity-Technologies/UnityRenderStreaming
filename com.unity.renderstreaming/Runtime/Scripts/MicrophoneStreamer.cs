@@ -13,7 +13,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
 
-        private int sampleRate = 0;
         private AudioStreamTrack track;
         public IEnumerable<string> MicrophoneNameList => Microphone.devices;
 
@@ -34,7 +33,6 @@ namespace Unity.RenderStreaming
             var deviceName = Microphone.devices[deviceIndex];
             Microphone.GetDeviceCaps(deviceName, out int minFreq, out int maxFreq);
             var micClip = Microphone.Start(deviceName, true, 1, 48000);
-            sampleRate = micClip.samples;
 
             // set the latency to “0” samples before the audio starts to play.
             while (!(Microphone.GetPosition(deviceName) > 0)) { }
