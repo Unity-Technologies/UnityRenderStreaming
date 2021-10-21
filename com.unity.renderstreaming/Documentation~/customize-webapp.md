@@ -12,17 +12,23 @@ The directory structure under the WebApp folder is given below:
 
 ```shell
 WebApp
-├─index.html
-├─public
-│  ├─images
-│  ├─scripts
-│  └─stylesheets
-├─src
+├─client                // web client
+│  ├─public
+│  │  ├─bidirectional   // bidirectional page
+│  │  ├─css
+│  │  ├─images
+│  │  ├─js
+│  │  ├─multiplay       // multiplay page
+│  │  ├─stylesheets
+│  │  ├─videoplayer     // videoplayer page
+│  │  └─index.html
+│  └─test
+├─src                   // web server
 │  └─class
 └─test
 ```
 
-If you want to change the user interface on the browser, you need to customize scripts in the `public` folder.
+If you want to change the user interface on the browser, you need to customize scripts in the `client/public` folder.
 
 While you want to change the signaling process, please check under the `src` folder. This source code is written `TypeScript`.
 
