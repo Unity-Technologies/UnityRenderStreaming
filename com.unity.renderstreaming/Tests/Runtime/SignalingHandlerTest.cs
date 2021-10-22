@@ -42,6 +42,23 @@ namespace Unity.RenderStreaming.RuntimeTest
         public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
+    class AudioStreamSourceTest : StreamSourceBase
+    {
+        private AudioSource m_audioSource;
+
+        protected override MediaStreamTrack CreateTrack()
+        {
+            m_audioSource = gameObject.AddComponent<AudioSource>();
+            m_audioSource.clip = AudioClip.Create("test", 48000, 2, 48000, false);
+            return new AudioStreamTrack(m_audioSource);
+        }
+    }
+
+    class AudioStreamReceiverTest : StreamReceiverBase
+    {
+        public override TrackKind Kind { get { return TrackKind.Audio; } }
+    }
+
     class DataChannelTest : DataChannelBase
     {
         public Action<string> OnReceiveMessage;
@@ -412,69 +429,98 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
             // prepare caller
-            var streamer1 = container1.test.gameObject.AddComponent<StreamSourceTest>();
-            bool isStartedSourceStream1 = false;
-            bool isStoppedSourceStream1 = false;
-            streamer1.OnStartedStream += _ => isStartedSourceStream1 = true;
-            streamer1.OnStoppedStream += _ => isStoppedSourceStream1 = true;
-            var receiver1 = container1.test.gameObject.AddComponent<VideoStreamReceiverTest>();
-            bool isStartedReceiveStream1 = false;
-            bool isStoppedReceiveStream1 = false;
-            receiver1.OnStartedStream += _ => isStartedReceiveStream1 = true;
-            receiver1.OnStoppedStream += _ => isStoppedReceiveStream1 = true;
+            var videoStreamer1 = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            bool isStartedVideoSourceStream1 = false;
+            bool isStoppedVideoSourceStream1 = false;
+            videoStreamer1.OnStartedStream += _ => isStartedVideoSourceStream1 = true;
+            videoStreamer1.OnStoppedStream += _ => isStoppedVideoSourceStream1 = true;
+            var audioStreamer1 = container1.test.gameObject.AddComponent<AudioStreamSourceTest>();
+            bool isStartedAudioSourceStream1 = false;
+            bool isStoppedAudioSourceStream1 = false;
+            audioStreamer1.OnStartedStream += _ => isStartedAudioSourceStream1 = true;
+            audioStreamer1.OnStoppedStream += _ => isStoppedAudioSourceStream1 = true;
+            var videoReceiver1 = container1.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            bool isStartedVideoReceiveStream1 = false;
+            bool isStoppedVideoReceiveStream1 = false;
+            videoReceiver1.OnStartedStream += _ => isStartedVideoReceiveStream1 = true;
+            videoReceiver1.OnStoppedStream += _ => isStoppedVideoReceiveStream1 = true;
+            var audioReceiver1 = container1.test.gameObject.AddComponent<AudioStreamReceiverTest>();
+            bool isStartedAudioReceiveStream1 = false;
+            bool isStoppedAudioReceiveStream1 = false;
+            audioReceiver1.OnStartedStream += _ => isStartedAudioReceiveStream1 = true;
+            audioReceiver1.OnStoppedStream += _ => isStoppedAudioReceiveStream1 = true;
 
-            container1.test.component.AddComponent(streamer1);
-            container1.test.component.AddComponent(receiver1);
+            container1.test.component.AddComponent(videoStreamer1);
+            container1.test.component.AddComponent(videoReceiver1);
+            container1.test.component.AddComponent(audioStreamer1);
+            container1.test.component.AddComponent(audioReceiver1);
 
             // prepare callee
-            var streamer2 = container2.test.gameObject.AddComponent<StreamSourceTest>();
-            bool isStartedSourceStream2 = false;
-            bool isStoppedSourceStream2 = false;
-            streamer2.OnStartedStream += _ => isStartedSourceStream2 = true;
-            streamer2.OnStoppedStream += _ => isStoppedSourceStream2 = true;
-            var receiver2 = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
-            bool isStartedReceiveStream2 = false;
-            bool isStoppedReceiveStream2 = false;
-            receiver2.OnStartedStream += _ => isStartedReceiveStream2 = true;
-            receiver2.OnStoppedStream += _ => isStoppedReceiveStream2 = true;
+            var videoStreamer2 = container2.test.gameObject.AddComponent<StreamSourceTest>();
+            bool isStartedVideoSourceStream2 = false;
+            bool isStoppedVideoSourceStream2 = false;
+            videoStreamer2.OnStartedStream += _ => isStartedVideoSourceStream2 = true;
+            videoStreamer2.OnStoppedStream += _ => isStoppedVideoSourceStream2 = true;
+            var audioStreamer2 = container2.test.gameObject.AddComponent<AudioStreamSourceTest>();
+            bool isStartedAudioSourceStream2 = false;
+            bool isStoppedAudioSourceStream2 = false;
+            audioStreamer2.OnStartedStream += _ => isStartedAudioSourceStream2 = true;
+            audioStreamer2.OnStoppedStream += _ => isStoppedAudioSourceStream2 = true;
+            var videoReceiver2 = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            bool isStartedVideoReceiveStream2 = false;
+            bool isStoppedVideoReceiveStream2 = false;
+            videoReceiver2.OnStartedStream += _ => isStartedVideoReceiveStream2 = true;
+            videoReceiver2.OnStoppedStream += _ => isStoppedVideoReceiveStream2 = true;
+            var audioReceiver2 = container2.test.gameObject.AddComponent<AudioStreamReceiverTest>();
+            bool isStartedAudioReceiveStream2 = false;
+            bool isStoppedAudioReceiveStream2 = false;
+            audioReceiver2.OnStartedStream += _ => isStartedAudioReceiveStream2 = true;
+            audioReceiver2.OnStoppedStream += _ => isStoppedAudioReceiveStream2 = true;
 
-            container2.test.component.AddComponent(streamer2);
-            container2.test.component.AddComponent(receiver2);
+            container2.test.component.AddComponent(videoStreamer2);
+            container2.test.component.AddComponent(videoReceiver2);
+            container2.test.component.AddComponent(audioStreamer2);
+            container2.test.component.AddComponent(audioReceiver2);
 
             // start signaling
             container1.test.component.CreateConnection(connectionId);
             container2.test.component.CreateConnection(connectionId);
-            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
-            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
-
-            yield return new WaitUntil(() => isStartedSourceStream1&& isStartedSourceStream2);
-            Assert.That(isStartedSourceStream1, Is.True, $"{nameof(isStartedSourceStream1)} is {isStartedSourceStream1}");
-            Assert.That(isStartedSourceStream2, Is.True, $"{nameof(isStartedSourceStream2)} is {isStartedSourceStream2}");
-
-            yield return new WaitUntil(() => isStartedReceiveStream1 && isStartedReceiveStream2);
-            Assert.That(isStartedReceiveStream1, Is.True, $"{nameof(isStartedReceiveStream1)} is {isStartedReceiveStream1}");
-            Assert.That(isStartedReceiveStream2, Is.True, $"{nameof(isStartedReceiveStream2)} is {isStartedReceiveStream2}");
+            yield return new WaitUntil(() =>
+                container1.test.component.ExistConnection(connectionId) &&
+                container2.test.component.ExistConnection(connectionId));
+            yield return new WaitUntil(() => isStartedVideoSourceStream1 && isStartedAudioSourceStream1 && isStartedVideoSourceStream2 && isStartedAudioSourceStream2);
+            yield return new WaitUntil(() => isStartedVideoReceiveStream1 && isStartedAudioReceiveStream1 && isStartedVideoReceiveStream2 && isStartedAudioReceiveStream2);
+            yield return new WaitUntil(() =>
+                container1.test.component.IsStable(connectionId) && container2.test.component.IsStable(connectionId));
 
             var transceivers1 = container1.instance.GetTransceivers(connectionId).ToList();
             var count1 = transceivers1.Count;
-            Assert.That(count1, Is.EqualTo(2), $"{nameof(transceivers1)} count is {count1}");
+            Assert.That(count1, Is.EqualTo(4), $"{nameof(transceivers1)} count is {count1}");
             Assert.That(transceivers1.Select(x => x.Direction),
-                Is.EquivalentTo(new[] { RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly }));
+                Is.EquivalentTo(new[]
+                {
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly,
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly
+                }));
             var transceivers2 = container2.instance.GetTransceivers(connectionId).ToList();
             var count2 = transceivers2.Count;
-            Assert.That(count2, Is.EqualTo(2), $"{nameof(transceivers2)} count is {count2}");
+            Assert.That(count2, Is.EqualTo(4), $"{nameof(transceivers2)} count is {count2}");
             Assert.That(transceivers2.Select(x => x.Direction),
-                Is.EquivalentTo(new[] { RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly }));
+                Is.EquivalentTo(new[]
+                {
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly,
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly
+                }));
+
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
 
+            yield return new WaitUntil(() => isStoppedVideoSourceStream1 && isStoppedAudioSourceStream1 && isStoppedVideoSourceStream2 && isStoppedAudioSourceStream2);
+            yield return new WaitUntil(() => isStoppedVideoReceiveStream1 && isStoppedAudioReceiveStream1 && isStoppedVideoReceiveStream2 && isStoppedAudioReceiveStream2);
             yield return new WaitUntil(() =>
-                isStoppedSourceStream1 && isStoppedReceiveStream1 && isStoppedSourceStream2 && isStoppedReceiveStream2);
-            Assert.That(isStoppedSourceStream1, Is.True, $"{nameof(isStoppedSourceStream1)} is {isStoppedSourceStream1}");
-            Assert.That(isStoppedReceiveStream1, Is.True, $"{nameof(isStoppedReceiveStream1)} is {isStoppedReceiveStream1}");
-            Assert.That(isStoppedSourceStream2, Is.True, $"{nameof(isStoppedSourceStream2)} is {isStoppedSourceStream2}");
-            Assert.That(isStoppedReceiveStream2, Is.True, $"{nameof(isStoppedReceiveStream2)} is {isStoppedReceiveStream2}");
+                !container1.test.component.ExistConnection(connectionId) &&
+                !container2.test.component.ExistConnection(connectionId));
 
             container1.Dispose();
             container2.Dispose();
