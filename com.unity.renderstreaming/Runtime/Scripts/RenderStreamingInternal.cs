@@ -313,6 +313,17 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        public IEnumerable<RTCRtpTransceiver> GetTransceivers(string connectionId)
+        {
+            return _mapConnectionIdAndPeer[connectionId].peer.GetTransceivers();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
             var pc = _mapConnectionIdAndPeer[connectionId];
