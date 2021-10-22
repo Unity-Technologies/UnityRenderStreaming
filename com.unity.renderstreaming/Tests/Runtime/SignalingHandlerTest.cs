@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
@@ -119,7 +120,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [Test]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public void AddStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
@@ -150,7 +151,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -205,7 +206,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
@@ -280,7 +281,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -397,6 +398,83 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
             Assert.That(isStoppedChannel1, Is.True);
             Assert.That(isStoppedChannel2, Is.True);
+
+            container1.Dispose();
+            container2.Dispose();
+        }
+
+        [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        public IEnumerator AssignTransceivers()
+        {
+            string connectionId = "12345";
+            var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
+            var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
+
+            // prepare caller
+            var streamer1 = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            bool isStartedSourceStream1 = false;
+            bool isStoppedSourceStream1 = false;
+            streamer1.OnStartedStream += _ => isStartedSourceStream1 = true;
+            streamer1.OnStoppedStream += _ => isStoppedSourceStream1 = true;
+            var receiver1 = container1.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            bool isStartedReceiveStream1 = false;
+            bool isStoppedReceiveStream1 = false;
+            receiver1.OnStartedStream += _ => isStartedReceiveStream1 = true;
+            receiver1.OnStoppedStream += _ => isStoppedReceiveStream1 = true;
+
+            container1.test.component.AddComponent(streamer1);
+            container1.test.component.AddComponent(receiver1);
+
+            // prepare callee
+            var streamer2 = container2.test.gameObject.AddComponent<StreamSourceTest>();
+            bool isStartedSourceStream2 = false;
+            bool isStoppedSourceStream2 = false;
+            streamer2.OnStartedStream += _ => isStartedSourceStream2 = true;
+            streamer2.OnStoppedStream += _ => isStoppedSourceStream2 = true;
+            var receiver2 = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            bool isStartedReceiveStream2 = false;
+            bool isStoppedReceiveStream2 = false;
+            receiver2.OnStartedStream += _ => isStartedReceiveStream2 = true;
+            receiver2.OnStoppedStream += _ => isStoppedReceiveStream2 = true;
+
+            container2.test.component.AddComponent(streamer2);
+            container2.test.component.AddComponent(receiver2);
+
+            // start signaling
+            container1.test.component.CreateConnection(connectionId);
+            container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
+
+            yield return new WaitUntil(() => isStartedSourceStream1&& isStartedSourceStream2);
+            Assert.That(isStartedSourceStream1, Is.True, $"{nameof(isStartedSourceStream1)} is {isStartedSourceStream1}");
+            Assert.That(isStartedSourceStream2, Is.True, $"{nameof(isStartedSourceStream2)} is {isStartedSourceStream2}");
+
+            yield return new WaitUntil(() => isStartedReceiveStream1 && isStartedReceiveStream2);
+            Assert.That(isStartedReceiveStream1, Is.True, $"{nameof(isStartedReceiveStream1)} is {isStartedReceiveStream1}");
+            Assert.That(isStartedReceiveStream2, Is.True, $"{nameof(isStartedReceiveStream2)} is {isStartedReceiveStream2}");
+
+            var transceivers1 = container1.instance.GetTransceivers(connectionId).ToList();
+            var count1 = transceivers1.Count;
+            Assert.That(count1, Is.EqualTo(2), $"{nameof(transceivers1)} count is {count1}");
+            Assert.That(transceivers1.Select(x => x.Direction),
+                Is.EquivalentTo(new[] { RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly }));
+            var transceivers2 = container2.instance.GetTransceivers(connectionId).ToList();
+            var count2 = transceivers2.Count;
+            Assert.That(count2, Is.EqualTo(2), $"{nameof(transceivers2)} count is {count2}");
+            Assert.That(transceivers2.Select(x => x.Direction),
+                Is.EquivalentTo(new[] { RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.RecvOnly }));
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() =>
+                isStoppedSourceStream1 && isStoppedReceiveStream1 && isStoppedSourceStream2 && isStoppedReceiveStream2);
+            Assert.That(isStoppedSourceStream1, Is.True, $"{nameof(isStoppedSourceStream1)} is {isStoppedSourceStream1}");
+            Assert.That(isStoppedReceiveStream1, Is.True, $"{nameof(isStoppedReceiveStream1)} is {isStoppedReceiveStream1}");
+            Assert.That(isStoppedSourceStream2, Is.True, $"{nameof(isStoppedSourceStream2)} is {isStoppedSourceStream2}");
+            Assert.That(isStoppedReceiveStream2, Is.True, $"{nameof(isStoppedReceiveStream2)} is {isStoppedReceiveStream2}");
 
             container1.Dispose();
             container2.Dispose();
