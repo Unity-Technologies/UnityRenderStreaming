@@ -192,6 +192,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.test.component.AddComponent(receiver);
             container2.test.component.CreateConnection(connectionId);
 
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
+            container2.test.component.SendOffer(connectionId);
+
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
             Assert.That(isStartedStream1, Is.True);
             Assert.That(isStartedStream2, Is.True);
