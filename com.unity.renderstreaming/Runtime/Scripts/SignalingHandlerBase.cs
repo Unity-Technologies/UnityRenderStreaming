@@ -99,6 +99,7 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
+            Debug.Log("AddReceiver");
             var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
             if (transceiver.Receiver != null)
                 receiver.SetReceiver(connectionId, transceiver.Receiver);
@@ -112,6 +113,7 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void RemoveReceiver(string connectionId, IStreamReceiver receiver)
         {
+            Debug.Log("RemoveReceiver");
             //receiver.
             receiver.SetReceiver(connectionId, null);
         }

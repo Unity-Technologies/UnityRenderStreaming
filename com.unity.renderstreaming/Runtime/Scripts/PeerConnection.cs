@@ -9,15 +9,42 @@ namespace Unity.RenderStreaming
         public readonly bool polite;
 
         public bool makingOffer;
-        public bool waitingAnswer;
         public bool ignoreOffer;
         public bool srdAnswerPending;
         public bool makingAnswer;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool waitingAnswer
+        {
+            get => _waitingAnswer;
+            set {
+                _waitingAnswer = value;
+                timeSinceStartWaitingAnswer =
+                    _waitingAnswer ? UnityEngine.Time.realtimeSinceStartup : 0;
+            }
+        }
+
+        /// <summary>
+        /// see Time.realtimeSinceStartup
+        /// </summary>
+        public float timeSinceStartWaitingAnswer { get; private set; }
+
+        private bool _waitingAnswer;
 
         public PeerConnection(RTCPeerConnection peer, bool polite)
         {
             this.peer = peer;
             this.polite = polite;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void RestartTimerForWaitingAnswer()
+        {
+            timeSinceStartWaitingAnswer = UnityEngine.Time.realtimeSinceStartup;
         }
 
         ~PeerConnection()

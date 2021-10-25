@@ -87,6 +87,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
     class TestContainer<T> : IDisposable where T : SignalingHandlerBase, IMonoBehaviourTest
     {
+        const float ResendOfferInterval = 3.0f;
+
         public MonoBehaviourTest<T> test;
         public RenderStreamingInternal instance;
         public SignalingEventProvider provider;
@@ -102,7 +104,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 },
                 encoderType = EncoderType.Software,
                 startCoroutine = behaviour.StartCoroutine,
-                resentOfferInterval = 1.0f,
+                resentOfferInterval = ResendOfferInterval,
             };
         }
 
@@ -171,11 +173,13 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
+            Debug.Log("ReceiveStream 0");
+
             string connectionId = "12345";
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<AudioStreamSourceTest>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
@@ -183,21 +187,26 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<AudioStreamReceiverTest>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
             receiver.OnStartedStream += _ => isStartedStream2 = true;
             receiver.OnStoppedStream += _ => isStoppedStream2 = true;
+
             container2.test.component.AddComponent(receiver);
+            Debug.Log("ReceiveStream 1");
             container2.test.component.CreateConnection(connectionId);
-
+            Debug.Log("ReceiveStream 2");
             yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
+            Debug.Log("ReceiveStream 3");
             container2.test.component.SendOffer(connectionId);
-
+            Debug.Log("ReceiveStream 4");
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
+            Debug.Log("ReceiveStream 5");
             Assert.That(isStartedStream1, Is.True);
             Assert.That(isStartedStream2, Is.True);
+            Debug.Log("ReceiveStream 6");
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);

@@ -55,6 +55,7 @@ namespace Unity.RenderStreaming
 
         public void OnAddReceiver(SignalingEventData data)
         {
+            Debug.Log("OnAddReceiver");
             var receiver = streams.OfType<IStreamReceiver>().
                 FirstOrDefault(r => r.Track == null);
             receiver?.SetReceiver(data.connectionId, data.receiver);
@@ -62,20 +63,23 @@ namespace Unity.RenderStreaming
 
         public void OnOffer(SignalingEventData data)
         {
+            Debug.Log("OnOffer 0");
             if (connectionIds.Contains(data.connectionId))
             {
                 Debug.Log($"Already answered this connectionId : {data.connectionId}");
-                return;
             }
-            connectionIds.Add(data.connectionId);
+            else
+            {
+                connectionIds.Add(data.connectionId);
 
-            foreach (var source in streams.OfType<IStreamSender>())
-            {
-                AddSender(data.connectionId, source);
-            }
-            foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
-            {
-                AddChannel(data.connectionId, channel);
+                foreach (var source in streams.OfType<IStreamSender>())
+                {
+                    AddSender(data.connectionId, source);
+                }
+                foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
+                {
+                    AddChannel(data.connectionId, channel);
+                }
             }
             SendAnswer(data.connectionId);
         }

@@ -40,7 +40,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         // workaround: More time for SetDescription process
-        const float ResendOfferInterval = 1.0f;
+        const float ResendOfferInterval = 3f;
 
         private RenderStreamingDependencies CreateDependencies()
         {
@@ -589,7 +589,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [UnityTest, Timeout(10000)]
+        [UnityTest, Timeout(30000)]
         public IEnumerator SwapTransceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -604,6 +604,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onStart += () => { isStarted1 = true; };
             target2.onStart += () => { isStarted2 = true; };
             yield return new WaitUntil(() => isStarted1 && isStarted2);
+            Assert.That(isStarted1, Is.True);
+            Assert.That(isStarted2, Is.True);
 
             bool isCreatedConnection1 = false;
             bool isCreatedConnection2 = false;
@@ -615,10 +617,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             // target1 has impolite peer (request first)
             target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
+            Assert.That(isCreatedConnection1, Is.True);
 
             // target2 has polite peer (request second)
             target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
+            Assert.That(isCreatedConnection2, Is.True);
 
             bool isGotOffer1 = false;
             bool isGotOffer2 = false;
@@ -652,7 +656,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
             Assert.That(isDeletedConnection1, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
-            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection2)} is not True.");
 
             target1.Dispose();
             target2.Dispose();
@@ -660,7 +664,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(10000)]
+        [UnityTest, Timeout(30000)]
         public IEnumerator ResendOfferUntilGotAnswer(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -685,18 +689,22 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             target1.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection1);
+            Assert.That(isCreatedConnection1, Is.True);
             target2.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection2);
+            Assert.That(isCreatedConnection2, Is.True);
 
             int countGotOffer2 = 0;
             target2.onGotOffer += (_, sdp) => { countGotOffer2++; };
             target1.SendOffer(connectionId);
             yield return new WaitUntil(() => countGotOffer2 > 1);
+            Assert.That(countGotOffer2, Is.GreaterThan(1));
 
             bool isGotAnswer1 = false;
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
             target2.SendAnswer(connectionId);
             yield return new WaitUntil(() => isGotAnswer1);
+            Assert.That(isGotAnswer1, Is.True);
 
             yield return new WaitForSeconds(ResendOfferInterval * 2);
             var currentCount = countGotOffer2;
@@ -713,7 +721,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
             yield return new WaitUntil(() => isDeletedConnection1 && isDeletedConnection2);
             Assert.That(isDeletedConnection1, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
-            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection1)} is not True.");
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection2)} is not True.");
 
             target1.Dispose();
             target2.Dispose();
