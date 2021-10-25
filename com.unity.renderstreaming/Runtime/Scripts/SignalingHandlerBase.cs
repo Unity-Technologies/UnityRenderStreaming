@@ -82,7 +82,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
@@ -93,7 +93,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
@@ -106,18 +106,18 @@ namespace Unity.RenderStreaming
 
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
         public virtual void RemoveReceiver(string connectionId, IStreamReceiver receiver)
         {
-            receiver.Track?.Stop();
+            //receiver.
             receiver.SetReceiver(connectionId, null);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="channel"></param>
@@ -131,7 +131,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="channel"></param>
@@ -243,7 +243,7 @@ namespace Unity.RenderStreaming
         bool IsLocal { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         bool IsConnected { get;  }
 
@@ -264,7 +264,7 @@ namespace Unity.RenderStreaming
         void SetChannel(string connectionId, RTCDataChannel channel);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="data"></param>
         void SetChannel(SignalingEventData data);
