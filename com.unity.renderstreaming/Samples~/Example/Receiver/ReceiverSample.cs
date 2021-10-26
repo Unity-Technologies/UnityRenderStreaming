@@ -13,7 +13,9 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button stopButton;
         [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage remoteVideoImage;
+        [SerializeField] private AudioSource remoteAudioSource;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
+        [SerializeField] private ReceiveAudioViewer receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
 #pragma warning restore 0649
 
@@ -26,6 +28,12 @@ namespace Unity.RenderStreaming.Samples
             if(connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+            receiveAudioViewer.OnUpdateReceiveAudioClip += clip =>
+            {
+                remoteAudioSource.clip = clip;
+                remoteAudioSource.loop = true;
+                remoteAudioSource.Play();
+            };
         }
 
         void Start()
@@ -59,7 +67,6 @@ namespace Unity.RenderStreaming.Samples
             connectionIdInput.interactable = true;
             startButton.gameObject.SetActive(true);
             stopButton.gameObject.SetActive(false);
-
         }
     }
 }

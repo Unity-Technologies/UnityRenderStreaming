@@ -86,7 +86,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         private RenderStreamingInternal _target1, _target2;
         private RTCDataChannel _channel1, _channel2;
         private string connectionId = "12345";
-        const float ResendOfferInterval = 1.0f;
+        const float ResendOfferInterval = 3f;
 
         private RenderStreamingDependencies CreateDependencies()
         {

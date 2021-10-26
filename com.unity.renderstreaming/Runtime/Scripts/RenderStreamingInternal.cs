@@ -98,7 +98,7 @@ namespace Unity.RenderStreaming
         private readonly Dictionary<string, PeerConnection> _mapConnectionIdAndPeer =
             new Dictionary<string, PeerConnection>();
         private bool _runningResendCoroutine;
-        private float _resendInterval = 1.0f;
+        private float _resendInterval = 3.0f;
 
         static List<RenderStreamingInternal> s_list = new List<RenderStreamingInternal>();
 
@@ -313,6 +313,17 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <param name="track"></param>
+        /// <returns></returns>
+        public IEnumerable<RTCRtpTransceiver> GetTransceivers(string connectionId)
+        {
+            return _mapConnectionIdAndPeer[connectionId].peer.GetTransceivers();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
             var pc = _mapConnectionIdAndPeer[connectionId];
@@ -346,10 +357,15 @@ namespace Unity.RenderStreaming
             {
                 foreach (var pair in _mapConnectionIdAndPeer.Where(x => x.Value.waitingAnswer))
                 {
-                    _signaling.SendOffer(pair.Key, pair.Value.peer.LocalDescription);
-                }
+                    float timeout = pair.Value.timeSinceStartWaitingAnswer + _resendInterval;
 
-                yield return new WaitForSeconds(_resendInterval);
+                    if (timeout < Time.realtimeSinceStartup)
+                    {
+                        _signaling.SendOffer(pair.Key, pair.Value.peer.LocalDescription);
+                        pair.Value.RestartTimerForWaitingAnswer();
+                    }
+                }
+                yield return 0;
             }
         }
 

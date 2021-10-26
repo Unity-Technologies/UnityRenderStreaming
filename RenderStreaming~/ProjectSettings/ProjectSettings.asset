@@ -441,7 +441,7 @@ PlayerSettings:
   enableCrashReportAPI: 0
   cameraUsageDescription: We are using a camera to enable you to stream video
   locationUsageDescription: 
-  microphoneUsageDescription: 
+  microphoneUsageDescription: We are using a microphone to enable you to stream audio
   switchNMETAOverride: 
   switchNetLibKey: 
   switchSocketMemoryPoolSize: 6144

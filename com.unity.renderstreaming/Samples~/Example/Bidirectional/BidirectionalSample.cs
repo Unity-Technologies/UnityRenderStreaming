@@ -9,14 +9,18 @@ namespace Unity.RenderStreaming.Samples
 #pragma warning disable 0649
         [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private Dropdown webcamSelectDropdown;
-        [SerializeField] private Button startVideoButton;
+        [SerializeField] private Dropdown microphoneSelectDropdown;
+        [SerializeField] private Button startButton;
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
         [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage localVideoImage;
         [SerializeField] private RawImage remoteVideoImage;
+        [SerializeField] private AudioSource receiveAudioSource;
         [SerializeField] private WebCamStreamer webCamStreamer;
         [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
+        [SerializeField] private MicrophoneStreamer microphoneStreamer;
+        [SerializeField] private ReceiveAudioViewer receiveAudioViewer;
         [SerializeField] private SingleConnection singleConnection;
 #pragma warning restore 0649
 
@@ -24,16 +28,18 @@ namespace Unity.RenderStreaming.Samples
 
         void Awake()
         {
-            startVideoButton.interactable = true;
+            startButton.interactable = true;
             webcamSelectDropdown.interactable = true;
             setUpButton.interactable = false;
             hangUpButton.interactable = false;
             connectionIdInput.interactable = true;
-            startVideoButton.onClick.AddListener(() =>
+            startButton.onClick.AddListener(() =>
             {
                 webCamStreamer.enabled = true;
-                startVideoButton.interactable = false;
+                startButton.interactable = false;
                 webcamSelectDropdown.interactable = false;
+                microphoneStreamer.enabled = true;
+                microphoneSelectDropdown.interactable = false;
                 setUpButton.interactable = true;
             });
             setUpButton.onClick.AddListener(SetUp);
@@ -46,6 +52,16 @@ namespace Unity.RenderStreaming.Samples
             webCamStreamer.OnStartedStream += id => receiveVideoViewer.enabled = true;
             webCamStreamer.OnUpdateWebCamTexture += texture => localVideoImage.texture = texture;
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+            microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));
+            microphoneSelectDropdown.options =
+                microphoneStreamer.MicrophoneNameList.Select(x => new Dropdown.OptionData(x)).ToList();
+            microphoneStreamer.OnStartedStream += id => receiveAudioViewer.enabled = true;
+            receiveAudioViewer.OnUpdateReceiveAudioClip += clip =>
+            {
+                receiveAudioSource.clip = clip;
+                receiveAudioSource.loop = true;
+                receiveAudioSource.Play();
+            };
         }
 
         void Start()
