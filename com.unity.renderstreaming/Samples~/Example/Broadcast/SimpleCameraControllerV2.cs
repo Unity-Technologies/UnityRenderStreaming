@@ -141,12 +141,12 @@ namespace Unity.RenderStreaming.Samples
 
         public void OnMovement(InputAction.CallbackContext value)
         {
-            UpdateTargetCameraStateFromInput(value.ReadValue<Vector2>());
+            UpdateTargetCameraStateDirection(value.ReadValue<Vector2>());
         }
 
         public void OnLook(InputAction.CallbackContext value)
         {
-            UpdateTargetCameraStateDirection(value.ReadValue<Vector2>());
+            UpdateTargetCameraStateFromInput(value.ReadValue<Vector2>());
         }
 
         public void ResetCamera()

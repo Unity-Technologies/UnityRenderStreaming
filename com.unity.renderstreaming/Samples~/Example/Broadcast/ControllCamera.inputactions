@@ -33,7 +33,7 @@
                     "name": "KeyInput",
                     "type": "Value",
                     "id": "d96b34f0-6c84-496d-b2d1-f811609df524",
-                    "expectedControlType": "Key",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": ""
                 }
@@ -155,7 +155,7 @@
                     "path": "<Keyboard>/#(u)",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard And Mouse",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -166,7 +166,7 @@
                     "path": "<Keyboard>/anyKey",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard And Mouse",
                     "action": "KeyInput",
                     "isComposite": false,
                     "isPartOfComposite": false
