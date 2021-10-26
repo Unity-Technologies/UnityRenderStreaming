@@ -112,5 +112,12 @@ namespace Unity.RenderStreaming
             text.text = c.ToString();
             timeTransition = 0;
         }
+
+        public void OnTextInput(string str)
+        {
+            canvasGroup.alpha = 1f;
+            text.text = str;
+            timeTransition = 0;
+        }
     }
 }

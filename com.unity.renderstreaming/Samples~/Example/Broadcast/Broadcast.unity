@@ -353,11 +353,12 @@ GameObject:
   m_Component:
   - component: {fileID: 725451150}
   - component: {fileID: 725451154}
-  - component: {fileID: 725451153}
   - component: {fileID: 725451151}
   - component: {fileID: 725451155}
   - component: {fileID: 725451156}
   - component: {fileID: 725451152}
+  - component: {fileID: 725451158}
+  - component: {fileID: 725451157}
   m_Layer: 0
   m_Name: Render Streaming Camera
   m_TagString: Untagged
@@ -401,49 +402,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   local: 0
   label: 
---- !u!114 &725451153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725451149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8a636f62116c0a40bbfefdf876d4608, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_movementSensitivityFactor: 0.1
-  boost: 3.5
-  positionLerpTime: 0.2
-  mouseSensitivityCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.5
-      inSlope: 0
-      outSlope: 5
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 2.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  rotationLerpTime: 0.01
-  invertY: 0
-  uiController: {fileID: 1215389824}
-  receiver: {fileID: 725451152}
 --- !u!20 &725451154
 Camera:
   m_ObjectHideFlags: 0
@@ -499,6 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
 --- !u!114 &725451156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,6 +473,134 @@ MonoBehaviour:
   streamingSize: {x: 1280, y: 720}
   depth: 16
   antiAliasing: 1
+--- !u!114 &725451157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725451149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: decb088abd7ec9747b6e9a1011c046b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: fb1fa075a0e6f4005901697d600f7844,
+    type: 3}
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451158}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: OnMovement
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 548e32fd-77d1-40e5-8197-32ca56b41bc0
+    m_ActionName: Player Controls/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451158}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: OnLook
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8ebbde1f-3044-41bc-bdac-430e0eae1a68
+    m_ActionName: Player Controls/Look[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451158}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: ResetCamera
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a2722d41-b412-4cc0-bc6d-518631827cac
+    m_ActionName: Camera Controls/Reset[/Keyboard/u]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451158}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: KeyInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d96b34f0-6c84-496d-b2d1-f811609df524
+    m_ActionName: Camera Controls/KeyInput[/Keyboard/anyKey]
+  m_DefaultActionMap: Camera Controls
+--- !u!114 &725451158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 725451149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2a629c27ff5453ea884627564e2e9f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSensitivityFactor: 0.1
+  boost: 3.5
+  positionLerpTime: 0.2
+  mouseSensitivityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0
+      outSlope: 5
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 2.5
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rotationLerpTime: 0.01
+  invertY: 0
+  uiController: {fileID: 1215389824}
+  playerInput: {fileID: 725451157}
+  receiver: {fileID: 725451152}
 --- !u!850595691 &774178818
 LightingSettings:
   m_ObjectHideFlags: 0
