@@ -173,8 +173,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReceiveStream()
         {
-            Debug.Log("ReceiveStream 0");
-
             string connectionId = "12345";
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
@@ -195,18 +193,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiver.OnStoppedStream += _ => isStoppedStream2 = true;
 
             container2.test.component.AddComponent(receiver);
-            Debug.Log("ReceiveStream 1");
             container2.test.component.CreateConnection(connectionId);
-            Debug.Log("ReceiveStream 2");
             yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
-            Debug.Log("ReceiveStream 3");
             container2.test.component.SendOffer(connectionId);
-            Debug.Log("ReceiveStream 4");
             yield return new WaitUntil(() => isStartedStream2 && isStartedStream1);
-            Debug.Log("ReceiveStream 5");
             Assert.That(isStartedStream1, Is.True);
             Assert.That(isStartedStream2, Is.True);
-            Debug.Log("ReceiveStream 6");
 
             Assert.That(receiver.Track, Is.Not.Null);
             Assert.That(receiver.Receiver, Is.Not.Null);

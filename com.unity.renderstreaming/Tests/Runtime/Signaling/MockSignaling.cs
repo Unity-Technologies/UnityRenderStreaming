@@ -56,23 +56,19 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
             public async Task Offer(MockSignaling owner, DescData data)
             {
-                UnityEngine.Debug.Log("MockSignaling.Offer 0");
                 await Task.Delay(MillisecondsDelay);
                 data.polite = false;
                 foreach (var signaling in list.Where(e => e != owner))
                 {
-                    UnityEngine.Debug.Log("MockSignaling.Offer 1");
                     signaling.OnOffer?.Invoke(signaling, data);
                 }
             }
 
             public async Task Answer(MockSignaling owner, DescData data)
             {
-                Debug.Log("MockSignaling.Answer 0");
                 await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in list.Where(e => e != owner))
                 {
-                    Debug.Log("MockSignaling.Answer 1");
                     signaling.OnAnswer?.Invoke(signaling, data);
                 }
             }
@@ -274,7 +270,6 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
         {
-            Debug.Log("SendAnswer");
             if (string.IsNullOrEmpty(connectionId))
                 throw new ArgumentException("connectionId is null or empty.");
             DescData data = new DescData

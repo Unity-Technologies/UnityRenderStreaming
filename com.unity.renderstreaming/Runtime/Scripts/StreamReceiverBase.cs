@@ -32,7 +32,6 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         public virtual void SetReceiver(string connectionId, RTCRtpReceiver receiver)
         {
-            Debug.Log("SetReceiver null=" + receiver == null);
             m_receiver = receiver;
             Track = m_receiver?.Track;
             if (m_receiver == null)

@@ -80,11 +80,7 @@ namespace Unity.RenderStreaming
         public void OnOffer(SignalingEventData data)
         {
             if (data.connectionId != connectionId)
-            {
-                Debug.Log($"Already answered this connectionId : {data.connectionId}");
                 return;
-            }
-            Debug.Log("SingleConnection.OnOffer");
             SendAnswer(data.connectionId);
         }
 
