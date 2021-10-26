@@ -1,5 +1,5 @@
 import { VideoPlayer } from "./video-player.js";
-import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../js/register-events.js";
+import { sendClickEvent } from "../../js/register-events.js";
 import { getServerConfig } from "../../js/config.js";
 
 setup();
@@ -58,13 +58,8 @@ function onClickPlayButton() {
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
 
-  // add video thumbnail
-  const elementVideoThumb = document.createElement('video');
-  elementVideoThumb.id = 'VideoThumbnail';
-  elementVideoThumb.style.touchAction = 'none';
-  playerDiv.appendChild(elementVideoThumb);
 
-  setupVideoPlayer([elementVideo, elementVideoThumb]).then(value => videoPlayer = value);
+  setupVideoPlayer(elementVideo).then(value => videoPlayer = value);
 
   // add blue button
   const elementBlueButton = document.createElement('button');
@@ -132,11 +127,7 @@ function onClickPlayButton() {
 async function setupVideoPlayer(elements) {
   const videoPlayer = new VideoPlayer(elements);
   await videoPlayer.setupConnection(useWebSocket);
-
   videoPlayer.ondisconnect = onDisconnect;
-  registerGamepadEvents(videoPlayer);
-  registerKeyboardEvents(videoPlayer);
-  registerMouseEvents(videoPlayer, elements[0]);
 
   return videoPlayer;
 }
