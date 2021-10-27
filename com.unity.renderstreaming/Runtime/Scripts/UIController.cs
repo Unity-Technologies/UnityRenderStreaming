@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming
         private Mouse m_mouse;
         private Touchscreen m_screen;
 
-        public void SetDevice(InputDevice device, bool add=false)
+        public void SetDevice(InputDevice device, bool add = false)
         {
             switch (device)
             {
@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming
                     return;
                 case Keyboard keyboard:
                     m_keyboard = add ? keyboard : null;
-                    if(add)
+                    if (add)
                         m_keyboard.onTextInput += OnTextInput;
                     return;
                 case Touchscreen screen:
@@ -51,8 +51,7 @@ namespace Unity.RenderStreaming
 
         void FixedUpdate()
         {
-            if (m_keyboard != null && !m_keyboard.anyKey.isPressed &&
-                !Mathf.Approximately(canvasGroup.alpha, 0f))
+            if (m_keyboard != null && !m_keyboard.anyKey.isPressed && !Mathf.Approximately(canvasGroup.alpha, 0f))
             {
                 timeTransition += Time.deltaTime;
                 canvasGroup.alpha = transitionCurve.Evaluate(timeTransition);
@@ -62,14 +61,13 @@ namespace Unity.RenderStreaming
                 }
             }
 
-            bool pointerFromMouse = HighlightPointerFromMouse(
-                m_mouse, new Vector2Int(Screen.width, Screen.height));
+            bool pointerFromMouse = HighlightPointerFromMouse(m_mouse, new Vector2Int(Screen.width, Screen.height));
             if (pointerFromMouse)
                 return;
 
             var touches = m_screen?.GetTouches();
 
-            if (touches != null && touches.Count() > 0)
+            if (touches != null && touches.Any())
             {
                 var position = Vector2.zero;
                 var count = touches.Count();
@@ -79,7 +77,8 @@ namespace Unity.RenderStreaming
                 {
                     position += activeTouches[i].screenPosition;
                 }
-                pointer.rectTransform.anchoredPosition = position / (float)count;
+
+                pointer.rectTransform.anchoredPosition = position / count;
                 pointer.color = Color.red;
             }
             else
@@ -110,13 +109,6 @@ namespace Unity.RenderStreaming
         {
             canvasGroup.alpha = 1f;
             text.text = c.ToString();
-            timeTransition = 0;
-        }
-
-        public void OnTextInput(string str)
-        {
-            canvasGroup.alpha = 1f;
-            text.text = str;
             timeTransition = 0;
         }
     }

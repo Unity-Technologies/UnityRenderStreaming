@@ -539,23 +539,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a2722d41-b412-4cc0-bc6d-518631827cac
     m_ActionName: Camera Controls/Reset[/Keyboard/u]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451158}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: KeyInput
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: d96b34f0-6c84-496d-b2d1-f811609df524
-    m_ActionName: Camera Controls/KeyInput[/Keyboard/anyKey]
   m_DefaultActionMap: Camera Controls
 --- !u!114 &725451158
 MonoBehaviour:
@@ -598,9 +581,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   rotationLerpTime: 0.01
   invertY: 0
-  uiController: {fileID: 1215389824}
   playerInput: {fileID: 725451157}
   receiver: {fileID: 725451152}
+  uiController: {fileID: 1215389824}
 --- !u!850595691 &774178818
 LightingSettings:
   m_ObjectHideFlags: 0
