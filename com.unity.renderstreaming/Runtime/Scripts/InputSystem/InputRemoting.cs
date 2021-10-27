@@ -97,6 +97,30 @@ namespace Unity.RenderStreaming
             }
         }
 
+        static InputRemoting()
+        {
+#if UNITY_EDITOR
+            // 
+            // note: This lines are for avoiding issues when running the editor
+            // on background. When moved the focus from the editor, input events
+            // from another process are ignored.
+            // Please attention behaviours are difference several platforms when
+            // moving focus from Unity Editor.
+            //
+            // Additionally, The behaviour is changed Unity2021.2 later (using
+            // InputSystem 1.1). Please see "Background behaviour".
+            // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.1/manual/Settings.html#background-behavior
+#if INPUTSYSTEM_1_1_OR_NEWER
+            // todo(kazuki):
+#else
+            // Make sure we're not affected by the user giving focus away from the
+            // game view.
+            //
+            InputEditorUserSettings.lockInputToGameView = true;
+#endif
+#endif
+        }
+
         internal InputRemoting(IInputManager manager, bool startSendingOnConnect = false)
         {
             if (manager == null)
