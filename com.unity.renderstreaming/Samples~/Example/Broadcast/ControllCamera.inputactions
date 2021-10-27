@@ -28,14 +28,6 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
-                },
-                {
-                    "name": "KeyInput",
-                    "type": "Value",
-                    "id": "d96b34f0-6c84-496d-b2d1-f811609df524",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -157,17 +149,6 @@
                     "processors": "",
                     "groups": "Keyboard And Mouse",
                     "action": "Reset",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0320415c-ceb8-4ae9-827d-f9fe4b8be4a3",
-                    "path": "<Keyboard>/anyKey",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard And Mouse",
-                    "action": "KeyInput",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -73,9 +73,6 @@ namespace Unity.RenderStreaming.Samples
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation."), SerializeField]
         private bool invertY;
 
-        [Tooltip("Instance for controlling UI that renders to the camera."), SerializeField]
-        private UIController uiController;
-
         [SerializeField] SimplePlayerInput playerInput;
         [SerializeField] InputSystemChannelReceiver receiver;
 
@@ -83,9 +80,13 @@ namespace Unity.RenderStreaming.Samples
         private readonly CameraState m_InterpolatingCameraState = new CameraState();
         private readonly CameraState m_InitialCameraState = new CameraState();
 
+        Vector2 inputMovement;
+        Vector2 inputLook;
+
         protected void Awake()
         {
             receiver.onDeviceChange += OnDeviceChange;
+            m_InitialCameraState.SetFromTransform(transform);
         }
 
         void OnDeviceChange(InputDevice device, InputDeviceChange change)
@@ -113,6 +114,9 @@ namespace Unity.RenderStreaming.Samples
 
         private void FixedUpdate()
         {
+            UpdateTargetCameraStateDirection(inputMovement);
+            UpdateTargetCameraStateFromInput(inputLook);
+
             // Framerate-independent interpolation
             // Calculate the lerp amount, such that we get 99% of the way to our target in the specified time
             var positionLerpPct = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / positionLerpTime) * Time.deltaTime);
@@ -121,39 +125,18 @@ namespace Unity.RenderStreaming.Samples
             m_InterpolatingCameraState.UpdateTransform(transform);
         }
 
-        public void OnControlsChanged()
-        {
-        }
 
-        public void OnDeviceLost()
+        private void UpdateTargetCameraStateDirection(Vector2 input)
         {
-        }
+            if (!invertY)
+            {
+                input.y *= -1;
+            }
 
-        public void OnDeviceRegained()
-        {
-        }
-
-        public void KeyInput(InputAction.CallbackContext value)
-        {
-            var key = value.ReadValue<Key>();
-            uiController.OnTextInput(key.ToString());
-        }
-
-        public void OnMovement(InputAction.CallbackContext value)
-        {
-            UpdateTargetCameraStateDirection(value.ReadValue<Vector2>());
-        }
-
-        public void OnLook(InputAction.CallbackContext value)
-        {
-            UpdateTargetCameraStateFromInput(value.ReadValue<Vector2>());
-        }
-
-        public void ResetCamera()
-        {
-            m_InitialCameraState.UpdateTransform(transform);
-            m_TargetCameraState.SetFromTransform(transform);
-            m_InterpolatingCameraState.SetFromTransform(transform);
+            var translation = Vector3.right * input.x * movementSensitivityFactor;
+            translation += Vector3.back * input.y * movementSensitivityFactor;
+            translation *= Mathf.Pow(2.0f, boost);
+            m_TargetCameraState.Translate(translation);
         }
 
         private void UpdateTargetCameraStateFromInput(Vector2 input)
@@ -169,11 +152,33 @@ namespace Unity.RenderStreaming.Samples
             m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
         }
 
-        private void UpdateTargetCameraStateDirection(Vector2 input)
+        public void OnControlsChanged()
         {
-            var translation = new Vector3(input.x, 0, input.y) * Time.deltaTime;
-            translation *= Mathf.Pow(2.0f, boost);
-            m_TargetCameraState.Translate(translation);
+        }
+
+        public void OnDeviceLost()
+        {
+        }
+
+        public void OnDeviceRegained()
+        {
+        }
+
+        public void OnMovement(InputAction.CallbackContext value)
+        {
+            inputMovement = value.ReadValue<Vector2>();
+        }
+
+        public void OnLook(InputAction.CallbackContext value)
+        {
+            inputLook = value.ReadValue<Vector2>();
+        }
+
+        public void ResetCamera()
+        {
+            m_InitialCameraState.UpdateTransform(transform);
+            m_TargetCameraState.SetFromTransform(transform);
+            m_InterpolatingCameraState.SetFromTransform(transform);
         }
     }
 }
