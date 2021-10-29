@@ -1,4 +1,4 @@
-import { Receiver } from "./receiver";
+import { Receiver } from "./receiver.js";
 import { getServerConfig } from "../../js/config.js";
 
 setup();
