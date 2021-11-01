@@ -109,15 +109,37 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "43d1488b-4ff2-4456-b1bf-a368a70fb680",
+                    "name": "Delta With Button [Mouse]",
+                    "id": "5b4d4ebb-ae12-4d2b-9afd-775a415b6f22",
+                    "path": "DeltaWithButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "delta",
+                    "id": "86663e78-4aa9-4457-b52b-c329d0a127da",
                     "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard And Mouse",
                     "action": "Look",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "2e315c32-dc6c-405f-a97b-10a1de00cb80",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard And Mouse",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
