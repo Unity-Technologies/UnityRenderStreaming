@@ -61,14 +61,20 @@ namespace Unity.RenderStreaming
             }
             catch (InvalidOperationException e)
             {
-                Debug.LogWarning(e);
                 track = null;
             }
         }
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
-            track?.SetData(data, channels, _sampleRate);
+            try
+            {
+                track?.SetData(data, channels, _sampleRate);
+            }
+            catch (InvalidOperationException e)
+            {
+                track = null;
+            }
         }
     }
 }
