@@ -13,7 +13,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
 
-        private AudioStreamTrack track;
         public IEnumerable<string> MicrophoneNameList => Microphone.devices;
 
         protected virtual void OnEnable()
@@ -60,8 +59,7 @@ namespace Unity.RenderStreaming
 
         protected override MediaStreamTrack CreateTrack()
         {
-            track = new AudioStreamTrack(audioSource);
-            return track;
+            return new AudioStreamTrack(audioSource);
         }
 
     }
