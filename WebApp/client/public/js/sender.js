@@ -113,10 +113,10 @@ export class Sender extends LocalInputManager {
       if(!event.repeat) { // StateEvent
         this.keyboard.queueEvent(event);
         this._queueStateEvent(this.keyboard.currentState, this.keyboard);
-      } else { //TextEvent
-        const key = event.key.charCodeAt(0);
-        this._queueTextEvent(this.keyboard, key);
       }
+      // TextEvent
+      const key = event.key.charCodeAt(0);
+      this._queueTextEvent(this.keyboard, key);
     }
     else if(event.type == 'keyup') {
       this.keyboard.queueEvent(event);
