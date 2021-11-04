@@ -141,7 +141,7 @@ namespace Unity.RenderStreaming.Signaling
 
                     Thread.Sleep((int)(m_timeout * 1000));
                 }
-                catch (ThreadAbortException e)
+                catch (ThreadAbortException)
                 {
                     // Thread.Abort() called from main thread. Ignore
                     return;
