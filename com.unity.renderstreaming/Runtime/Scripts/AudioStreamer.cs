@@ -59,7 +59,7 @@ namespace Unity.RenderStreaming
                 if (track != null)
                     track.Enabled = false;
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 track = null;
             }
@@ -71,7 +71,7 @@ namespace Unity.RenderStreaming
             {
                 track?.SetData(data, channels, _sampleRate);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 track = null;
             }
