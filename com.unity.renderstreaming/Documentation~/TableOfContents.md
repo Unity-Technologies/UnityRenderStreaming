@@ -5,7 +5,6 @@
     * [Launching The Web Application](launch-webapp.md)
     * [Creating The Scene](create-scene.md)
     * [Setting Up Device Input](control-camera.md)
-* [Project Template](template.md)
 * [Web Application](webapp.md)
     * [Configure Self-Signed Credentials for https](https.md)
     * [Setting for TURN Server](turnserver.md)
@@ -27,4 +26,5 @@
     * [Gyroscope](sample-gyroscope.md)
     * [Web Browser Input](sample-browserinput.md)
     * [Multiplay](sample-multiplay.md)
+* [Project Template](template.md)
 * [FAQ](faq.md)
