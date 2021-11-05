@@ -4,6 +4,7 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class CustomEventSystem : EventSystem
 {
+#if !INPUTSYSTEM_1_1_OR_NEWER
     protected override void Awake()
     {
         base.Awake();
@@ -29,4 +30,5 @@ public class CustomEventSystem : EventSystem
     {
         //Do not change focus flag on eventsystem
     }
+#endif    
 }

@@ -28,6 +28,12 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.1",
+            "define": "INPUTSYSTEM_1_1_OR_NEWER"
+        }
+    ],
     "noEngineReferences": false
 }
