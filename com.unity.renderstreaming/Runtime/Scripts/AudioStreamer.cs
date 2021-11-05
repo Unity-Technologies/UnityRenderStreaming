@@ -1,3 +1,4 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -53,13 +54,27 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnDisable()
         {
-            if (track != null)
-                track.Enabled = false;
+            try
+            {
+                if (track != null)
+                    track.Enabled = false;
+            }
+            catch (InvalidOperationException e)
+            {
+                track = null;
+            }
         }
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
-            track?.SetData(data, channels, _sampleRate);
+            try
+            {
+                track?.SetData(data, channels, _sampleRate);
+            }
+            catch (InvalidOperationException e)
+            {
+                track = null;
+            }
         }
     }
 }
