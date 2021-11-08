@@ -5,11 +5,11 @@ The base class for sending video is `VideoSender`, and the base class for receiv
 > [!NOTE]
 > The choice of video codec is currently limited. Use **H.264** if using a hardware encoder, or **VP8** if using a software encoder.
 
-## `TextureSender` component
+## `VideoStreamSender` component
 
 This component sends the texture.
 
-![TextureSender inspector](images/texturesender_inspector.png)
+![VideoStreamSender inspector](images/videostreamsender_inspector.png)
 
 ### Properties
 
@@ -20,11 +20,11 @@ This component sends the texture.
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
 
-## `ScreenSender` component
+## `ScreenStreamSender` component
 
 This component sends the image of the main display.
 
-![ScreenSender inspector](images/displaysender_inspector.png)
+![ScreenStreamSender inspector](images/screenstreamsender_inspector.png)
 
 ### Properties
 
@@ -34,7 +34,7 @@ This component sends the image of the main display.
 | **Anti-aliasing** | The antialiasing level for the RenderTexture | None |
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
-## `CameraSender` component
+## `CameraStreamSender` component
 
 This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
@@ -42,7 +42,7 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 > You can attach the `Target Texture` to the `Camera` component.
 > If `Target Texture` is attached on Camera, use that `Render Texture` setting first.
 
-![CameraSender inspector](images/camerasender_inspector.png)
+![CameraStreamSender inspector](images/camerastreamsender_inspector.png)
 
 ### Properties
 
@@ -52,11 +52,11 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | **Anti-aliasing** | The antialiasing level for the RenderTexture | None |
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
-## `WebCamSender` component
+## `WebCamStreamSender` component
 
 This component streams the `WebCamTexture` rendering results. Please refer [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) pages.
 
-![WebCamSender inspector](images/webcamsender_inspector.png)
+![WebCamStreamSender inspector](images/webcamstreamsender_inspector.png)
 
 > [!NOTE]
 > When building application for iOS platform, you need set `Camera Usage Description` on Player Settings.
@@ -72,11 +72,11 @@ This component streams the `WebCamTexture` rendering results. Please refer [WebC
 | **Device Index** | Index of `WebCamTexutre.devices` to use | 0 |
 
 
-## `TextureReceiver` component
+## `VideoStreamReceiver` component
 
 This component receives a videostream and exposes a texture that rendered the receiving frame buffer. 
 
-![TextureReceiver inspector](images/texturereceiver_inspector.png)
+![VideoStreamReceiver inspector](images/videostreamreceiver_inspector.png)
 
 ### Properties
 
