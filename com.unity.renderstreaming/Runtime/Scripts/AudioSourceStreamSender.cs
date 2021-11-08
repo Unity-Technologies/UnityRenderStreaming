@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// Attach AudioListerner or AudioSource
     /// </summary>
-    public class AudioStreamer : AudioStreamBase
+    public class AudioSourceStreamSender : AudioStreamSender
     {
         [SerializeField]
         private AudioSource audioSource;

@@ -96,7 +96,7 @@ namespace Unity.RenderStreaming.Samples
                 );
 
             videoImage.gameObject.SetActive(true);
-            var receiveVideoViewer = guestPlayer.GetComponent<ReceiveVideoViewer>();
+            var receiveVideoViewer = guestPlayer.GetComponent<VideoStreamReceiver>();
             receiveVideoViewer.OnUpdateReceiveTexture += texture => videoImage.texture = texture;
 
             var channel = guestPlayer.GetComponent<MultiplayChannel>();

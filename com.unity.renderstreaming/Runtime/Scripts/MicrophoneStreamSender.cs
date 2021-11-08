@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    public class MicrophoneStreamer : AudioStreamBase
+    public class MicrophoneStreamSender : AudioStreamSender
     {
         [SerializeField, Tooltip("Play microphone input (Required)")]
         private AudioSource audioSource;

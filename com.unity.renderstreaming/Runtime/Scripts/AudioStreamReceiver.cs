@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
-    public class ReceiveAudioViewer : StreamReceiverBase
+    public class AudioStreamReceiver : StreamReceiverBase
     {
         /// <summary>
         ///

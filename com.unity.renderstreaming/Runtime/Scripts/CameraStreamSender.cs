@@ -5,7 +5,7 @@ using UnityEngine.Experimental.Rendering;
 namespace Unity.RenderStreaming
 {
     [RequireComponent(typeof(Camera))]
-    public class CameraStreamer : VideoStreamBase
+    public class CameraStreamSender : VideoStreamSender
     {
         [SerializeField] private int depth = 0;
         [SerializeField] private int antiAliasing = 1;

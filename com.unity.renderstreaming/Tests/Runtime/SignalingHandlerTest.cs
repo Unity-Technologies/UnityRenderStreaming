@@ -26,7 +26,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class StreamSourceTest : StreamSourceBase
+    class StreamSourceTest : StreamSenderBase
     {
         private Camera m_camera;
 
@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
-    class AudioStreamSourceTest : StreamSourceBase
+    class AudioStreamSourceTest : StreamSenderBase
     {
         private AudioSource m_audioSource;
 
