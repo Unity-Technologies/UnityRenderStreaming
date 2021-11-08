@@ -7,12 +7,12 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// Attach AudioListerner or AudioSource
     /// </summary>
-    public class AudioSourceStreamSender : AudioStreamSender
+    public class AudioSourceStreamSender : StreamSenderBase
     {
-        [SerializeField]
-        private AudioSource audioSource;
+        [SerializeField, Tooltip("Play microphone input (Required)")]
+        protected AudioSource audioSource;
+        protected AudioStreamTrack track;
 
-        private AudioStreamTrack track;
         int _sampleRate = 0;
 
         public AudioSource AudioSource
@@ -48,6 +48,12 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnEnable()
         {
+            if (audioSource == null)
+            {
+                Debug.LogFormat("AudioSource required");
+                return;
+            }
+
             if (track != null)
                 track.Enabled = true;
         }
@@ -63,9 +69,17 @@ namespace Unity.RenderStreaming
             {
                 track = null;
             }
+
+            if (audioSource == null)
+            {
+                return;
+            }
+
+            audioSource.Stop();
+            audioSource.clip = null;
         }
 
-        private void OnAudioFilterRead(float[] data, int channels)
+        protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
             try
             {
