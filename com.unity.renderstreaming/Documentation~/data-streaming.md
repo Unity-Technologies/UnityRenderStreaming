@@ -32,7 +32,7 @@ This component receives input events from Unity.
 
 ## `DataSender` component
 
-This component receives input events from Unity.
+This component sends any data from Unity.
 
 ![DataSender inspector](images/datasender_inspector.png)
 
@@ -45,7 +45,7 @@ This component receives input events from Unity.
 
 ## `DataReceiver` component
 
-This component receives input events from Unity.
+This component receives any data from Unity.
 
 ![DataReceiver inspector](images/datareceiver_inspector.png)
 
