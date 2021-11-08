@@ -11,6 +11,8 @@ using UnityEngine.XR.ARSubsystems;
 #endif
 namespace Unity.RenderStreaming
 {
+    using UnityInputSystem = UnityEngine.InputSystem.InputSystem;
+
     public interface IInput
     {
         Mouse RemoteMouse { get; }
@@ -28,10 +30,10 @@ namespace Unity.RenderStreaming
 
         public DefaultInput()
         {
-            RemoteMouse = Mouse.current != null ? Mouse.current : InputSystem.AddDevice<Mouse>();
-            RemoteKeyboard = Keyboard.current != null ? Keyboard.current : InputSystem.AddDevice<Keyboard>();
-            RemoteTouchscreen = Touchscreen.current != null ? Touchscreen.current : InputSystem.AddDevice<Touchscreen>();
-            RemoteGamepad = Gamepad.current != null ? Gamepad.current : InputSystem.AddDevice<Gamepad>();
+            RemoteMouse = Mouse.current != null ? Mouse.current : UnityInputSystem.AddDevice<Mouse>();
+            RemoteKeyboard = Keyboard.current != null ? Keyboard.current : UnityInputSystem.AddDevice<Keyboard>();
+            RemoteTouchscreen = Touchscreen.current != null ? Touchscreen.current : UnityInputSystem.AddDevice<Touchscreen>();
+            RemoteGamepad = Gamepad.current != null ? Gamepad.current : UnityInputSystem.AddDevice<Gamepad>();
         }
 
         public void MakeCurrent()

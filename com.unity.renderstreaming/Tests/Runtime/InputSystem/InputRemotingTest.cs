@@ -1,15 +1,17 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
+using Unity.RenderStreaming.InputSystem;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.InputSystem.Layouts;
 using UnityEngine.TestTools;
 using Assert = NUnit.Framework.Assert;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
+    using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
+
     class MessageSerializerTest
     {
         [Test]

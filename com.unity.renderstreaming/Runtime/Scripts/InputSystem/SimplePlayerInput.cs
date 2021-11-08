@@ -5,8 +5,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine.InputSystem.Users;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.InputSystem
 {
+    using InputSystem = UnityEngine.InputSystem.InputSystem;
+
     /// <summary>
     /// Represents a separate player in the game complete with a set of actions exclusive
     /// to the player and a set of paired device.

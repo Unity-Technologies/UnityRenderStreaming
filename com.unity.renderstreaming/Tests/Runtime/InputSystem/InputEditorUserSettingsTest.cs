@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Unity.RenderStreaming.InputSystem;
 using Assert = NUnit.Framework.Assert;
 
 namespace Unity.RenderStreaming.RuntimeTest

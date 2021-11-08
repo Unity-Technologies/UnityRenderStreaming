@@ -1,9 +1,12 @@
 using System;
 using Unity.WebRTC;
 using UnityEngine.InputSystem;
+using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming
 {
+    using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
+
     /// <summary>
     /// 
     /// </summary>

@@ -1,12 +1,9 @@
-// todo(kazuki):: This script should be moved into the WebRTC package.
-// #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
 using System.Reflection;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem;
 
-// namespace Unity.WebRTC.InputSystem
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.InputSystem
 {
     // todo(kazuki)::Avoid to use reflection
     static class InputDeviceExtension

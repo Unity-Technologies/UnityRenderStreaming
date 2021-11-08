@@ -1,5 +1,6 @@
 using System;
 using Unity.WebRTC;
+using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming
 {

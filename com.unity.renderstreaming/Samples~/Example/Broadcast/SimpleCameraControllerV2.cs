@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming.Samples
 {

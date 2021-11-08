@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.InputSystem
 {
 #if UNITY_EDITOR && !INPUTSYSTEM_1_1_OR_NEWER
     // todo(kazuki)::Avoid to use reflection

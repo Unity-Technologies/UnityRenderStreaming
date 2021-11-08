@@ -1,17 +1,14 @@
-// todo(kazuki):: This script should be moved into the WebRTC package.
-// #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.WebRTC;
-using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
 
-// namespace Unity.WebRTC.InputSystem
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.InputSystem
 {
+    using InputSystem = UnityEngine.InputSystem.InputSystem;
+
     class Sender : InputManager, IDisposable
     {
         public override event Action<InputEventPtr, InputDevice> onEvent;
