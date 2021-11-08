@@ -8,9 +8,10 @@ namespace Unity.RenderStreaming
     [RequireComponent(typeof(RectTransform))]
     public class UIController : MonoBehaviour
     {
-        [SerializeField] Text text = null;
-        [SerializeField] CanvasGroup canvasGroup = null;
-        [SerializeField] Image pointer = null;
+        [SerializeField] Text text;
+        [SerializeField] CanvasGroup canvasGroup;
+        [SerializeField] Image pointer;
+        [SerializeField] GameObject noticeTouchControl;
         [SerializeField] private AnimationCurve transitionCurve =
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
@@ -24,7 +25,7 @@ namespace Unity.RenderStreaming
         private Mouse m_mouse;
         private Touchscreen m_screen;
 
-        public void SetDevice(InputDevice device, bool add=false)
+        public void SetDevice(InputDevice device, bool add = false)
         {
             switch (device)
             {
@@ -33,11 +34,15 @@ namespace Unity.RenderStreaming
                     return;
                 case Keyboard keyboard:
                     m_keyboard = add ? keyboard : null;
-                    if(add)
+                    if (add)
                         m_keyboard.onTextInput += OnTextInput;
                     return;
                 case Touchscreen screen:
                     m_screen = add ? screen : null;
+                    if (noticeTouchControl != null)
+                    {
+                        noticeTouchControl.SetActive(add);
+                    }
                     return;
             }
         }
@@ -79,6 +84,7 @@ namespace Unity.RenderStreaming
                 {
                     position += activeTouches[i].screenPosition;
                 }
+
                 pointer.rectTransform.anchoredPosition = position / (float)count;
                 pointer.color = Color.red;
             }
