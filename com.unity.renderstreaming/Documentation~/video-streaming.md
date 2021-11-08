@@ -1,6 +1,6 @@
 # Video Streaming
 
-The base class for sending video is `VideoSender`, and the base class for receiving video is `VideoReceiver`. And various components are implemented using the inheritance relation. Components are provided for the sender and receiver sides. There are multiple components for the sender side, but all the sent videos can be received by `TextureReceiver`.
+The base class for sending video is `VideoStreamSender`, and the base class for receiving video is `VideoStreamReceiver`. And various components are implemented using the inheritance relation. Components are provided for the sender and receiver sides.
 
 > [!NOTE]
 > The choice of video codec is currently limited. Use **H.264** if using a hardware encoder, or **VP8** if using a software encoder.
