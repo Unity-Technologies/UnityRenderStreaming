@@ -408,8 +408,7 @@ namespace Unity.RenderStreaming
             {
                 _signaling.SendCandidate(connectionId, candidate);
             };
-            pc.OnIceConnectionChange = state => OnIceConnectionChange(connectionId, state);
-
+            pc.OnConnectionStateChange = state => OnConnectionStateChange(connectionId, state);
             pc.OnTrack = trackEvent =>
             {
                 onAddReceiver?.Invoke(connectionId, trackEvent.Receiver);
@@ -434,14 +433,14 @@ namespace Unity.RenderStreaming
             onAddChannel?.Invoke(connectionId, channel);
         }
 
-        void OnIceConnectionChange(string connectionId, RTCIceConnectionState state)
+        void OnConnectionStateChange(string connectionId, RTCPeerConnectionState state)
         {
             switch (state)
             {
-                case RTCIceConnectionState.Connected:
+                case RTCPeerConnectionState.Connected:
                     onConnect?.Invoke(connectionId);
                     break;
-                case RTCIceConnectionState.Disconnected:
+                case RTCPeerConnectionState.Disconnected:
                     onDisconnect?.Invoke(connectionId);
                     break;
             }
