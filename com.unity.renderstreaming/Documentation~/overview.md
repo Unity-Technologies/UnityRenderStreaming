@@ -1,25 +1,18 @@
 # Overview
 
-The following is an explanation the general concepts of the Render Streaming system. 
+The following is an explanation the general concepts of the Unity Render Streaming system. 
 
 ## System Structure
 
-The Render Streaming system consists of the following 3 components
+The Render Streaming system consists of the following 3 components.
 
-- **Unity** (Editor or Application)
-- **Web server**
-- **Web browser** 
+- **Signaling server**
+- **Peer 1 (Sender)**
+- **Peer 2 (Receiver)**
 
-![Render Streaming Overview](images/renderstreaming_overview.png)
+![Render Streaming System Structure](images/renderstreaming_system_structure.png)
 
-
-In Render Streaming a P2P network is created between **Unity** and the **Web browser**, and this network sends data via UDP/IP. The **Web server** enables communication between the Web browser and Unity. This communication is called signaling. 
-
-> [!WARNING]
-> Currently does not support the following features.
->
-> - Streaming video from the browser to Unity
-> - Streaming audio from the browser to Unity
+In Render Streaming a P2P network is created between two peers, and this network sends video/audio/binary data. The **Web server** enables communication between two peers. This communication is called **signaling**. 
 
 ## The Signaling Process
 
@@ -27,11 +20,12 @@ The following is an explanation of how signaling works.
 
 ![Render Streaming Sequence](images/renderstreaming_sequence.png)
 
-1. Web browser sends **Offer SDP** to the Web server.
-2. Unity checks the Web server for unprocessed **Offer SDPs** and receives any found.
-3. Unity sends **Answer SDP** to the Web server.
-4. Web browser checks the Web server for unprocessed **Answer SDPs** and receives any found.
-5. Web browser sends **ICE Candidate** to the Web server.
-6. Unity checks the Web server for unprocessed **ICE Candidates** and receives any found. 
-7. Unity sends **ICE Candidate**to the Web server.
-8. Web browser checks the Web server for unprocessed **ICE Candidate** and receives any found. 
+1. *Peer 1* sends **Offer SDP** to *Signaling Server*.
+2. The *Peer 2* checks the *Signaling Server* for unprocessed **Offer SDPs** and receives any found.
+3. The *Peer 2* sends **Answer SDP** to the *Signaling Server*.
+4. The *Peer 1* checks the *Signaling Server* for unprocessed **Answer SDPs** and receives any found.
+5. The *Peer 1* sends **ICE Candidate** to the *Signaling Server*.
+6. The *Peer 2* checks the *Signaling Server* for unprocessed **ICE Candidates** and receives any found.
+7. The *Peer 2* sends **ICE Candidate**to the *Signaling Server*.
+8. The *Peer 1* checks the *Signaling Server* for unprocessed **ICE Candidate** and receives any found.
+9. The connection establishment between peers are completed and *Peer 1* can send streams to the *Peer 2*.

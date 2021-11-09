@@ -1,4 +1,4 @@
-# The Web Application
+# Web Application
 
 The **Web application** 
 
@@ -74,4 +74,4 @@ Use this command to display the help guide.
 
 ## How to custmize web application
 
-Please see the page [Customize Web Application](customize_webapp.md).
+Please see the page [Customize Web Application](customize-webapp.md).

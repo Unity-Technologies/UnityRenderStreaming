@@ -1,4 +1,4 @@
-# TURN Servers
+# Setting for TURN Servers
 
 If streaming is not functioning correctly in Unity Render Streaming, consult the [troubleshooting guide](faq.md).
 If you are experiencing firewall issues, you may need to change your firewall settings or use a **TURN server**.

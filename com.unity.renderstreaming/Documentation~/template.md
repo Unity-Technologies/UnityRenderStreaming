@@ -1,4 +1,4 @@
-# Unity Render Streaming Template
+# Project Template
 
 This document describes the way to start using the template package of Unity Render Streaming.
 

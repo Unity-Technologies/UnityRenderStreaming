@@ -1,25 +1,11 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4">
-<img src="https://img.shields.io/badge/unity-2020.2-green.svg?style=flat-square" alt="unity 2020.2">
+<img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4"> <img src="https://img.shields.io/badge/unity-2020.3-green.svg?style=flat-square" alt="unity 2020.3">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
-This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://github.com/Unity-Technologies/com.unity.webrtc) to create their own unique solutions. 
+This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) to create their own unique solutions. 
 
 <img src="com.unity.renderstreaming/Documentation~/images/browser_hdrpscene.png" width=500 align=center>
-
-This repository manages 1 package and 2 templates. Details can be found in the `README.md` for each package.
-
-- [com.unity.template.renderstreaming-hd](com.unity.template.renderstreaming-hd/Packages/com.unity.template.renderstreaming-hd/README.md)
-- [com.unity.template.renderstreaming-rtx](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/README.md)
-- [com.unity.renderstreaming](com.unity.renderstreaming/README.md)
-
-## Branch
-
-| Branch                                                                                         | Status         |
-| ---------------------------------------------------------------------------------------------- | -------------- |
-| [release/3.0.0](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/release/3.0.0) | Stable         |
-| [develop](https://github.com/Unity-Technologies/UnityRenderStreaming/tree/develop)             | In development |
 
 ## Requirements
 
@@ -30,7 +16,7 @@ Please see [Requirements](com.unity.renderstreaming/Documentation~/index.md#requ
 **Unity Render Streaming** is also supported natively by **Furioos** platform https://www.furioos.com/ .
 That means that you can easily build a Unity application, upload it on **Furioos** and enjoy all the features of **Unity Render Streaming** without worrying about the deployment and scalability issues of your project.
 
-Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/tutorial.md#deploy-to-furioos) section to find out how it works.
+Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to-furioos) section to find out how it works.
 
 ### License
 
@@ -40,54 +26,32 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/tutorial.
 
 - `com.unity.template.renderstreaming-rtx` -  [LICENSE.md](com.unity.template.renderstreaming-rtx/Packages/com.unity.template.renderstreaming-rtx/LICENSE.md)
 
-## Package Structure
+## Repository Structure
 
 ```
 <root>
-├── com.unity.renderstreaming
-│   ├── Documentation~
-│   ├── Editor
-│   ├── Runtime
-│   ├── Samples~
-│   └── Test
-├── com.unity.template.renderstreaming-hd
-│   ├── Assets
-│   │   ├── Plugins
-│   │   ├── Scenes
-│   │   ├── Scripts
-│   │   └── Tests
-│   ├── Packages
-│   └── ProjectSettings
-├── com.unity.template.renderstreaming-rtx
-│   ├── Assets
-│   │   ├── Plugins
-│   │   ├── Scenes
-│   │   ├── Scripts
-│   │   └── Tests
-│   ├── Packages
-│   └── ProjectSettings
-├── RenderStreaming~
-│   ├── Assets
-│   ├── Packages
-│   └── ProjectSettings
-└── WebApp
-    ├── public
-    ├── src
-    └── test
+├── BuildScripts~                          // Build scripts for CI system
+├── com.unity.renderstreaming              // Unity Render Streaming Package 
+├── com.unity.template.renderstreaming-hd  // HDRP template
+├── com.unity.template.renderstreaming-rtx // HDRP Raytracing template
+├── RenderStreaming~                       // Sample project for package
+└── WebApp                                 // Web application for signaling
 ```
 
 ## Roadmap
 
-| Version | Focus                                                   |
-| ------- | ------------------------------------------------------- |
-| `1.0`   | - First release                                         |
-| `1.1`   | - Upgrade HDRP version 5.16                             |
-| `1.2`   | - Unity 2019.3 support                                  |
-| `2.0`   | - Multi camera <br>- DirectX12 (DXR) Support            |
-| `2.1`   | - Unity 2019.4 support <br>- Add bitrate control sample |
-| `2.2`   | - Add video receiver <br>- HDRP/URP on Linux support    |
-| `3.0`   | - iOS platform support <br>- AR Foundation sample       |
-| `3.1`   | - Android platform support                              |
+| Version | Focus |
+| ------- | ----- |
+| `1.0-preview` | - First release |
+| `1.1-preview` | - Upgrade HDRP version 5.16 |
+| `1.2-preview` | - Unity 2019.3 support |
+| `2.0-preview` | - Multi camera <br/>- DirectX12 (DXR) Support |
+| `2.1-preview` | - Unity 2019.4 support <br/>- Add bitrate control sample |
+| `2.2-preview` | - Add video receiver <br/>- HDRP/URP on Linux support |
+| `3.0-preview` | - iOS platform support <br/>- AR Foundation sample |
+| `3.1-exp.1` | - Android platform support |
+| `3.1-exp.2` | - Audio Renderer support <br/> - Multiplay sample <br/> - M1 Mac support |
+
 
 ## FAQ
 

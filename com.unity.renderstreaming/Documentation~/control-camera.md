@@ -1,0 +1,85 @@
+# Setting Up Device Input
+
+To control the camera on the remote PC,  we need to link the input events on web browsers to the actions in Unity. **Input System** makes it easy to implement the input processing.
+
+## Adding components for input processing
+
+Open the Unity scene which created in [the previous page](create-camera.md), and select **Main Camera** in the Hierarchy window. Add the **Input Receiver** component in the Inspector window.
+
+![Control camera 01](images/control_camera_01.png)
+
+## Setting Input Actions
+
+We will use the [**Input Actions**](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/Actions.html) feature of the Input System. Input Actions is a mechanism for mapping various inputs to Unity actions, and it provides editing tools that make it easy for anyone to use. We will use Input Actions to define mouse actions.
+
+Right-click in the project window, and then click **Create > Input Actions**.
+
+![Control camera 01](images/control_camera_01.png)
+
+The asset will be added to the project window and renamed to `Control`. Double-click on the `Control` asset in the project window, and the **Action editor** will appear.
+
+![Control camera 01](images/control_camera_02.png)
+
+Click the **+** button in **Actions Maps** to add an item.
+
+![Control camera 01](images/control_camera_03.png)
+
+Rename the **Actions** item to `Look`.
+
+![Control camera 01](images/control_camera_04.png)
+
+Select the item and change **Action Type** to `Value`, and **Control Type** to `Vector2`.
+
+![Control camera 01](images/control_camera_05.png)
+
+Next, select the **\<No Binding\>** item and add **Mouse/Delta** to the **Path** of **Binding**.
+
+![Control camera 01](images/control_camera_06.png)
+
+The result will look like this. Note that the last step is to press the **Save Asset** button to save your edits.
+
+![Control camera 01](images/control_camera_07.png)
+
+## Setting `InputReceiver` component
+
+Drag the **Control** asset in the project window to the **Input Actions** property of the `InputReceiver` component.
+
+![Control camera 01](images/control_camera_07.png)
+
+Add the code to control the rotation of the camera. Right-click on the project window and select **Create > C#** Script to create the asset. Change the asset name to `PlayerController`.
+
+![Control camera 01](images/control_camera_08.png)
+
+The contents of the script will be as follows.
+
+```csharp
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class PlayerController : MonoBehaviour
+{
+    public void Look(InputAction.CallbackContext value)
+    {
+        Vector2 input = value.ReadValue<Vector2>();
+        transform.eulerAngles = new Vector3(-input.y, input.x, 0);
+    }
+}
+```
+
+Once you have copied the script and saved the file, add the `PlayerController` component to the **Main Camera** object in the Hierarchy window.
+
+![Control camera 01](images/control_camera_09.png)
+
+Assign `PlayerController.Look` to the **SimplePlayerInput** component's **Look** event.
+
+![Control camera 01](images/control_camera_10.png)
+
+## Checking on browsers
+
+The mouse operation in the browser should be reflected in the rotation of the camera.
+
+![Control camera 01](images/control_camera_11.png)
+
+## Next step
+
+We were able to incorporate the input processing using the Input Actions feature. If you would like to learn more about the features of Unity Render Streaming, please see the [Components page](components.md). Also, check out [Customizing your web application](customize-webapp.md) for information on how to modify the web user interface.
