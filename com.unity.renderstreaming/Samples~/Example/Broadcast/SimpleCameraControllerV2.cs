@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming.Samples
         private bool invertY;
 
         [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputSystemChannelReceiver receiver;
+        [SerializeField] InputReceiver receiver;
         [SerializeField] UIController uiController;
 
         private readonly CameraState m_TargetCameraState = new CameraState();

@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    public class InputSystemChannelSender : DataChannelBase
+    public class InputSender : DataChannelBase
     {
         private Sender sender;
         private InputRemoting senderInput;

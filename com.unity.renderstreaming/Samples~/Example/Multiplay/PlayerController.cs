@@ -10,7 +10,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;
         [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputSystemChannelReceiver receiver;
+        [SerializeField] InputReceiver receiver;
         [SerializeField] TextMesh label;
         [SerializeField] GameObject captionForMobile;
         [SerializeField] GameObject captionForDesktop;

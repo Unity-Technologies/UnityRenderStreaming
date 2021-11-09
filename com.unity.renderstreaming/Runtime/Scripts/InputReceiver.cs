@@ -10,7 +10,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    public class InputSystemChannelReceiver : InputChannelReceiverBase
+    public class InputReceiver : InputChannelReceiverBase
     {
         /// <summary>
         ///
