@@ -7,9 +7,10 @@ using UnityEngine.InputSystem.Utilities;
 using UnityEngine.InputSystem.Users;
 using Unity.RenderStreaming.InputSystem;
 
+using Inputs = UnityEngine.InputSystem.InputSystem;
+
 namespace Unity.RenderStreaming
 {
-    using UnityInputSystem = UnityEngine.InputSystem.InputSystem;
     using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
 
     /// <summary>
@@ -196,7 +197,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public void PerformPairingWithAllLocalDevices()
         {
-            foreach (var device in UnityInputSystem.devices.Where(_ => !_.remote))
+            foreach (var device in Inputs.devices.Where(_ => !_.remote))
             {
                 PerformPairingWithDevice(device);
             }
