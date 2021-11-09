@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    public class MicrophoneStreamSender : AudioSourceStreamSender
+    public class MicrophoneStreamSender : AudioStreamSender
     {
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
