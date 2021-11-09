@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming.Samples
             [SerializeField] private RenderStreaming renderStreaming;
             [SerializeField] private Button sendOfferButton;
             [SerializeField] private RawImage remoteVideoImage;
-            [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
+            [SerializeField] private VideoStreamReceiver receiveVideoViewer;
             [SerializeField] private SingleConnection connection;
             [SerializeField] private Text textVelocityX;
             [SerializeField] private Text textVelocityY;

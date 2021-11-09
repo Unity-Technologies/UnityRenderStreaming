@@ -1,11 +1,10 @@
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.RenderStreaming.Editor
 {
-    [CustomEditor(typeof(CameraStreamer))]
-    public class CameraStreamerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CameraStreamSender))]
+    public class CameraStreamSenderEditor : UnityEditor.Editor
     {
         readonly GUIContent[] renderTextureAntiAliasing = new GUIContent[4]
         {

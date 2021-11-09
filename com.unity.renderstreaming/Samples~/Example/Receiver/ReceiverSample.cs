@@ -14,8 +14,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private InputField connectionIdInput;
         [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private AudioSource remoteAudioSource;
-        [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
-        [SerializeField] private ReceiveAudioViewer receiveAudioViewer;
+        [SerializeField] private VideoStreamReceiver receiveVideoViewer;
+        [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
 #pragma warning restore 0649
 

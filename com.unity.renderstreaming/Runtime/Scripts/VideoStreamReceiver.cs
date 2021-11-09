@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    public class ReceiveVideoViewer : StreamReceiverBase
+    public class VideoStreamReceiver : StreamReceiverBase
     {
         /// <summary>
         /// 

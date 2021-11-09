@@ -3,7 +3,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    public abstract class AudioStreamBase : StreamSourceBase
+    public abstract class AudioStreamSender : StreamSenderBase
     {
     }
 }

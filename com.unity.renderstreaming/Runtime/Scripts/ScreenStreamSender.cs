@@ -2,11 +2,10 @@ using System.Collections;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
-using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
-    public class ScreenSender : VideoStreamBase
+    public class ScreenStreamSender : VideoStreamSender
     {
         [SerializeField] private int depth = 0;
         [SerializeField] private int antiAliasing = 1;

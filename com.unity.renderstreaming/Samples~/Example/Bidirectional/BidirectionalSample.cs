@@ -17,10 +17,10 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private RawImage localVideoImage;
         [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private AudioSource receiveAudioSource;
-        [SerializeField] private WebCamStreamer webCamStreamer;
-        [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
-        [SerializeField] private MicrophoneStreamer microphoneStreamer;
-        [SerializeField] private ReceiveAudioViewer receiveAudioViewer;
+        [SerializeField] private WebCamStreamSender webCamStreamer;
+        [SerializeField] private VideoStreamReceiver receiveVideoViewer;
+        [SerializeField] private MicrophoneStreamSender microphoneStreamer;
+        [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection singleConnection;
 #pragma warning restore 0649
 

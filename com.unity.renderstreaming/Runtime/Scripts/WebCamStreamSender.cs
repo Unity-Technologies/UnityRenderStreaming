@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
-    public class WebCamStreamer : VideoStreamBase
+    public class WebCamStreamSender : VideoStreamSender
     {
         /// <summary>
         ///
