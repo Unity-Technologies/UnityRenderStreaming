@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -849,7 +849,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3379f8b7ab35724b965e26351c2004e, type: 3}
+  m_Script: {fileID: 11500000, guid: 64875cfea3598b9419edac2dbbce0413, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
@@ -1773,7 +1773,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1112556112}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3379f8b7ab35724b965e26351c2004e, type: 3}
+  m_Script: {fileID: 11500000, guid: 64875cfea3598b9419edac2dbbce0413, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
@@ -2290,6 +2290,7 @@ MonoBehaviour:
   text: {fileID: 1127658837}
   canvasGroup: {fileID: 920982465}
   pointer: {fileID: 1287993068}
+  noticeTouchControl: {fileID: 0}
   transitionCurve:
     serializedVersion: 2
     m_Curve:
@@ -2349,6 +2350,7 @@ MonoBehaviour:
   text: {fileID: 1187697327}
   canvasGroup: {fileID: 1781893189}
   pointer: {fileID: 710664488}
+  noticeTouchControl: {fileID: 0}
   transitionCurve:
     serializedVersion: 2
     m_Curve:
