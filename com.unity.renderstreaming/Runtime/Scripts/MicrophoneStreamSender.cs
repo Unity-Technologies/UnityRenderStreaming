@@ -6,21 +6,18 @@ namespace Unity.RenderStreaming
 {
     public class MicrophoneStreamSender : AudioStreamSender
     {
-        [SerializeField, Tooltip("Play microphone input (Required)")]
-        private AudioSource audioSource;
-
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
 
         public IEnumerable<string> MicrophoneNameList => Microphone.devices;
 
-        protected virtual void OnEnable()
+        protected override void Awake()
         {
-            if (audioSource == null)
-            {
-                Debug.LogFormat("AudioSource required");
-                return;
-            }
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
 
             if (Microphone.devices.Length == 0)
             {
@@ -40,17 +37,6 @@ namespace Unity.RenderStreaming
             audioSource.Play();
         }
 
-        protected virtual void OnDisable()
-        {
-            if (audioSource == null)
-            {
-                return;
-            }
-
-            audioSource.Stop();
-            audioSource.clip = null;
-        }
-
         public void SetDeviceIndex(int index)
         {
             deviceIndex = index;
@@ -58,8 +44,11 @@ namespace Unity.RenderStreaming
 
         protected override MediaStreamTrack CreateTrack()
         {
-            return new AudioStreamTrack(audioSource);
+            track = new AudioStreamTrack(audioSource);
+            return track;
         }
 
+        protected override void OnAudioFilterRead(float[] data, int channels)
+        {}
     }
 }
