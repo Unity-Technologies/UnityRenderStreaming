@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming.Samples
 
             var obj = dictObj[connectionId];
             var sender = obj.GetComponentInChildren<IStreamSender>();
-            var inputChannel = obj.GetComponentInChildren<InputReceiver>();
+            var inputChannel = obj.GetComponentInChildren<SimplePlayerInput>();
             var multiplayChannel = obj.GetComponentInChildren<MultiplayChannel>();
 
             dictObj.Remove(connectionId);
@@ -56,7 +56,7 @@ namespace Unity.RenderStreaming.Samples
             dictObj.Add(data.connectionId, newObj);
 
             var sender = newObj.GetComponentInChildren<IStreamSender>();
-            var inputChannel = newObj.GetComponentInChildren<InputReceiver>();
+            var inputChannel = newObj.GetComponentInChildren<SimplePlayerInput>();
             var multiplayChannel = newObj.GetComponentInChildren<MultiplayChannel>();
             var playerController = newObj.GetComponentInChildren<PlayerController>();
 

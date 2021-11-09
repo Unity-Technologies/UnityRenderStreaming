@@ -10,7 +10,6 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;
         [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputReceiver receiver;
         [SerializeField] TextMesh label;
         [SerializeField] GameObject captionForMobile;
         [SerializeField] GameObject captionForDesktop;
@@ -29,7 +28,7 @@ namespace Unity.RenderStreaming.Samples
 
         protected void Awake()
         {
-            receiver.onDeviceChange += OnDeviceChange;
+            playerInput.onDeviceChange += OnDeviceChange;
             initialPosition = transform.position;
         }
 

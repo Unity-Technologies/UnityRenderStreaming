@@ -75,7 +75,6 @@ namespace Unity.RenderStreaming.Samples
         private bool invertY;
 
         [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputReceiver receiver;
         [SerializeField] UIController uiController;
 
         private readonly CameraState m_TargetCameraState = new CameraState();
@@ -87,7 +86,7 @@ namespace Unity.RenderStreaming.Samples
 
         protected void Awake()
         {
-            receiver.onDeviceChange += OnDeviceChange;
+            playerInput.onDeviceChange += OnDeviceChange;
             m_InitialCameraState.SetFromTransform(transform);
         }
 
