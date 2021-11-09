@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button startButton;
         [SerializeField] private Button stopButton;
         [SerializeField] private RawImage remoteVideoImage;
-        [SerializeField] private ReceiveVideoViewer receiveVideoViewer;
+        [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private SingleConnection connection;
         [SerializeField] private ARSession session;
         [SerializeField] private Text textPositionX;

@@ -3029,6 +3029,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a75a8d7bfb939449ddb4a45d07259d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderStreaming: {fileID: 1915034402}
   startButton: {fileID: 662432479}
   stopButton: {fileID: 395898786}
   remoteVideoImage: {fileID: 1363584101}

@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
+        "Unity.XR.ARFoundation",
         "Unity.RenderStreaming.Runtime"
     ],
     "includePlatforms": [],
