@@ -6,6 +6,8 @@ using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
 namespace Unity.RenderStreaming.Samples
 {
+    using InputSystem = UnityEngine.InputSystem.InputSystem;
+
     class GyroSample : MonoBehaviour
     {
 #pragma warning disable 0649

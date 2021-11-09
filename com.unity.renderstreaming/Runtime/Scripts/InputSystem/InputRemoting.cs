@@ -1,7 +1,5 @@
 // note:: This script is using code snippets in InputSystem.
 // https://github.com/Unity-Technologies/InputSystem/blob/develop/Packages/com.unity.inputsystem/InputSystem/Devices/Remote/InputRemoting.cs
-// todo(kazuki):: This script should be moved into the WebRTC package.
-// #if UNITY_WEBRTC_ENABLE_INPUT_SYSTEM
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -29,8 +27,7 @@ using UnityEngine.InputSystem;
 ////REVIEW: the namespacing mechanism for layouts which changes base layouts means that layouts can't be played
 ////        around with on the editor side but will only be changed once they're updated in the player
 
-// namespace Unity.WebRTC.InputSystem
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.InputSystem
 {
     /// <summary>
     /// Makes the activity and data of an InputManager observable in message form.

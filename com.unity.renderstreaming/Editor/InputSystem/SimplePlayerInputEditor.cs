@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
-using Unity.RenderStreaming;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 using UnityEngine.InputSystem.Utilities;
 
-namespace UnityEngine.RenderStreaming.Editor
+namespace Unity.RenderStreaming.InputSystem.Editor
 {
     [CustomEditor(typeof(SimplePlayerInput))]
     internal class SimplePlayerInputEditor : UnityEditor.Editor

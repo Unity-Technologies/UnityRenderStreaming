@@ -9,6 +9,8 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming.Samples
 {
+    using InputSystem = UnityEngine.InputSystem.InputSystem;
+
 #if UNITY_EDITOR
     [InitializeOnLoad]
 #endif

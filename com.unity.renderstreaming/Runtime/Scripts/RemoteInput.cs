@@ -1,14 +1,16 @@
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.EnhancedTouch;
 using UE = UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming
 {
+    using UnityInputSystem = UnityEngine.InputSystem.InputSystem;
+
     enum KeyboardEventType
     {
         KeyUp = 0,
@@ -77,10 +79,10 @@ namespace Unity.RenderStreaming
         public static RemoteInput Create()
         {
             InputUser user = InputUser.CreateUserWithoutPairedDevices();
-            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Mouse>(), user);
-            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Keyboard>(), user);
-            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Gamepad>(), user);
-            user = InputUser.PerformPairingWithDevice(InputSystem.AddDevice<Touchscreen>(), user);
+            user = InputUser.PerformPairingWithDevice(UnityInputSystem.AddDevice<Mouse>(), user);
+            user = InputUser.PerformPairingWithDevice(UnityInputSystem.AddDevice<Keyboard>(), user);
+            user = InputUser.PerformPairingWithDevice(UnityInputSystem.AddDevice<Gamepad>(), user);
+            user = InputUser.PerformPairingWithDevice(UnityInputSystem.AddDevice<Touchscreen>(), user);
             RemoteInput remoteInput = new RemoteInput(ref user);
             s_mapRemoteInputAndInputUserId.Add(remoteInput, user.id);
             s_listRemoteInput.Add(remoteInput);
@@ -104,7 +106,7 @@ namespace Unity.RenderStreaming
             user.UnpairDevicesAndRemoveUser();
             foreach (var deviceId in arrayDeviceId)
             {
-                InputSystem.RemoveDevice(InputSystem.GetDeviceById(deviceId));
+                UnityInputSystem.RemoveDevice(UnityInputSystem.GetDeviceById(deviceId));
             }
             s_mapRemoteInputAndInputUserId.Remove(remoteInput);
             s_listRemoteInput.Remove(remoteInput);
@@ -242,7 +244,7 @@ namespace Unity.RenderStreaming
                                 }
                                 break;
                         }
-                        InputSystem.QueueStateEvent(RemoteGamepad, m_gamepadState);
+                        UnityInputSystem.QueueStateEvent(RemoteGamepad, m_gamepadState);
                     }
                     break;
             }
@@ -325,16 +327,16 @@ namespace Unity.RenderStreaming
                     if (!repeat)
                     {
                         m_keyboardState.Set((Key)keyCode, true);
-                        InputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
+                        UnityInputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
                     }
                     if(character != 0)
                     {
-                        InputSystem.QueueTextEvent(RemoteKeyboard, character);
+                        UnityInputSystem.QueueTextEvent(RemoteKeyboard, character);
                     }
                     break;
                 case KeyboardEventType.KeyUp:
                     m_keyboardState.Set((Key)keyCode, false);
-                    InputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
+                    UnityInputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
                     break;
             }
         }
@@ -343,7 +345,7 @@ namespace Unity.RenderStreaming
         {
             UnityEngine.Vector2Int pos = new UnityEngine.Vector2Int(x, y);
             UnityEngine.Vector2Int delta = pos - m_prevMousePos;
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState {
+            UnityInputSystem.QueueStateEvent(RemoteMouse, new MouseState {
                 position = pos,
                 delta = delta,
                 buttons = button
@@ -353,14 +355,14 @@ namespace Unity.RenderStreaming
 
         void ProcessMouseWheelEvent(float scrollX, float scrollY)
         {
-            InputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
+            UnityInputSystem.QueueStateEvent(RemoteMouse, new MouseState { scroll = new UnityEngine.Vector2(scrollX, scrollY) });
         }
 
         void ProcessTouchMoveEvent(TouchState[] touches)
         {
             for (var i = 0; i < touches.Length; i++)
             {
-                InputSystem.QueueStateEvent(RemoteTouchscreen, touches[i]);
+                UnityInputSystem.QueueStateEvent(RemoteTouchscreen, touches[i]);
             }
         }
         void ChangeEndStateUnusedTouches(TouchState[] touches)
@@ -375,7 +377,7 @@ namespace Unity.RenderStreaming
                     {
                         continue;
                     }
-                    InputSystem.QueueStateEvent(RemoteTouchscreen, new TouchState
+                    UnityInputSystem.QueueStateEvent(RemoteTouchscreen, new TouchState
                     {
                         touchId = touchId,
                         phase = TouchPhase.Ended,
