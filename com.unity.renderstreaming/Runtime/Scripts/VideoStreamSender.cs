@@ -6,6 +6,16 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    public sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute {}
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class VideoStreamSender : StreamSenderBase
     {
         /// <summary>

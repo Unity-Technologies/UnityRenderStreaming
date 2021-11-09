@@ -5,10 +5,22 @@ using UnityEngine.Experimental.Rendering;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ScreenStreamSender : VideoStreamSender
     {
-        [SerializeField] private int depth = 0;
-        [SerializeField] private int antiAliasing = 1;
+        /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField, RenderTextureDepthBuffer]
+        private int depth = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField, RenderTextureAntiAliasing]
+        private int antiAliasing = 1;
 
         public override Texture SendTexture => m_sendTexture;
         private RenderTexture m_sendTexture;

@@ -4,15 +4,30 @@ using UnityEngine.Experimental.Rendering;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [RequireComponent(typeof(Camera))]
     public class CameraStreamSender : VideoStreamSender
     {
-        [SerializeField] private int depth = 0;
-        [SerializeField] private int antiAliasing = 1;
+        /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField, RenderTextureDepthBuffer]
+        private int depth = 0;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField, RenderTextureAntiAliasing]
+        private int antiAliasing = 1;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override Texture SendTexture => m_camera.targetTexture;
 
         private Camera m_camera;
-        public override Texture SendTexture => m_camera.targetTexture;
 
         protected virtual void Awake()
         {
