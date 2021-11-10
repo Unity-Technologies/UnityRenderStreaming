@@ -1,9 +1,10 @@
 # .yamato/upm-ci-publish-github-release.yml
 {% metadata_file .yamato/meta/environments.yml %}
 
-platforms:
+webapp-platforms:
   - name: win
   - name: macos
+  - name: linux
 packages:
   - name: renderstreaming
 ---
@@ -25,7 +26,7 @@ publish_github_release_webapp:
     - gh release upload $GIT_TAG 'WebApp/bin~/webserver_mac' --clobber -R Unity-Technologies/UnityRenderStreaming
     - gh release upload $GIT_TAG 'WebApp/bin~/webserver.exe' --clobber -R Unity-Technologies/UnityRenderStreaming
   dependencies:
-   {% for platform in platforms %}
+   {% for platform in webapp-platforms %}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
    {% endfor %}
 
