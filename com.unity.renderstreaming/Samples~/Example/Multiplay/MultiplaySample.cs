@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.RenderStreaming.InputSystem;
@@ -43,7 +45,8 @@ namespace Unity.RenderStreaming.Samples
         void OnClickButtonStart()
         {
             var toggles = toggleGroupRole.GetComponentsInChildren<Toggle>();
-            var toggle = toggleGroupRole.GetFirstActiveToggle();
+            var activeToggles = toggleGroupRole.ActiveToggles();
+            var toggle = activeToggles.Any() ? activeToggles.First() : null;
             var indexRole = Array.FindIndex(toggles, _ => _ == toggle);
             Role role = (Role)indexRole;
 
