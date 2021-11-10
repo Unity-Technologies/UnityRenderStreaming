@@ -143,7 +143,19 @@ namespace Unity.RenderStreaming.InputSystem
 
         public virtual void RegisterControlLayout(string json, string name = null, bool isOverride = false)
         {
-            if(isOverride)
+            if (name.Contains("XRInput"))
+            {
+                UnityEngine.Debug.LogWarning(json);
+            }
+            else {
+                UnityEngine.Debug.Log(json);
+            }
+
+            //var layout = InputControlLayout.FromJson(json);
+            //layout.type;
+            //InputSystem.Registercon
+
+            if (isOverride)
                 InputSystem.RegisterLayoutOverride(json, name);
             else
                 InputSystem.RegisterLayout(json, name);

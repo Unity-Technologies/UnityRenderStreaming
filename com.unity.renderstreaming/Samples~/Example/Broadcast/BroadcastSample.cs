@@ -6,6 +6,15 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] RenderStreaming renderStreaming;
 
+        private void Awake()
+        {
+            UnityEngine.InputSystem.InputSystem.RegisterLayout<UnityEngine.XR.ARSubsystems.HandheldARInputDevice>(
+                matches: new UnityEngine.InputSystem.Layouts.InputDeviceMatcher()
+                    .WithInterface(UnityEngine.InputSystem.XR.XRUtilities.InterfaceMatchAnyVersion)
+                    .WithProduct("(ARCore)")
+                );
+        }
+
         // Start is called before the first frame update
         void Start()
         {
