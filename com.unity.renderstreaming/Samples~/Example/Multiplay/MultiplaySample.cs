@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.Samples
             var hostPlayer = GameObject.Instantiate(prefabPlayer);
             var playerController = hostPlayer.GetComponent<PlayerController>();
             playerController.SetLabel(username);
-            var playerInput = hostPlayer.GetComponent<SimplePlayerInput>();
+            var playerInput = hostPlayer.GetComponent<InputReceiver>();
             playerInput.PerformPairingWithAllLocalDevices();
             playerController.CheckPairedDevices();
 

@@ -1,21 +1,30 @@
 using System;
 using System.Linq;
+using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 using UnityEngine.InputSystem.Users;
+using Unity.RenderStreaming.InputSystem;
 
-namespace Unity.RenderStreaming.InputSystem
+using Inputs = UnityEngine.InputSystem.InputSystem;
+
+namespace Unity.RenderStreaming
 {
-    using InputSystem = UnityEngine.InputSystem.InputSystem;
+    using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
 
     /// <summary>
     /// Represents a separate player in the game complete with a set of actions exclusive
     /// to the player and a set of paired device.
     /// It is the simple version of UnityEngine.InputSystem.PlayerInput that removing dependency of InputControlScheme.
     /// </summary>
-    public class SimplePlayerInput : MonoBehaviour
+    public class InputReceiver : InputChannelReceiverBase
     {
+        /// <summary>
+        ///
+        /// </summary>
+        public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
+
         /// <summary>
         /// 
         /// </summary>
@@ -97,6 +106,7 @@ namespace Unity.RenderStreaming.InputSystem
         protected virtual void OnEnable()
         {
             m_Enabled = true;
+            onDeviceChange += OnDeviceChange;
 
             //AssignPlayerIndex();
             InitializeActions();
@@ -110,6 +120,7 @@ namespace Unity.RenderStreaming.InputSystem
         protected virtual void OnDisable()
         {
             m_Enabled = false;
+            onDeviceChange -= OnDeviceChange;
 
             DeactivateInput();
             UnassignUserAndDevices();
@@ -186,7 +197,7 @@ namespace Unity.RenderStreaming.InputSystem
         /// </summary>
         public void PerformPairingWithAllLocalDevices()
         {
-            foreach (var device in InputSystem.devices.Where(_ => !_.remote))
+            foreach (var device in Inputs.devices.Where(_ => !_.remote))
             {
                 PerformPairingWithDevice(device);
             }
@@ -203,6 +214,43 @@ namespace Unity.RenderStreaming.InputSystem
             m_InputUser.UnpairDevice(device);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="track"></param>
+        public override void SetChannel(string connectionId, RTCDataChannel channel)
+        {
+            if (channel == null)
+            {
+                Dispose();
+            }
+            else
+            {
+                receiver = new Receiver(channel);
+                receiver.onDeviceChange += onDeviceChange;
+                receiverInput = new InputRemoting(receiver);
+                subscriberDisposer = receiverInput.Subscribe(receiverInput);
+                receiverInput.StartSending();
+            }
+            base.SetChannel(connectionId, channel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            Dispose();
+        }
+
+        protected virtual void Dispose()
+        {
+            receiverInput?.StopSending();
+            subscriberDisposer?.Dispose();
+            receiver?.Dispose();
+            receiver = null;
+        }
+
         [Tooltip("Input actions associated with the player.")]
         [SerializeField] internal InputActionAsset m_Actions;
         [SerializeField] internal PlayerInput.ActionEvent[] m_ActionEvents;
@@ -214,6 +262,10 @@ namespace Unity.RenderStreaming.InputSystem
         [NonSerialized] private bool m_Enabled;
         [NonSerialized] private bool m_ActionsInitialized;
         [NonSerialized] private InputUser m_InputUser;
+
+        [NonSerialized] private Receiver receiver;
+        [NonSerialized] private InputRemoting receiverInput;
+        [NonSerialized] private IDisposable subscriberDisposer;
 
         private void AssignUserAndDevices()
         {
@@ -317,6 +369,19 @@ namespace Unity.RenderStreaming.InputSystem
 
             m_CurrentActionMap = null;
             m_ActionsInitialized = false;
+        }
+
+        protected virtual void OnDeviceChange(InputDevice device, InputDeviceChange change)
+        {
+            switch (change)
+            {
+                case InputDeviceChange.Added:
+                    PerformPairingWithDevice(device);
+                    return;
+                case InputDeviceChange.Removed:
+                    UnpairDevices(device);
+                    return;
+            }
         }
     }
 }

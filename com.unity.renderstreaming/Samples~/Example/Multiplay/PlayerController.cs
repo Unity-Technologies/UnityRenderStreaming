@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Linq;
-using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -9,8 +8,7 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;
-        [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputSystemChannelReceiver receiver;
+        [SerializeField] InputReceiver playerInput;
         [SerializeField] TextMesh label;
         [SerializeField] GameObject captionForMobile;
         [SerializeField] GameObject captionForDesktop;
@@ -29,7 +27,7 @@ namespace Unity.RenderStreaming.Samples
 
         protected void Awake()
         {
-            receiver.onDeviceChange += OnDeviceChange;
+            playerInput.onDeviceChange += OnDeviceChange;
             initialPosition = transform.position;
         }
 

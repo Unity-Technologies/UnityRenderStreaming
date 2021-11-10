@@ -119,9 +119,9 @@ namespace Unity.RenderStreaming.InputSystem
         {
             if (InputSystem.ListLayouts().Count(_ => _ == layout) == 0)
             {
-                if (!_remoteLayouts.TryGetValue(layout, out string value))
+                if (!_remoteLayouts.TryGetValue(layout, out string json))
                     throw new InvalidOperationException();
-                base.RegisterControlLayout(layout, value);
+                base.RegisterControlLayout(json, layout);
                 _registeredRemoteLayout.Add(layout);
             }
             var device = base.AddDevice(layout, name, variants);

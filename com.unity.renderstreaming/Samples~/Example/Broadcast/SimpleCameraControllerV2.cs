@@ -74,8 +74,7 @@ namespace Unity.RenderStreaming.Samples
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation."), SerializeField]
         private bool invertY;
 
-        [SerializeField] SimplePlayerInput playerInput;
-        [SerializeField] InputSystemChannelReceiver receiver;
+        [SerializeField] InputReceiver playerInput;
         [SerializeField] UIController uiController;
 
         private readonly CameraState m_TargetCameraState = new CameraState();
@@ -87,7 +86,7 @@ namespace Unity.RenderStreaming.Samples
 
         protected void Awake()
         {
-            receiver.onDeviceChange += OnDeviceChange;
+            playerInput.onDeviceChange += OnDeviceChange;
             m_InitialCameraState.SetFromTransform(transform);
         }
 

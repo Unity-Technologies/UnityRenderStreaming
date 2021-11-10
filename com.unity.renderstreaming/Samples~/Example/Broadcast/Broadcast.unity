@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -846,7 +846,6 @@ GameObject:
   - component: {fileID: 725451151}
   - component: {fileID: 725451155}
   - component: {fileID: 725451156}
-  - component: {fileID: 725451152}
   - component: {fileID: 725451157}
   - component: {fileID: 725451153}
   m_Layer: 0
@@ -878,20 +877,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
---- !u!114 &725451152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725451149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f8d5d29a31dd084aaa8cb13851d7ef8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  local: 0
-  label: 
 --- !u!114 &725451153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -904,6 +889,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decb088abd7ec9747b6e9a1011c046b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  local: 0
+  label: 
   m_Actions: {fileID: -944628639613478452, guid: 73fc86559d71147b18ea5f2623204ede,
     type: 3}
   m_ActionEvents:
@@ -1096,7 +1083,6 @@ MonoBehaviour:
   rotationLerpTime: 0.01
   invertY: 0
   playerInput: {fileID: 725451153}
-  receiver: {fileID: 725451152}
   uiController: {fileID: 1215389824}
 --- !u!850595691 &774178818
 LightingSettings:
@@ -2270,7 +2256,7 @@ MonoBehaviour:
   streams:
   - {fileID: 725451155}
   - {fileID: 725451156}
-  - {fileID: 725451152}
+  - {fileID: 725451153}
 --- !u!4 &1623734775
 Transform:
   m_ObjectHideFlags: 0

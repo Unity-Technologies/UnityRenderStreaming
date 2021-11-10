@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 489449647258272014}
-  - component: {fileID: -3789206479390473380}
-  - component: {fileID: 5349509679622244369}
-  - component: {fileID: 2309994222390268704}
   - component: {fileID: 5258059423068454973}
+  - component: {fileID: 2309994222390268704}
+  - component: {fileID: 5349509679622244369}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -39,59 +38,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-3789206479390473380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489449647258272010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f8d5d29a31dd084aaa8cb13851d7ef8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  local: 0
-  label: 
---- !u!114 &5349509679622244369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489449647258272010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8db48a86c216984492c52d1586282ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3169816317629344907}
-  cameraPivot: {fileID: 1474066182485874884}
-  playerInput: {fileID: 5258059423068454973}
-  receiver: {fileID: -3789206479390473380}
-  label: {fileID: 6761489373774958269}
-  captionForMobile: {fileID: 5124456021770815322}
-  captionForDesktop: {fileID: 918811819929358957}
-  moveSpeed: 200
-  rotateSpeed: 100
-  jumpSpeed: 300
---- !u!114 &2309994222390268704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489449647258272010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11af0c7644036f84bb5d375f2560b63f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  local: 0
-  label: 
-  OnChangeLabel:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &5258059423068454973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decb088abd7ec9747b6e9a1011c046b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  local: 0
+  label: 
   m_Actions: {fileID: -944628639613478452, guid: 8c0e401c9f7f88d43b8650b1b972f45f,
     type: 3}
   m_ActionEvents:
@@ -187,6 +135,44 @@ MonoBehaviour:
     m_ActionId: e773b1f9-ce5b-4fa2-9c1f-d194202c43b7
     m_ActionName: Menu Controls/TogglePause[/Keyboard/p,/XInputControllerWindows/start]
   m_DefaultActionMap: Player Controls
+--- !u!114 &2309994222390268704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489449647258272010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11af0c7644036f84bb5d375f2560b63f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  local: 0
+  label: 
+  OnChangeLabel:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5349509679622244369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489449647258272010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8db48a86c216984492c52d1586282ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 3169816317629344907}
+  cameraPivot: {fileID: 1474066182485874884}
+  playerInput: {fileID: 5258059423068454973}
+  label: {fileID: 6761489373774958269}
+  captionForMobile: {fileID: 5124456021770815322}
+  captionForDesktop: {fileID: 918811819929358957}
+  moveSpeed: 200
+  rotateSpeed: 100
+  jumpSpeed: 300
 --- !u!1 &542197457373687705
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,7 +437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
-  depth: 0
+  depth: 16
   antiAliasing: 1
 --- !u!1 &1474066182485874884
 GameObject:

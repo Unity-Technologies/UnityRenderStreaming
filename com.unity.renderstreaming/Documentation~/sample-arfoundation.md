@@ -15,7 +15,7 @@ There are two scenes in this sample because the verified package version of AR F
 | Unity version | scene name    |
 | ------------- | ------------- |
 | Unity2019.4   | `ARFoundation2.1` |
-| Unity2020.2   | `ARFoundation4.0` |
+| Unity2020.3   | `ARFoundation4.1` |
 
 ## Additional packages
 
@@ -24,7 +24,7 @@ To use this sample, You need to install additional packages shown following tabl
 | Unity version | Platform | packages |
 | ------------- | -------- | -------- |
 | Unity2019.4   | iOS      | `ARFoundation 2.1` |
-| Unity2020.2   | iOS      | `ARFoundation 4.0` |
+| Unity2020.3   | iOS      | `ARFoundation 4.1` |
 
 In addition, depending on the platform, each `XR plugin` package must be installed.
 ​
@@ -32,8 +32,8 @@ In addition, depending on the platform, each `XR plugin` package must be install
 | ------------- | -------- | -------- |
 | Unity2019.4   | iOS      | `ARKit XR Plugin 2.1` |
 | Unity2019.4   | Android  | `ARCore XR Plugin 2.1` |
-| Unity2020.2   | iOS      | `ARKit XR Plugin 4.0` |
-| Unity2020.2   | Android  | `ARCore XR Plugin 4.0` |
+| Unity2020.3   | iOS      | `ARKit XR Plugin 4.1` |
+| Unity2020.3   | Android  | `ARCore XR Plugin 4.1` |
 
 > [!NOTE]
 > In this version, Android is not supported by this sample.
@@ -62,7 +62,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Open scene `ARFoundation2.1` or `ARFoundation4.0`, and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+2) Open scene `ARFoundation2.1` or `ARFoundation4.1`, and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
 
 3) Specify the build platform (Currently iOS supported only) and start building. Connect the device to the PC, and transfer the application to the device.
 

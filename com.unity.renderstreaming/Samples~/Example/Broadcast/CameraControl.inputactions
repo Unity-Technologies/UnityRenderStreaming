@@ -164,6 +164,39 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "2D Vector",
+                    "id": "e1df4888-ab33-4662-9a26-1427bb69166d",
+                    "path": "2DVector(mode=2)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "down",
+                    "id": "9e7a94a7-e078-4cb0-9129-d4201b3cc5af",
+                    "path": "<Gyroscope>/angularVelocity/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "1f55665d-2075-44a5-a2ee-7ce59d934d2c",
+                    "path": "<Gyroscope>/angularVelocity/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "afb2c858-f0b0-4573-9bd7-3530d86fc6c1",
                     "path": "<Keyboard>/u",
