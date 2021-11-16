@@ -88,7 +88,9 @@ export default class Peer extends EventTarget {
       return;
     }
 
-    this.pc.addTrack(track);
+    const sender = this.pc.addTrack(track);
+    const transceiver = this.pc.getTransceivers().find((t) => t.sender == sender);
+    transceiver.direction = "sendonly";
   }
 
   addTransceiver(connectionId, trackOrKind, init) {
