@@ -90,6 +90,7 @@ namespace Unity.RenderStreaming
         {
             sender.Track.Stop();
             sender.SetSender(connectionId, null);
+            RemoveTrack(connectionId, sender.Track);
         }
 
         /// <summary>
@@ -145,7 +146,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public virtual void RemoveTrack(string connectionId, MediaStreamTrack track)
+        protected virtual void RemoveTrack(string connectionId, MediaStreamTrack track)
         {
             m_handler.RemoveSenderTrack(connectionId, track);
         }
