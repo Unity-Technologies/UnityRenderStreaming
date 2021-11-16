@@ -62,17 +62,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public virtual RTCDataChannel CreateChannel(string connectionId, string name = null)
-        {
-            return m_handler.CreateChannel(connectionId, name);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)

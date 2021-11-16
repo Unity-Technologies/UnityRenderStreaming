@@ -212,6 +212,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(isStoppedStream1, Is.True);
             Assert.That(isStoppedStream2, Is.True);
 
+            Assert.That(container1.instance.GetSenders(connectionId), Is.Empty);
+            Assert.That(container1.instance.GetReceivers(connectionId), Is.Empty);
+            Assert.That(container2.instance.GetSenders(connectionId), Is.Empty);
+            Assert.That(container2.instance.GetReceivers(connectionId), Is.Empty);
+
             container1.Dispose();
             container2.Dispose();
         }
