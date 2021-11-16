@@ -449,7 +449,8 @@ namespace Unity.RenderStreaming
         IEnumerator OnNegotiationNeeded(string connectionId)
         {
             yield return new WaitWhile(() => !IsStable(connectionId));
-            SendOffer(connectionId);
+            if(ExistConnection(connectionId))
+                SendOffer(connectionId);
         }
 
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)

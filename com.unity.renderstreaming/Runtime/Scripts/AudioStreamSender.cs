@@ -38,6 +38,18 @@ namespace Unity.RenderStreaming
             {
                 _sampleRate = AudioSettings.outputSampleRate;
             }
+
+            OnStartedStream += _OnStartedStream;
+            OnStoppedStream += _OnStoppedStream;
+        }
+
+        void _OnStartedStream(string connectionId)
+        {
+        }
+
+        void _OnStoppedStream(string connectionId)
+        {
+            track = null;
         }
 
         protected override MediaStreamTrack CreateTrack()

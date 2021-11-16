@@ -79,7 +79,8 @@ namespace Unity.RenderStreaming
         {
             sender.Track.Stop();
             sender.SetSender(connectionId, null);
-            RemoveTrack(connectionId, sender.Track);
+            if(ExistConnection(connectionId))
+                RemoveTrack(connectionId, sender.Track);
         }
 
         /// <summary>
