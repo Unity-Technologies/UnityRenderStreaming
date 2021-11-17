@@ -45,14 +45,16 @@ export class Signaling extends EventTarget {
       const connections = data.connections;
       Logger.log('get connections:', connections);
 
-      const newSet = new Set([...connections]);
+      const newSet = new Set();
+      connections.forEach(e => newSet.add(e.connectionId));
       const deleteConnection = new Set([...currentConnections].filter(e => (!newSet.has(e))));
 
       deleteConnection.forEach(connection => {
-        this.dispatchEvent(new CustomEvent('disconnect', { detail: connection }));
+        this.dispatchEvent(new CustomEvent('disconnect', { detail: { connectionId: connection } }));
+        currentConnections.delete(connection);
       });
 
-      currentConnections = newSet;
+      newSet.forEach(e => currentConnections.add(e));
 
       await this.sleep(this.interval);
     }
