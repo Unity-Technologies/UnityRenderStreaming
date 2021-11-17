@@ -22,6 +22,8 @@ export default class PeerConnectionMock extends EventTarget {
     this.audioTracks = new Map();
     this.videoTracks = new Map();
     this.channels = new Map();
+    this.transceiverCount = 0;
+    this.transceivers = new Map();
   }
 
   get localDescription() {
@@ -57,6 +59,8 @@ export default class PeerConnectionMock extends EventTarget {
     this.audioTracks.clear();
     this.videoTracks.clear();
     this.channels.clear();
+    this.transceiverCount = 0;
+    this.transceivers.clear();
   }
 
   fireOnNegotiationNeeded() {
@@ -65,13 +69,20 @@ export default class PeerConnectionMock extends EventTarget {
     }
   }
 
+  getTransceivers() {
+    return Array.from(this.transceivers.values());
+  }
+
   addTrack(track) {
     if (track.kind == "audio") {
       this.audioTracks.set(track.id, track);
     } else {
       this.videoTracks.set(track.id, track);
     }
+    const transceiver = { sender: { direction: "sendrecv", track: track }, receiver: null };
+    this.transceivers.set(this.transceiverCount++, transceiver);
     this.fireOnNegotiationNeeded();
+    return transceiver.sender;
   }
 
   addTransceiver(trackOrKind) {
@@ -82,8 +93,10 @@ export default class PeerConnectionMock extends EventTarget {
       } else {
         this.videoTracks.set(track.id, track);
       }
+      const transceiver = { sender: { direction: "sendrecv", track: track }, receiver: null };
+      this.transceivers.set(this.transceiverCount++, transceiver);
       this.fireOnNegotiationNeeded();
-      return;
+      return transceiver;
     }
 
     if (trackOrKind.kind == "audio") {
@@ -91,7 +104,10 @@ export default class PeerConnectionMock extends EventTarget {
     } else {
       this.videoTracks.set(trackOrKind.id, trackOrKind);
     }
+    const transceiver = { sender: { direction: "sendrecv", track: trackOrKind }, receiver: null };
+    this.transceivers.set(this.transceiverCount++, transceiver);
     this.fireOnNegotiationNeeded();
+    return transceiver;
   }
 
   createDataChannel(label) {
