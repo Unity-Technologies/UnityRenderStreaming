@@ -326,7 +326,8 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
-            var pc = _mapConnectionIdAndPeer[connectionId];
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+                return;
             if (!IsStable(connectionId))
             {
                 if (!pc.waitingAnswer)
@@ -338,7 +339,6 @@ namespace Unity.RenderStreaming
                 _signaling.SendOffer(connectionId, pc.peer.LocalDescription);
                 return;
             }
-
             _startCoroutine(SendOfferCoroutine(connectionId, pc));
         }
 
