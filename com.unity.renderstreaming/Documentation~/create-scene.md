@@ -12,13 +12,20 @@ Select the **Main Camera** object in the Hierarchy window, and add the **Render 
 
 ![Create scene 02](images/create_scene_02.png)
 
+Update properties in the inspector.
+
+- **Signaling Type** : `WebSocketSignaling`
+- **Signaling URL** : `ws://localhost`
+
+![Create scene 03](images/change_properties_websocket.png)
+
 Next, we will add the **Broadcast** component. this component deliver the stream to multiple peers.
 
-![Create scene 03](images/create_scene_03.png)
+![Add broadcast component](images/add_broadcast_component.png)
 
 Assign the **Broadcast** component to the `Handler` property of the **Render Streaming** component.
 
-![Create scene 04](images/create_scene_04.png)
+![Assign broadcast to handler](images/assign_broadcast_to_handler.png)
 
 Add a **Camera Streamer** component. This component refers to the **Camera** and delivers it as a stream to other peers.
 
