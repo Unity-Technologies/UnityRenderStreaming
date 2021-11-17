@@ -449,14 +449,16 @@ namespace Unity.RenderStreaming
         IEnumerator OnNegotiationNeeded(string connectionId)
         {
             yield return new WaitWhile(() => !IsStable(connectionId));
-            if(ExistConnection(connectionId))
-                SendOffer(connectionId);
+            SendOffer(connectionId);
         }
 
         IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
         {
             // waiting other setLocalDescription process
             yield return new WaitWhile(() => !IsStable(connectionId));
+
+            if (!ExistConnection(connectionId))
+                yield break;
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
                 $"{pc} negotiationneeded always fires in stable state");
