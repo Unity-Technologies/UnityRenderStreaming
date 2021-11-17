@@ -83,20 +83,31 @@ export default class Peer extends EventTarget {
     }
   }
 
-  addTrack(connectionId, track) {
+  getTransceivers(connectionId) {
     if (this.connectionId != connectionId) {
-      return;
+      return null;
     }
 
-    this.pc.addTrack(track);
+    return this.pc.getTransceivers();
+  }
+
+  addTrack(connectionId, track) {
+    if (this.connectionId != connectionId) {
+      return null;
+    }
+
+    const sender = this.pc.addTrack(track);
+    const transceiver = this.pc.getTransceivers().find((t) => t.sender == sender);
+    transceiver.direction = "sendonly";
+    return sender;
   }
 
   addTransceiver(connectionId, trackOrKind, init) {
     if (this.connectionId != connectionId) {
-      return;
+      return null;
     }
 
-    this.pc.addTransceiver(trackOrKind, init);
+    return this.pc.addTransceiver(trackOrKind, init);
   }
 
   createDataChannel(connectionId, label) {

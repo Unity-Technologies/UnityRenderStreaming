@@ -28,6 +28,16 @@ describe(`peer connection test`, () => {
     expect(peer.pc).toBeNull();
   });
 
+  test(`transceiver direction is sendonly if using addtrack`, () => {
+    const peer = new Peer(connectionId, true);
+    expect(peer).not.toBeNull();
+
+    const track = { id: getUniqueId(), kind: "audio" };
+    const sender = peer.addTrack(connectionId, track);
+    const transceiver = peer.getTransceivers(connectionId).find(t => t.sender == sender);
+    expect(transceiver.direction).toBe("sendonly");
+  });
+
   test(`fire trackevent when addtrack`, async () => {
     let trackEvent;
     const peer = new Peer(connectionId, true);
