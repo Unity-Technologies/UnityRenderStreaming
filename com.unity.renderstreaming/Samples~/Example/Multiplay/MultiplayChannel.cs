@@ -19,10 +19,15 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
+    public class ChangeLabelEvent : UnityEvent<string> {};
+
+    /// <summary>
+    ///
+    /// </summary>
     public class MultiplayChannel : DataChannelBase
     {
-        public UnityEvent<string> OnChangeLabel;
-
+        public ChangeLabelEvent OnChangeLabel;
 
         protected override void OnMessage(byte[] bytes)
         {
@@ -38,7 +43,7 @@ namespace Unity.RenderStreaming
 
         public void ChangeLabel(string text)
         {
-            var msg = new Message()
+            var msg = new Message
             {
                 type = ActionType.ChangeLabel,
                 argument = text

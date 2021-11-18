@@ -60,6 +60,8 @@ namespace Unity.RenderStreaming.Samples
             var multiplayChannel = newObj.GetComponentInChildren<MultiplayChannel>();
             var playerController = newObj.GetComponentInChildren<PlayerController>();
 
+            if (multiplayChannel.OnChangeLabel == null)
+                multiplayChannel.OnChangeLabel = new ChangeLabelEvent();
             multiplayChannel.OnChangeLabel.AddListener(playerController.SetLabel);
 
             AddSender(data.connectionId, sender);
