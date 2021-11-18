@@ -6,6 +6,7 @@ import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep, serverExeName } from "./testutils";
 
 const portNumber = 8081;
+jest.setTimeout(10000);
 
 describe.each([
   { mode: "mock" },
