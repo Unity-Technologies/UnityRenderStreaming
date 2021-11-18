@@ -9,12 +9,19 @@ import {
 
 import { LocalInputManager } from "./inputremoting.js";
 import { GamepadHandler } from "./gamepadhandler.js";
+import { PointerCorrector } from "./pointercorrect.js";
 
 export class Sender extends LocalInputManager {
   constructor(elem) {
     super();
     this._devices = [];
-    this.elem = elem;
+    this._elem = elem;
+    this._corrector = new PointerCorrector(
+      this._elem.videoWidth,
+      this._elem.videoHeight,
+      this._elem.getBoundingClientRect()
+      );
+    this._elem.addEventListener('resize', this._onResizeEvent.bind(this), false);
   }
 
   addMouse() {
@@ -30,11 +37,11 @@ export class Sender extends LocalInputManager {
     this.mouse = new Mouse("Mouse", "Mouse", 1, "Default", descriptionMouse);
     this._devices.push(this.mouse);
 
-    this.elem.addEventListener('click', this._onMouseEvent.bind(this), false);
-    this.elem.addEventListener('mousedown', this._onMouseEvent.bind(this), false);
-    this.elem.addEventListener('mouseup', this._onMouseEvent.bind(this), false);
-    this.elem.addEventListener('mousemove', this._onMouseEvent.bind(this), false);
-    this.elem.addEventListener('wheel', this._onWheelEvent.bind(this), false);
+    this._elem.addEventListener('click', this._onMouseEvent.bind(this), false);
+    this._elem.addEventListener('mousedown', this._onMouseEvent.bind(this), false);
+    this._elem.addEventListener('mouseup', this._onMouseEvent.bind(this), false);
+    this._elem.addEventListener('mousemove', this._onMouseEvent.bind(this), false);
+    this._elem.addEventListener('wheel', this._onWheelEvent.bind(this), false);
   }
 
   addKeyboard() {
@@ -86,11 +93,11 @@ export class Sender extends LocalInputManager {
     this.touchscreen = new Touchscreen("Touchscreen", "Touchscreen", 4, "Default", descriptionTouch);
     this._devices.push(this.touchscreen);
 
-    this.elem.addEventListener('touchend', this._onTouchEvent.bind(this), false);
-    this.elem.addEventListener('touchstart', this._onTouchEvent.bind(this), false);
-    this.elem.addEventListener('touchcancel', this._onTouchEvent.bind(this), false);
-    this.elem.addEventListener('touchmove', this._onTouchEvent.bind(this), false);
-    this.elem.addEventListener('click', this._onTouchEvent.bind(this), false);
+    this._elem.addEventListener('touchend', this._onTouchEvent.bind(this), false);
+    this._elem.addEventListener('touchstart', this._onTouchEvent.bind(this), false);
+    this._elem.addEventListener('touchcancel', this._onTouchEvent.bind(this), false);
+    this._elem.addEventListener('touchmove', this._onTouchEvent.bind(this), false);
+    this._elem.addEventListener('click', this._onTouchEvent.bind(this), false);
   }
 
   /**
@@ -100,8 +107,16 @@ export class Sender extends LocalInputManager {
     return this._devices;
   }
 
+  _onResizeEvent() {
+    this._corrector.reset(
+      this._elem.videoWidth,
+      this._elem.videoHeight,
+      this._elem.getBoundingClientRect()
+    );
+  }
   _onMouseEvent(event) {
     this.mouse.queueEvent(event);
+    this.mouse.currentState.position = this._corrector.map(this.mouse.currentState.position);
     this._queueStateEvent(this.mouse.currentState, this.mouse);
   }
   _onWheelEvent(event) {
@@ -125,8 +140,9 @@ export class Sender extends LocalInputManager {
   }
   _onTouchEvent(event) {
     this.touchscreen.queueEvent(event, this.timeSinceStartup);
-    for(let touch of this.touchscreen.currentState.touchData)
+    for(let touch of this.touchscreen.currentState.touchData) {
       this._queueStateEvent(touch, this.touchscreen);
+    }
   }
   _onGamepadEvent(event) {
     switch(event.type) {
