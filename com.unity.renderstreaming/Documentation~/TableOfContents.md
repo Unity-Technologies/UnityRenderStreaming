@@ -15,7 +15,7 @@
     * [Video Streaming](video-streaming.md)
     * [Audio Streaming](audio-streaming.md)
     * [Data Streaming](data-streaming.md)
-* [Use Input System](use-inputsystem.md)
+* [Using with Input System](use-inputsystem.md)
 * [Deploy to Furioos](deploy-to-furioos.md)
 * [Samples](samples.md)
     * [Receiver](sample-receiver.md)

@@ -10,7 +10,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ### For Unity 2021.2
 
-1. Check Input System **version 1.1** installed.
+1. Open **Package Manager** window and check Input System **version 1.1** installed.
 
 ![Input System version 1.1](images/inputsystem-version.png)
 
@@ -18,7 +18,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 
-3. Move **Input System Package** in **Build Settings** window, and set `Ignore Focus` for **Background Behavior**.
+3. Move **Input System Package** in **Project Settings** window, and set `Ignore Focus` for **Background Behavior**.
 
 ![Set Ignore Focus for Background Behavior](images/set_background_behavior.png)
 
@@ -26,10 +26,10 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Set Play Mode Input Behavior](images/set_playmode_input_behavior.png)
 
-### For Unity 2020.3 
+### For Unity 2020.3 and 2019.4
 
-1. Check Input System version 1.0 installed.
-2. Open **Build Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
+1. Check Input System version **1.0** installed.
+2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 
@@ -37,6 +37,6 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Select EventSystem object](images/select_eventsystem_object.png)
 
-4. Move **Inspector** window, and replace the `EventSystem` component with a `CustomEventSystem` component.
+4. Move **Inspector** window, and replace the `EventSystem` component with a `CustomEventSystem` component. `CustomEventSystem` is contained in the package sample. For import instruction, refer to [this page](samples.md).
 
-![Replace to CustomEventSystem component](images/replace_to_customeventsystem_component.png)
+![Add CustomEventSystem component](images/add_customeventsystem_component.png)
