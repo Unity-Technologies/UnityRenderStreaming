@@ -212,6 +212,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(isStoppedStream1, Is.True);
             Assert.That(isStoppedStream2, Is.True);
 
+            Assert.That(container1.test.component.ExistConnection(connectionId), Is.False);
+            Assert.That(container2.test.component.ExistConnection(connectionId), Is.False);
+
+
             container1.Dispose();
             container2.Dispose();
         }

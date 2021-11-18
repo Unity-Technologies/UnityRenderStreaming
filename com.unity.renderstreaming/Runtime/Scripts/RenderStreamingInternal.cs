@@ -326,7 +326,8 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendOffer(string connectionId)
         {
-            var pc = _mapConnectionIdAndPeer[connectionId];
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+                return;
             if (!IsStable(connectionId))
             {
                 if (!pc.waitingAnswer)
@@ -338,7 +339,6 @@ namespace Unity.RenderStreaming
                 _signaling.SendOffer(connectionId, pc.peer.LocalDescription);
                 return;
             }
-
             _startCoroutine(SendOfferCoroutine(connectionId, pc));
         }
 
@@ -456,6 +456,9 @@ namespace Unity.RenderStreaming
         {
             // waiting other setLocalDescription process
             yield return new WaitWhile(() => !IsStable(connectionId));
+
+            if (!ExistConnection(connectionId))
+                yield break;
 
             Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
                 $"{pc} negotiationneeded always fires in stable state");

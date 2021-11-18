@@ -40,6 +40,9 @@ namespace Unity.RenderStreaming.Samples
             RemoveSender(connectionId, sender);
             RemoveChannel(connectionId, inputChannel);
             RemoveChannel(connectionId, multiplayChannel);
+
+            if (ExistConnection(connectionId))
+                DeleteConnection(connectionId);
         }
 
         public void OnOffer(SignalingEventData data)

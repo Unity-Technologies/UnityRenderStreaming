@@ -62,17 +62,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public virtual RTCDataChannel CreateChannel(string connectionId, string name = null)
-        {
-            return m_handler.CreateChannel(connectionId, name);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)
@@ -90,6 +79,8 @@ namespace Unity.RenderStreaming
         {
             sender.Track.Stop();
             sender.SetSender(connectionId, null);
+            if(ExistConnection(connectionId))
+                RemoveTrack(connectionId, sender.Track);
         }
 
         /// <summary>
@@ -145,7 +136,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public virtual void RemoveTrack(string connectionId, MediaStreamTrack track)
+        protected virtual void RemoveTrack(string connectionId, MediaStreamTrack track)
         {
             m_handler.RemoveSenderTrack(connectionId, track);
         }
