@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import * as Path from 'path';
 import { setup, teardown } from 'jest-dev-server';
 import { Signaling, WebSocketSignaling } from "../public/js/signaling";
@@ -5,6 +6,7 @@ import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep, serverExeName } from "./testutils";
 
 const portNumber = 8081;
+jest.setTimeout(10000);
 
 describe.each([
   { mode: "mock" },
@@ -63,6 +65,7 @@ describe.each([
   });
 
   test(`onConnect using ${mode}`, async () => {
+    const signaling1Spy = jest.spyOn(signaling1, 'dispatchEvent');
     let connectRes;
     let disconnectRes;
     signaling1.addEventListener('connect', (e) => connectRes = e.detail);
@@ -76,6 +79,11 @@ describe.each([
     await signaling1.deleteConnection(connectionId1);
     await waitFor(() => disconnectRes != null);
     expect(disconnectRes.connectionId).toBe(connectionId1);
+
+    const disconnectCalledCount = signaling1Spy.mock.calls.map(x => x[0].type).filter(x => x == "disconnect").length;
+    expect(disconnectCalledCount).toBe(1);
+
+    signaling1Spy.mockRestore();
   });
 
   test(`onOffer using ${mode}`, async () => {
