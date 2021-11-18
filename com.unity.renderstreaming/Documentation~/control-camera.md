@@ -70,15 +70,13 @@ public class PlayerController : MonoBehaviour
 }
 ```
 
-Once you have copied the script and saved the file, assign `PlayerController.Look` to the **SimplePlayerInput** component's **Look** event.
+Once you have copied the script and saved the file, assign `PlayerController.Look` to the **InputReceiver** component's **Look** event.
 
 ![Control camera 01](images/assign_event_to_inputreceiver.png)
 
 ## Checking on browsers
 
-The mouse operation in the browser should be reflected in the rotation of the camera.
-
-![Control camera 01](images/control_camera_11.png)
+The mouse operation in the browser should be reflected in the rotation of the camera. If the camera is not moved, please check [the settings](use-inputsystem.md).
 
 ## Next step
 
