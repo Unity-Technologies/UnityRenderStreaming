@@ -1,5 +1,9 @@
-export class PointerCorrector {
+export const LetterBoxType = {
+  Vertical: 0,
+  Horizontal: 1
+};
 
+export class PointerCorrector {
   /**
    * @param {Number} videoWidth 
    * @param {Number} videoHeight
@@ -23,7 +27,11 @@ export class PointerCorrector {
     // (2) translate Unity coordinate system (reverse y-axis)
     _position[1] = this._rect.height - _position[1];
 
-    // (3) mapping element rectangle to video rectangle
+    // (3) add offset of letterbox
+    _position[0] -= this._offsetX;
+    _position[1] -= this._offsetY;
+
+    // (4) mapping element rectangle to video rectangle
     _position[0] = _position[0] / this._rect.width * this._videoWidth;
     _position[1] = _position[1] / this._rect.height * this._videoHeight;
 
@@ -66,7 +74,31 @@ export class PointerCorrector {
     this._reset();
   }
 
+  get letterBoxType() {
+    const videoRatio = this._videoHeight / this._videoWidth;
+    const rectRatio = this._rect.height / this._rect.width;
+    return videoRatio > rectRatio ? LetterBoxType.Vertical : LetterBoxType.Horizontal;
+  }
+
+  get letterBoxSize() {
+    switch(this.letterBoxType) {
+      case LetterBoxType.Horizontal:
+        const ratioWidth = this._rect.width / this._videoWidth;
+        const height = this._videoHeight * ratioWidth;
+        return (this._rect.height - height) * 0.5;
+      case LetterBoxType.Vertical:
+        const ratioHeight = this._rect.height / this._videoHeight;
+        const width = this._videoWidth * ratioHeight;
+        return (this._rect.width - width) * 0.5;
+    }
+  }
+
   _reset() {
     this._videoRatio = this._videoHeight / this.videoWidth;
+    this._rectRatio = this._rect.height / this.width;
+    this._letterBox = this._videoRatio > this._rectRatio ? LetterBoxType.Vertical : LetterBoxType.Horizontal;
+
+    this._offsetX = this._letterBox == LetterBoxType.Vertical ? this.letterBoxSize : 0;
+    this._offsetY = this._letterBox == LetterBoxType.Horizontal ? this.letterBoxSize : 0;
   }
 }  
