@@ -1,34 +1,48 @@
 # Creating The Scene
 
-This tutorial explains how to edit an empty scene in Unity and display the camera image in the browser.
+This tutorial explains how to edit an empty scene in Unity Editor and display the image rendered from the camera to the browser.
 
 ## Setting component
 
-Create a new empty scene. Select **File -> New Scene** from the menu to open the dialog and select **Basic (Built-in)**.
+If Unity version is 2020 or later, Create a new empty scene. Select **File -> New Scene** from the menu to open the dialog and select **Basic (Built-in)**. 
 
-![Create scene 01](images/create_scene_01.png)
+> [!NOTE]
+> This dialog is not opened if you are using Unity 2019.
+
+![Create new scene](images/create_new_scene.png)
 
 Select the **Main Camera** object in the Hierarchy window, and add the **Render Streaming** component in the Inspector window.
 
-![Create scene 02](images/create_scene_02.png)
+![Add RenderStreaming component](images/add_renderstreaming_component.png)
 
-Next, we will add the **Broadcast** component. this component deliver the stream to multiple peers.
+Update properties in the inspector.
 
-![Create scene 03](images/create_scene_03.png)
+- **Signaling Type** : `WebSocketSignaling`
+- **Signaling URL** : `ws://localhost`
+
+![Create scene 03](images/change_properties_websocket.png)
+
+Next, we will add the **Broadcast** component to the **Main Camera** object. this component deliver the stream to multiple peers.
+
+![Add Broadcast component](images/add_broadcast_component.png)
 
 Assign the **Broadcast** component to the `Handler` property of the **Render Streaming** component.
 
-![Create scene 04](images/create_scene_04.png)
+![Assign Broadcast component to handler](images/assign_broadcast_to_handler.png)
 
-Add a **Camera Streamer** component. This component refers to the **Camera** and delivers it as a stream to other peers.
+Add a **Camera Stream Sender** component to the **Main Camera** object. This component refers to the Camera and delivers it as a stream to other peers.
 
-Assign the **Camera Streamer** component to the **Broadcast** component property.
+![Add CameraStreamSender component](images/add_camerastreamsender_component.png)
+
+Assign the **Camera Stream Sender** component to the **Broadcast** component property.
+
+![Assign CameraStreamSender component to streams](images/assign_camerastreamsender_to_streams.png)
 
 ### Check on browser
 
-Open the **VideoPlayer Sample** page, and you should see the video from the Unity camera appear in your browser.
+Open the **Receiver Sample** page, and you should see the video from the Unity camera appear in your browser.
 
-![Create scene 05](images/create_scene_05.png)
+![Receiver Sample on the browser](images/receiver_sample_on_browser.png)
 
 ## Next Step
 

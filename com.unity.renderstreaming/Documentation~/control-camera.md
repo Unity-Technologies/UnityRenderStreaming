@@ -6,7 +6,11 @@ To control the camera on the remote PC,  we need to link the input events on web
 
 Open the Unity scene which created in [the previous page](create-camera.md), and select **Main Camera** in the Hierarchy window. Add the **Input Receiver** component in the Inspector window.
 
-![Control camera 01](images/control_camera_01.png)
+![Add InputReceiver component](images/add_inputreceiver_component.png)
+
+The initial condition of the inspector of **Input Receiver** is below.
+
+![Add InputReceiver component](images/inputreceiver_inspector.png)
 
 ## Setting Input Actions
 
@@ -42,13 +46,13 @@ The result will look like this. Note that the last step is to press the **Save A
 
 ## Setting `InputReceiver` component
 
-Drag the **Control** asset in the project window to the **Input Actions** property of the `InputReceiver` component.
+Drag the **Control** asset to the **Input Actions** property of the `InputReceiver` component.
 
-![Control camera 01](images/control_camera_07.png)
+![Control camera 01](images/assign_inputactions_to_inputreceiver.png)
 
-Add the code to control the rotation of the camera. Right-click on the project window and select **Create > C#** Script to create the asset. Change the asset name to `PlayerController`.
+Add the code to control the rotation of the camera. Right-click on the project window and select **Create > C#** Script to create the asset. Change the asset name to `PlayerControler`.
 
-![Control camera 01](images/control_camera_08.png)
+![Create Player Controller component](images/create_playercontroler_component.png)
 
 The contents of the script will be as follows.
 
@@ -61,24 +65,18 @@ public class PlayerController : MonoBehaviour
     public void Look(InputAction.CallbackContext value)
     {
         Vector2 input = value.ReadValue<Vector2>();
-        transform.eulerAngles = new Vector3(-input.y, input.x, 0);
+        transform.eulerAngles += new Vector3(-input.y, input.x, 0);
     }
 }
 ```
 
-Once you have copied the script and saved the file, add the `PlayerController` component to the **Main Camera** object in the Hierarchy window.
+Once you have copied the script and saved the file, assign `PlayerController.Look` to the **InputReceiver** component's **Look** event.
 
-![Control camera 01](images/control_camera_09.png)
-
-Assign `PlayerController.Look` to the **SimplePlayerInput** component's **Look** event.
-
-![Control camera 01](images/control_camera_10.png)
+![Control camera 01](images/assign_event_to_inputreceiver.png)
 
 ## Checking on browsers
 
-The mouse operation in the browser should be reflected in the rotation of the camera.
-
-![Control camera 01](images/control_camera_11.png)
+The mouse operation in the browser should be reflected in the rotation of the camera. If the camera is not moved, please check [the settings](use-inputsystem.md).
 
 ## Next step
 
