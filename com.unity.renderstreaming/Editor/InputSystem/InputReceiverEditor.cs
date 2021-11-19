@@ -10,7 +10,7 @@ using UnityEngine.InputSystem.Utilities;
 namespace Unity.RenderStreaming.InputSystem.Editor
 {
     [CustomEditor(typeof(InputReceiver))]
-    internal class SimplePlayerInputEditor : UnityEditor.Editor
+    internal class InputReceiverEditor : UnityEditor.Editor
     {
         public void OnEnable()
         {
@@ -96,6 +96,46 @@ namespace Unity.RenderStreaming.InputSystem.Editor
 
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
+
+
+            // Debug UI.
+            if (EditorApplication.isPlaying)
+                DoDebugUI();
+        }
+
+        private void DoDebugUI()
+        {
+            var playerInput = (InputReceiver)target;
+            if (!playerInput.user.valid)
+                return;
+
+            ////TODO: show actions when they happen
+
+            var user = playerInput.user.index.ToString();
+            //var controlScheme = playerInput.user.controlScheme?.name;
+            var devices = playerInput.user.pairedDevices.Select(_ => _.ToString()).OrderBy(x => x).ToArray();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField(m_DebugText, EditorStyles.boldLabel);
+            ++EditorGUI.indentLevel;
+            EditorGUILayout.LabelField("User", $"#{user}");
+            //EditorGUILayout.LabelField("Control Scheme", controlScheme);
+            m_DevicesGroupUnfolded = EditorGUILayout.Foldout(
+                m_DevicesGroupUnfolded, m_DevicesGroupText, toggleOnLabelClick: true);
+
+            if (m_DevicesGroupUnfolded)
+            {
+                using (new EditorGUI.IndentLevelScope())
+                {
+                    foreach (var device in devices)
+                    {
+                        EditorGUILayout.LabelField(device.ToString());
+                        // todo: InputDeviceDebuggerWindow is an internal class
+                        // InputDeviceDebuggerWindow.CreateOrShowExisting(device);
+                    }
+                }
+            }
+            --EditorGUI.indentLevel;
         }
 
         private void OnActionAssetChange()
@@ -185,6 +225,7 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         }
 
         [SerializeField] private bool m_EventsGroupUnfolded;
+        [SerializeField] private bool m_DevicesGroupUnfolded;
         [SerializeField] private bool[] m_ActionMapEventsUnfolded;
 
         [NonSerialized]
@@ -193,6 +234,12 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         [NonSerialized]
         private readonly GUIContent m_DefaultActionMapText =
             EditorGUIUtility.TrTextContent("Default Map", "Action map to enable by default. If not set, no actions will be enabled by default.");
+
+        [NonSerialized]
+        private readonly GUIContent m_DebugText = EditorGUIUtility.TrTextContent("Debug");
+        [NonSerialized]
+        private readonly GUIContent m_DevicesGroupText =
+            EditorGUIUtility.TrTextContent("Paired Devices", "InputDevices paired by the PlayerInput component");
 
         [NonSerialized] private GUIContent[] m_ActionNames;
         [NonSerialized] private GUIContent[] m_ActionMapNames;
