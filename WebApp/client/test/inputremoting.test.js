@@ -22,15 +22,18 @@ import {
   Observer
 } from "../public/js/sender";
 
+import {DOMRect} from "./domrect.js";
+
 describe(`InputRemoting`, () => {
   let sender = null;
   let inputRemoting = null;
   let observer = null;
   beforeEach(async () => {
-      sender = new Sender(document);
-      inputRemoting = new InputRemoting(sender);
-      let dc = null;
-      observer = new Observer(dc);
+    document.getBoundingClientRect = function(){ return new DOMRect(0,0,0,0); };
+    sender = new Sender(document);
+    inputRemoting = new InputRemoting(sender);
+    let dc = null;
+    observer = new Observer(dc);
   });
   test('startSending', () => {
     expect.assertions(0);
