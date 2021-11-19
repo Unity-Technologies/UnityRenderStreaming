@@ -82,15 +82,18 @@ export class PointerCorrector {
 
   get letterBoxSize() {
     switch(this.letterBoxType) {
-      case LetterBoxType.Horizontal:
+      case LetterBoxType.Horizontal: {
         const ratioWidth = this._rect.width / this._videoWidth;
         const height = this._videoHeight * ratioWidth;
         return (this._rect.height - height) * 0.5;
-      case LetterBoxType.Vertical:
+      }
+      case LetterBoxType.Vertical: {
         const ratioHeight = this._rect.height / this._videoHeight;
         const width = this._videoWidth * ratioHeight;
         return (this._rect.width - width) * 0.5;
+      }
     }
+    throw 'invalid status';
   }
 
   /**
