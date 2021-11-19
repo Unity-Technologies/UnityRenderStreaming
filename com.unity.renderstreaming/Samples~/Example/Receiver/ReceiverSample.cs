@@ -27,7 +27,8 @@ namespace Unity.RenderStreaming.Samples
             stopButton.onClick.AddListener(OnStop);
             if(connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
-            receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+
+            receiveVideoViewer.OnUpdateReceiveTexture += OnUpdateReceiveTexture;
             receiveAudioViewer.SetSource(remoteAudioSource);
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
@@ -43,6 +44,34 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling);
+        }
+
+        void OnUpdateReceiveTexture(Texture texture)
+        {
+            remoteVideoImage.texture = texture;
+
+            // correct pointer position
+            InputSender inputSender = GetComponent<InputSender>();
+            Vector3[] corners = new Vector3[4];
+            remoteVideoImage.rectTransform.GetWorldCorners(corners);
+            Camera camera = remoteVideoImage.canvas.worldCamera;
+            var corner0 = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+            var corner2 = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+
+            var rect = new Rect(
+                corner0.x,
+                corner0.y,
+                corner2.x - corner0.x,
+                corner2.y - corner0.y
+                );
+
+            // todo(kazuki)::
+            // This texture size is determined receiver side, so the
+            // correction process is not work correctly.
+            // We should fix that the sender size determine the size.
+            var size = new Vector2Int(texture.width, texture.height);
+            inputSender.SetCorrectPointerPositionInfo(size, rect);
+            inputSender.EnableCorrectPointerPosition(true);
         }
 
         private void OnStart()

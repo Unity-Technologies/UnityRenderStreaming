@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Unity.WebRTC;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
@@ -51,10 +53,58 @@ namespace Unity.RenderStreaming.InputSystem
             }
         }
 
+        public bool EnableCorrectPointerPosition { set; get; }
+
+        public Vector2Int FrameSize { set; get; }
+
+        public Rect Region { set; get; }
+
+
+        Vector2 Translate(ref Vector2 position)
+        {
+            return Rect.PointToNormalized(Region, position) * FrameSize;
+        }
+
+        unsafe void PointerMap(StateEvent* data, InputDevice device)
+        {
+            switch (device)
+            {
+                case Mouse mouse:
+                    MouseState* mouseState = (MouseState*)data->state;
+                    mouseState->position = Translate(ref mouseState->position);
+                    break;
+            }
+        }
+
+        unsafe void OnPointerEvent(ref InputEventPtr ptr, InputDevice device)
+        {
+            // Allocate memory and copy InputEventPtr
+            InputEventPtr dst = (InputEventPtr)
+                UnsafeUtility.Malloc(ptr.sizeInBytes, 4, Collections.Allocator.Temp);
+            UnsafeUtility.MemCpy(dst, ptr, ptr.sizeInBytes);
+
+            // Mapping 
+            PointerMap((StateEvent*)dst.data, device);
+
+            onEvent?.Invoke(dst, device);
+
+            // Free memory
+            UnsafeUtility.Free(dst, Collections.Allocator.Temp);
+        }
+
         private void OnEvent(InputEventPtr ptr, InputDevice device)
         {
-            onEvent?.Invoke(ptr, device);
+            // mapping sender coordinate system to receiver one.
+            if (EnableCorrectPointerPosition && device is Pointer && ptr.IsA<StateEvent>())
+            {
+                OnPointerEvent(ref ptr, device);
+            }
+            else
+            {
+                onEvent?.Invoke(ptr, device);
+            }
         }
+
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
             onDeviceChange?.Invoke(device, change);

@@ -1,5 +1,6 @@
 using System;
 using Unity.WebRTC;
+using UnityEngine;
 using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming
@@ -32,6 +33,17 @@ namespace Unity.RenderStreaming
                 channel.OnClose += OnClose;
             }
             base.SetChannel(connectionId, channel);
+        }
+
+        public void SetCorrectPointerPositionInfo(Vector2Int frameSize, Rect region)
+        {
+            sender.FrameSize = frameSize;
+            sender.Region = region;
+        }
+
+        public void EnableCorrectPointerPosition(bool enabled)
+        {
+            sender.EnableCorrectPointerPosition = enabled;
         }
 
         void OnOpen()
