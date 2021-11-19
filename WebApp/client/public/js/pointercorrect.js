@@ -28,12 +28,12 @@ export class PointerCorrector {
     _position[1] = this._rect.height - _position[1];
 
     // (3) add offset of letterbox
-    _position[0] -= this._offsetX;
-    _position[1] -= this._offsetY;
+    _position[0] -= this._contentRect.x;
+    _position[1] -= this._contentRect.y;
 
     // (4) mapping element rectangle to video rectangle
-    _position[0] = _position[0] / this._rect.width * this._videoWidth;
-    _position[1] = _position[1] / this._rect.height * this._videoHeight;
+    _position[0] = _position[0] / this._contentRect.width * this._videoWidth;
+    _position[1] = _position[1] / this._contentRect.height * this._videoHeight;
 
     return _position;
   }
@@ -93,12 +93,24 @@ export class PointerCorrector {
     }
   }
 
-  _reset() {
-    this._videoRatio = this._videoHeight / this.videoWidth;
-    this._rectRatio = this._rect.height / this.width;
-    this._letterBox = this._videoRatio > this._rectRatio ? LetterBoxType.Vertical : LetterBoxType.Horizontal;
+  /**
+   * Returns rectangle for displaying video with the origin at the left-top of the element.
+   * Not considered applying CSS like `object-fit`.
+   * @returns {Object} 
+   */  
+  get contentRect() {
+    const letterBoxType = this.letterBoxType;
+    const letterBoxSize = this.letterBoxSize;
 
-    this._offsetX = this._letterBox == LetterBoxType.Vertical ? this.letterBoxSize : 0;
-    this._offsetY = this._letterBox == LetterBoxType.Horizontal ? this.letterBoxSize : 0;
+    const x = letterBoxType == LetterBoxType.Vertical ? letterBoxSize : 0;
+    const y = letterBoxType == LetterBoxType.Horizontal ? letterBoxSize : 0;
+    const width = letterBoxType == LetterBoxType.Vertical ? this._rect.width - letterBoxSize * 2 : this._rect.width;
+    const height = letterBoxType == LetterBoxType.Horizontal ? this._rect.height - letterBoxSize * 2 : this._rect.height;
+
+    return {x: x, y: y, width: width, height: height};
+  }
+
+  _reset() {
+    this._contentRect = this.contentRect;
   }
 }  

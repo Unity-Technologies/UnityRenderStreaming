@@ -13,6 +13,19 @@ describe(`PointerCorrector.map`, () => {
     corrector.reset(100, 50, rect);
     expect(corrector.letterBoxType).toBe(LetterBoxType.Horizontal);
   });
+  test('letterboxSize', () => {
+    const rect = new DOMRect(0, 0, 100, 100);
+    let corrector = new PointerCorrector(50, 100, rect);
+    expect(corrector.letterBoxSize).toBe(25);
+  });
+  test('contentRect', () => {
+    const rect = new DOMRect(0, 0, 100, 100);
+    let corrector = new PointerCorrector(50, 100, rect);
+    expect(corrector.contentRect.x).toBe(25);
+    expect(corrector.contentRect.y).toBe(0);
+    expect(corrector.contentRect.width).toBe(50);
+    expect(corrector.contentRect.height).toBe(100);
+  });
   test('mapping', () => {
     const rect = new DOMRect(10, 10, 200, 200);
     const videoWidth = 100;
