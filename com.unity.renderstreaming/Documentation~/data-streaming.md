@@ -27,31 +27,8 @@ This component receives input events from Unity.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| **Local** | Channel is local or remote | `False` |
-| **Label** | Channel label | Empty |
-
-## `DataSender` component
-
-This component sends any data from Unity.
-
-![DataSender inspector](images/datasender_inspector.png)
-
-### Properties
-
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| **Local** | Channel is local or remote | `False` |
-| **Label** | Channel label | Empty |
-
-## `DataReceiver` component
-
-This component receives any data from Unity.
-
-![DataReceiver inspector](images/datareceiver_inspector.png)
-
-### Properties
-
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| **Local** | Channel is local or remote | `False` |
-| **Label** | Channel label | Empty |
+| **Local** | Channel is local or remote. | `False` |
+| **Label** | Channel label. | Empty |
+| **Actions** | The set of Input Actions associated with the player. To receive input, each player must have an associated set of Actions. See documentation on Actions for details. | `None` |
+| *Default Map* | Which Action Map in `Actions` to enable by default. If set to `None`, then the player starts with no Actions being enabled. | `None` |
+| **Events** | Uses a separate UnityEvent for each individual type of message.  | Empty |
