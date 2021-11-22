@@ -20,18 +20,16 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Open `Gyro` scene and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+2) Build an app in Unity Editor, and launch an application on mobile device.
 
-![Signaling url on inspector](images/gyro_sample_signaling_url_on_inspector.png)
-
-3) Specify the build platform (Currently iOS supported only) and start building. Connect the device to the PC, and transfer the application to the device.
-
-![Build settings](images/sample_gyroscope_build_settings.png)
-
-4) Open `Broadcast` scene and Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+3) Open `Menu` scene in Unity Editor and click `Broadcast` button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 
-5) Click on the Play button in Unity Editor.
+4) On mobile device, configure signaling settings, and click `Gyro` button.
 
-6) Push the `Play` button on the device and check streaming video.
+![Open Gyro scene](images/open_gyro_scene.png)
+
+5) Push the `Start` button on the device and check streaming video.
+
+![Play Gyro sample](images/play_sample_gyro.png)

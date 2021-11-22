@@ -19,6 +19,12 @@ You can import Samples from the bottom of the `com.unity.renderstreaming` packag
 
 ![Sample List](images/renderstreaming_samples.png)
 
+## Build Settings
+
+It is easy to try all samples if only you put sample scenes into `Scenes in Build` in **Build Settings** Window. `Menu` scene should be loaded as a first one so you need to rearrange scenes.
+
+![Build Settings](images/sample_buildsettings.png)
+
 ## Sample menu
 
 `Menu` scene is helpful for checking multiple sample scenes. You can find the scene `Example/Menu/Menu.scene`.
@@ -37,9 +43,3 @@ Users can change signaling settings below during runtime.
 - **Interval (only Http signaling)**
 
 ![Sample menu](images/sample_menu_setting_panel.png)
-
-## Install samples into mobile devices 
-
-It is easy to try all samples on mobile devices if only you put sample scenes into `Scenes in Build` in **Build Settings** Window. `Menu` scene should be loaded as a first one so you need to rearrange scenes.
-
-![Build Settings](images/sample_buildsettings.png)
