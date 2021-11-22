@@ -8,6 +8,7 @@ import {
 } from "../public/js/sender.js";
 
 import {jest} from '@jest/globals';
+import {DOMRect} from "./domrect.js";
 
 // mock
 
@@ -38,6 +39,7 @@ describe(`Sender`, () => {
       document.removeEventListener = jest.fn((event, callback) => {
         delete events[event];
       });
+      document.getBoundingClientRect = function(){ return new DOMRect(0,0,0,0); };
       sender = new Sender(document);
       inputRemoting = new InputRemoting(sender);
       dc = new RTCDataChannel(); 
