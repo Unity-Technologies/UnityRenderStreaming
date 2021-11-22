@@ -16,13 +16,13 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2) Build a scene as a receiver (ex. [`Receiver`](sample-receiver.md) scene) in Unity Editor, and launch an application.
 
-3) Open `Broadcast` scene.
+3) Open `Menu` scene and click `Multiplay` button. 
 
-![Open Broadcast scene](images/open_broadcast_scene.png)
+![Open Multiplay scene](images/open_multiplay_scene.png)
 
-4) Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+4) Select **host** and click "Play" button.
 
-![Signaling url on inspector](images/broadcast_sample_signaling.png)
+![Open Multiplay scene](images/sample_multiplay_select_host.png)
 
 5) Click on the Play button in Unity Editor.
 

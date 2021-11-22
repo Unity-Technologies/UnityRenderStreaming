@@ -14,7 +14,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Input System version 1.1](images/inputsystem-version.png)
 
-2. Open **Build Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
+2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 

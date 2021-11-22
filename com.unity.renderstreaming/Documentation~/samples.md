@@ -7,9 +7,10 @@ The package contains the following samples.
 | [Receiver](sample-receiver.md) | Displaying a video streaming from another Unity |
 | [Broadcast](sample-broadcast.md) | Streaming video and audio to multi Unity applications |
 | [Bidirectional](sample-bidirectional.md) | bi-directional(send/receive) each other's video |
+| [Multiplay](sample-multiplay.md) | Multi player game using video streaming |
 | [RenderPipeline](sample-renderpipeline.md) | Streaming video using HDRP or URP |
-| [AR Foundation](sample-arfoundation.md) | Controling a camera using AR Foundation. |
-| [Gyroscope](sample-gyroscope.md) | Controling a camera using Gyroscope. |
+| [AR Foundation](sample-arfoundation.md) | Controling a camera using AR Foundation |
+| [Gyroscope](sample-gyroscope.md) | Controling a camera using Gyroscope |
 | [Web Browser Input](sample-browserinput.md) | Streaming the video from Unity to the web browser |
 
 
@@ -28,8 +29,17 @@ Open `Menu` scene and press `Play` button, as you can see the menu for sample sc
 
 ![Sample menu](images/sample_menu_scene.png)
 
+Users can change signaling settings below during runtime.
+
+- **Signaling Type** (HTTP or Signaling)
+- **Enable/Disable SSL**
+- **Host Address**
+- **Interval (only Http signaling)**
+
+![Sample menu](images/sample_menu_setting_panel.png)
+
 ## Install samples into mobile devices 
 
-It is easy to try all samples on mobile devices if only you put sample scenes into `Scenes in Build` in Build Settings Window. `Menu` scene should be loaded as a first one so you need to rearrange scenes.
+It is easy to try all samples on mobile devices if only you put sample scenes into `Scenes in Build` in **Build Settings** Window. `Menu` scene should be loaded as a first one so you need to rearrange scenes.
 
 ![Build Settings](images/sample_buildsettings.png)
