@@ -8,7 +8,7 @@
 * [Web Application](webapp.md)
     * [Configure Self-Signed Credentials for https](https.md)
     * [Setting for TURN Server](turnserver.md)
-    * [About Signaling Protocol](signalingprotocol.md)
+    * [About Signaling Type](signaling-type.md)
     * [Customize Web Application](customize-webapp.md)
 * [Components Settings](components.md)
     * [Streaming Management](streaming-management.md)

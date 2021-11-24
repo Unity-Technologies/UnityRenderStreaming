@@ -2,10 +2,7 @@
 
 This sample shows that displaying a video streamed from another Unity.
 
-This sample can use in combination with other samples below.
-
-- [Broadcast](sample-broadcast.md)
-- [Bidirectional](sample-bidirectional.md)
+This sample can use in combination with the [Broadcast](sample-broadcast.md) sample.
 
 ![ReceiveVideo Sample](images/renderstreaming_receivevideosample.png)
 

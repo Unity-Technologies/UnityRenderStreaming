@@ -15,7 +15,7 @@ The package contains the following samples.
 
 
 ## Import samples in project
-You can import Samples from the bottom of the `com.unity.renderstreaming` package in the PackageManager Window.
+You can import samples from the bottom of the `com.unity.renderstreaming` package in the **Package Manager** Window.
 
 ![Sample List](images/renderstreaming_samples.png)
 
@@ -37,7 +37,7 @@ Open `Menu` scene and press `Play` button, as you can see the menu for sample sc
 
 Users can change signaling settings below during runtime.
 
-- **Signaling Type** (HTTP or Signaling)
+- [**Signaling Type**](signaling-type.md)
 - **Enable/Disable SSL**
 - **Host Address**
 - **Interval (only Http signaling)**

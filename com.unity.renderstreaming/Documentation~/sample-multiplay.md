@@ -1,6 +1,6 @@
 # Multiplay Sample
 
-The `Multiplay` sample can stream video and audio to multi Unity applications.
+The `Multiplay` sample can stream video and audio to multi Unity applications. This sample works with the combination of Unity-Unity or Unity-Browser.
 
 ## Usage
 

@@ -28,7 +28,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Bidirectional Sample Setup](images/open_bidirectional_scene.png)
 
-4) Build and run application. After running application click `SetUp` button. (**ConnectionID** is autofill.)
+4) Build and run application. Select video/audio devices and click `StartVideo/Mic` button. Then click `SetUp` button. (**ConnectionID** is autofill.)
 
 ![Bidirectional Sample Setup](images/sample_bidirectional_setup.png)
 

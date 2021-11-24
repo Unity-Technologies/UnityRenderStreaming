@@ -5,7 +5,7 @@ In this page, we introduce the way to use samples published on Package Manager.
 ## Install package
 
 > [!NOTE]
-> In Unity `2020.2` and `2019.4`, there are differences about how to install Unity Render Streaming package so please pay attention to the Unity version you are using and follow the instructions below.
+> In Unity `2020.3` and `2019.4`, there are differences about how to install Unity Render Streaming package so please pay attention to the Unity version you are using and follow the instructions below.
 
 ### Case of Unity 2019.4
 
@@ -27,7 +27,7 @@ If an input system dialog box appears, click `Yes`
 
 ![Input system backend](images/input_system_backend.png)
 
-### Case of Unity 2020.2
+### Case of Unity 2020.3
 
 Select `Window/Package Manager` in the menu bar.
 
