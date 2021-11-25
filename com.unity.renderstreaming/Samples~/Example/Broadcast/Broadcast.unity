@@ -969,6 +969,40 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 7f36745c-6b3f-404f-9df5-42688580b961
     m_ActionName: Player Controls/ResetCamera[/Keyboard/u]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451157}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: OnRotate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 524fee92-4ef1-4fd9-9cb1-97fb72ae1195
+    m_ActionName: Player Controls/Rotate
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 725451157}
+        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
+          Unity.RenderStreaming.Sample
+        m_MethodName: OnPosition
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 50305201-a606-4afe-954c-0666ccaf6c53
+    m_ActionName: Player Controls/Position
   m_DefaultActionMap: Player Controls
 --- !u!20 &725451154
 Camera:

@@ -84,6 +84,9 @@ namespace Unity.RenderStreaming.Samples
         Vector2 inputMovement;
         Vector2 inputLook;
 
+        Vector3? inputPosition;
+        Quaternion? inputRotation;
+
         protected void Awake()
         {
             playerInput.onDeviceChange += OnDeviceChange;
@@ -117,6 +120,14 @@ namespace Unity.RenderStreaming.Samples
 
         private void FixedUpdate()
         {
+            // Tracked Device
+            if(inputPosition.HasValue && inputRotation.HasValue)
+            {
+                transform.position = inputPosition.Value;
+                transform.rotation = inputRotation.Value;
+                return;
+            }
+
             UpdateTargetCameraStateDirection(inputMovement);
             UpdateTargetCameraStateFromInput(inputLook);
 
@@ -176,6 +187,17 @@ namespace Unity.RenderStreaming.Samples
         {
             inputLook = value.ReadValue<Vector2>();
         }
+
+        public void OnPosition(InputAction.CallbackContext value)
+        {
+            inputPosition = value.ReadValue<Vector3>();
+        }
+
+        public void OnRotate(InputAction.CallbackContext value)
+        {
+            inputRotation = value.ReadValue<Quaternion>();
+        }
+
 
         public void ResetCamera()
         {
