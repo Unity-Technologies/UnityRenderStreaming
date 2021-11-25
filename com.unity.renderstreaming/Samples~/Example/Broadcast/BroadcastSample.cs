@@ -16,7 +16,6 @@ namespace Unity.RenderStreaming.Samples
             InputSystem.RegisterLayout<UnityEngine.XR.ARSubsystems.HandheldARInputDevice>(
                 matches: new InputDeviceMatcher()
                     .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
-                    .WithProduct("(ARCore)")
                 );
 #endif
         }
