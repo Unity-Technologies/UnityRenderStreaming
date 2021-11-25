@@ -34,6 +34,15 @@ namespace Unity.RenderStreaming
             m_screenTexture.Create();
 
             StartCoroutine(RecordScreenFrame());
+
+            OnStoppedStream += _ =>
+            {
+                if (m_sendTexture != null)
+                {
+                    DestroyImmediate(m_sendTexture);
+                    m_sendTexture = null;
+                }
+            };
         }
 
         protected void OnDestroy()
