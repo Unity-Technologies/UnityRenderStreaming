@@ -1,18 +1,24 @@
 using UnityEngine;
+using UnityEngine.InputSystem.Layouts;
+using UnityEngine.InputSystem.XR;
 
 namespace Unity.RenderStreaming.Samples
 {
+    using InputSystem = UnityEngine.InputSystem.InputSystem;
+
     class BroadcastSample : MonoBehaviour
     {
         [SerializeField] RenderStreaming renderStreaming;
 
         private void Awake()
         {
-            UnityEngine.InputSystem.InputSystem.RegisterLayout<UnityEngine.XR.ARSubsystems.HandheldARInputDevice>(
-                matches: new UnityEngine.InputSystem.Layouts.InputDeviceMatcher()
-                    .WithInterface(UnityEngine.InputSystem.XR.XRUtilities.InterfaceMatchAnyVersion)
+#if URS_USE_AR_FOUNDATION
+            InputSystem.RegisterLayout<UnityEngine.XR.ARSubsystems.HandheldARInputDevice>(
+                matches: new InputDeviceMatcher()
+                    .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
                     .WithProduct("(ARCore)")
                 );
+#endif
         }
 
         // Start is called before the first frame update
