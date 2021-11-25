@@ -16,7 +16,7 @@ Unity Render Streaming automatically creates and destroys streams as needed. It 
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| **Signaling Type** | Class type of the signaling | `WebSocketSignaling` |
+| **Signaling Type** | Class type of the signaling (See [About Signaling Type](signaling-type.md)) | `WebSocketSignaling` |
 | **Signaling URL** | Set the signaling server URL <br>If you use WebSocket as a signaling protocol, you should specify a URL starting with `ws` or `wss`. | `ws://localhost` |
 | **Ice Servers** | Set a list of STUN/TURN servers | |
 | *Urls* | Set URLs of STUN/TURN servers | `[stun:stun.l.google.com:19302\]` |

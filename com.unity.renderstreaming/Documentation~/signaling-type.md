@@ -1,12 +1,12 @@
-# About Signaling Protocol
+# About Signaling Type
 
-**The Unity Render Streaming** package provides three different signaling protocols as examples.
+**The Unity Render Streaming** package provides three different signaling types as examples.
 
 - `Http Signaling`
 - `WebSocket Signaling`
 - `Furioos Signaling`
 
-In the example, the schema given to `URL Signaling` is used to determine which protocol to use.
+In the example, the schema given to `URL Signaling` is used to determine which type to use.
 
 ![Render Streaming backend](images/websocket_signaling_inspector.png)
 

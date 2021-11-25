@@ -2,7 +2,7 @@
 
 Unity Render Streaming supports controlling device input using [Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@latest). Input from a browser or Unity can be reflected to Unity on another PC.
 
-The user input on the browser is converted to the Input System message format and sent messages to another PC. The receiver can support both Unity and the browser without having to implement any additional functionality.
+The user input on the browser is converted to the message format of Input System and sent messages to another peers. The receiver of input message supports both Unity and the browser without having to implement any additional functionality.
 
 ## Preferences
 
@@ -14,7 +14,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Input System version 1.1](images/inputsystem-version.png)
 
-2. Open **Build Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
+2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 

@@ -3,9 +3,6 @@
 This sample demonstrates operating the position and direction of a camera on another PC from the mobile device supported by [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest).
 
 > [!NOTE]
-> In this version, it was checked on only iOS devices. Android and other devices are not supported by this sample.
-
-> [!NOTE]
 > If no codec is available on both sender and receiver, the video can not stream. Please note that the compatibility of codecs is different corresponding to platforms and graphics API.
 
 ## Sample scenes
@@ -23,8 +20,8 @@ To use this sample, You need to install additional packages shown following tabl
 
 | Unity version | Platform | packages |
 | ------------- | -------- | -------- |
-| Unity2019.4   | iOS      | `ARFoundation 2.1` |
-| Unity2020.3   | iOS      | `ARFoundation 4.1` |
+| Unity2019.4   | Android, iOS | `ARFoundation 2.1`, `XR Plugin Management 4.2` |
+| Unity2020.3   | Android, iOS | `ARFoundation 4.1`, `XR Plugin Management 4.2` |
 
 In addition, depending on the platform, each `XR plugin` package must be installed.
 ​
@@ -35,20 +32,27 @@ In addition, depending on the platform, each `XR plugin` package must be install
 | Unity2020.3   | iOS      | `ARKit XR Plugin 4.1` |
 | Unity2020.3   | Android  | `ARCore XR Plugin 4.1` |
 
-> [!NOTE]
-> In this version, Android is not supported by this sample.
-
 ## Build settings
 
 ### iOS
 
 In case of iOS, Please enable to `Requires ARKit support` on `Player Settings`. Additionally, `Architecture` should be selected `ARM64`.
 
-![Player Settings](images/playersettings_arfoundation.png)
+![Player Settings](images/playersettings_arkit.png)
+
+Open **Project Settings** window and select **XR Plug-in Management**. Set enable `ARKit` option in iOS tab.
+
+![XRPlugin Enable ARKit](images/xrplugin_enable_arkit.png)
 
 ### Android
 
-In this version, Android is not supported by this sample.
+In case of Android, **Target Architectures** should be checked `ARM64`, and not checked `ARMv7`.
+
+![Player Settings](images/playersettings_arcore.png)
+
+Open **Project Settings** window and select **XR Plug-in Management**. Set enable `ARCore` option in Android tab.
+
+![XRPlugin Enable ARCore](images/xrplugin_enable_arcore.png)
 
 ## Usage
 
@@ -62,14 +66,16 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Open scene `ARFoundation2.1` or `ARFoundation4.1`, and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+2) Build an app in Unity Editor, and launch an application on mobile device.
 
-3) Specify the build platform (Currently iOS supported only) and start building. Connect the device to the PC, and transfer the application to the device.
-
-4) Open `Broadcast` scene and Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+3) Open `Menu` scene in Unity Editor and click `Broadcast` button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 
-5) Click on the Play button in Unity Editor.
+4) On mobile device, configure signaling settings, and click `AR` button.
 
-6) Push the `Play` button on the device and check streaming video.
+![Open AR scene](images/open_ar_scene.png)
+
+5) Push the `Start` button on the device and check streaming video.
+
+![Play AR sample](images/play_sample_ar.png)

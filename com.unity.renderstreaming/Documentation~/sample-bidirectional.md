@@ -15,20 +15,20 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ### Procedure (Unity-Unity)
 
-1) Launch the signaling server using private mode. Please refer to [this link](webapp.md) for launching.
+1) Launch the signaling server using **private mode**. Please refer to [this link](webapp.md) for launching.
 
 > [!NOTE]
 > This sample does not work on signaling server in public mode.
 
 ![Launch web server](images/launch_webserver_private_mode.png)
 
-2) Open `Bidirectional` scene and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+2) Build an app in Unity Editor, and launch an application.
 
-3) If you need, change the `Device Index` parameter on `WebCamStreamer` component.
+3) Click `Bidirectional` button on the app.
 
-![Change Device Index](images/change_device_index_on_webcamstreamer.png)
+![Bidirectional Sample Setup](images/open_bidirectional_scene.png)
 
-4) Build and run application. After running application click `SetUp` button. (ConnectionID is autofill.)
+4) Build and run application. Select video/audio devices and click `StartVideo/Mic` button. Then click `SetUp` button. (**ConnectionID** is autofill.)
 
 ![Bidirectional Sample Setup](images/sample_bidirectional_setup.png)
 
@@ -38,7 +38,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Set Camera Usage Description](images/sample_bidirectional_camerausagedescription.png)
 
-5) Enter same ConnectionID on the application in Unity Editor.
+5) Enter same **ConnectionID** on the application in Unity Editor.
 
 ![Enter Same ID](images/sample_bidirectional_entersameid.png)
 
@@ -56,7 +56,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Browser Bidirectional Sample Link](images/browser_mainpage_bidirectional.png)
 
-5) Enter same ConnectionID on the Unity Application to Browser text area.
+5) Enter same **ConnectionID** on the Unity Application to Browser text area.
 
 ![Enter Same ID on browser](images/sample_bidirectional_entersameid_browser.png)
 

@@ -38,12 +38,12 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Build a scene as a receiver (ex. [`Receiver`](sample-receiver.md) scene) in Unity Editor, and launch an application.
+2) Build an app in Unity Editor, and launch an application.
 
-3) Open `HDRP` or `URP` scene, and specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+3) On the Unity Editor, open `Menu` scene and click `RenderPipeline` button.
 
-![Open Render Pipeline scene](images/open_renderpipeline_scene.png)
+4) Click `Receiver` button on the app.
 
-4) Click on the Play button in Unity Editor.
+6) Click `Start` button.
 
-5) Operate the receiver and check the streaming video/audio correctly.
+![Play receiver scene](images/play_sample_receiver.png)

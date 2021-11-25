@@ -11,7 +11,7 @@ Please check if there is any error log on the browser console and Unity debug co
 ### Web app doesn't run on Safari browser
 
 Check the web server's [startup options](webapp.md). In **Safari** and **iOS Safari**, WebRTC features cannot be used with **http**. Instead, **https** must be used.
-Also, **iOS Safari** does not support WebSocket signaling if the server uses a self-signed certificate. Please check [here](signalingprotocol.md) for more information.
+Also, **iOS Safari** does not support WebSocket signaling if the server uses a self-signed certificate. Please check [here](signaling-type.md) for more information.
 
 ### Unity's initial startup fails
 

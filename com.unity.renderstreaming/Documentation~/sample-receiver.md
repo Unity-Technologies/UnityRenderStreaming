@@ -2,15 +2,9 @@
 
 This sample shows that displaying a video streamed from another Unity.
 
-This sample can use in combination with other samples below.
-
-- [Broadcast](sample-broadcast.md)
-- [Bidirectional](sample-bidirectional.md)
+This sample can use in combination with the [Broadcast](sample-broadcast.md) sample.
 
 ![ReceiveVideo Sample](images/renderstreaming_receivevideosample.png)
-
-> [!NOTE]
-> In this version, it was checked on only iOS devices. Android and other devices are not supported by this sample.
 
 > [!NOTE]
 > If no codec is available on both sender and receiver, the video can not stream. Please note that the compatibility of codecs is different corresponding to platforms and graphics API.
@@ -29,16 +23,14 @@ This procedure is for using it with the [Broadcast](sample-broadcast.md) sample.
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Build a `Receiver` scene in Unity Editor, and launch an application.
+2) Build an app in Unity Editor, and launch an application.
 
-3) Open `Broadcast` scene.
+3) On the Unity Editor, open `Menu` scene and click `Broadcast` button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 
-4) Specify IP address of the signaling server to the `Signaling URL` parameter on the inspector.
+4) Click `Receiver` button on the app.
 
-![Signaling url on inspector](images/broadcast_sample_signaling.png)
+6) Click `Start` button.
 
-5) Click on the Play button in Unity Editor.
-
-6) Operate the receiver and check the streaming video/audio correctly.
+![Play receiver scene](images/play_sample_receiver.png)
