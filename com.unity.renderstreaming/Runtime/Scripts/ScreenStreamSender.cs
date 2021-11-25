@@ -32,6 +32,8 @@ namespace Unity.RenderStreaming
             m_screenTexture =
                 new RenderTexture(Screen.width, Screen.height, depth, format) { antiAliasing = antiAliasing };
             m_screenTexture.Create();
+
+            StartCoroutine(RecordScreenFrame());
         }
 
         protected void OnDestroy()
@@ -85,22 +87,26 @@ namespace Unity.RenderStreaming
             return new VideoStreamTrack(rt.GetNativeTexturePtr(), rt.width, rt.height, rt.graphicsFormat);
         }
 
-        protected void LateUpdate()
+        IEnumerator RecordScreenFrame()
         {
-            if (m_screenTexture != null && m_screenTexture.IsCreated())
+            while (true)
             {
-                StartCoroutine(RecordFrame());
-            }
-        }
+                yield return new WaitForEndOfFrame();
 
-        IEnumerator RecordFrame()
-        {
-            yield return new WaitForEndOfFrame();
-            ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
+                if (m_sendTexture == null || !m_sendTexture.IsCreated())
+                {
+                    continue;
+                }
 
-            if (m_sendTexture != null && m_sendTexture.IsCreated())
-            {
-                Graphics.Blit(m_screenTexture, m_sendTexture);
+                if (m_screenTexture.width == m_sendTexture.width && m_screenTexture.height == m_sendTexture.height)
+                {
+                    ScreenCapture.CaptureScreenshotIntoRenderTexture(m_sendTexture);
+                }
+                else
+                {
+                    ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
+                    Graphics.Blit(m_screenTexture, m_sendTexture);
+                }
             }
         }
     }
