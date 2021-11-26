@@ -25,6 +25,7 @@ namespace Unity.RenderStreaming
         public override Texture SendTexture => m_sendTexture;
         private RenderTexture m_sendTexture;
         private RenderTexture m_screenTexture;
+        private bool isStreaming = false;
 
         protected virtual void Awake()
         {
@@ -35,14 +36,8 @@ namespace Unity.RenderStreaming
 
             StartCoroutine(RecordScreenFrame());
 
-            OnStoppedStream += _ =>
-            {
-                if (m_sendTexture != null)
-                {
-                    DestroyImmediate(m_sendTexture);
-                    m_sendTexture = null;
-                }
-            };
+            OnStartedStream += _ => isStreaming = true;
+            OnStoppedStream += _ => isStreaming = false;
         }
 
         protected void OnDestroy()
@@ -102,7 +97,7 @@ namespace Unity.RenderStreaming
             {
                 yield return new WaitForEndOfFrame();
 
-                if (m_sendTexture == null || !m_sendTexture.IsCreated())
+                if (!isStreaming || m_sendTexture == null || !m_sendTexture.IsCreated())
                 {
                     continue;
                 }
