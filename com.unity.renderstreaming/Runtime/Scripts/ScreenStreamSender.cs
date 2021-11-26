@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -25,7 +27,7 @@ namespace Unity.RenderStreaming
         public override Texture SendTexture => m_sendTexture;
         private RenderTexture m_sendTexture;
         private RenderTexture m_screenTexture;
-        private bool isStreaming = false;
+        private HashSet<string> connections = new HashSet<string>();
 
         protected virtual void Awake()
         {
@@ -36,8 +38,8 @@ namespace Unity.RenderStreaming
 
             StartCoroutine(RecordScreenFrame());
 
-            OnStartedStream += _ => isStreaming = true;
-            OnStoppedStream += _ => isStreaming = false;
+            OnStartedStream += id => connections.Add(id);
+            OnStoppedStream += id => connections.Remove(id);
         }
 
         protected void OnDestroy()
@@ -97,7 +99,7 @@ namespace Unity.RenderStreaming
             {
                 yield return new WaitForEndOfFrame();
 
-                if (!isStreaming || m_sendTexture == null || !m_sendTexture.IsCreated())
+                if (!connections.Any() || m_sendTexture == null || !m_sendTexture.IsCreated())
                 {
                     continue;
                 }
