@@ -11,28 +11,28 @@ namespace Unity.RenderStreaming
     public sealed class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Signaling server url")]
+        [SerializeField, Tooltip("Signaling server url.")]
         private string urlSignaling = "http://localhost";
 
-        [SerializeField, Tooltip("Type of signaling")]
+        [SerializeField, Tooltip("Type of signaling.")]
         private string signalingType = typeof(HttpSignaling).FullName;
 
-        [SerializeField, Tooltip("Array to set your own STUN/TURN servers")]
+        [SerializeField, Tooltip("Array to set your own STUN/TURN servers.")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
         {
             new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
         };
 
-        [SerializeField, Tooltip("Time interval for polling from signaling server")]
+        [SerializeField, Tooltip("Time interval for polling from signaling server.")]
         private float interval = 5.0f;
 
-        [SerializeField, Tooltip("Enable or disable hardware encoder")]
+        [SerializeField, Tooltip("Enable or disable hardware encoder.")]
         private bool hardwareEncoderSupport = true;
 
-        [SerializeField]
+        [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
 
-        [SerializeField]
+        [SerializeField, Tooltip("Automatically started when called Awake method.")]
         public bool runOnAwake = true;
 #pragma warning restore 0649
 
