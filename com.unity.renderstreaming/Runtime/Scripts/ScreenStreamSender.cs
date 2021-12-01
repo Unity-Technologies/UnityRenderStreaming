@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming
         {
             var format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
             m_screenTexture =
-                new RenderTexture(Screen.width, Screen.height, depth, format) { antiAliasing = antiAliasing };
+                new RenderTexture(Screen.width, Screen.height, depth, RenderTextureFormat.Default) { antiAliasing = antiAliasing };
             m_screenTexture.Create();
 
             StartCoroutine(RecordScreenFrame());
@@ -104,15 +104,8 @@ namespace Unity.RenderStreaming
                     continue;
                 }
 
-                if (m_screenTexture.width == m_sendTexture.width && m_screenTexture.height == m_sendTexture.height)
-                {
-                    ScreenCapture.CaptureScreenshotIntoRenderTexture(m_sendTexture);
-                }
-                else
-                {
-                    ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
-                    Graphics.Blit(m_screenTexture, m_sendTexture);
-                }
+                ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
+                Graphics.Blit(m_screenTexture, m_sendTexture);
             }
         }
     }
