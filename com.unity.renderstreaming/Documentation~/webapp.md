@@ -15,7 +15,7 @@ The **Render Streaming** web application uses WebRTC technologies, which means t
 
 ## The Web Server
 
-Click on `Edit/Render Streaming/Download web app` menu item to download our web server on [this site](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
+Click on **Edit > Render Streaming > Download web app** menu item to download our web server on [this site](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 
 ![Download webapp](images/download_webapp.png)
 

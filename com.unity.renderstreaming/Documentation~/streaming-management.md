@@ -2,7 +2,7 @@
 
 Unity Render Streaming automatically creates and destroys streams as needed. It also allows the developer to customize the mechanism for controlling the stream. For a description of components related to individual streams, see the section on components for streaming.
 
-## `Render Streaming` component
+## `RenderStreaming` component
 
 **Render Streaming** includes the following features.
 

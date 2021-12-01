@@ -20,7 +20,7 @@ Right-click in the project window, and then click **Create > Input Actions**.
 
 ![Control camera 01](images/control_camera_01.png)
 
-The asset will be added to the project window and renamed to `Control`. Double-click on the `Control` asset in the project window, and the **Action editor** will appear.
+The asset will be added to the project window and rename to **Control**. Double-click on the **Control** asset in the project window, and the **Action editor** will appear.
 
 ![Control camera 01](images/control_camera_02.png)
 
@@ -36,7 +36,7 @@ Select the item and change **Action Type** to `Value`, and **Control Type** to `
 
 ![Control camera 01](images/control_camera_05.png)
 
-Next, select the **\<No Binding\>** item and add **Mouse/Delta** to the **Path** of **Binding**.
+Next, select the **\<No Binding\>** item and add **Mouse > Delta** to the **Path** of **Binding**.
 
 ![Control camera 01](images/control_camera_06.png)
 
@@ -50,7 +50,7 @@ Drag the **Control** asset to the **Input Actions** property of the `InputReceiv
 
 ![Control camera 01](images/assign_inputactions_to_inputreceiver.png)
 
-Add the code to control the rotation of the camera. Right-click on the project window and select **Create > C#** Script to create the asset. Change the asset name to `PlayerControler`.
+Add the code to control the rotation of the camera. Move to the Inspector window, click **Add component** button and select **New Script** Script to create the asset. Change the asset name to `PlayerControler`.
 
 ![Create Player Controller component](images/create_playercontroler_component.png)
 
@@ -80,4 +80,4 @@ The mouse operation in the browser should be reflected in the rotation of the ca
 
 ## Next step
 
-We were able to incorporate the input processing using the Input Actions feature. If you would like to learn more about the features of Unity Render Streaming, please see the [Components page](components.md). Also, check out [Customizing your web application](customize-webapp.md) for information on how to modify the web user interface.
+We were able to incorporate the input processing using the Input Actions feature. If you would like to learn more about the features of Unity Render Streaming, please see the [Sample page](samples.md). Also, check out [Customizing your web application](customize-webapp.md) for information on how to modify the web user interface.
