@@ -68,7 +68,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2) Build an app in Unity Editor, and launch an application on mobile device.
 
-3) Open `Menu` scene in Unity Editor and click `Broadcast` button.
+3) Open **Menu** scene in Unity Editor and click **Broadcast** button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 

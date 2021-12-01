@@ -28,7 +28,7 @@ Unity Render Streaming automatically creates and destroys streams as needed. It 
 | **Handlers** | List of handlers of signaling process. | |
 | **Run On Awake** | Automatically started when called `Awake` method. | `True` |
 
-## `SingleConnection`
+## `SingleConnection` component
 
 This component lists components that stream media or data via a single peer connection.
 
@@ -40,7 +40,7 @@ This component lists components that stream media or data via a single peer conn
 | --------- | ----------- | ------- |
 | **Streams** | List of streams | [] |
 
-## `Broadcast`
+## `Broadcast` component
 
 This component lists components that stream media or data via multiple peer connections.
 

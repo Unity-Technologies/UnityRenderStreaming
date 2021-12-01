@@ -21,17 +21,17 @@ You can import samples from the bottom of the `com.unity.renderstreaming` packag
 
 ## Build Settings
 
-It is easy to try all samples if only you put sample scenes into `Scenes in Build` in **Build Settings** Window. `Menu` scene should be loaded as a first one so you need to rearrange scenes.
+It is easy to try all samples if only you put sample scenes into `Scenes in Build` in **Build Settings** Window. **Menu** scene should be loaded as a first one so you need to rearrange scenes.
 
 ![Build Settings](images/sample_buildsettings.png)
 
 ## Sample menu
 
-`Menu` scene is helpful for checking multiple sample scenes. You can find the scene `Example/Menu/Menu.scene`.
+**Menu** scene is helpful for checking multiple sample scenes. You can find the scene `Example/Menu/Menu.scene`.
 
 ![Sample menu](images/sample_menu.png)
 
-Open `Menu` scene and press `Play` button, as you can see the menu for sample scenes.
+Open **Menu** scene and press `Play` button, as you can see the menu for sample scenes.
 
 ![Sample menu](images/sample_menu_scene.png)
 

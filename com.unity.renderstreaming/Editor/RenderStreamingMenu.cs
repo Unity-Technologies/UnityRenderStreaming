@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Editor
 {
-    public static class RenderStreamingMenu
+    internal static class RenderStreamingMenu
     {
         [MenuItem("Edit/Render Streaming/Download web app")]
         static void DownloadWebAppFromMenu() {

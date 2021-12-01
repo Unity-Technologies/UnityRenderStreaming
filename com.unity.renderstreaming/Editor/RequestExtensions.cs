@@ -1,4 +1,4 @@
-﻿using UnityEditor.PackageManager.Requests;  //ListRequest
+using UnityEditor.PackageManager.Requests;  //ListRequest
 using UnityEditor.PackageManager;       //PackageCollection  
 using System.Collections.Generic;       //IEnumerable
 
@@ -8,7 +8,7 @@ namespace Unity.RenderStreaming.Editor {
 /// <summary>
 /// An extension class to extend the functionalities of UnityEditor.PackageManager.Requests classes
 /// </summary>
-public static class RequestExtensions
+internal static class RequestExtensions
 {
 
     /// <summary>

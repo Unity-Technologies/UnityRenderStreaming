@@ -1,6 +1,6 @@
 # Broadcast Sample
 
-The `Broadcast` sample can stream video and audio to multi Unity applications.
+The **Broadcast** sample can stream video and audio to multi Unity applications.
 
 This sample can use in combination with other samples below.
 
@@ -28,11 +28,11 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2) Build an app in Unity Editor, and launch an application.
 
-3) Click `Broadcast` scene on the app.
+3) Click **Broadcast** scene on the app.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 
-5) Open `Menu` scene and click on the Play button in Unity Editor.
+5) Open **Menu** scene and click on the Play button in Unity Editor.
 
 6) Click `Receiver` button on the app.
 

@@ -2,12 +2,6 @@
 
 This sample shows ways to operate the direction of a camera on the remote PC from the mobile device that equipped gyro sensor.
 
-> [!NOTE]
-> In this version, it was checked on only iOS devices. Android and other devices are not supported by this sample.
-
-> [!NOTE]
-> If no codec is available on both sender and receiver, the video can not stream. Please note that the compatibility of codecs is different corresponding to platforms and graphics API.
-
 ## Usage
 
 ### Hardware acceleration 
@@ -22,14 +16,14 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2) Build an app in Unity Editor, and launch an application on mobile device.
 
-3) Open `Menu` scene in Unity Editor and click `Broadcast` button.
+3) Open **Menu** scene in Unity Editor and click **Broadcast** button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 
-4) On mobile device, configure signaling settings, and click `Gyro` button.
+4) On mobile device, configure signaling settings, and click **Gyro** button.
 
 ![Open Gyro scene](images/open_gyro_scene.png)
 
-5) Push the `Start` button on the device and check streaming video.
+5) Push the **Start** button on the device and check streaming video.
 
 ![Play Gyro sample](images/play_sample_gyro.png)

@@ -1,0 +1,13 @@
+apiRules:
+- include:
+    uidRegex: Unity.RenderStreaming
+    type: Namespace
+- exclude:
+    uidRegex: ^System\.Object\..*$
+    type: Method
+- exclude:
+    uidRegex: ^System\.ValueType\..*$
+    type: Method
+- exclude:
+    hasAttribute:
+      uid: System.ObsoleteAttribute

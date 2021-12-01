@@ -40,7 +40,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 2) Build an app in Unity Editor, and launch an application.
 
-3) On the Unity Editor, open `Menu` scene and click `RenderPipeline` button.
+3) On the Unity Editor, open **Menu** scene and click `RenderPipeline` button.
 
 4) Click `Receiver` button on the app.
 
