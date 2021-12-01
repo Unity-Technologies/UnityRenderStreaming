@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;           //HashSet
+using System.Collections.Generic;           //HashSet
 using UnityEditor.PackageManager.Requests;  //ListRequest, AddRequest, etc
 using UnityEditor.PackageManager;           //PackageCollection
 using System;                               //Action
@@ -11,7 +11,7 @@ namespace Unity.RenderStreaming.Editor {
 /// An editor class to manage requests to UnityEditor.PackageManager.Client
 /// This class will perform its operations in background while Unity is running.
 /// </summary>
-public class RequestJobManager 
+internal class RequestJobManager 
 {
     [UnityEditor.InitializeOnLoadMethod]
     static void OnLoad() {    

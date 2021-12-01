@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
-    public abstract class VideoStreamSender : StreamSenderBase
+    public class VideoStreamSender : StreamSenderBase
     {
         /// <summary>
         ///

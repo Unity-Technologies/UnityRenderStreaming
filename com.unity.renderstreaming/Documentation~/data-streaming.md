@@ -29,6 +29,6 @@ This component receives input events from Unity.
 | --------- | ----------- | ------- |
 | **Local** | Channel is local or remote. | `False` |
 | **Label** | Channel label. | Empty |
-| **Actions** | The set of Input Actions associated with the player. To receive input, each player must have an associated set of Actions. See documentation on Actions for details. | `None` |
+| **Actions** | The set of [**Input Actions**](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/Actions.html) associated with the player. To receive input, each player must have an associated set of Actions. See documentation on Actions for details. | `None` |
 | *Default Map* | Which Action Map in `Actions` to enable by default. If set to `None`, then the player starts with no Actions being enabled. | `None` |
 | **Events** | Uses a separate UnityEvent for each individual type of message.  | Empty |

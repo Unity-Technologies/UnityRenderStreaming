@@ -4,7 +4,7 @@ After installing the package, you will need to install and run the signaling ser
 
 ## Download web application
 
-Click on `Edit/Render Streaming/Download web app` menu  item on Unity Editor to download the application.
+Click on **Edit > Render Streaming > Download web app** menu  item on Unity Editor to download the application.
 The download site is [this page](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
 
 ![Download webapp](images/download_webapp.png)

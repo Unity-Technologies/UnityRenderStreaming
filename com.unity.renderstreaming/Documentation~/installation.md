@@ -1,11 +1,11 @@
 # Installing The Package
 
 > [!NOTE]
-> In Unity `2020.3` and `2019.4`, there are differences about how to install Unity Render Streaming package so please pay attention to the Unity version you are using and follow the instructions below.
+> In Unity **2020.3** and **2019.4**, there are differences about how to install Unity Render Streaming package so please pay attention to the Unity version you are using and follow the instructions below.
 
 ## Case of Unity 2019.4
 
-Select `Window/Package Manager` in the menu bar.
+Select **Window > Package Manager** in the menu bar.
 
 ![Install Package Manager from menu bar](images/install_select_packman_menu_unity2019.png)
 
@@ -25,7 +25,7 @@ If an input system dialog box appears, click `Yes`
 
 ## Case of Unity 2020.3
 
-Select `Window/Package Manager` in the menu bar.
+Select **Window > Package Manager** in the menu bar.
 
 ![Install Package Manager from menu bar](images/install_select_packman_menu_unity2020.png)
 

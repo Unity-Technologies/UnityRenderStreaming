@@ -4,6 +4,9 @@ This sample demonstrates to stream the video from Unity to the web browser, and 
 
 you can see the list of supported browsers on [The Web Application](webapp.md) page.
 
+> [!NOTE]
+> This sample has the same behavior as [Broadcast](broadcast.md) sample, but only the input control method is different.  For normal case, we recommend using the Broadcast sample.
+
 ## Usage
 
 ### Hardware acceleration 
@@ -16,7 +19,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ![Launch web server](images/launch_webserver_public_mode.png)
 
-2) Open `Menu` scene in Unity Editor, and click `WebBrowserInput` button.
+2) Open **Menu** scene in Unity Editor, and click `WebBrowserInput` button.
 
 ![Open WebBrowserInput scene](images/open_webbrowserinput_scene.png)
 

@@ -63,7 +63,7 @@ Yes. If you use the hardware encoder, make sure to check the limitation of the n
 
 ### How do you increase the video quality?
 
-You can set the resolution of the frame on the `CameraStreamer` inspector. Keep in mind that video quality depends on the quality of the network. 
+You can set the resolution of the frame on the inspector window of [video stream components](video-streaming.md). Keep in mind that video quality depends on the quality of the network.
 
 ## Questions about support
 

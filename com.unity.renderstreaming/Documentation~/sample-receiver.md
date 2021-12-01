@@ -25,7 +25,7 @@ This procedure is for using it with the [Broadcast](sample-broadcast.md) sample.
 
 2) Build an app in Unity Editor, and launch an application.
 
-3) On the Unity Editor, open `Menu` scene and click `Broadcast` button.
+3) On the Unity Editor, open **Menu** scene and click **Broadcast** button.
 
 ![Open Broadcast scene](images/open_broadcast_scene.png)
 

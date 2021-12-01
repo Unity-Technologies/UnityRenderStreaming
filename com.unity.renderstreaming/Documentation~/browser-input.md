@@ -114,7 +114,7 @@ If use UnityUI in the background, follow the steps below.
 
 1. Update `com.unity.inputsystem` to `1.1.0-preview.2` on PackageManager.
 
-2. In Project Setting->Player->Other Setting, check `Allow 'unsafe' code`.
+2. In **Project Setting > Player > Other Setting**, check `Allow 'unsafe' code`.
 
 3. Replace `EventSystem` in the Scene with the following component.
 
@@ -153,4 +153,4 @@ public class CustomEventSystem : EventSystem
 }
 ```
 
-4. (Optional) For UnityEditor, Open Window->Analysis->Input Debugger and turn on `Lock Input to Game View` in Options.
+4. (Optional) For UnityEditor, Open **Window > Analysis > Input Debugger** and turn on `Lock Input to Game View` in Options.

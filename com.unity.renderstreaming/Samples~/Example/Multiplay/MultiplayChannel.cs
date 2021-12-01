@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Samples
 {
     public enum ActionType
     {

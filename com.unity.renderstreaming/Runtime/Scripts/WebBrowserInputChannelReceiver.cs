@@ -3,6 +3,8 @@ using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+////TODO: Move namespace to Unity.RenderStreaming.Samples 
+
 namespace Unity.RenderStreaming
 {
     /// <summary>
