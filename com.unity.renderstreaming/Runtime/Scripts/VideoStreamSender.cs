@@ -4,33 +4,38 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
-    public sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute {}
+    public sealed class StreamingSizeAttribute : PropertyAttribute { }
 
     /// <summary>
-    /// 
+    ///
+    /// </summary>
+    public sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute { }
+
+    /// <summary>
+    ///
     /// </summary>
     public sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public abstract class VideoStreamSender : StreamSenderBase
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        [SerializeField, Tooltip("Streaming size should match display aspect ratio")]
+        [SerializeField, StreamingSize]
         protected Vector2Int streamingSize = new Vector2Int(1280, 720);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual Texture SendTexture { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="bitrate"></param>
@@ -45,6 +50,7 @@ namespace Unity.RenderStreaming
                 if (bitrate != null) encoding.maxBitrate = bitrate;
                 if (framerate != null) encoding.maxFramerate = framerate;
             }
+
             sender.SetParameters(parameters);
         }
     }
