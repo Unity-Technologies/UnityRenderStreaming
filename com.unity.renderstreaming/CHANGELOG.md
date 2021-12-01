@@ -11,29 +11,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added audio streaming receiver.
 - Added the `Multiplay` scene into samples.
 - Added components for streaming.
-  - `MicrophoneSender`
-  - `AudioClipReceiver`
-  - `DisplaySender`
-  - `TextureSender`
-  - `ArraySender`
-  - `ArrayReceiver`
+  - `MicrophoneStreamSender`
+  - `AudioStreamReceiver`
+  - `ScreenStreamSender`
 - Added components for controlling user input.
-  - `SimplePlayerInput`
-  - `RemotePlayerInput`
+  - `InputSender`
+  - `InputReceiver`
 
 ### Changed
 
 - Upgraded WebRTC package to `2.4.0-exp.4`.
 - Upgraded Input System package to `1.0.2`.
 - Renamed components.
-  - `CameraStreamer` -> `CameraSender`
-  - `ReceiveVideoViewer` -> `TextureReceiver`
-  - `WebCamStreamer` -> `WebCamSender`
-  - `AudioStreamer` -> `AudioClipSender`
+  - `CameraStreamer` -> `CameraStreamSender`
+  - `ReceiveVideoViewer` -> `VideoStreamReceiver`
+  - `WebCamStreamer` -> `WebCamStreamSender`
+  - `AudioStreamer` -> `AudioStreamSender`
   - `InputSystemChannnelSender` -> `InputSender`
   - `InputSystemChannnelReceiver` -> `InputReceiver`
 - Improved controlling user input from browsers.
 - Updated manual documents.
+
+### Fixed
+
+- Fixed resource leak of sender stream tracks.
 
 ## [3.1.0-exp.1] - 2021-06-15
 
