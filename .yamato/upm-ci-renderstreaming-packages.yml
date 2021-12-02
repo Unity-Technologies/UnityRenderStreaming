@@ -400,6 +400,8 @@ publish_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
+{% if editor.version != "2021.2" -%} # exclude editor version 2021.2
     - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
+{% endif %}
 {% endfor %}
 {% endfor %}
