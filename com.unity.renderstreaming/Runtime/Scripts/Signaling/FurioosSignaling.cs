@@ -65,6 +65,8 @@ namespace Unity.RenderStreaming.Signaling
             if (m_running)
             {
                 m_running = false;
+                m_webSocket.Close();
+
                 if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
                 {
                     m_signalingThread.Abort();
