@@ -101,13 +101,6 @@ export class VideoPlayer {
         this.signaling.sendCandidate(_this.connectionId, e.candidate.candidate, e.candidate.sdpMid, e.candidate.sdpMLineIndex);
       }
     }.bind(this);
-    // Create data channel with proxy server and set up handlers
-    this.inputSenderChannel = this.pc.createDataChannel("input");
-    this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
-    this.multiplayChannel = this.pc.createDataChannel("multiplay");
-    this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);
-
-    this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
 
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
@@ -124,6 +117,14 @@ export class VideoPlayer {
     // setup signaling
     await this.signaling.start();
     this.connectionId = uuid4();
+
+    // Create data channel with proxy server and set up handlers
+    this.inputSenderChannel = this.pc.createDataChannel("input");
+    this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
+    this.multiplayChannel = this.pc.createDataChannel("multiplay");
+    this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);
+
+    this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
 
     // Add transceivers to receive multi stream.
     // It can receive two video tracks and one audio track from Unity app.
