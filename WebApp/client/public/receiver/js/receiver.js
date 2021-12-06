@@ -90,10 +90,6 @@ export class Receiver {
       _this.signaling.sendCandidate(candidate.connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
     });
 
-    this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
-    this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
-    this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
-
     this.signaling.addEventListener('disconnect', async (e) => {
       const data = e.detail;
       if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
@@ -124,6 +120,11 @@ export class Receiver {
 
     // setup signaling
     await this.signaling.start();
+
+    // kick send offer process
+    this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
+    this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
+    this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
   }
 
   resizeVideo() {
