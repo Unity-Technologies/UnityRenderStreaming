@@ -40,12 +40,19 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
-        static ISignaling CreateSignaling(
-            string type, string url, float interval, SynchronizationContext context)
-        {
-            Type _type = Type.GetType(type);
-            if (_type == null)
-            {
+        static Type GetType(string typeName) {
+            var type = Type.GetType(typeName);
+            if (type != null) return type;
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()) {
+                type = assembly.GetType(typeName);
+                if (type != null) return type;
+            }
+            return null;
+        }
+		
+		static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context) {
+            Type _type = GetType(type);
+            if (_type == null) {
                 throw new ArgumentException($"Signaling type is undefined. {type}");
             }
             object[] args = { url, interval, context };
