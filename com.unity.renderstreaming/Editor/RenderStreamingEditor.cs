@@ -58,16 +58,18 @@ namespace Unity.RenderStreaming.Editor
             int i = 0;
 
             foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()){
-                foreach (System.Type type in assembly.GetTypes()) {
-                    if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
-                        if(type.FullName == signalingType.stringValue){
-                            selected = i;
+                try { 
+                    foreach (System.Type type in assembly.GetTypes()) {
+                        if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
+                            if(type.FullName == signalingType.stringValue){
+                                selected = i;
+                            }
+                            options.Add(type.Name);
+                            types.Add(type.FullName);
+                            i++;
                         }
-                        options.Add(type.Name);
-                        types.Add(type.FullName);
-                        i++;
                     }
-                }
+                } catch { }
             }
 
             selected = EditorGUILayout.Popup("Signaling Type", selected, options.ToArray());
