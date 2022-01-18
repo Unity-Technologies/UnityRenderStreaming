@@ -90,7 +90,11 @@ namespace Unity.RenderStreaming
                 m_sendTexture = rt;
             }
 
-            return new VideoStreamTrack(rt.GetNativeTexturePtr(), rt.width, rt.height, rt.graphicsFormat);
+            var isOpenGl = SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore ||
+                           SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 ||
+                           SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
+
+            return new VideoStreamTrack(rt, isOpenGl);
         }
 
         IEnumerator RecordScreenFrame()
