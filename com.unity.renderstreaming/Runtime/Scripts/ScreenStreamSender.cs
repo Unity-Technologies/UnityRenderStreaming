@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
