@@ -1,0 +1,96 @@
+name: Bug report
+description: Create a report to help us improve.
+title: "[BUG]: "
+labels: 
+  - bug
+assignees: 
+  - karasusan
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check below before post your issue.
+        * For questions, ask in [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413).
+        * Before you file an issue read the [Contributing guide](https://github.com/Unity-Technologies/com.unity.webrtc/blob/develop/CONTRIBUTING.md).
+        * Check to make sure someone hasn't already opened a similar [issue](https://github.com/Unity-Technologies/com.unity.webrtc/issues).
+         
+        Please note the following points.
+        * We try to reply as soon as possible but we will get in touch with you within **5 working days**.
+        * If you solved the issue yourself, please **post the comment and close your issue**.
+        * We would close the issue if we do not receive a reply for more than **2 weeks**.
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Package version
+      description: |
+        What version of the package are you using?
+        You can check the Unity version in Package Manager Window. See [manual](https://docs.unity3d.com/Manual/upm-ui.html).
+      options:
+        - 3.1.0-exp.3
+        - 3.1.0-exp.2
+        - 3.1.0-exp.1
+        - Others
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Please describe your environment when the issue occurred.
+        Example:
+          - **OS**: Windows10
+          - **Unity version**: Unity 2021.2
+          - **Graphics API**: DirectX11
+          - **Browser**: Google Chrome Version 97
+      value: |
+          * OS:
+          * Unity version:
+          * Graphics API:
+          * Browser:
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. In this environment...
+        2. With this config...
+        3. Run '...'
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: false
+      
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: false
+
+  - type: textarea
+    id: anything-else
+    attributes:
+      label: Anything else?
+      description: |
+        Links? Reference? Anything that will give us more context about the issue you are encountering!
+        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+      placeholder: |
+        Drag and drop image or text files here.
+    validations:
+      required: false
