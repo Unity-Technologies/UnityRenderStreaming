@@ -93,9 +93,10 @@ template_projects:
   - name: renderstreaming-rtx
     packagename: com.unity.template.renderstreaming-rtx
 test_targets_android:
-  - name: vulkan
-    playergraphicsapi: Vulkan
-    extra-editor-arg: vulkan
+# todo(kazuki):
+#  - name: vulkan
+#    playergraphicsapi: Vulkan
+#    extra-editor-arg: vulkan
   - name: opengles3
     playergraphicsapi: OpenGLES3
     extra-editor-arg: gles3
