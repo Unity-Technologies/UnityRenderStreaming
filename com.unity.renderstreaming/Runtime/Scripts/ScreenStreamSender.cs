@@ -91,6 +91,8 @@ namespace Unity.RenderStreaming
                 m_sendTexture = rt;
             }
 
+            // The texture obtained by ScreenCapture.CaptureScreenshotIntoRenderTexture is different between OpenGL and other Graphics APIs.
+            // In OpenGL, we got a texture that is not inverted, so need flip when sending.
             var isOpenGl = SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore ||
                            SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 ||
                            SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
