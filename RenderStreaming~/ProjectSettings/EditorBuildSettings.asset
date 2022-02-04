@@ -38,4 +38,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Samples/Example/Multiplay/Multiplay.unity
     guid: e807d14debe77b243882e9e5949c104d
-  m_configObjects: {}
+  m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 3484399237ac7f4489fe37bf114d4c3d,
+      type: 2}
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 8c1796da6b9ff3a409077a9bd90a4acf,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 66105b57eda77e74db55e7eb2b532054,
+      type: 2}
