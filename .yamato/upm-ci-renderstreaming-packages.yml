@@ -33,7 +33,7 @@ build_{{ package.name }}_{{ editor.version }}_ios:
     - unity-downloader-cli -c Editor -c iOS -u {{ editor.version }} --fast -w
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr --output utr
     - chmod +x ./utr
-    - ./utr --suite=playmode --platform=iOS --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=ARM64 --artifacts_path=build/logs --build-only
+    - ./utr --suite=playmode --platform=iOS --editor-location=.Editor --testproject=TestProjects/Empty --player-save-path=build/players --architecture=ARM64 --artifacts_path=build/logs --build-only
   artifacts:
     players:
       paths:
@@ -77,13 +77,13 @@ build_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
       find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
       cp -rf upm-ci~/package/Runtime/Plugins Runtime/
 {% if target.name == "vulkan" -%}
-      cp -f RenderStreaming~/ProjectSettings/ProjectSettings-android-vulkan.asset RenderStreaming~/ProjectSettings/ProjectSettings.asset
+      cp -f TestProjects/Empty/ProjectSettings/ProjectSettings-android-vulkan.asset TestProjects/Empty/ProjectSettings/ProjectSettings.asset
 {% endif -%}
     - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - unity-downloader-cli -c Editor -c Android -u {{ editor.version }} --fast -w
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr --output utr
     - chmod +x ./utr
-    - ./utr --suite=playmode --platform=Android --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=ARM64 --artifacts_path=build/logs --scripting-backend=il2cpp --build-only
+    - ./utr --suite=playmode --platform=Android --editor-location=.Editor --testproject=TestProjects/Empty --player-save-path=build/players --architecture=ARM64 --artifacts_path=build/logs --scripting-backend=il2cpp --build-only
   artifacts:
     players:
       paths:
@@ -206,7 +206,7 @@ build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.na
     - unity-downloader-cli -c Editor -c {{ param.additional_component_arg }} -u {{ editor.version }} --fast -w
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr --output utr
     - chmod +x ./utr
-    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=RenderStreaming~ --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only --timeout=3000 --testfilter=!HttpSignaling
+    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=TestProjects/Empty --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only --timeout=3000 --testfilter=!HttpSignaling
   artifacts:
     players:
       paths:
@@ -256,7 +256,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   variables:
       TEMPLATE_FILE: BuildScripts~/template/remote.sh.template
       PACKAGE_DIR: UnityRenderStreaming
-      TEST_PROJECT_DIR: UnityRenderStreaming/RenderStreaming~
+      TEST_PROJECT_DIR: UnityRenderStreaming/TestProjects/Empty
       TEST_RESULT_DIR: upm-ci~/test-results/
       WEBAPP_DIR: UnityRenderStreaming/WebApp/bin~
       WEBAPP_NAME: {{ platform.packed_webapp_name }}
