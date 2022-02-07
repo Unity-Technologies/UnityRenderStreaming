@@ -39,20 +39,17 @@ namespace Unity.RenderStreaming
 
         private void StartedStream(string connectionId)
         {
-            var audioTrack = Track as AudioStreamTrack;
-            audioTrack.OnAudioReceived += OnAudioReceived;
+            if (Track is AudioStreamTrack audioTrack)
+            {
+                m_renderer = audioTrack.Renderer.clip;
+                OnUpdateReceiveAudioClip?.Invoke(m_renderer);
+            }
         }
 
         private void StoppedStream(string connectionId)
         {
             m_renderer = null;
             OnUpdateReceiveAudioClip?.Invoke(null);
-        }
-
-        private void OnAudioReceived(AudioClip clip)
-        {
-            m_renderer = clip;
-            OnUpdateReceiveAudioClip?.Invoke(clip);
         }
     }
 }

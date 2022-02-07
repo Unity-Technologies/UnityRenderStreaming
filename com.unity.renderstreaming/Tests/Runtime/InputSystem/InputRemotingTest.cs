@@ -117,6 +117,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // If target1 processes resent　Offer from target2, target1 is not stable.
             Assert.That(_target2.IsStable(connectionId), Is.True);
+
+            yield return new WaitUntil(() => _channel1 != null);
+            Assert.That(_channel1.ReadyState, Is.EqualTo(RTCDataChannelState.Open));
         }
 
         [UnityTearDown]
@@ -133,7 +136,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             _channel1.Dispose();
             _channel2.Dispose();
-
+            _channel1 = null;
+            _channel2 = null;
             _test.component.StopAllCoroutines();
             _target1.Dispose();
             _target2.Dispose();
@@ -157,6 +161,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             senderInput.StartSending();
             senderInput.StopSending();
             senderDisposer.Dispose();
+            sender.Dispose();
         }
 
         [Test]
