@@ -6,6 +6,7 @@ const remoteVideo = document.getElementById('remote_video');
 const textForConnectionId = document.getElementById('text_for_connection_id');
 textForConnectionId.value = getRandom();
 let videoSelect = document.querySelector('select#videoSource');
+let audioSelect = document.querySelector('select#audioSource');
 
 setUpVideoSelect();
 
@@ -46,7 +47,7 @@ async function startVideo() {
   videoSelect.disabled = true;
   startButton.disabled = true;
   setupButton.disabled = false;
-  await sendVideo.startVideo(localVideo, videoSelect.value);
+  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value);
 }
 
 async function setUp() {
@@ -81,6 +82,11 @@ async function setUpVideoSelect() {
       option.value = deviceInfo.deviceId;  
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
       videoSelect.appendChild(option);
+    } else if (deviceInfo.kind === 'audioinput') {
+      const option = document.createElement('option');
+      option.value = deviceInfo.deviceId;  
+      option.text = deviceInfo.label || `mic ${audioSelect.length + 1}`;
+      audioSelect.appendChild(option);
     }
   }
 }
