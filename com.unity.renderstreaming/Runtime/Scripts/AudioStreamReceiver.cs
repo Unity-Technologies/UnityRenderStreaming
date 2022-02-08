@@ -12,12 +12,12 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="clip"></param>
-        public delegate void OnUpdateReceiveAudioClipHandler(AudioClip clip);
+        public delegate void OnUpdateReceiveAudioSourceHandler(AudioSource source);
 
         /// <summary>
         ///
         /// </summary>
-        public OnUpdateReceiveAudioClipHandler OnUpdateReceiveAudioClip;
+        public OnUpdateReceiveAudioSourceHandler OnUpdateReceiveAudioSource;
 
         /// <summary>
         ///
@@ -27,9 +27,18 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public AudioClip Clip => m_renderer;
+        public AudioSource Source => m_source;
 
-        private AudioClip m_renderer;
+        private AudioSource m_source;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        public void SetSource(AudioSource source)
+        {
+            m_source = source;
+        }
 
         protected virtual void Start()
         {
@@ -41,15 +50,15 @@ namespace Unity.RenderStreaming
         {
             if (Track is AudioStreamTrack audioTrack)
             {
-                m_renderer = audioTrack.Renderer.clip;
-                OnUpdateReceiveAudioClip?.Invoke(m_renderer);
+                m_source?.SetTrack(audioTrack);
+                OnUpdateReceiveAudioSource?.Invoke(m_source);
             }
         }
 
         private void StoppedStream(string connectionId)
         {
-            m_renderer = null;
-            OnUpdateReceiveAudioClip?.Invoke(null);
+            m_source = null;
+            OnUpdateReceiveAudioSource?.Invoke(null);
         }
     }
 }

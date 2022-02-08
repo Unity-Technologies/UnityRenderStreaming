@@ -28,11 +28,11 @@ namespace Unity.RenderStreaming.Samples
             if(connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
-            receiveAudioViewer.OnUpdateReceiveAudioClip += clip =>
+            receiveAudioViewer.SetSource(remoteAudioSource);
+            receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
-                remoteAudioSource.clip = clip;
-                remoteAudioSource.loop = true;
-                remoteAudioSource.Play();
+                source.loop = true;
+                source.Play();
             };
         }
 
