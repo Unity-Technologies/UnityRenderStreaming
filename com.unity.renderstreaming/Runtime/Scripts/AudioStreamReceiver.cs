@@ -57,7 +57,7 @@ namespace Unity.RenderStreaming
 
         private void StoppedStream(string connectionId)
         {
-            m_source?.SetTrack(null);
+            m_source = null;
             OnUpdateReceiveAudioSource?.Invoke(null);
         }
     }
