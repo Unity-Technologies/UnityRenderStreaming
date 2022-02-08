@@ -8,7 +8,7 @@ textForConnectionId.value = getRandom();
 let videoSelect = document.querySelector('select#videoSource');
 let audioSelect = document.querySelector('select#audioSource');
 
-setUpVideoSelect();
+setUpInputSelect();
 
 let sendVideo = new SendVideo();
 sendVideo.ondisconnect = () => hangUp();
@@ -45,6 +45,7 @@ function showWarningIfNeeded(startupMode) {
 
 async function startVideo() {
   videoSelect.disabled = true;
+  audioSelect.disabled = true;
   startButton.disabled = true;
   setupButton.disabled = false;
   await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value);
@@ -72,7 +73,7 @@ function getRandom() {
   return (Array(length).join('0') + number).slice(-length);
 }
 
-async function setUpVideoSelect() {
+async function setUpInputSelect() {
   const deviceInfos = await navigator.mediaDevices.enumerateDevices();
 
   for (let i = 0; i !== deviceInfos.length; ++i) {
