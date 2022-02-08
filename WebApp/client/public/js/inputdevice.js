@@ -103,7 +103,7 @@ export class Keyboard extends InputDevice {
    * @param {KeyboardEvent} event 
    */
   queueEvent(event) {
-    this.updateState(new KeyboardState(event));
+    this.updateState(new KeyboardState(event, this.currentState));
   }
 }
 
@@ -283,9 +283,13 @@ export class KeyboardState extends IInputState {
   /**
    * @param {KeyboardEvent} event 
    */
-  constructor(event) {
+  constructor(event, state) {
     super();
-    this.keys = new ArrayBuffer(KeyboardState.sizeInBytes);
+    if (state == null || state.keys == null) {
+      this.keys = new ArrayBuffer(KeyboardState.sizeInBytes);
+    } else {
+      this.keys = state.keys;
+    }
     let value = false;
     switch(event.type) {
       case 'keydown':
