@@ -194,40 +194,6 @@ namespace Unity.RenderStreaming.InputSystem
             _corrector.inputRegion = inputRegion;
             _corrector.outputRegion = outputRegion;
         }
-
-        //unsafe void OnPointerEvent(ref InputEventPtr ptr, InputDevice device)
-        //{
-        //    // Allocate memory and copy InputEventPtr
-        //    InputEventPtr dst = (InputEventPtr)
-        //        UnsafeUtility.Malloc(ptr.sizeInBytes, 4, Collections.Allocator.Temp);
-        //    UnsafeUtility.MemCpy(dst, ptr, ptr.sizeInBytes);
-
-        //    // Mapping 
-        //    PointerMap((StateEvent*)dst.data, device);
-
-        //    base.QueueEvent(dst);
-
-        //    // Free memory
-        //    UnsafeUtility.Free(dst, Collections.Allocator.Temp);
-        //}
-
-        //Vector2 Translate(ref Vector2 position)
-        //{
-        //    Rect region = new Rect(0, 0, 1280, 720);
-        //    Vector2 frameSize = new Vector2(Screen.width, Screen.height);
-        //    return Rect.PointToNormalized(region, position) * frameSize;
-        //}
-
-        //unsafe void PointerMap(StateEvent* data, InputDevice device)
-        //{
-        //    switch (device)
-        //    {
-        //        case Mouse mouse:
-        //            MouseState* mouseState = (MouseState*)data->state;
-        //            mouseState->position = Translate(ref mouseState->position);
-        //            break;
-        //    }
-        //}
     }
 }
 // #endif
