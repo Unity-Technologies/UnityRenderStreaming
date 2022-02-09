@@ -35,15 +35,23 @@ namespace Unity.RenderStreaming
             base.SetChannel(connectionId, channel);
         }
 
-        public void SetCorrectPointerPositionInfo(Vector2Int frameSize, Rect region)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Texture Size.</param>
+        /// <param name="region">Region of the texture in world coordinate system.</param>
+        public void SetInputRange(Rect region, Vector2Int size)
         {
-            sender.FrameSize = frameSize;
-            sender.Region = region;
+            sender.SetInputRange(region, new Rect(Vector2.zero, size));
         }
 
-        public void EnableCorrectPointerPosition(bool enabled)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void EnableInputPositionCorrection(bool enabled)
         {
-            sender.EnableCorrectPointerPosition = enabled;
+            sender.EnableInputPositionCorrection = enabled;
         }
 
         void OnOpen()

@@ -1,10 +1,31 @@
 using System;
-using Unity.RenderStreaming.Samples;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
+    static class InputSenderExtension
+    {
+        public static void SetInputRange(this InputSender sender, RawImage image)
+        {
+            // correct pointer position
+            Vector3[] corners = new Vector3[4];
+            image.rectTransform.GetWorldCorners(corners);
+            Camera camera = image.canvas.worldCamera;
+            var corner0 = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+            var corner2 = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+            var region = new Rect(
+                corner0.x,
+                corner0.y,
+                corner2.x - corner0.x,
+                corner2.y - corner0.y
+                );
+
+            var size = new Vector2Int(image.texture.width, image.texture.height);
+            sender.SetInputRange(region, size);
+        }
+    }
+
     class ReceiverSample : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -20,6 +41,7 @@ namespace Unity.RenderStreaming.Samples
 #pragma warning restore 0649
 
         private string connectionId;
+        private InputSender inputSender;
 
         void Awake()
         {
@@ -44,34 +66,27 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling);
+            inputSender = GetComponent<InputSender>();
+            inputSender.OnStartedChannel += OnStartedChannel;
         }
 
         void OnUpdateReceiveTexture(Texture texture)
         {
             remoteVideoImage.texture = texture;
+            if (inputSender.IsConnected)
+                SetInputChange();
+        }
 
-            // correct pointer position
-            InputSender inputSender = GetComponent<InputSender>();
-            Vector3[] corners = new Vector3[4];
-            remoteVideoImage.rectTransform.GetWorldCorners(corners);
-            Camera camera = remoteVideoImage.canvas.worldCamera;
-            var corner0 = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
-            var corner2 = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+        void OnStartedChannel(string connectionId)
+        {
+            if (remoteVideoImage.texture != null)
+                SetInputChange();
+        }
 
-            var rect = new Rect(
-                corner0.x,
-                corner0.y,
-                corner2.x - corner0.x,
-                corner2.y - corner0.y
-                );
-
-            // todo(kazuki)::
-            // This texture size is determined receiver side, so the
-            // correction process is not work correctly.
-            // We should fix that the sender size determine the size.
-            var size = new Vector2Int(texture.width, texture.height);
-            inputSender.SetCorrectPointerPositionInfo(size, rect);
-            inputSender.EnableCorrectPointerPosition(true);
+        void SetInputChange()
+        {
+            inputSender.SetInputRange(remoteVideoImage);
+            inputSender.EnableInputPositionCorrection(true);
         }
 
         private void OnStart()

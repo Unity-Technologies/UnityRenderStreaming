@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.WebRTC;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -17,11 +16,17 @@ namespace Unity.RenderStreaming.InputSystem
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
         public override event Action<string, InputControlLayoutChange> onLayoutChange;
 
+        private InputPositionCorrector _corrector;
+        private Action<InputEventPtr, InputDevice> _onEvent;
+
         public Sender()
         {
             InputSystem.onEvent += OnEvent;
             InputSystem.onDeviceChange += OnDeviceChange;
             InputSystem.onLayoutChange += OnLayoutChange;
+
+            _onEvent = (InputEventPtr ptr, InputDevice device) => { onEvent?.Invoke(ptr, device); };
+            _corrector = new InputPositionCorrector(_onEvent);
         }
 
         ~Sender()
@@ -36,6 +41,9 @@ namespace Unity.RenderStreaming.InputSystem
             InputSystem.onLayoutChange -= OnLayoutChange;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override ReadOnlyArray<InputDevice> devices
         {
             get
@@ -44,6 +52,9 @@ namespace Unity.RenderStreaming.InputSystem
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override IEnumerable<string> layouts
         {
             get
@@ -53,51 +64,28 @@ namespace Unity.RenderStreaming.InputSystem
             }
         }
 
-        public bool EnableCorrectPointerPosition { set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool EnableInputPositionCorrection { set; get; }
 
-        public Vector2Int FrameSize { set; get; }
-
-        public Rect Region { set; get; }
-
-
-        Vector2 Translate(ref Vector2 position)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputRegion"></param>
+        /// <param name="outputRegion"></param>
+        public void SetInputRange(Rect inputRegion, Rect outputRegion)
         {
-            return Rect.PointToNormalized(Region, position) * FrameSize;
-        }
-
-        unsafe void PointerMap(StateEvent* data, InputDevice device)
-        {
-            switch (device)
-            {
-                case Mouse mouse:
-                    MouseState* mouseState = (MouseState*)data->state;
-                    mouseState->position = Translate(ref mouseState->position);
-                    break;
-            }
-        }
-
-        unsafe void OnPointerEvent(ref InputEventPtr ptr, InputDevice device)
-        {
-            // Allocate memory and copy InputEventPtr
-            InputEventPtr dst = (InputEventPtr)
-                UnsafeUtility.Malloc(ptr.sizeInBytes, 4, Collections.Allocator.Temp);
-            UnsafeUtility.MemCpy(dst, ptr, ptr.sizeInBytes);
-
-            // Mapping 
-            PointerMap((StateEvent*)dst.data, device);
-
-            onEvent?.Invoke(dst, device);
-
-            // Free memory
-            UnsafeUtility.Free(dst, Collections.Allocator.Temp);
+            _corrector.inputRegion = inputRegion;
+            _corrector.outputRegion = outputRegion;
         }
 
         private void OnEvent(InputEventPtr ptr, InputDevice device)
         {
             // mapping sender coordinate system to receiver one.
-            if (EnableCorrectPointerPosition && device is Pointer && ptr.IsA<StateEvent>())
+            if (EnableInputPositionCorrection && device is Pointer && ptr.IsA<StateEvent>())
             {
-                OnPointerEvent(ref ptr, device);
+                _corrector.Invoke(ptr, device);
             }
             else
             {

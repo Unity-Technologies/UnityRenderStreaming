@@ -26,6 +26,12 @@ namespace Unity.RenderStreaming.InputSystem
 
         private readonly Dictionary<string, string> _remoteLayouts = new Dictionary<string, string>();
         private readonly List<string> _registeredRemoteLayout = new List<string>();
+        private InputPositionCorrector _corrector;
+        private Action<InputEventPtr, InputDevice> _onEvent;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool EnableInputPositionCorrection { set; get; }
 
         /// <summary>
         ///
@@ -35,6 +41,9 @@ namespace Unity.RenderStreaming.InputSystem
         {
             _channel = channel ?? throw new ArgumentNullException("channel is null");
             _channel.OnMessage += OnMessage;
+
+            _onEvent = (InputEventPtr ptr, InputDevice device) => { base.QueueEvent(ptr); };
+            _corrector = new InputPositionCorrector(_onEvent);
         }
 
         ~Receiver()
@@ -160,47 +169,65 @@ namespace Unity.RenderStreaming.InputSystem
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Removed);
         }
 
-        public override void QueueEvent(InputEventPtr eventPtr)
+        public override void QueueEvent(InputEventPtr ptr)
         {
-            // Transform the coord system
-            //base.QueueEvent(eventPtr);
-            InputDevice device = InputSystem.GetDeviceById(eventPtr.deviceId);
-            OnPointerEvent(ref eventPtr, device);
-        }
+            InputDevice device = InputSystem.GetDeviceById(ptr.deviceId);
 
-        unsafe void OnPointerEvent(ref InputEventPtr ptr, InputDevice device)
-        {
-            // Allocate memory and copy InputEventPtr
-            InputEventPtr dst = (InputEventPtr)
-                UnsafeUtility.Malloc(ptr.sizeInBytes, 4, Collections.Allocator.Temp);
-            UnsafeUtility.MemCpy(dst, ptr, ptr.sizeInBytes);
-
-            // Mapping 
-            PointerMap((StateEvent*)dst.data, device);
-
-            base.QueueEvent(dst);
-
-            // Free memory
-            UnsafeUtility.Free(dst, Collections.Allocator.Temp);
-        }
-
-        Vector2 Translate(ref Vector2 position)
-        {
-            Rect region = new Rect(0, 0, 1280, 720);
-            Vector2 frameSize = new Vector2(Screen.width, Screen.height);
-            return Rect.PointToNormalized(region, position) * frameSize;
-        }
-
-        unsafe void PointerMap(StateEvent* data, InputDevice device)
-        {
-            switch (device)
+            // mapping sender coordinate system to receiver one.
+            if (EnableInputPositionCorrection && device is Pointer && ptr.IsA<StateEvent>())
             {
-                case Mouse mouse:
-                    MouseState* mouseState = (MouseState*)data->state;
-                    mouseState->position = Translate(ref mouseState->position);
-                    break;
+                _corrector.Invoke(ptr, device);
+            }
+            else
+            {
+                base.QueueEvent(ptr);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Texture Size.</param>
+        /// <param name="region">Region of the texture in world coordinate system.</param>
+        public void SetInputRange(Rect inputRegion, Rect outputRegion)
+        {
+            _corrector.inputRegion = inputRegion;
+            _corrector.outputRegion = outputRegion;
+        }
+
+        //unsafe void OnPointerEvent(ref InputEventPtr ptr, InputDevice device)
+        //{
+        //    // Allocate memory and copy InputEventPtr
+        //    InputEventPtr dst = (InputEventPtr)
+        //        UnsafeUtility.Malloc(ptr.sizeInBytes, 4, Collections.Allocator.Temp);
+        //    UnsafeUtility.MemCpy(dst, ptr, ptr.sizeInBytes);
+
+        //    // Mapping 
+        //    PointerMap((StateEvent*)dst.data, device);
+
+        //    base.QueueEvent(dst);
+
+        //    // Free memory
+        //    UnsafeUtility.Free(dst, Collections.Allocator.Temp);
+        //}
+
+        //Vector2 Translate(ref Vector2 position)
+        //{
+        //    Rect region = new Rect(0, 0, 1280, 720);
+        //    Vector2 frameSize = new Vector2(Screen.width, Screen.height);
+        //    return Rect.PointToNormalized(region, position) * frameSize;
+        //}
+
+        //unsafe void PointerMap(StateEvent* data, InputDevice device)
+        //{
+        //    switch (device)
+        //    {
+        //        case Mouse mouse:
+        //            MouseState* mouseState = (MouseState*)data->state;
+        //            mouseState->position = Translate(ref mouseState->position);
+        //            break;
+        //    }
+        //}
     }
 }
 // #endif
