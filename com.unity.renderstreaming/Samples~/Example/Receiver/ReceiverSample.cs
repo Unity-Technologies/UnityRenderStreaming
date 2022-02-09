@@ -73,18 +73,18 @@ namespace Unity.RenderStreaming.Samples
         void OnUpdateReceiveTexture(Texture texture)
         {
             remoteVideoImage.texture = texture;
-            if (inputSender.IsConnected)
-                SetInputChange();
+            SetInputChange();
         }
 
         void OnStartedChannel(string connectionId)
         {
-            if (remoteVideoImage.texture != null)
-                SetInputChange();
+            SetInputChange();
         }
 
         void SetInputChange()
         {
+            if (!inputSender.IsConnected || remoteVideoImage.texture == null)
+                return;
             inputSender.SetInputRange(remoteVideoImage);
             inputSender.EnableInputPositionCorrection(true);
         }
