@@ -10,10 +10,14 @@ export class SendVideo {
     this.ondisconnect = function () { };
   }
 
-  async startVideo(localVideo, videoSource) {
+  async startVideo(localVideo, videoSource, audioSource) {
     try {
       this.localVideo = localVideo;
-      this.localStream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: videoSource ? { exact: videoSource } : undefined } });
+      const constraints = {
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined },
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined }
+      };
+      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
       this.localVideo.srcObject = this.localStream;
       await localVideo.play();
     } catch (err) {
@@ -90,13 +94,11 @@ export class SendVideo {
     });
     this.pc.addEventListener('trackevent', (e) => {
       const trackEvent = e.detail;
-      if (trackEvent.track.kind != "video") {
-        return;
-      }
-
       const direction = trackEvent.transceiver.direction;
       if (direction == "sendrecv" || direction == "recvonly") {
-        _this.remoteVideo.srcObject = new MediaStream();
+        if (_this.remoteVideo.srcObject == null) {
+          _this.remoteVideo.srcObject = new MediaStream();
+        }
         _this.remoteVideo.srcObject.addTrack(trackEvent.track);
       }
     });
@@ -116,8 +118,10 @@ export class SendVideo {
 
   addTracks(connectionId) {
     const _this = this;
-    const track = _this.localVideo.srcObject.getTracks().find(x => x.kind == 'video');
-    _this.pc.addTrack(connectionId, track);
+    const tracks = _this.localVideo.srcObject.getTracks();
+    for(const track of tracks) {
+      _this.pc.addTrack(connectionId, track);
+    }
   }
 
   async hangUp(connectionId) {
