@@ -1,4 +1,5 @@
 using System;
+using Unity.Collections;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -66,13 +67,20 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
+            NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
             try
             {
-                track?.SetData(data, channels, m_sampleRate);
+                track?.SetData(ref nativeArray, channels, m_sampleRate);
             }
-            catch (InvalidOperationException)
+            // todo(kazuki):: Should catch only ObjectDisposedException but 
+            // AudioStreamTrack also throws NullReferenceException.
+            catch (Exception)
             {
                 track = null;
+            }
+            finally
+            {
+                nativeArray.Dispose();
             }
         }
     }
