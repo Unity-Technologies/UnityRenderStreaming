@@ -9,38 +9,20 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamSender : StreamSenderBase
     {
-        [SerializeField, Tooltip("Play microphone input (Required)")]
-        protected AudioSource audioSource;
         protected AudioStreamTrack track;
 
-        int _sampleRate = 0;
+        int m_sampleRate = 0;
 
-        public AudioSource AudioSource
-        {
-            set
-            {
-                audioSource = value;
-                _sampleRate = audioSource.clip.samples;
-            }
-            get
-            {
-                return audioSource;
-            }
-        }
 
         protected virtual void Awake()
         {
-            if(audioSource != null && audioSource.clip != null)
-            {
-                _sampleRate = audioSource.clip.samples;
-            }
-            else
-            {
-                _sampleRate = AudioSettings.outputSampleRate;
-            }
-
             OnStartedStream += _OnStartedStream;
             OnStoppedStream += _OnStoppedStream;
+        }
+
+        void OnAudioConfigurationChanged(bool deviceWasChanged)
+        {
+            m_sampleRate = AudioSettings.outputSampleRate;
         }
 
         void _OnStartedStream(string connectionId)
@@ -60,11 +42,8 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnEnable()
         {
-            if (audioSource == null)
-            {
-                Debug.LogFormat("AudioSource required");
-                return;
-            }
+            OnAudioConfigurationChanged(false);
+            AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
 
             if (track != null)
                 track.Enabled = true;
@@ -72,6 +51,8 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnDisable()
         {
+            AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
+
             try
             {
                 if (track != null)
@@ -81,21 +62,13 @@ namespace Unity.RenderStreaming
             {
                 track = null;
             }
-
-            if (audioSource == null)
-            {
-                return;
-            }
-
-            audioSource.Stop();
-            audioSource.clip = null;
         }
 
         protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
             try
             {
-                track?.SetData(data, channels, _sampleRate);
+                track?.SetData(data, channels, m_sampleRate);
             }
             catch (InvalidOperationException)
             {

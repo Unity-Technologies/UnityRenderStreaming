@@ -6,14 +6,13 @@ namespace Unity.RenderStreaming
 {
     public class MicrophoneStreamSender : AudioStreamSender
     {
+        [SerializeField, Tooltip("Play microphone input (Required)")]
+        protected AudioSource audioSource;
+
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
 
         public IEnumerable<string> MicrophoneNameList => Microphone.devices;
-
-        protected override void Awake()
-        {
-        }
 
         protected override void OnEnable()
         {
@@ -35,6 +34,17 @@ namespace Unity.RenderStreaming
             audioSource.clip = micClip;
             audioSource.loop = true;
             audioSource.Play();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (audioSource == null)
+                return;
+
+            audioSource.Stop();
+            audioSource.clip = null;
         }
 
         public void SetDeviceIndex(int index)
