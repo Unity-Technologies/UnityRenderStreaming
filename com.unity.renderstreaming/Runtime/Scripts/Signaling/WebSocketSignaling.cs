@@ -263,6 +263,7 @@ namespace Unity.RenderStreaming.Signaling
 
             m_wsCloseEvent.Set();
             m_webSocket = null;
+            m_running = false;
         }
 
         private void WSSend(object data)
