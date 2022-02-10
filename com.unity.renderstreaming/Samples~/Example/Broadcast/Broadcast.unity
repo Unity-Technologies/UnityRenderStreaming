@@ -2343,6 +2343,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderStreaming: {fileID: 1623734776}
+  inputReceiver: {fileID: 725451153}
+  videoStreamSender: {fileID: 725451156}
 --- !u!1 &2061595961
 GameObject:
   m_ObjectHideFlags: 0

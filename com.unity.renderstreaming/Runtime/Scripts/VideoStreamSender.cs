@@ -27,7 +27,7 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         [SerializeField, StreamingSize]
-        protected Vector2Int streamingSize = new Vector2Int(1280, 720);
+        public Vector2Int streamingSize = new Vector2Int(1280, 720);
 
         /// <summary>
         ///

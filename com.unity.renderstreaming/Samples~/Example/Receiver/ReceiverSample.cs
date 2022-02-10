@@ -1,10 +1,31 @@
 using System;
-using Unity.RenderStreaming.Samples;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
+    static class InputSenderExtension
+    {
+        public static void SetInputRange(this InputSender sender, RawImage image)
+        {
+            // correct pointer position
+            Vector3[] corners = new Vector3[4];
+            image.rectTransform.GetWorldCorners(corners);
+            Camera camera = image.canvas.worldCamera;
+            var corner0 = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+            var corner2 = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+            var region = new Rect(
+                corner0.x,
+                corner0.y,
+                corner2.x - corner0.x,
+                corner2.y - corner0.y
+                );
+
+            var size = new Vector2Int(image.texture.width, image.texture.height);
+            sender.SetInputRange(region, size);
+        }
+    }
+
     class ReceiverSample : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -20,6 +41,7 @@ namespace Unity.RenderStreaming.Samples
 #pragma warning restore 0649
 
         private string connectionId;
+        private InputSender inputSender;
 
         void Awake()
         {
@@ -27,7 +49,8 @@ namespace Unity.RenderStreaming.Samples
             stopButton.onClick.AddListener(OnStop);
             if(connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
-            receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+
+            receiveVideoViewer.OnUpdateReceiveTexture += OnUpdateReceiveTexture;
             receiveAudioViewer.SetSource(remoteAudioSource);
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
@@ -43,6 +66,27 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling);
+            inputSender = GetComponent<InputSender>();
+            inputSender.OnStartedChannel += OnStartedChannel;
+        }
+
+        void OnUpdateReceiveTexture(Texture texture)
+        {
+            remoteVideoImage.texture = texture;
+            SetInputChange();
+        }
+
+        void OnStartedChannel(string connectionId)
+        {
+            SetInputChange();
+        }
+
+        void SetInputChange()
+        {
+            if (!inputSender.IsConnected || remoteVideoImage.texture == null)
+                return;
+            inputSender.SetInputRange(remoteVideoImage);
+            inputSender.EnableInputPositionCorrection(true);
         }
 
         private void OnStart()

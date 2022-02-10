@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.WebRTC;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
@@ -15,11 +16,17 @@ namespace Unity.RenderStreaming.InputSystem
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
         public override event Action<string, InputControlLayoutChange> onLayoutChange;
 
+        private InputPositionCorrector _corrector;
+        private Action<InputEventPtr, InputDevice> _onEvent;
+
         public Sender()
         {
             InputSystem.onEvent += OnEvent;
             InputSystem.onDeviceChange += OnDeviceChange;
             InputSystem.onLayoutChange += OnLayoutChange;
+
+            _onEvent = (InputEventPtr ptr, InputDevice device) => { onEvent?.Invoke(ptr, device); };
+            _corrector = new InputPositionCorrector(_onEvent);
         }
 
         ~Sender()
@@ -34,6 +41,9 @@ namespace Unity.RenderStreaming.InputSystem
             InputSystem.onLayoutChange -= OnLayoutChange;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override ReadOnlyArray<InputDevice> devices
         {
             get
@@ -42,6 +52,9 @@ namespace Unity.RenderStreaming.InputSystem
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override IEnumerable<string> layouts
         {
             get
@@ -51,10 +64,35 @@ namespace Unity.RenderStreaming.InputSystem
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool EnableInputPositionCorrection { set; get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputRegion"></param>
+        /// <param name="outputRegion"></param>
+        public void SetInputRange(Rect inputRegion, Rect outputRegion)
+        {
+            _corrector.inputRegion = inputRegion;
+            _corrector.outputRegion = outputRegion;
+        }
+
         private void OnEvent(InputEventPtr ptr, InputDevice device)
         {
-            onEvent?.Invoke(ptr, device);
+            // mapping sender coordinate system to receiver one.
+            if (EnableInputPositionCorrection && device is Pointer && ptr.IsA<StateEvent>())
+            {
+                _corrector.Invoke(ptr, device);
+            }
+            else
+            {
+                onEvent?.Invoke(ptr, device);
+            }
         }
+
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
             onDeviceChange?.Invoke(device, change);

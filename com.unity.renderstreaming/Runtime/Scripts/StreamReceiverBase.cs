@@ -8,12 +8,24 @@ namespace Unity.RenderStreaming
     /// </summary>
     public abstract class StreamReceiverBase : MonoBehaviour, IStreamReceiver
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public RTCRtpReceiver Receiver => m_receiver;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public OnStartedStreamHandler OnStartedStream { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public OnStoppedStreamHandler OnStoppedStream { get; set; }
+
 
         private RTCRtpReceiver m_receiver;
 
-        public OnStartedStreamHandler OnStartedStream { get; set; }
-        public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
         /// <summary>
         ///

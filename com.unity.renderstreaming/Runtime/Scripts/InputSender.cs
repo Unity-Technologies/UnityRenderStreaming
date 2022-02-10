@@ -1,5 +1,6 @@
 using System;
 using Unity.WebRTC;
+using UnityEngine;
 using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming
@@ -32,6 +33,25 @@ namespace Unity.RenderStreaming
                 channel.OnClose += OnClose;
             }
             base.SetChannel(connectionId, channel);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Texture Size.</param>
+        /// <param name="region">Region of the texture in world coordinate system.</param>
+        public void SetInputRange(Rect region, Vector2Int size)
+        {
+            sender.SetInputRange(region, new Rect(Vector2.zero, size));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enabled"></param>
+        public void EnableInputPositionCorrection(bool enabled)
+        {
+            sender.EnableInputPositionCorrection = enabled;
         }
 
         void OnOpen()

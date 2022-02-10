@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.WebRTC;
+using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Unity.RenderStreaming.InputSystem
@@ -23,6 +26,12 @@ namespace Unity.RenderStreaming.InputSystem
 
         private readonly Dictionary<string, string> _remoteLayouts = new Dictionary<string, string>();
         private readonly List<string> _registeredRemoteLayout = new List<string>();
+        private InputPositionCorrector _corrector;
+        private Action<InputEventPtr, InputDevice> _onEvent;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool EnableInputPositionCorrection { set; get; }
 
         /// <summary>
         ///
@@ -32,6 +41,9 @@ namespace Unity.RenderStreaming.InputSystem
         {
             _channel = channel ?? throw new ArgumentNullException("channel is null");
             _channel.OnMessage += OnMessage;
+
+            _onEvent = (InputEventPtr ptr, InputDevice device) => { base.QueueEvent(ptr); };
+            _corrector = new InputPositionCorrector(_onEvent);
         }
 
         ~Receiver()
@@ -155,6 +167,32 @@ namespace Unity.RenderStreaming.InputSystem
             }
             _remoteLayouts.Remove(name);
             onLayoutChange?.Invoke(name, InputControlLayoutChange.Removed);
+        }
+
+        public override void QueueEvent(InputEventPtr ptr)
+        {
+            InputDevice device = InputSystem.GetDeviceById(ptr.deviceId);
+
+            // mapping sender coordinate system to receiver one.
+            if (EnableInputPositionCorrection && device is Pointer && ptr.IsA<StateEvent>())
+            {
+                _corrector.Invoke(ptr, device);
+            }
+            else
+            {
+                base.QueueEvent(ptr);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Texture Size.</param>
+        /// <param name="region">Region of the texture in world coordinate system.</param>
+        public void SetInputRange(Rect inputRegion, Rect outputRegion)
+        {
+            _corrector.inputRegion = inputRegion;
+            _corrector.outputRegion = outputRegion;
         }
     }
 }
