@@ -9,41 +9,11 @@ using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 #if URS_USE_AR_SUBSYSTEMS
 using UnityEngine.XR.ARSubsystems;
 #endif
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Samples
 {
     using UnityInputSystem = UnityEngine.InputSystem.InputSystem;
 
-    public interface IInput
-    {
-        Mouse RemoteMouse { get; }
-        Keyboard RemoteKeyboard { get; }
-        Touchscreen RemoteTouchscreen { get; }
-        Gamepad RemoteGamepad { get; }
-    }
 
-    public class DefaultInput : IInput
-    {
-        public Mouse RemoteMouse { get; }
-        public Keyboard RemoteKeyboard { get; }
-        public Touchscreen RemoteTouchscreen { get; }
-        public Gamepad RemoteGamepad { get; }
-
-        public DefaultInput()
-        {
-            RemoteMouse = Mouse.current != null ? Mouse.current : UnityInputSystem.AddDevice<Mouse>();
-            RemoteKeyboard = Keyboard.current != null ? Keyboard.current : UnityInputSystem.AddDevice<Keyboard>();
-            RemoteTouchscreen = Touchscreen.current != null ? Touchscreen.current : UnityInputSystem.AddDevice<Touchscreen>();
-            RemoteGamepad = Gamepad.current != null ? Gamepad.current : UnityInputSystem.AddDevice<Gamepad>();
-        }
-
-        public void MakeCurrent()
-        {
-            RemoteMouse.MakeCurrent();
-            RemoteKeyboard.MakeCurrent();
-            RemoteTouchscreen.MakeCurrent();
-            RemoteGamepad.MakeCurrent();
-        }
-    }
 
     static class TouchScreenExtension
     {
@@ -54,7 +24,7 @@ namespace Unity.RenderStreaming
     }
 
     [RequireComponent(typeof(InputChannelReceiverBase))]
-    public class SimpleCameraController : MonoBehaviour
+    class SimpleCameraController : MonoBehaviour
     {
         class CameraState
         {

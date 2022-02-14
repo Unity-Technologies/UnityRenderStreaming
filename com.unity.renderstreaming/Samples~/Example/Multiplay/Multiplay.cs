@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class Multiplay : SignalingHandlerBase,
+    class Multiplay : SignalingHandlerBase,
         IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler
     {
         [SerializeField] GameObject prefab;

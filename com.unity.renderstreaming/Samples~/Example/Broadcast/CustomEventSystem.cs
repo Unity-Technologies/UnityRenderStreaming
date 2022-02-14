@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming.Samples
 {
     using InputSystem = UnityEngine.InputSystem.InputSystem;
 
-    public class CustomEventSystem : EventSystem
+    class CustomEventSystem : EventSystem
     {
 #if !INPUTSYSTEM_1_1_OR_NEWER
         protected override void Awake()

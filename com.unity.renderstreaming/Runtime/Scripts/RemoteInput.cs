@@ -54,7 +54,7 @@ namespace Unity.RenderStreaming
         Axis1
     }
 
-    public static class RemoteInputReceiver
+    internal static class RemoteInputReceiver
     {
         private static readonly Dictionary<RemoteInput, uint> s_mapRemoteInputAndInputUserId;
         private static readonly List<RemoteInput> s_listRemoteInput;
@@ -113,7 +113,15 @@ namespace Unity.RenderStreaming
         }
     }
 
-    public class RemoteInput : IInput, IDisposable
+    public interface IInput
+    {
+        Mouse RemoteMouse { get; }
+        Keyboard RemoteKeyboard { get; }
+        Touchscreen RemoteTouchscreen { get; }
+        Gamepad RemoteGamepad { get; }
+    }
+
+    internal class RemoteInput : IInput, IDisposable
     {
         private GamepadState m_gamepadState;
 

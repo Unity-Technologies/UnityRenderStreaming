@@ -4,7 +4,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class SimpleCameraControllerV2 : MonoBehaviour
+    class SimpleCameraControllerV2 : MonoBehaviour
     {
         class CameraState
         {

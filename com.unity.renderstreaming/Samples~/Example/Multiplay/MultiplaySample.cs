@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.RenderStreaming.InputSystem;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class MultiplaySample : MonoBehaviour
+    class MultiplaySample : MonoBehaviour
     {
         [SerializeField] ToggleGroup toggleGroupRole;
         [SerializeField] InputField inputFieldUsername;

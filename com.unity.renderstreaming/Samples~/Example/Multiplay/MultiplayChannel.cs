@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public enum ActionType
+    enum ActionType
     {
         ChangeLabel = 0,
     }
@@ -20,12 +20,12 @@ namespace Unity.RenderStreaming.Samples
     /// 
     /// </summary>
     [Serializable]
-    public class ChangeLabelEvent : UnityEvent<string> {};
+    class ChangeLabelEvent : UnityEvent<string> {};
 
     /// <summary>
     ///
     /// </summary>
-    public class MultiplayChannel : DataChannelBase
+    class MultiplayChannel : DataChannelBase
     {
         public ChangeLabelEvent OnChangeLabel;
 
