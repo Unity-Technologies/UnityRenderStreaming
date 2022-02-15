@@ -4,6 +4,14 @@ All notable changes to the render streaming template package will be documented 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.2] - 2022-02-15
+
+### Changed
+
+- Upgrading Unity version to `2020.3`
+- Upgrading RenderStreaming package to `3.1.0-exp.2`.
+- Upgrading HDRP package to `10.8.1`
+
 ## [3.0.0] - 2021-03-02
 
 Version 3.0.0 has a big change in the package design. This mainly addresses moving scripts from template to package.

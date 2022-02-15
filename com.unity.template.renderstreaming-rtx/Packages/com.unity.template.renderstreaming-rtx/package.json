@@ -1,7 +1,7 @@
 {
   "name": "com.unity.template.renderstreaming-rtx",
   "displayName": "Render Streaming Raytracing",
-  "version": "3.1.0-exp.1",
+  "version": "3.1.0-exp.2",
   "type": "template",
   "unity": "2020.3",
   "description": "This is HDRP Raytracing sample scene project integrated with Unity Render Streaming technology.\n\nAlong with its signaling web server, you could play around the scene in any webrtc supported web browser.",
