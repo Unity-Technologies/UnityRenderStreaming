@@ -82,12 +82,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.high-definition-config": {
-      "version": "file:../LocalPackages/com.unity.render-pipelines.high-definition-config",
-      "depth": 0,
-      "source": "local",
+      "version": "10.8.1",
+      "depth": 1,
+      "source": "registry",
       "dependencies": {
         "com.unity.render-pipelines.core": "10.8.1"
-      }
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.renderstreaming": {
       "version": "3.1.0-exp.2",
