@@ -5,6 +5,8 @@
 {% for project in template_projects %}
 
 {% for editor in editors %}
+{% if editor.version == "2020.3" -%}
+
 prepack_{{ project.name }}_{{ editor.version }}:
   name: Pre-Pack {{ project.packagename }} {{ editor.version }} - Primed Artifacts
   agent:
@@ -97,14 +99,15 @@ trigger_template_test_{{ project.name }}_{{ editor.version }}:
     - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% else -%}
-    {% for param in platform.test_params %}
     {% if project.name != "renderstreaming-rtx" %}
+    {% for param in platform.test_params %}
     - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
-    {% endif %}
     {% endfor %}
+    {% endif %}
     {% endif -%}
     {% endfor %}
 
+{% endif -%}
 {% endfor %}
 
 publish_{{ project.name }}:
@@ -130,8 +133,10 @@ publish_{{ project.name }}:
         - "upm-ci~/templates/*.tgz"
   dependencies:
     {% for editor in editors %}
+    {% if editor.version == "2020.3" %}
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
+    {% endif %}
     {% endfor %}
 
 publish_dryrun_{{ project.name }}:
@@ -157,7 +162,10 @@ publish_dryrun_{{ project.name }}:
         - "upm-ci~/templates/*.tgz"
   dependencies:
     {% for editor in editors %}
+    {% if editor.version == "2020.3" %}
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-template.yml#trigger_template_test_{{ project.name }}_{{ editor.version }}
+    {% endif %}
     {% endfor %}
+
 {% endfor %}
