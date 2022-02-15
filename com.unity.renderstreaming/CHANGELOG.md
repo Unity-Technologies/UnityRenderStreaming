@@ -4,6 +4,22 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Upgraded the version of Input System package `1.3.0`.
+- Upgraded the version of WebRTC package `2.4.0-exp.5`.
+- Added microphone device option for streaming audio in the "Bidirectional" sample.
+
+### Fixed
+
+- Fixed the worker thread is not closed when stopping the signaling client.
+- Fixed keyboard input sending only sends one key at a time from browser.
+- Fixed video flipped vertically when uging GLES/GLCore graphics API.
+- Fixed the crach when encoding the high resolution on macOS using HWA.
+- Fixed the gap of the input position between sender and receiver.
+
 ## [3.1.0-exp.2] - 2021-12-01
 
 ### Added
