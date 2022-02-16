@@ -1,10 +1,8 @@
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class FollowTransform : MonoBehaviour
+    class FollowTransform : MonoBehaviour
     {
         [SerializeField] Transform target;
         [SerializeField] Vector3 offset;

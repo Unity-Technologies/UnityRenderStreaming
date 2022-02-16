@@ -16,7 +16,7 @@ namespace Unity.RenderStreaming.Samples
 #endif
     [Preserve]
     [DisplayStringFormat("{button}+{delta}")]
-    public class DeltaWithButton : InputBindingComposite<Vector2>
+    class DeltaWithButton : InputBindingComposite<Vector2>
     {
 #if UNITY_EDITOR
         static DeltaWithButton()

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class PlayerController : MonoBehaviour
+    class PlayerController : MonoBehaviour
     {
         [SerializeField] GameObject player;
         [SerializeField] GameObject cameraPivot;

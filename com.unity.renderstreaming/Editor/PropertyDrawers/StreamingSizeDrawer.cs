@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming.Editor
 {
     [CustomPropertyDrawer(typeof(StreamingSizeAttribute))]
-    public class StreamingSizeDrawer : PropertyDrawer
+    class StreamingSizeDrawer : PropertyDrawer
     {
         readonly GUIContent[] streamingSizeText =
         {
