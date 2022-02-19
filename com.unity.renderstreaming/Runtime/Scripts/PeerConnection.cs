@@ -13,6 +13,8 @@ namespace Unity.RenderStreaming
         public bool srdAnswerPending;
         public bool makingAnswer;
 
+        bool disposed = false;
+
         /// <summary>
         /// 
         /// </summary>
@@ -64,6 +66,8 @@ namespace Unity.RenderStreaming
             {
                 return;
             }
+            if (disposed)
+                return;
 
             peer.OnTrack = null;
             peer.OnDataChannel = null;
@@ -73,6 +77,9 @@ namespace Unity.RenderStreaming
             peer.OnIceConnectionChange = null;
             peer.OnIceGatheringStateChange = null;
             peer.Dispose();
+
+            disposed = true;
+            GC.SuppressFinalize(this);
         }
     }
 }
