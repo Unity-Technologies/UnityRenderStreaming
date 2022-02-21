@@ -34,6 +34,8 @@ namespace Unity.RenderStreaming.Samples
 
         void OnDestroy()
         {
+            // Reset InputControl of Gyroscope surely.
+            InputSystem.ResetDevice(Gyroscope.current, true);
             InputSystem.DisableDevice(Gyroscope.current);
         }
 
