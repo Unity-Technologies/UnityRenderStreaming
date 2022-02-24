@@ -48,6 +48,9 @@ Open **Project Settings** window and select **XR Plug-in Management**. Set enabl
 
 ![XRPlugin Enable ARCore](images/xrplugin_enable_arcore.png)
 
+> [!NOTE]
+> If you get an error about Gradle version when building with Unity 2019.4, please refer to [this page](https://developers.google.com/ar/develop/unity/android-11-build).
+
 ## Usage
 
 ### Hardware acceleration 
