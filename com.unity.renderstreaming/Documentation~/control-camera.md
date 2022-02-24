@@ -2,6 +2,10 @@
 
 To control the camera on the remote PC,  we need to link the input events on web browsers to the actions in Unity. **Input System** makes it easy to implement the input processing.
 
+## Check settings of Input System
+
+First, please check [the settings](use-inputsystem.md) for using Input System.
+
 ## Adding components for input processing
 
 Open the Unity scene which created in [the previous page](create-camera.md), and select **Main Camera** in the Hierarchy window. Add the **Input Receiver** component in the Inspector window.
@@ -11,6 +15,10 @@ Open the Unity scene which created in [the previous page](create-camera.md), and
 The initial condition of the inspector of **Input Receiver** is below.
 
 ![Add InputReceiver component](images/inputreceiver_inspector.png)
+
+Add the **Input Receiver** component to the **Broadcast** component property.
+
+![Assign InputReceiver to streams](images/assign_inputreceiver_to_streams.png)
 
 ## Setting Input Actions
 
@@ -44,9 +52,9 @@ The result will look like this. Note that the last step is to press the **Save A
 
 ![Control camera 01](images/control_camera_07.png)
 
-## Setting `InputReceiver` component
+## Setting [`InputReceiver`](../api/Unity.RenderStreaming.InputReceiver.html) component
 
-Drag the **Control** asset to the **Input Actions** property of the `InputReceiver` component.
+Drag the **Control** asset to the **Input Actions** property of the [`InputReceiver`](../api/Unity.RenderStreaming.InputReceiver.html) component.
 
 ![Control camera 01](images/assign_inputactions_to_inputreceiver.png)
 
@@ -70,7 +78,7 @@ public class PlayerController : MonoBehaviour
 }
 ```
 
-Once you have copied the script and saved the file, assign `PlayerController.Look` to the **InputReceiver** component's **Look** event.
+Once you have copied the script and saved the file, assign `PlayerController.Look` to the [`InputReceiver`](../api/Unity.RenderStreaming.InputReceiver.html) component's **Look** event.
 
 ![Control camera 01](images/assign_event_to_inputreceiver.png)
 

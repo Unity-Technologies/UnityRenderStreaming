@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Upgraded the version of Input System package `1.3.0`.
-- Upgraded the version of WebRTC package `2.4.0-exp.5`.
+- Upgraded the version of WebRTC package `2.4.0-exp.6`.
 - Added microphone device option for streaming audio in the "Bidirectional" sample.
 
 ### Fixed

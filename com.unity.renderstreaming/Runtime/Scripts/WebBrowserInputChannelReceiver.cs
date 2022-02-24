@@ -11,13 +11,13 @@ namespace Unity.RenderStreaming
     ///
     /// </summary>
     [Serializable]
-    public class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
+    class ButtonClickEvent : UnityEngine.Events.UnityEvent<int> { }
 
     /// <summary>
     ///
     /// </summary>
     [Serializable]
-    public class ButtonClickElement
+    class ButtonClickElement
     {
         [Tooltip("Specifies the ID on the HTML")]
         public int elementId;

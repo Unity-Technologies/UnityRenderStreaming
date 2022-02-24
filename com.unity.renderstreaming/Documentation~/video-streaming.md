@@ -1,11 +1,11 @@
 # Video Streaming
 
-The base class for sending video is `VideoStreamSender`, and the base class for receiving video is `VideoStreamReceiver`. And various components are implemented using the inheritance relation. Components are provided for the sender and receiver sides.
+The base class for sending video is [`VideoStreamSender`](../api/Unity.RenderStreaming.VideoStreamSender.html), and the base class for receiving video is [`VideoStreamReceiver`](../api/Unity.RenderStreaming.VideoStreamReceiver.html). And various components are implemented using the inheritance relation. Components are provided for the sender and receiver sides.
 
 > [!NOTE]
 > The choice of video codec is currently limited. Use **H.264** if using a hardware encoder, or **VP8** if using a software encoder.
 
-## `VideoStreamSender` component
+## [`VideoStreamSender`](../api/Unity.RenderStreaming.VideoStreamSender.html) component
 
 This component sends the texture.
 
@@ -20,7 +20,7 @@ This component sends the texture.
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
 
-## `ScreenStreamSender` component
+## [`ScreenStreamSender`](../api/Unity.RenderStreaming.ScreenStreamSender.html) component
 
 This component sends the image of the main display.
 
@@ -34,7 +34,7 @@ This component sends the image of the main display.
 | **Anti-aliasing** | The antialiasing level for the RenderTexture | None |
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
-## `CameraStreamSender` component
+## [`CameraStreamSender`](../api/Unity.RenderStreaming.CameraStreamSender.html) component
 
 This component streams the `Camera` component's camera rendering results.  Uses `Target Texture` to store the rendering results.
 
@@ -52,9 +52,9 @@ This component streams the `Camera` component's camera rendering results.  Uses 
 | **Anti-aliasing** | The antialiasing level for the RenderTexture | None |
 | **Depth Buffer** | The precision of the render texture's depth buffer in bits | No depth buffer |
 
-## `WebCamStreamSender` component
+## [`WebCamStreamSender`](../api/Unity.RenderStreaming.WebCamStreamSender.html) component
 
-This component streams the `WebCamTexture` rendering results. Please refer [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) pages.
+This component streams the [WebCamTexture](https://docs.unity3d.com/ScriptReference/WebCamTexture.html) rendering results.
 
 ![WebCamStreamSender inspector](images/webcamstreamsender_inspector.png)
 
@@ -69,10 +69,10 @@ This component streams the `WebCamTexture` rendering results. Please refer [WebC
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | **Streaming Size** | Size of the frame buffer used for streaming | 1280, 720 |
-| **Device Index** | Index of `WebCamTexutre.devices` to use | 0 |
+| **Device Index** | Index of [`WebCamTexutre.devices`](https://docs.unity3d.com/ScriptReference/WebCamTexture-devices.html) to use | 0 |
 
 
-## `VideoStreamReceiver` component
+## [`VideoStreamReceiver`](../api/Unity.RenderStreaming.VideoStreamReceiver.html) component
 
 This component receives a videostream and exposes a texture that rendered the receiving frame buffer. 
 
