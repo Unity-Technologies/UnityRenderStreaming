@@ -3131,6 +3131,7 @@ GameObject:
   - component: {fileID: 1363584102}
   - component: {fileID: 1363584101}
   - component: {fileID: 1363584103}
+  - component: {fileID: 1363584104}
   m_Layer: 5
   m_Name: LocalImage
   m_TagString: Untagged
@@ -3288,6 +3289,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1363584104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363584099}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd052cb8051a41309639216a466bf35a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 1363584103}
+  deviceIndex: 0
+  mute: 1
 --- !u!1 &1423621363
 GameObject:
   m_ObjectHideFlags: 0
@@ -4319,7 +4335,6 @@ GameObject:
   - component: {fileID: 1915034405}
   - component: {fileID: 1915034404}
   - component: {fileID: 1915034408}
-  - component: {fileID: 1915034407}
   - component: {fileID: 1915034401}
   m_Layer: 0
   m_Name: RenderStreaming
@@ -4352,7 +4367,7 @@ MonoBehaviour:
   receiveAudioSource: {fileID: 1221238575}
   webCamStreamer: {fileID: 1915034404}
   receiveVideoViewer: {fileID: 1915034405}
-  microphoneStreamer: {fileID: 1915034407}
+  microphoneStreamer: {fileID: 1363584104}
   receiveAudioViewer: {fileID: 1915034408}
   singleConnection: {fileID: 1915034406}
 --- !u!114 &1915034402
@@ -4443,21 +4458,7 @@ MonoBehaviour:
   - {fileID: 1915034405}
   - {fileID: 1915034404}
   - {fileID: 1915034408}
-  - {fileID: 1915034407}
---- !u!114 &1915034407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915034400}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd052cb8051a41309639216a466bf35a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioSource: {fileID: 1363584103}
-  deviceIndex: 0
+  - {fileID: 1363584104}
 --- !u!114 &1915034408
 MonoBehaviour:
   m_ObjectHideFlags: 0
