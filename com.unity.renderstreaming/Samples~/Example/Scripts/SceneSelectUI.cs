@@ -230,7 +230,7 @@ namespace Unity.RenderStreaming.Samples
         }
         private void OnPressedAR()
         {
-            SceneManager.LoadScene("ARFoundation4.0", LoadSceneMode.Single);
+            SceneManager.LoadScene("ARFoundation", LoadSceneMode.Single);
         }
 
         private void OnPressedMultiplay()
