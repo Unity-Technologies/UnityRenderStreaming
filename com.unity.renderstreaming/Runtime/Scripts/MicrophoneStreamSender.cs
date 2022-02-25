@@ -7,9 +7,6 @@ namespace Unity.RenderStreaming
     [RequireComponent(typeof(AudioSource))]
     public class MicrophoneStreamSender : AudioStreamSender
     {
-        [SerializeField, Tooltip("Play microphone input (Required)")]
-        protected AudioSource audioSource;
-
         [SerializeField, Tooltip("Device index of microphone")]
         private int deviceIndex = 0;
 
@@ -18,14 +15,13 @@ namespace Unity.RenderStreaming
 
         public IEnumerable<string> MicrophoneNameList => Microphone.devices;
 
+        protected AudioSource audioSource;
+
         protected override void Awake()
         {
             base.Awake();
 
-            if (audioSource == null)
-            {
-                audioSource = GetComponent<AudioSource>();
-            }
+            audioSource = GetComponent<AudioSource>();
         }
 
         protected override void OnEnable()
