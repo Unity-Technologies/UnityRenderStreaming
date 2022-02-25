@@ -2,7 +2,7 @@
 
 Unity Render Streaming automatically creates and destroys streams as needed. It also allows the developer to customize the mechanism for controlling the stream. For a description of components related to individual streams, see the section on components for streaming.
 
-## `RenderStreaming` component
+## [`RenderStreaming`](../api/Unity.RenderStreaming.RenderStreaming.html) component
 
 **Render Streaming** includes the following features.
 
@@ -28,7 +28,7 @@ Unity Render Streaming automatically creates and destroys streams as needed. It 
 | **Handlers** | List of handlers of signaling process. | |
 | **Run On Awake** | Automatically started when called `Awake` method. | `True` |
 
-## `SingleConnection` component
+## [`SingleConnection`](../api/Unity.RenderStreaming.SingleConnection.html) component
 
 This component lists components that stream media or data via a single peer connection.
 
@@ -40,7 +40,7 @@ This component lists components that stream media or data via a single peer conn
 | --------- | ----------- | ------- |
 | **Streams** | List of streams | [] |
 
-## `Broadcast` component
+## [`Broadcast`](../api/Unity.RenderStreaming.SingleConnection.html) component
 
 This component lists components that stream media or data via multiple peer connections.
 

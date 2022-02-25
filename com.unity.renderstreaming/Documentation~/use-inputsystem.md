@@ -10,9 +10,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ### For Unity 2021.2
 
-1. Open **Package Manager** window and check Input System **version 1.1** installed.
-
-![Input System version 1.1](images/inputsystem-version.png)
+1. Open **Package Manager** window and check Input System version **1.3** installed.
 
 2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
 
@@ -28,7 +26,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ### For Unity 2020.3 and 2019.4
 
-1. Check Input System version **1.0** installed.
+1. Check Input System version **1.3** installed.
 2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
