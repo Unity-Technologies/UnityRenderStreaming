@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upgraded the version of Input System package `1.3.0`.
 - Upgraded the version of WebRTC package `2.4.0-exp.6`.
 - Added microphone device option for streaming audio in the "Bidirectional" sample.
+- Integrate AR Foundation Sample (only use AR Foundation version 4.1.9, deprecated version 2.1)
 
 ### Fixed
 
