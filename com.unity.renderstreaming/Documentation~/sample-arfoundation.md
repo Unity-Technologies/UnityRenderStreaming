@@ -5,32 +5,26 @@ This sample demonstrates operating the position and direction of a camera on ano
 > [!NOTE]
 > If no codec is available on both sender and receiver, the video can not stream. Please note that the compatibility of codecs is different corresponding to platforms and graphics API.
 
-## Sample scenes
-
-There are two scenes in this sample because the verified package version of AR Foundation is different depends on Unity version.
-
-| Unity version | scene name    |
-| ------------- | ------------- |
-| Unity2019.4   | `ARFoundation2.1` |
-| Unity2020.3   | `ARFoundation4.1` |
-
 ## Additional packages
 
-To use this sample, You need to install additional packages shown following table.
+To use this sample, You need to install following additional packages.
 
-| Unity version | Platform | packages |
-| ------------- | -------- | -------- |
-| Unity2019.4   | Android, iOS | `ARFoundation 2.1`, `XR Plugin Management 4.2` |
-| Unity2020.3   | Android, iOS | `ARFoundation 4.1`, `XR Plugin Management 4.2` |
+- `ARFoundation 4.1.9`
+- `XR Plugin Management 4.2`
+
+> [!NOTE]
+> `AR Foundation 4.1.9` is compatible with the following versions of the Unity Editor:
+> - 2019.4.15f1 or later
+> - 2020.3
+> - 2021.1
+> - 2021.2
 
 In addition, depending on the platform, each `XR plugin` package must be installed.
 ​
-| Unity version | Platform | packages |
-| ------------- | -------- | -------- |
-| Unity2019.4   | iOS      | `ARKit XR Plugin 2.1` |
-| Unity2019.4   | Android  | `ARCore XR Plugin 2.1` |
-| Unity2020.3   | iOS      | `ARKit XR Plugin 4.1` |
-| Unity2020.3   | Android  | `ARCore XR Plugin 4.1` |
+| Platform | packages |
+| -------- | -------- |
+| iOS      | `ARKit XR Plugin 4.1.9` |
+| Android  | `ARCore XR Plugin 4.1.9` |
 
 ## Build settings
 
@@ -53,6 +47,9 @@ In case of Android, **Target Architectures** should be checked `ARM64`, and not 
 Open **Project Settings** window and select **XR Plug-in Management**. Set enable `ARCore` option in Android tab.
 
 ![XRPlugin Enable ARCore](images/xrplugin_enable_arcore.png)
+
+> [!NOTE]
+> If you get an error about Gradle version when building with Unity 2019.4, please refer to [this page](https://developers.google.com/ar/develop/unity/android-11-build).
 
 ## Usage
 

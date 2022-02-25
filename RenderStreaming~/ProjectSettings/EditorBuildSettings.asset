@@ -9,10 +9,7 @@ EditorBuildSettings:
     path: Assets/Samples/Example/Menu/Menu.unity
     guid: f74260b9867fa524a9677fe64004f4f9
   - enabled: 1
-    path: Assets/Samples/Example/ARFoundation/ARFoundation2.1.unity
-    guid: 9656d177e1b07f64d88c8353665b4392
-  - enabled: 1
-    path: Assets/Samples/Example/ARFoundation/ARFoundation4.0.unity
+    path: Assets/Samples/Example/ARFoundation/ARFoundation.unity
     guid: b4bf2204f409346859b79249938241f3
   - enabled: 1
     path: Assets/Samples/Example/Bidirectional/Bidirectional.unity

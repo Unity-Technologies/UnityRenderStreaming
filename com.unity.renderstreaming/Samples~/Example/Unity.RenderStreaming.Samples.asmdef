@@ -17,7 +17,7 @@
     "versionDefines": [
         {
             "name": "com.unity.xr.arfoundation",
-            "expression": "1.0.0",
+            "expression": "4.1.9",
             "define": "URS_USE_AR_FOUNDATION"
         },
         {
