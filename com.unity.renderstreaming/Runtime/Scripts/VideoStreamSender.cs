@@ -1,5 +1,6 @@
 using Unity.WebRTC;
 using UnityEngine;
+using System.Linq;
 
 namespace Unity.RenderStreaming
 {
@@ -33,6 +34,22 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         public virtual Texture SendTexture { get; }
+
+
+
+        /// <summary>
+        /// todo::redesign
+        /// </summary>
+        /// <param name="index"></param>
+        public void FilterCodec(string connectionId, int index)
+        {
+            if (!Senders.TryGetValue(connectionId, out var sender))
+                return;
+            RTCRtpSendParameters parameters = sender.GetParameters();
+            var encodings = parameters.encodings.ToList().GetRange(index, 1);
+            parameters.encodings = encodings.ToArray();
+            sender.SetParameters(parameters);
+        }
 
         /// <summary>
         ///
