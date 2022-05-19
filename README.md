@@ -52,6 +52,7 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to
 | `3.1.0-exp.1` | - Android platform support | Jun 2021 |
 | `3.1.0-exp.2` | - Audio Renderer support <br/> - Multiplay sample <br/> - M1 Mac support | Dec 2021 |
 | `3.1.0-exp.3` | - Fix bugs | Feb 2022 |
+| `3.1.0-exp.4` |  |  |
 
 ## FAQ
 

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     public class Broadcast : SignalingHandlerBase,
-        IOfferHandler, IAddChannelHandler, IConnectHandler, IDisconnectHandler, IDeletedConnectionHandler,
+        IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler,
         IAddReceiverHandler
     {
         [SerializeField]
@@ -31,20 +31,6 @@ namespace Unity.RenderStreaming
         public void OnDisconnect(SignalingEventData eventData)
         {
             Disconnect(eventData.connectionId);
-        }
-
-        public void OnConnect(SignalingEventData eventData)
-        {
-            //WebRTC.RTCRtpSender.GetCapabilities().codecs.First().
-            //foreach (var sender in streams.OfType<IStreamSender>())
-            //{
-            //    var parameters = sender.Senders.First().Value.GetParameters();
-            //    Debug.Log(parameters.encodings.Length);
-            //    foreach(var encoding in parameters.encodings)
-            //    {
-            //        Debug.Log(encoding.rid);
-            //    }
-            //}
         }
 
         private void Disconnect(string connectionId)
