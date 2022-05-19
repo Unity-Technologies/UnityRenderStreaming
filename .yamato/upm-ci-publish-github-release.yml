@@ -13,7 +13,7 @@ publish_github_release_webapp:
   name: Publish Webapp to Github Release
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu:v1.21.0-1103459
     flavor: b1.large
   variables:
     GIT_TAG: Foo
@@ -36,7 +36,7 @@ publish_github_release_template_{{ project.name }}_{{ editor.version }}:
   name: Publish Template to Github Release {{ project.name }} {{ editor.version }}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu:v1.21.0-1103459
     flavor: b1.large
   variables:
     GIT_TAG: Foo
