@@ -220,25 +220,7 @@ namespace Unity.RenderStreaming
         {
             var peer = _mapConnectionIdAndPeer[connectionId];
             RTCRtpSender sender = peer.peer.AddTrack(track);
-
-            RTCRtpSendParameters parameters = sender.GetParameters();
-
             var transceiver = peer.peer.GetTransceivers().First(t => t.Sender == sender);
-
-            // todo:
-            if(transceiver.Sender.Track.Kind == TrackKind.Video)
-            {
-                var codecs = RTCRtpSender.GetCapabilities(TrackKind.Video).codecs;
-                codecs = codecs.Where(codec => codec.mimeType == "video/H264").ToArray();
-                var error = transceiver.SetCodecPreferences(codecs);
-                if (error != RTCErrorType.None)
-                    throw new ArgumentException($"{error}");
-            }
-
-            // note:: This line is needed to stream video to other peers with hardware codec.
-            // The exchanging SDP is failed if remove the line because the hardware decoder currently is not supported.
-            // Please remove the line after supporting the hardware decoder.
-            transceiver.Direction = RTCRtpTransceiverDirection.SendOnly;
             return transceiver;
         }
 
