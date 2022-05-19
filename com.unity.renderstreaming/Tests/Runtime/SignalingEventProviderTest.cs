@@ -169,7 +169,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            WebRTC.WebRTC.Initialize(EncoderType.Software);
+            WebRTC.WebRTC.Initialize();
             m_eventSystem = new GameObject("EventSystem").AddComponent<EventSystem>();
         }
 

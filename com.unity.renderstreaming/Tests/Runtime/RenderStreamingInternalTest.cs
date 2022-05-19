@@ -51,7 +51,6 @@ namespace Unity.RenderStreaming.RuntimeTest
                 {
                     iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}},
                 },
-                encoderType = EncoderType.Software,
                 startCoroutine = test.component.StartCoroutine,
                 resentOfferInterval = ResendOfferInterval,
             };
@@ -184,7 +183,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
             var transceiver = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
             target.RemoveSenderTrack(connectionId, track);
 
             bool isDeletedConnection = false;
@@ -261,13 +260,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver1 = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target.AddSenderTrack(connectionId, track2);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
 
             target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
@@ -366,7 +365,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after adding a Track
             var transceiver = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
             Assert.That(isAddReceiver1, Is.True);
@@ -436,7 +435,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target2.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);

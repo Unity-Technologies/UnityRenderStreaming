@@ -5,11 +5,12 @@ intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi
 editors:
   - version: 2019.4
   - version: 2020.3
-  - version: 2021.2
+  - version: 2021.3
+  - version: 2022.1
 platforms:
   - name: win
     type: Unity::VM::GPU
-    image: renderstreaming/win10:latest
+    image: renderstreaming/win10:v0.3.13-1084240
     flavor: b1.large
     model: rtx2080
     packed_webapp_name: webserver.exe
@@ -28,7 +29,7 @@ platforms:
         platform: standalone
   - name: macos
     type: Unity::metal::macmini
-    image: package-ci/mac:latest
+    image: package-ci/mac:v1.20.0-1079282
     flavor: m1.mac
     architecture: x64
     packed_webapp_name: webserver_mac
@@ -48,7 +49,7 @@ platforms:
         platform: standalone
   - name: macos-m1
     type: Unity::metal::devkit
-    image: package-ci/mac:latest
+    image: package-ci/mac:v1.20.0-1079282
     flavor: m1.mac
     architecture: arm64
     packed_webapp_name: webserver_mac
@@ -69,7 +70,7 @@ platforms:
 #        platform: standalone
   - name: linux
     type: Unity::VM::GPU
-    image: renderstreaming/ubuntu-18.04:latest
+    image: renderstreaming/ubuntu:v0.2.4-1104053
     flavor: b1.large
     model: rtx2080
     packed_webapp_name: webserver

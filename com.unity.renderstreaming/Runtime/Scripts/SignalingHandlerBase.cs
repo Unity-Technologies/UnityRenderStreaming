@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -197,6 +198,11 @@ namespace Unity.RenderStreaming
         MediaStreamTrack Track { get; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        IReadOnlyDictionary<string, RTCRtpSender> Senders { get; }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>
@@ -213,6 +219,11 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         MediaStreamTrack Track { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        RTCRtpReceiver Receiver { get; }
 
         /// <summary>
         ///
