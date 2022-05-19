@@ -7,6 +7,11 @@ let playButton;
 let receiver;
 let useWebSocket;
 
+const playerDiv = document.getElementById('player');
+const codecPreferences = document.getElementById('codecPreferences');
+const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
+  'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
+
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
 };
@@ -23,6 +28,7 @@ async function setup() {
   const res = await getServerConfig();
   useWebSocket = res.useWebSocket;
   showWarningIfNeeded(res.startupMode);
+  showCodecSelect();
   showPlayButton();
 }
 
@@ -48,8 +54,6 @@ function showPlayButton() {
 function onClickPlayButton() {
 
   playButton.style.display = 'none';
-
-  const playerDiv = document.getElementById('player');
 
   // add video player
   const elementVideo = document.createElement('video');
@@ -97,18 +101,36 @@ function onClickPlayButton() {
 
 async function setupVideoPlayer(elements) {
   const videoPlayer = new Receiver(elements);
-  await videoPlayer.setupConnection(useWebSocket);
 
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+      // codecs.splice(selectedCodecIndex, 1);
+      // codecs.unshift(selectedCodec);
+      console.log('Preferred video codec', selectedCodecs);
+    }
+  }
+  codecPreferences.disabled = true;
+
+  await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
 
   return videoPlayer;
 }
 
 function onDisconnect() {
-  const playerDiv = document.getElementById('player');
   clearChildren(playerDiv);
   receiver.stop();
   receiver = null;
+  if (supportsSetCodecPreferences) {
+    codecPreferences.disabled = false;
+  }
   showPlayButton();
 }
 
@@ -116,4 +138,42 @@ function clearChildren(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
+}
+
+function showCodecSelect() {
+  if (!supportsSetCodecPreferences) {
+    return;
+  }
+
+  const codecs = RTCRtpSender.getCapabilities('video').codecs;
+  codecs.forEach(codec => {
+    if (['video/red', 'video/ulpfec', 'video/rtx'].includes(codec.mimeType)) {
+      return;
+    }
+    const option = document.createElement('option');
+    option.value = (codec.mimeType + ' ' + (codec.sdpFmtpLine || '')).trim();
+    option.innerText = option.value;
+    codecPreferences.appendChild(option);
+  });
+  codecPreferences.disabled = false;
+
+  const actualCodec = document.getElementById('actualCodec');
+  // Display the video codec that is actually used.
+  setInterval(async () => {
+    if (receiver == null) {
+      return;
+    }
+
+    const stats = await receiver.getStats();
+    if (stats == null) {
+      return;
+    }
+    stats.forEach(stat => {
+      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video')) {
+        return;
+      }
+      const codec = stats.get(stat.codecId);
+      actualCodec.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
+    });
+  }, 1000);
 }

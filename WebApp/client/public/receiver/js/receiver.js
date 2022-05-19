@@ -46,7 +46,7 @@ export class Receiver {
     this.ondisconnect = function () { };
   }
 
-  async setupConnection(useWebSocket) {
+  async setupConnection(useWebSocket, codecs) {
     const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
@@ -64,7 +64,7 @@ export class Receiver {
     this.connectionId = uuid4();
 
     // Create peerConnection with proxy server and set up handlers
-    this.pc = new Peer(this.connectionId, true);
+    this.pc = new Peer(this.connectionId, true, codecs);
     this.pc.addEventListener('disconnect', () => {
       _this.ondisconnect();
     });
@@ -125,6 +125,10 @@ export class Receiver {
     this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
     this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
     this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
+  }
+
+  async getStats() {
+    return await this.pc.getStats(this.connectionId)
   }
 
   resizeVideo() {

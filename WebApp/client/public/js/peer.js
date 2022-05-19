@@ -2,11 +2,12 @@ import * as Config from "./config.js";
 import * as Logger from "./logger.js";
 
 export default class Peer extends EventTarget {
-  constructor(connectionId, polite, resendIntervalMsec = 5000) {
+  constructor(connectionId, polite, codecs = null, resendIntervalMsec = 5000) {
     super();
     const _this = this;
     this.connectionId = connectionId;
     this.polite = polite;
+    this.codecs = codecs;
     this.config = Config.getRTCConfiguration();
     this.pc = new RTCPeerConnection(this.config);
     this.makingOffer = false;
@@ -36,6 +37,7 @@ export default class Peer extends EventTarget {
         _this.assert_equals(_this.pc.signalingState, 'stable', 'negotiationneeded always fires in stable state');
         _this.assert_equals(_this.makingOffer, false, 'negotiationneeded not already in progress');
         _this.makingOffer = true;
+        _this._setCodecPreferences(_this.codecs);
         await _this.pc.setLocalDescription();
         _this.assert_equals(_this.pc.signalingState, 'have-local-offer', 'negotiationneeded not racing with onmessage');
         _this.assert_equals(_this.pc.localDescription.type, 'offer', 'negotiationneeded SLD worked');
@@ -96,10 +98,7 @@ export default class Peer extends EventTarget {
       return null;
     }
 
-    const sender = this.pc.addTrack(track);
-    const transceiver = this.pc.getTransceivers().find((t) => t.sender == sender);
-    transceiver.direction = "sendonly";
-    return sender;
+    return this.pc.addTrack(track);
   }
 
   addTransceiver(connectionId, trackOrKind, init) {
@@ -116,6 +115,14 @@ export default class Peer extends EventTarget {
     }
 
     return this.pc.createDataChannel(label);
+  }
+
+  async getStats(connectionId) {
+    if (this.connectionId != connectionId) {
+      return null;
+    }
+
+    return await this.pc.getStats();
   }
 
   async onGotDescription(connectionId, description) {
@@ -145,6 +152,7 @@ export default class Peer extends EventTarget {
       _this.assert_equals(this.pc.signalingState, 'have-remote-offer', 'Remote offer');
       _this.assert_equals(this.pc.remoteDescription.type, 'offer', 'SRD worked');
       _this.log('SLD to get back to stable');
+      _this._setCodecPreferences(_this.codecs);
       await this.pc.setLocalDescription();
       _this.assert_equals(this.pc.signalingState, 'stable', 'onmessage not racing with negotiationneeded');
       _this.assert_equals(this.pc.localDescription.type, 'answer', 'onmessage SLD worked');
@@ -167,5 +175,13 @@ export default class Peer extends EventTarget {
     } catch (e) {
       if (!this.ignoreOffer) this.log(e);
     }
+  }
+
+  _setCodecPreferences(codecs) {
+    if (codecs == null) {
+      return;
+    }
+    const transceivers = this.pc.getTransceivers().filter(t => t.receiver.track.kind == "video");
+    transceivers.forEach(t => t.setCodecPreferences(codecs));
   }
 }
