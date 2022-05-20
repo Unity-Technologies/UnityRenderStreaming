@@ -128,6 +128,8 @@ export class Receiver {
 
     // setup signaling
     await this.signaling.start();
+    // register using connectionId
+    await this.signaling.createConnection(this.connectionId);
 
     // kick send offer process
     this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
