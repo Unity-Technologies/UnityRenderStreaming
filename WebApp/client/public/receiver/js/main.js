@@ -11,6 +11,7 @@ const playerDiv = document.getElementById('player');
 const codecPreferences = document.getElementById('codecPreferences');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
+const messageDiv = document.getElementById('message');
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
@@ -53,6 +54,7 @@ function showPlayButton() {
 
 function onClickPlayButton() {
 
+  messageDiv.style.hidden = true;
   playButton.style.display = 'none';
 
   // add video player
@@ -124,9 +126,14 @@ async function setupVideoPlayer(elements) {
   return videoPlayer;
 }
 
-function onDisconnect() {
+async function onDisconnect(message) {
+  if (message) {
+    messageDiv.innerText = message;
+    messageDiv.style.hidden = false;
+  }
+
   clearChildren(playerDiv);
-  receiver.stop();
+  await receiver.stop();
   receiver = null;
   if (supportsSetCodecPreferences) {
     codecPreferences.disabled = false;

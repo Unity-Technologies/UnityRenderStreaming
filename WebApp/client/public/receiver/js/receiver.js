@@ -43,7 +43,7 @@ export class Receiver {
     }, true);
     this.video.srcObject = this.localStream;
 
-    this.ondisconnect = function () { };
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`) };
   }
 
   async setupConnection(useWebSocket, codecs) {
@@ -66,7 +66,7 @@ export class Receiver {
     // Create peerConnection with proxy server and set up handlers
     this.pc = new Peer(this.connectionId, true, codecs);
     this.pc.addEventListener('disconnect', () => {
-      _this.ondisconnect();
+      _this.ondisconnect(`Receive disconnect message from peer. connectionId:${this.connectionId}`);
     });
     this.pc.addEventListener('trackevent', (e) => {
       const data = e.detail;
@@ -93,21 +93,29 @@ export class Receiver {
     this.signaling.addEventListener('disconnect', async (e) => {
       const data = e.detail;
       if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
-        _this.ondisconnect();
+        _this.ondisconnect(`Receive disconnect message from server. connectionId:${data.connectionId}`);
       }
     });
     this.signaling.addEventListener('offer', async (e) => {
       const offer = e.detail;
       const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
       if (_this.pc != null) {
-        await _this.pc.onGotDescription(offer.connectionId, desc);
+        try {
+          await _this.pc.onGotDescription(offer.connectionId, desc);
+        } catch (error) {
+          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+        }
       }
     });
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
       if (_this.pc != null) {
-        await _this.pc.onGotDescription(answer.connectionId, desc);
+        try {
+          await _this.pc.onGotDescription(answer.connectionId, desc);
+        } catch (error) {
+          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+        }
       }
     });
     this.signaling.addEventListener('candidate', async (e) => {
