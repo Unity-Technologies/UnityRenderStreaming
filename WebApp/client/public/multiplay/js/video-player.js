@@ -1,6 +1,6 @@
 import {
   Signaling,
-  WebSocketSignaling 
+  WebSocketSignaling
 } from "../../js/signaling.js";
 
 import {
@@ -8,8 +8,8 @@ import {
   Sender
 } from "../../js/sender.js";
 
-import { 
-  InputRemoting 
+import {
+  InputRemoting
 } from "../../js/inputremoting.js";
 
 
@@ -30,8 +30,8 @@ function uuid4() {
 
 function isTouchDevice() {
   return (('ontouchstart' in window) ||
-     (navigator.maxTouchPoints > 0) ||
-     (navigator.msMaxTouchPoints > 0));
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
 }
 
 export class VideoPlayer {
@@ -44,7 +44,7 @@ export class VideoPlayer {
     this.sender = new Sender(elements[0]);
     this.sender.addMouse();
     this.sender.addKeyboard();
-    if(isTouchDevice()) {
+    if (isTouchDevice()) {
       this.sender.addTouchscreen();
     }
     this.sender.addGamepad();
@@ -59,10 +59,10 @@ export class VideoPlayer {
       _this.resizeVideo();
     }, true);
 
-    this.ondisconnect = function () { };
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`) };
   }
 
-  async setupConnection(useWebSocket) {
+  async setupConnection(useWebSocket, codecs) {
     const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
@@ -86,15 +86,15 @@ export class VideoPlayer {
       Logger.log('iceConnectionState changed:', e);
       Logger.log('pc.iceConnectionState:' + _this.pc.iceConnectionState);
       if (_this.pc.iceConnectionState === 'disconnected') {
-        _this.ondisconnect();
+        _this.ondisconnect(`Receive disconnect message from peer. connectionId:${this.connectionId}`);
       }
     };
     this.pc.onicegatheringstatechange = function (e) {
       Logger.log('iceGatheringState changed:', e);
     };
     this.pc.ontrack = function (e) {
-        this.localStream.addTrack(e.track);
-        this.video.srcObject = this.localStream;
+      this.localStream.addTrack(e.track);
+      this.video.srcObject = this.localStream;
     }.bind(this);
     this.pc.onicecandidate = function (e) {
       if (e.candidate != null) {
@@ -105,7 +105,11 @@ export class VideoPlayer {
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-      await _this.pc.setRemoteDescription(desc);
+      try {
+        await _this.pc.setRemoteDescription(desc);
+      } catch (error) {
+        _this.ondisconnect(`Error happen on setRemoteDescription.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+      }
     });
 
     this.signaling.addEventListener('candidate', async (e) => {
@@ -118,6 +122,9 @@ export class VideoPlayer {
     await this.signaling.start();
     this.connectionId = uuid4();
 
+    // register using connectionId
+    await this.signaling.createConnection(this.connectionId);
+
     // Create data channel with proxy server and set up handlers
     this.inputSenderChannel = this.pc.createDataChannel("input");
     this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
@@ -129,7 +136,8 @@ export class VideoPlayer {
     // Add transceivers to receive multi stream.
     // It can receive two video tracks and one audio track from Unity app.
     // This operation is required to generate offer SDP correctly.
-    this.pc.addTransceiver('video', { direction: 'recvonly' });
+    const transceiver = this.pc.addTransceiver('video', { direction: 'recvonly' });
+    transceiver.setCodecPreferences(codecs);
 
     // create offer
     const offer = await this.pc.createOffer();
@@ -138,6 +146,10 @@ export class VideoPlayer {
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     await this.pc.setLocalDescription(desc);
     await this.signaling.sendOffer(this.connectionId, offer.sdp);
+  }
+
+  async getStats() {
+    return await this.pc.getStats(this.connectionId)
   }
 
   resizeVideo() {
@@ -192,7 +204,7 @@ export class VideoPlayer {
   }
 
   _changeLabel(label) {
-    const json = JSON.stringify({type: ActionType.ChangeLabel, argument: label});
+    const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
     this.multiplayChannel.send(json);
   }
 

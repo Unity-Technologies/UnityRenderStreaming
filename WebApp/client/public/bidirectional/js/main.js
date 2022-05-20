@@ -79,7 +79,6 @@ async function setUp() {
       const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
       const selectCodec = codecs[selectedCodecIndex];
       selectedCodecs = [selectCodec];
-      console.log('Preferred video codec', selectedCodecs);
     }
   }
   codecPreferences.disabled = true;
