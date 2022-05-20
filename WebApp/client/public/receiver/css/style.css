@@ -2,10 +2,6 @@ body {
   margin: 0px;
 }
 
-div.box {
-  margin: 1em;
-}
-
 #player {
   position: relative;
   top: 0;

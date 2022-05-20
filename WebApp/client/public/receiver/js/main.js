@@ -12,6 +12,7 @@ const codecPreferences = document.getElementById('codecPreferences');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
+messageDiv.style.display = 'none';
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
@@ -54,7 +55,6 @@ function showPlayButton() {
 
 function onClickPlayButton() {
 
-  messageDiv.style.hidden = true;
   playButton.style.display = 'none';
 
   // add video player
@@ -128,8 +128,8 @@ async function setupVideoPlayer(elements) {
 
 async function onDisconnect(message) {
   if (message) {
+    messageDiv.style.display = 'block';
     messageDiv.innerText = message;
-    messageDiv.style.hidden = false;
   }
 
   clearChildren(playerDiv);
@@ -164,7 +164,6 @@ function showCodecSelect() {
   });
   codecPreferences.disabled = false;
 
-  const actualCodec = document.getElementById('actualCodec');
   // Display the video codec that is actually used.
   setInterval(async () => {
     if (receiver == null) {
@@ -180,7 +179,8 @@ function showCodecSelect() {
         return;
       }
       const codec = stats.get(stat.codecId);
-      actualCodec.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
+      messageDiv.style.display = 'block';
+      messageDiv.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
     });
   }, 1000);
 }

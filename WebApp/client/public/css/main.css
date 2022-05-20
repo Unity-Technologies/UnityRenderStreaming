@@ -79,6 +79,16 @@ div#warning {
   border: 1px solid transparent;
 }
 
+div.box {
+  margin: 1em;
+}
+
+div#message {
+  border-top: 1px solid #666;
+  margin: 1em;
+  padding: 1em;
+}
+
 @media screen and (max-width: 650px) {
   .highlight {
     font-size: 1em;
