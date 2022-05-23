@@ -32,6 +32,7 @@ async function setup() {
   showWarningIfNeeded(res.startupMode);
   showCodecSelect();
   showPlayButton();
+  showStatsMessage();
 }
 
 function showWarningIfNeeded(startupMode) {
@@ -146,6 +147,8 @@ function clearChildren(element) {
 
 function showCodecSelect() {
   if (!supportsSetCodecPreferences) {
+    messageDiv.style.display = 'block';
+    messageDiv.innerHTML = `Current Browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/setCodecPreferences">RTCRtpTransceiver.setCodecPreferences</a>.`;
     return;
   }
 
@@ -160,8 +163,9 @@ function showCodecSelect() {
     codecPreferences.appendChild(option);
   });
   codecPreferences.disabled = false;
+}
 
-  // Display the video codec that is actually used.
+function showStatsMessage() {
   setInterval(async () => {
     if (receiver == null) {
       return;
