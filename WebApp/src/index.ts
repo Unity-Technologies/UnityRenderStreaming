@@ -71,7 +71,7 @@ export class RenderStreaming {
     }
 
     if (this.options.websocket) {
-      console.log(`start websocket signaling server ws://${this.getIPAddress()[0]}`)
+      console.log(`start websocket signaling server ws://${this.getIPAddress()[0]}`);
       //Start Websocket Signaling server
       new WSSignaling(this.server, this.options.mode);
     }

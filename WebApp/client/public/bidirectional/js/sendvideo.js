@@ -8,7 +8,7 @@ export class SendVideo {
     this.localVideo = null;
     this.remoteVideo = null;
     this.preferedCodecs = null;
-    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`) };
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
   async startVideo(localVideo, videoSource, audioSource) {
@@ -135,7 +135,7 @@ export class SendVideo {
   }
 
   async getStats(connectionId) {
-    return await this.pc.getStats(connectionId)
+    return await this.pc.getStats(connectionId);
   }
 
   async hangUp(connectionId) {

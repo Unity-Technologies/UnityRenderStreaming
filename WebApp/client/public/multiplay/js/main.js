@@ -127,7 +127,7 @@ async function setupVideoPlayer(elements) {
   return videoPlayer;
 }
 
-function onDisconnect() {
+function onDisconnect(message) {
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;

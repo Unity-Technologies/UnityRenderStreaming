@@ -1,6 +1,6 @@
 import * as websocket from "ws";
 import { Server } from 'http';
-import * as handler from "./class/websockethandler"
+import * as handler from "./class/websockethandler";
 
 export default class WSSignaling {
   server: Server;
@@ -17,7 +17,7 @@ export default class WSSignaling {
 
       ws.onclose = (): void => {
         handler.remove(ws);
-      }
+      };
 
       ws.onmessage = (event: MessageEvent): void => {
 

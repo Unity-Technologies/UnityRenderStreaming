@@ -59,7 +59,7 @@ export class VideoPlayer {
       _this.resizeVideo();
     }, true);
 
-    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`) };
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
   async setupConnection(useWebSocket, codecs) {
@@ -149,7 +149,7 @@ export class VideoPlayer {
   }
 
   async getStats() {
-    return await this.pc.getStats(this.connectionId)
+    return await this.pc.getStats(this.connectionId);
   }
 
   resizeVideo() {
