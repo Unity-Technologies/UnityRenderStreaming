@@ -79,7 +79,7 @@ export default class PeerConnectionMock extends EventTarget {
     } else {
       this.videoTracks.set(track.id, track);
     }
-    const transceiver = { sender: { direction: "sendrecv", track: track }, receiver: null };
+    const transceiver = { direction: "sendrecv", sender: { track: track }, receiver: null, setCodecPreferences: (codecs) => { } };
     this.transceivers.set(this.transceiverCount++, transceiver);
     this.fireOnNegotiationNeeded();
     return transceiver.sender;
@@ -93,7 +93,7 @@ export default class PeerConnectionMock extends EventTarget {
       } else {
         this.videoTracks.set(track.id, track);
       }
-      const transceiver = { sender: { direction: "sendrecv", track: track }, receiver: null };
+      const transceiver = { direction: "sendrecv", sender: { track: track }, receiver: null, setCodecPreferences: (codecs) => { } };
       this.transceivers.set(this.transceiverCount++, transceiver);
       this.fireOnNegotiationNeeded();
       return transceiver;
@@ -104,7 +104,7 @@ export default class PeerConnectionMock extends EventTarget {
     } else {
       this.videoTracks.set(trackOrKind.id, trackOrKind);
     }
-    const transceiver = { sender: { direction: "sendrecv", track: trackOrKind }, receiver: null };
+    const transceiver = { direction: "sendrecv", sender: { track: trackOrKind }, receiver: null, setCodecPreferences: (codecs) => { } };
     this.transceivers.set(this.transceiverCount++, transceiver);
     this.fireOnNegotiationNeeded();
     return transceiver;
