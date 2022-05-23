@@ -137,7 +137,9 @@ export class VideoPlayer {
     // It can receive two video tracks and one audio track from Unity app.
     // This operation is required to generate offer SDP correctly.
     const transceiver = this.pc.addTransceiver('video', { direction: 'recvonly' });
-    transceiver.setCodecPreferences(codecs);
+    if (codecs) {
+      transceiver.setCodecPreferences(codecs);
+    }
 
     // create offer
     const offer = await this.pc.createOffer();
