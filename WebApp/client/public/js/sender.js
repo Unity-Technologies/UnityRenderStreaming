@@ -21,7 +21,11 @@ export class Sender extends LocalInputManager {
       this._elem.videoHeight,
       this._elem.getBoundingClientRect()
       );
+
+    //since line 27 cannot complete resize initialization but can only monitor div dimension changes, line 26 needs to be reserved
     this._elem.addEventListener('resize', this._onResizeEvent.bind(this), false);
+    const observer = new ResizeObserver(this._onResizeEvent.bind(this));
+    observer.observe(this._elem);
   }
 
   addMouse() {
