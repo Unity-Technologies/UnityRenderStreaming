@@ -43,10 +43,10 @@ export class Receiver {
     }, true);
     this.video.srcObject = this.localStream;
 
-    this.ondisconnect = function () { };
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
-  async setupConnection(useWebSocket) {
+  async setupConnection(useWebSocket, codecs) {
     const _this = this;
     // close current RTCPeerConnection
     if (this.pc) {
@@ -64,9 +64,9 @@ export class Receiver {
     this.connectionId = uuid4();
 
     // Create peerConnection with proxy server and set up handlers
-    this.pc = new Peer(this.connectionId, true);
+    this.pc = new Peer(this.connectionId, true, codecs);
     this.pc.addEventListener('disconnect', () => {
-      _this.ondisconnect();
+      _this.ondisconnect(`Receive disconnect message from peer. connectionId:${this.connectionId}`);
     });
     this.pc.addEventListener('trackevent', (e) => {
       const data = e.detail;
@@ -93,21 +93,29 @@ export class Receiver {
     this.signaling.addEventListener('disconnect', async (e) => {
       const data = e.detail;
       if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
-        _this.ondisconnect();
+        _this.ondisconnect(`Receive disconnect message from server. connectionId:${data.connectionId}`);
       }
     });
     this.signaling.addEventListener('offer', async (e) => {
       const offer = e.detail;
       const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
       if (_this.pc != null) {
-        await _this.pc.onGotDescription(offer.connectionId, desc);
+        try {
+          await _this.pc.onGotDescription(offer.connectionId, desc);
+        } catch (error) {
+          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+        }
       }
     });
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
       if (_this.pc != null) {
-        await _this.pc.onGotDescription(answer.connectionId, desc);
+        try {
+          await _this.pc.onGotDescription(answer.connectionId, desc);
+        } catch (error) {
+          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+        }
       }
     });
     this.signaling.addEventListener('candidate', async (e) => {
@@ -120,11 +128,17 @@ export class Receiver {
 
     // setup signaling
     await this.signaling.start();
+    // register using connectionId
+    await this.signaling.createConnection(this.connectionId);
 
     // kick send offer process
     this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
     this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
     this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
+  }
+
+  async getStats() {
+    return await this.pc.getStats(this.connectionId);
   }
 
   resizeVideo() {

@@ -55,8 +55,11 @@ namespace Unity.RenderStreaming.Samples
             microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));
             microphoneSelectDropdown.options =
                 microphoneStreamer.MicrophoneNameList.Select(x => new Dropdown.OptionData(x)).ToList();
-            microphoneStreamer.OnStartedStream += id => receiveAudioViewer.enabled = true;
-            receiveAudioViewer.SetSource(receiveAudioSource);
+            microphoneStreamer.OnStartedStream += id =>
+            {
+                receiveAudioViewer.SetSource(receiveAudioSource);
+                receiveAudioViewer.enabled = true;
+            };
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
                 source.loop = true;

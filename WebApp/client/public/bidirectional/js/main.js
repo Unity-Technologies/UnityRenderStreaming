@@ -8,10 +8,25 @@ textForConnectionId.value = getRandom();
 let videoSelect = document.querySelector('select#videoSource');
 let audioSelect = document.querySelector('select#audioSource');
 
+const codecPreferences = document.getElementById('codecPreferences');
+const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
+  'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
+const messageDiv = document.getElementById('message');
+messageDiv.style.display = 'none';
+
 setUpInputSelect();
+showCodecSelect();
+showStatsMessage();
 
 let sendVideo = new SendVideo();
-sendVideo.ondisconnect = () => hangUp();
+sendVideo.ondisconnect = async (message) => {
+  if (message) {
+    messageDiv.style.display = 'block';
+    messageDiv.innerText = message;
+  }
+
+  await hangUp();
+};
 
 let useWebSocket;
 let connectionId;
@@ -55,15 +70,32 @@ async function setUp() {
   setupButton.disabled = true;
   hangUpButton.disabled = false;
   connectionId = textForConnectionId.value;
-  await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket);
+
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+    }
+  }
+  codecPreferences.disabled = true;
+
+  await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket, selectedCodecs);
 }
 
-function hangUp() {
+async function hangUp() {
   hangUpButton.disabled = true;
   setupButton.disabled = false;
-  sendVideo.hangUp(connectionId);
+  await sendVideo.hangUp(connectionId);
   textForConnectionId.value = getRandom();
   connectionId = null;
+  if (supportsSetCodecPreferences) {
+    codecPreferences.disabled = false;
+  }
 }
 
 function getRandom() {
@@ -80,14 +112,64 @@ async function setUpInputSelect() {
     const deviceInfo = deviceInfos[i];
     if (deviceInfo.kind === 'videoinput') {
       const option = document.createElement('option');
-      option.value = deviceInfo.deviceId;  
+      option.value = deviceInfo.deviceId;
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
       videoSelect.appendChild(option);
     } else if (deviceInfo.kind === 'audioinput') {
       const option = document.createElement('option');
-      option.value = deviceInfo.deviceId;  
+      option.value = deviceInfo.deviceId;
       option.text = deviceInfo.label || `mic ${audioSelect.length + 1}`;
       audioSelect.appendChild(option);
     }
   }
+}
+
+function showCodecSelect() {
+  if (!supportsSetCodecPreferences) {
+    messageDiv.style.display = 'block';
+    messageDiv.innerHTML = `Current Browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/setCodecPreferences">RTCRtpTransceiver.setCodecPreferences</a>.`;
+    return;
+  }
+
+  const codecs = RTCRtpSender.getCapabilities('video').codecs;
+  codecs.forEach(codec => {
+    if (['video/red', 'video/ulpfec', 'video/rtx'].includes(codec.mimeType)) {
+      return;
+    }
+    const option = document.createElement('option');
+    option.value = (codec.mimeType + ' ' + (codec.sdpFmtpLine || '')).trim();
+    option.innerText = option.value;
+    codecPreferences.appendChild(option);
+  });
+  codecPreferences.disabled = false;
+}
+
+function showStatsMessage() {
+  setInterval(async () => {
+    if (sendVideo == null || connectionId == null) {
+      return;
+    }
+
+    const stats = await sendVideo.getStats(connectionId);
+    if (stats == null) {
+      return;
+    }
+
+    let message = "";
+    stats.forEach(stat => {
+      if (stat.type === 'inbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
+        const codec = stats.get(stat.codecId);
+        message += `Using for receive video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation} \n`;
+      }
+      if (stat.type === 'outbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
+        const codec = stats.get(stat.codecId);
+        message += `Using for send video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Encoder: ${stat.encoderImplementation} \n`;
+      }
+    });
+
+    if (message != "") {
+      messageDiv.style.display = 'block';
+      messageDiv.innerText = message;
+    }
+  }, 1000);
 }

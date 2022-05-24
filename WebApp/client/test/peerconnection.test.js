@@ -28,14 +28,14 @@ describe(`peer connection test`, () => {
     expect(peer.pc).toBeNull();
   });
 
-  test(`transceiver direction is sendonly if using addtrack`, () => {
+  test(`transceiver direction is sendrecv if using addtrack`, () => {
     const peer = new Peer(connectionId, true);
     expect(peer).not.toBeNull();
 
     const track = { id: getUniqueId(), kind: "audio" };
     const sender = peer.addTrack(connectionId, track);
     const transceiver = peer.getTransceivers(connectionId).find(t => t.sender == sender);
-    expect(transceiver.direction).toBe("sendonly");
+    expect(transceiver.direction).toBe("sendrecv");
   });
 
   test(`fire trackevent when addtrack`, async () => {
@@ -99,7 +99,7 @@ describe(`peer connection test`, () => {
   test(`re-fire sendoffer if get answer not yet`, async () => {
     let sendOfferCount = 0;
     let offer;
-    const peer = new Peer(connectionId, true, 100);
+    const peer = new Peer(connectionId, true, null, 100);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => {
       offer = e.detail;

@@ -1,9 +1,9 @@
-import { 
-  VideoPlayer 
+import {
+  VideoPlayer
 } from "./video-player.js";
 
-import { 
-  getServerConfig 
+import {
+  getServerConfig
 } from "../../js/config.js";
 
 setup();
@@ -11,6 +11,13 @@ setup();
 let playButton;
 let videoPlayer;
 let useWebSocket;
+
+const playerDiv = document.getElementById('player');
+const codecPreferences = document.getElementById('codecPreferences');
+const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
+  'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
+const messageDiv = document.getElementById('message');
+messageDiv.style.display = 'none';
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
@@ -28,6 +35,8 @@ async function setup() {
   const res = await getServerConfig();
   useWebSocket = res.useWebSocket;
   showWarningIfNeeded(res.startupMode);
+  showCodecSelect();
+  showStatsMessage();
   showPlayButton();
 }
 
@@ -52,8 +61,6 @@ function showPlayButton() {
 
 function onClickPlayButton() {
   playButton.style.display = 'none';
-
-  const playerDiv = document.getElementById('player');
 
   // add video player
   const elementVideo = document.createElement('video');
@@ -101,15 +108,36 @@ function onClickPlayButton() {
 
 async function setupVideoPlayer(elements) {
   const videoPlayer = new VideoPlayer(elements);
-  await videoPlayer.setupConnection(useWebSocket);
+
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+    }
+  }
+  codecPreferences.disabled = true;
+
+  await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
   return videoPlayer;
 }
 
-function onDisconnect() {
-  const playerDiv = document.getElementById('player');
+function onDisconnect(message) {
+  if (message) {
+    messageDiv.style.display = 'block';
+    messageDiv.innerText = message;
+  }
+
   clearChildren(playerDiv);
   videoPlayer = null;
+  if (supportsSetCodecPreferences) {
+    codecPreferences.disabled = false;
+  }
   showPlayButton();
 }
 
@@ -117,4 +145,45 @@ function clearChildren(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
+}
+
+function showCodecSelect() {
+  if (!supportsSetCodecPreferences) {
+    messageDiv.style.display = 'block';
+    messageDiv.innerHTML = `Current Browser does not support <a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCRtpTransceiver/setCodecPreferences">RTCRtpTransceiver.setCodecPreferences</a>.`;
+    return;
+  }
+
+  const codecs = RTCRtpSender.getCapabilities('video').codecs;
+  codecs.forEach(codec => {
+    if (['video/red', 'video/ulpfec', 'video/rtx'].includes(codec.mimeType)) {
+      return;
+    }
+    const option = document.createElement('option');
+    option.value = (codec.mimeType + ' ' + (codec.sdpFmtpLine || '')).trim();
+    option.innerText = option.value;
+    codecPreferences.appendChild(option);
+  });
+  codecPreferences.disabled = false;
+}
+
+function showStatsMessage() {
+  setInterval(async () => {
+    if (videoPlayer == null) {
+      return;
+    }
+
+    const stats = await videoPlayer.getStats();
+    if (stats == null) {
+      return;
+    }
+    stats.forEach(stat => {
+      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video') || stat.codecId === undefined) {
+        return;
+      }
+      const codec = stats.get(stat.codecId);
+      messageDiv.style.display = 'block';
+      messageDiv.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
+    });
+  }, 1000);
 }

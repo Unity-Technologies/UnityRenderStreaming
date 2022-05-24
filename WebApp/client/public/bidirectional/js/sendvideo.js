@@ -7,7 +7,8 @@ export class SendVideo {
     this.pc = null;
     this.localVideo = null;
     this.remoteVideo = null;
-    this.ondisconnect = function () { };
+    this.preferedCodecs = null;
+    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
   async startVideo(localVideo, videoSource, audioSource) {
@@ -25,9 +26,10 @@ export class SendVideo {
     }
   }
 
-  async setupConnection(remoteVideo, connectionId, useWebSocket) {
+  async setupConnection(remoteVideo, connectionId, useWebSocket, codecs) {
     const _this = this;
     this.remoteVideo = remoteVideo;
+    this.preferedCodecs = codecs;
 
     if (useWebSocket) {
       this.signaling = new WebSocketSignaling();
@@ -44,7 +46,7 @@ export class SendVideo {
     this.signaling.addEventListener('disconnect', async (e) => {
       const data = e.detail;
       if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
-        _this.ondisconnect();
+        _this.ondisconnect(`Receive disconnect message from server. connectionId:${data.connectionId}`);
       }
     });
 
@@ -55,14 +57,22 @@ export class SendVideo {
         _this.addTracks(offer.connectionId);
       }
       const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-      await _this.pc.onGotDescription(offer.connectionId, desc);
+      try {
+        await _this.pc.onGotDescription(offer.connectionId, desc);
+      } catch (error) {
+        _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+      }
     });
 
     this.signaling.addEventListener('answer', async (e) => {
       const answer = e.detail;
       const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
       if (_this.pc != null) {
-        await _this.pc.onGotDescription(answer.connectionId, desc);
+        try {
+          await _this.pc.onGotDescription(answer.connectionId, desc);
+        } catch (error) {
+          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+        }
       }
     });
 
@@ -88,9 +98,9 @@ export class SendVideo {
     }
 
     // Create peerConnection with proxy server and set up handlers
-    this.pc = new Peer(connectionId, polite);
+    this.pc = new Peer(connectionId, polite, this.preferedCodecs);
     this.pc.addEventListener('disconnect', () => {
-      _this.ondisconnect();
+      _this.ondisconnect(`Receive disconnect message from peer.`);
     });
     this.pc.addEventListener('trackevent', (e) => {
       const trackEvent = e.detail;
@@ -119,9 +129,13 @@ export class SendVideo {
   addTracks(connectionId) {
     const _this = this;
     const tracks = _this.localVideo.srcObject.getTracks();
-    for(const track of tracks) {
+    for (const track of tracks) {
       _this.pc.addTrack(connectionId, track);
     }
+  }
+
+  async getStats(connectionId) {
+    return await this.pc.getStats(connectionId);
   }
 
   async hangUp(connectionId) {
