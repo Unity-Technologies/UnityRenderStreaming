@@ -176,7 +176,7 @@ function showStatsMessage() {
       return;
     }
     stats.forEach(stat => {
-      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video')) {
+      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video') || stat.codecId === undefined) {
         return;
       }
       const codec = stats.get(stat.codecId);

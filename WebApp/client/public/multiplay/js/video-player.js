@@ -115,7 +115,11 @@ export class VideoPlayer {
     this.signaling.addEventListener('candidate', async (e) => {
       const candidate = e.detail;
       const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-      await _this.pc.addIceCandidate(iceCandidate);
+      try {
+        await _this.pc.addIceCandidate(iceCandidate);
+      } catch (e) {
+        Logger.warn(e);
+      }
     });
 
     // setup signaling
