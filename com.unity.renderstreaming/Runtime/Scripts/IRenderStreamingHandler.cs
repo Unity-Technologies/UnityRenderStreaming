@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -137,5 +138,12 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
         void RemoveSenderTrack(string connectionId, MediaStreamTrack track);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        IEnumerable<RTCRtpTransceiver> GetTransceivers(string connectionId);
     }
 }

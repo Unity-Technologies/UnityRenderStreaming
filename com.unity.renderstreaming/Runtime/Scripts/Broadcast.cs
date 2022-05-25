@@ -72,6 +72,11 @@ namespace Unity.RenderStreaming
             foreach (var source in streams.OfType<IStreamSender>())
             {
                 AddSender(data.connectionId, source);
+                SetSenderCodecs(data.connectionId, source);
+            }
+            foreach (var receiver in streams.OfType<IStreamReceiver>())
+            {
+                SetReceiverCodecs(data.connectionId, receiver);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {

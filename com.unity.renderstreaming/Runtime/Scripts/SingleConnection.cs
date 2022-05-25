@@ -8,8 +8,7 @@ namespace Unity.RenderStreaming
         ICreatedConnectionHandler, IDeletedConnectionHandler,
         IAddReceiverHandler, IOfferHandler, IAddChannelHandler
     {
-        [SerializeField]
-        private List<Component> streams = new List<Component>();
+        [SerializeField] private List<Component> streams = new List<Component>();
 
         private string connectionId;
 
@@ -46,7 +45,14 @@ namespace Unity.RenderStreaming
             foreach (var sender in streams.OfType<IStreamSender>())
             {
                 AddSender(connectionId, sender);
+                SetSenderCodecs(connectionId, sender);
             }
+
+            foreach (var receiver in streams.OfType<IStreamReceiver>())
+            {
+                SetReceiverCodecs(connectionId, receiver);
+            }
+
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
                 AddChannel(connectionId, channel);
@@ -67,10 +73,12 @@ namespace Unity.RenderStreaming
             {
                 RemoveSender(connectionId, sender);
             }
+
             foreach (var receiver in streams.OfType<IStreamReceiver>())
             {
                 RemoveReceiver(connectionId, receiver);
             }
+
             foreach (var channel in streams.OfType<IDataChannel>())
             {
                 RemoveChannel(connectionId, channel);
@@ -81,6 +89,18 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
+
+
+            foreach (var sender in streams.OfType<IStreamSender>())
+            {
+                SetSenderCodecs(connectionId, sender);
+            }
+
+            foreach (var receiver in streams.OfType<IStreamReceiver>())
+            {
+                SetReceiverCodecs(connectionId, receiver);
+            }
+
             SendAnswer(data.connectionId);
         }
 
@@ -90,7 +110,8 @@ namespace Unity.RenderStreaming
                 return;
 
             var receiver = streams.OfType<IStreamReceiver>()
-                .FirstOrDefault((r => r.Track == null && r.Kind == data.receiver.Track.Kind && data.receiver.Track.Enabled));
+                .FirstOrDefault((r =>
+                    r.Track == null && r.Kind == data.receiver.Track.Kind && data.receiver.Track.Enabled));
             receiver?.SetReceiver(connectionId, data.receiver);
         }
 
@@ -98,8 +119,7 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-            var channel = streams.OfType<IDataChannel>().
-                FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
+            var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
             channel?.SetChannel(connectionId, data.channel);
         }
     }
