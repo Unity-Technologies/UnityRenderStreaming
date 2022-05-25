@@ -211,7 +211,6 @@ namespace Unity.RenderStreaming
     /// </summary>
     public delegate void OnStoppedChannelHandler(string connectionId);
 
-
     /// <summary>
     ///
     /// </summary>
@@ -226,11 +225,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         IReadOnlyDictionary<string, RTCRtpSender> Senders { get; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        TrackKind Kind { get; }
 
         /// <summary>
         ///

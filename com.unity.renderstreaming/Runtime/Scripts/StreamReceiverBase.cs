@@ -75,40 +75,15 @@ namespace Unity.RenderStreaming
             }
         }
 
-        private static readonly string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx" };
-        private Dictionary<int, RTCRtpCodecCapability> m_availableCodecs;
-
-        /// <summary>
-        /// int: codec index
-        /// string: codec name
-        /// </summary>
-        /// <returns></returns>
-        public IReadOnlyDictionary<int, string> GetAvailableCodecsName()
-        {
-            if (m_availableCodecs == null)
-            {
-                m_availableCodecs = RTCRtpReceiver.GetCapabilities(Kind).codecs
-                    .Where(codec => !excludeCodecMimeType.Contains(codec.mimeType))
-                    .Select((codec, index) => new {codec, index})
-                    .ToDictionary(t => t.index, t => t.codec);
-            }
-
-            return m_availableCodecs.ToDictionary(pair => pair.Key, pair =>
-            {
-                var codec = pair.Value;
-                return $"{codec.mimeType} {codec.sdpFmtpLine}";
-            });
-        }
-
         /// <summary>
         /// argument index must use dictionary key from GetAvailableCodecsName
         /// </summary>
-        /// <seealso cref="GetAvailableCodecsName"/>
+        /// <seealso cref="AvailableCodecsUtils.GetAvailableCodecsName"/>
         /// <param name="index"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void FilterCodecs(int index)
         {
-            if (!m_availableCodecs.TryGetValue(index, out var codec))
+            if (!AvailableCodecsUtils.AvailableCodecs.TryGetValue(index, out var codec))
             {
                 throw new ArgumentOutOfRangeException(nameof (index), index, "Index was out of range.");
             }

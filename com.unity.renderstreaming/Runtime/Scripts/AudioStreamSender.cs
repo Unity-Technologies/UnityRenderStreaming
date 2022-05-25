@@ -35,8 +35,6 @@ namespace Unity.RenderStreaming
             track = null;
         }
 
-        public override TrackKind Kind { get { return TrackKind.Audio; } }
-
         protected override MediaStreamTrack CreateTrack()
         {
             track = new AudioStreamTrack();
