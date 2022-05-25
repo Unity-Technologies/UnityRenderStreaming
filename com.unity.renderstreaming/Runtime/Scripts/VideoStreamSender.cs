@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public virtual Texture SendTexture { get; }
 
-
+        public override TrackKind Kind { get { return TrackKind.Video; } }
 
         /// <summary>
         /// todo::redesign

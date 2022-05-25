@@ -35,6 +35,8 @@ namespace Unity.RenderStreaming
             track = null;
         }
 
+        public override TrackKind Kind { get { return TrackKind.Audio; } }
+
         protected override MediaStreamTrack CreateTrack()
         {
             track = new AudioStreamTrack();
@@ -72,7 +74,7 @@ namespace Unity.RenderStreaming
             {
                 track?.SetData(ref nativeArray, channels, m_sampleRate);
             }
-            // todo(kazuki):: Should catch only ObjectDisposedException but 
+            // todo(kazuki):: Should catch only ObjectDisposedException but
             // AudioStreamTrack also throws NullReferenceException.
             catch (Exception)
             {
