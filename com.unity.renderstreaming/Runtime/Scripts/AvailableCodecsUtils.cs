@@ -6,21 +6,18 @@ namespace Unity.RenderStreaming
 {
     public class AvailableCodecsUtils
     {
-        public enum TrackType
+        private static readonly string[] s_excludeCodecMimeType = {"video/red", "video/ulpfec", "video/rtx"};
+        private static Dictionary<int, RTCRtpCodecCapability> s_availableVideoCodecs;
+        private static Dictionary<int, RTCRtpCodecCapability> s_availableAudioCodecs;
+
+        public static bool TryGetAvailableVideoCodec(int index, out RTCRtpCodecCapability codec)
         {
-            Audio,
-            Video
+            return s_availableVideoCodecs.TryGetValue(index, out codec);
         }
 
-        private static readonly string[] s_excludeCodecMimeType = {"video/red", "video/ulpfec", "video/rtx"};
-        private static Dictionary<int, RTCRtpCodecCapability> s_availableCodecs;
-
-        public static IReadOnlyDictionary<int, RTCRtpCodecCapability> AvailableCodecs
+        public static bool TryGetAvailableAudioCodec(int index, out RTCRtpCodecCapability codec)
         {
-            get
-            {
-                return s_availableCodecs;
-            }
+            return s_availableAudioCodecs.TryGetValue(index, out codec);
         }
 
         /// <summary>
@@ -28,17 +25,38 @@ namespace Unity.RenderStreaming
         /// string: codec name
         /// </summary>
         /// <returns></returns>
-        public static IReadOnlyDictionary<int, string> GetAvailableCodecsName(TrackType kind)
+        public static IReadOnlyDictionary<int, string> GetAvailableVideoCodecsName()
         {
-            if (s_availableCodecs == null)
+            if (s_availableVideoCodecs == null)
             {
-                s_availableCodecs = RTCRtpReceiver.GetCapabilities((TrackKind)kind).codecs
+                s_availableVideoCodecs = RTCRtpReceiver.GetCapabilities(TrackKind.Video).codecs
                     .Where(codec => !s_excludeCodecMimeType.Contains(codec.mimeType))
                     .Select((codec, index) => new {codec, index})
                     .ToDictionary(t => t.index, t => t.codec);
             }
 
-            return s_availableCodecs.ToDictionary(pair => pair.Key, pair =>
+            return s_availableVideoCodecs.ToDictionary(pair => pair.Key, pair =>
+            {
+                var codec = pair.Value;
+                return $"{codec.mimeType} {codec.sdpFmtpLine}";
+            });
+        }
+
+        /// <summary>
+        /// int: codec index
+        /// string: codec name
+        /// </summary>
+        /// <returns></returns>
+        public static IReadOnlyDictionary<int, string> GetAvailableAudioCodecsName()
+        {
+            if (s_availableAudioCodecs == null)
+            {
+                s_availableAudioCodecs = RTCRtpReceiver.GetCapabilities(TrackKind.Audio).codecs
+                    .Select((codec, index) => new {codec, index})
+                    .ToDictionary(t => t.index, t => t.codec);
+            }
+
+            return s_availableAudioCodecs.ToDictionary(pair => pair.Key, pair =>
             {
                 var codec = pair.Value;
                 return $"{codec.mimeType} {codec.sdpFmtpLine}";

@@ -71,7 +71,8 @@ namespace Unity.RenderStreaming
             }
         }
 
-        private List<RTCRtpCodecCapability> m_senderCodecs = new List<RTCRtpCodecCapability>();
+        private List<RTCRtpCodecCapability> m_senderAudioCodecs = new List<RTCRtpCodecCapability>();
+        private List<RTCRtpCodecCapability> m_senderVideoCodecs = new List<RTCRtpCodecCapability>();
 
         /// <summary>
         ///
@@ -80,32 +81,67 @@ namespace Unity.RenderStreaming
         /// <param name="transceivers"></param>
         public void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers)
         {
-            if (m_senderCodecs.Count == 0)
+            if (m_senderAudioCodecs.Count != 0)
             {
-                return;
+                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Audio))
+                {
+                    transceiver.SetCodecPreferences(m_senderAudioCodecs.ToArray());
+                }
             }
 
-            foreach (var transceiver in transceivers)
+            if (m_senderVideoCodecs.Count != 0)
             {
-                transceiver.SetCodecPreferences(m_senderCodecs.ToArray());
+                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Video))
+                {
+                    transceiver.SetCodecPreferences(m_senderVideoCodecs.ToArray());
+                }
             }
         }
 
         /// <summary>
-        /// argument index must use dictionary key from AvailableCodecsUtils.GetAvailableCodecsName
+        /// argument index must use dictionary key from GetAvailableAudioCodecsName
         /// </summary>
-        /// <seealso cref="AvailableCodecsUtils.GetAvailableCodecsName"/>
+        /// <seealso cref="AvailableCodecsUtils.GetAvailableAudioCodecsName"/>
         /// <param name="index"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void FilterCodecs(int index)
+        public void FilterAudioCodecs(int index)
         {
-            if (!AvailableCodecsUtils.AvailableCodecs.TryGetValue(index, out var codec))
+            if (index < 0)
+            {
+                m_senderAudioCodecs.Clear();
+                return;
+            }
+
+            if (!AvailableCodecsUtils.TryGetAvailableAudioCodec(index, out var codec))
             {
                 throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
             }
 
-            m_senderCodecs.Clear();
-            m_senderCodecs.Add(codec);
+            m_senderAudioCodecs.Clear();
+            m_senderAudioCodecs.Add(codec);
+        }
+
+        /// <summary>
+        /// argument index must use dictionary key from GetAvailableVideoCodecsName
+        /// </summary>
+        /// <seealso cref="AvailableCodecsUtils.GetAvailableVideoCodecsName"/>
+        /// <param name="index"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void FilterVideoCodecs(int index)
+        {
+            if (index < 0)
+            {
+                m_senderVideoCodecs.Clear();
+                return;
+            }
+
+            if (!AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var codec))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
+            }
+
+            m_senderVideoCodecs.Clear();
+            m_senderVideoCodecs.Add(codec);
         }
     }
 }
