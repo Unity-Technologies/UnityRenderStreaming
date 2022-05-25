@@ -30,8 +30,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         private Camera m_camera;
 
-        public override TrackKind Kind { get { return TrackKind.Video; } }
-
         protected override MediaStreamTrack CreateTrack()
         {
             m_camera = gameObject.AddComponent<Camera>();
@@ -47,8 +45,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     class AudioStreamSourceTest : StreamSenderBase
     {
         private AudioSource m_audioSource;
-
-        public override TrackKind Kind { get { return TrackKind.Audio; } }
 
         protected override MediaStreamTrack CreateTrack()
         {
