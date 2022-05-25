@@ -4,12 +4,9 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class CodecSelect : MonoBehaviour
+    public class AudioCodecSelect : MonoBehaviour
     {
-        [SerializeField] private AvailableCodecsUtils.TrackType m_selectTrackType;
         [SerializeField] private Dropdown m_codecSelectDropdown;
-
-        public AvailableCodecsUtils.TrackType SelectTrackType => m_selectTrackType;
 
         private int m_selectIndex = -1;
         public int SelectIndex => m_selectIndex;
@@ -26,7 +23,7 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnEnable()
         {
-            var list = AvailableCodecsUtils.GetAvailableCodecsName(m_selectTrackType)
+            var list = AvailableCodecsUtils.GetAvailableAudioCodecsName()
                 .OrderBy(codec => codec.Key)
                 .Select(codec => new Dropdown.OptionData {text = codec.Value})
                 .ToList();

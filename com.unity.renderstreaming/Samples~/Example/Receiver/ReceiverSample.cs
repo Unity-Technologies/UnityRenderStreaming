@@ -38,7 +38,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
-        [SerializeField] private CodecSelect videoCodecSelect;
+        [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         private string connectionId;
@@ -101,10 +101,7 @@ namespace Unity.RenderStreaming.Samples
             }
             connectionIdInput.interactable = false;
             videoCodecSelect.ChangeInteractable(false);
-            if (videoCodecSelect.SelectIndex >= 0)
-            {
-                receiveVideoViewer.FilterCodecs(videoCodecSelect.SelectIndex);
-            }
+            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
 
             connection.CreateConnection(connectionId);
             startButton.gameObject.SetActive(false);
