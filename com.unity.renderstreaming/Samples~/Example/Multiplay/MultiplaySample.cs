@@ -18,6 +18,9 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
+        [SerializeField] VideoCodecSelect videoCodecSelect;
+
+        private Role role;
 
         enum Role
         {
@@ -31,6 +34,26 @@ namespace Unity.RenderStreaming.Samples
             buttonStart.onClick.AddListener(OnClickButtonStart);
             inputFieldUsername.text = UnityEngine.Random.Range(0, 99999).ToString("00000");
             inputFieldUsername.onValueChanged.AddListener(OnValueChangedUserName);
+
+            var toggles = toggleGroupRole.GetComponentsInChildren<Toggle>();
+            var activeToggle = toggleGroupRole.ActiveToggles().FirstOrDefault();
+            var indexRole = Array.FindIndex(toggles, _ => _ == activeToggle);
+            role = (Role)indexRole;
+            videoCodecSelect.ChangeInteractable(role == Role.Guest);
+
+            foreach (var tuple in toggles.Select(((toggle, i) => new {toggle, i})))
+            {
+                tuple.toggle.onValueChanged.AddListener(isOn =>
+                {
+                    if (!isOn)
+                    {
+                        return;
+                    }
+
+                    role = (Role)tuple.i;
+                    videoCodecSelect.ChangeInteractable(role == Role.Guest);
+                });
+            }
         }
 
         void OnValueChangedUserName(string value)
@@ -42,12 +65,6 @@ namespace Unity.RenderStreaming.Samples
 
         void OnClickButtonStart()
         {
-            var toggles = toggleGroupRole.GetComponentsInChildren<Toggle>();
-            var activeToggles = toggleGroupRole.ActiveToggles();
-            var toggle = activeToggles.Any() ? activeToggles.First() : null;
-            var indexRole = Array.FindIndex(toggles, _ => _ == toggle);
-            Role role = (Role)indexRole;
-
             var username = inputFieldUsername.text;
             var connectionId = Guid.NewGuid().ToString();
 
@@ -82,8 +99,8 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling,
-                handlers: new SignalingHandlerBase[] { handler }
-                );
+                handlers: new SignalingHandlerBase[] {handler}
+            );
         }
 
         IEnumerator SetUpGuest(string username, string connectionId)
@@ -94,8 +111,8 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(
                 hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
                 signaling: RenderStreamingSettings.Signaling,
-                handlers: new SignalingHandlerBase[] { handler }
-                );
+                handlers: new SignalingHandlerBase[] {handler}
+            );
 
             videoImage.gameObject.SetActive(true);
             var receiveVideoViewer = guestPlayer.GetComponent<VideoStreamReceiver>();
@@ -103,6 +120,8 @@ namespace Unity.RenderStreaming.Samples
 
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
+
+            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
@@ -118,4 +137,3 @@ namespace Unity.RenderStreaming.Samples
         }
     }
 }
-
