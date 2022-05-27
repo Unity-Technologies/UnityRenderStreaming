@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming
                 {
                     WebRTC.WebRTC.Initialize();
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     alreadyInitialized = true;
                 }
@@ -72,7 +72,7 @@ namespace Unity.RenderStreaming
                 {
                     WebRTC.WebRTC.Initialize();
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     alreadyInitialized = true;
                 }
