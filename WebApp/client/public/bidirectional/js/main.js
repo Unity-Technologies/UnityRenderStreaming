@@ -1,6 +1,22 @@
 import { SendVideo } from "./sendvideo.js";
 import { getServerConfig } from "../../js/config.js";
 
+const defaultStreamWidth = 1280;
+const defaultStreamHeight = 720;
+const streamSizeList =
+  [
+    { width: 640, height: 360 },
+    { width: 1280, height: 720 },
+    { width: 1920, height: 1080 },
+    { width: 2560, height: 1440 },
+    { width: 3840, height: 2160 },
+    { width: 360, height: 640 },
+    { width: 720, height: 1280 },
+    { width: 1080, height: 1920 },
+    { width: 1440, height: 2560 },
+    { width: 2160, height: 3840 },
+  ];
+
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const localVideoStatsDiv = document.getElementById('localVideoStats');
@@ -9,6 +25,7 @@ const textForConnectionId = document.getElementById('textForConnectionId');
 textForConnectionId.value = getRandom();
 const videoSelect = document.querySelector('select#videoSource');
 const audioSelect = document.querySelector('select#audioSource');
+const videoResolutionSelect = document.querySelector('select#videoResolution');
 const cameraWidthInput = document.querySelector('input#cameraWidth');
 const cameraHeightInput = document.querySelector('input#cameraHeight');
 
@@ -17,6 +34,8 @@ const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
 messageDiv.style.display = 'none';
+
+let useCustomResolution = false;
 
 setUpInputSelect();
 showCodecSelect();
@@ -65,11 +84,24 @@ function showWarningIfNeeded(startupMode) {
 async function startVideo() {
   videoSelect.disabled = true;
   audioSelect.disabled = true;
+  videoResolutionSelect.disabled = true;
   cameraWidthInput.disabled = true;
   cameraHeightInput.disabled = true;
   startButton.disabled = true;
   setupButton.disabled = false;
-  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value, cameraWidthInput.value, cameraHeightInput.value);
+
+  let width = 0;
+  let height = 0;
+  if (useCustomResolution) {
+    width = cameraWidthInput.value ? cameraWidthInput.value : defaultStreamWidth;
+    height = cameraHeightInput.value ? cameraHeightInput.value : defaultStreamHeight;
+  } else {
+    const size = streamSizeList[videoResolutionSelect.value];
+    width = size.width;
+    height = size.height;
+  }
+
+  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value, width, height);
 }
 
 async function setUp() {
@@ -128,6 +160,27 @@ async function setUpInputSelect() {
       audioSelect.appendChild(option);
     }
   }
+
+  for (let i = 0; i < streamSizeList.length; i++) {
+    const streamSize = streamSizeList[i];
+    const option = document.createElement('option');
+    option.value = i;
+    option.text = `${streamSize.width} x ${streamSize.height}`;
+    videoResolutionSelect.appendChild(option);
+  }
+
+  const option = document.createElement('option');
+  option.value = streamSizeList.length;
+  option.text = 'Custom';
+  videoResolutionSelect.appendChild(option);
+  videoResolutionSelect.value = 1; // default select index (1280 x 720)
+
+  videoResolutionSelect.addEventListener('change', (event) => {
+    const isCustom = event.target.value >= streamSizeList.length;
+    cameraWidthInput.disabled = !isCustom;
+    cameraHeightInput.disabled = !isCustom;
+    useCustomResolution = isCustom;
+  });
 }
 
 function showCodecSelect() {
@@ -153,10 +206,10 @@ function showCodecSelect() {
 function showStatsMessage() {
   setInterval(async () => {
     if (localVideo.videoWidth) {
-      localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth}x${localVideo.videoHeight} px`;
+      localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth} x ${localVideo.videoHeight} px`;
     }
     if (remoteVideo.videoWidth) {
-      remoteVideoStatsDiv.innerHTML = `<strong>Receiving resolution:</strong> ${remoteVideo.videoWidth}x${remoteVideo.videoHeight} px`;
+      remoteVideoStatsDiv.innerHTML = `<strong>Receiving resolution:</strong> ${remoteVideo.videoWidth} x ${remoteVideo.videoHeight} px`;
     }
 
     if (sendVideo == null || connectionId == null) {
