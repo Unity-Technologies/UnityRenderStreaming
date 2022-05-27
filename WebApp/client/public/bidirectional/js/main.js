@@ -1,12 +1,16 @@
 import { SendVideo } from "./sendvideo.js";
 import { getServerConfig } from "../../js/config.js";
 
-const localVideo = document.getElementById('local_video');
-const remoteVideo = document.getElementById('remote_video');
-const textForConnectionId = document.getElementById('text_for_connection_id');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const localVideoStatsDiv = document.getElementById('localVideoStats');
+const remoteVideoStatsDiv = document.getElementById('remoteVideoStats');
+const textForConnectionId = document.getElementById('textForConnectionId');
 textForConnectionId.value = getRandom();
-let videoSelect = document.querySelector('select#videoSource');
-let audioSelect = document.querySelector('select#audioSource');
+const videoSelect = document.querySelector('select#videoSource');
+const audioSelect = document.querySelector('select#audioSource');
+const cameraWidthInput = document.querySelector('input#cameraWidth');
+const cameraHeightInput = document.querySelector('input#cameraHeight');
 
 const codecPreferences = document.getElementById('codecPreferences');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
@@ -31,11 +35,11 @@ sendVideo.ondisconnect = async (message) => {
 let useWebSocket;
 let connectionId;
 
-let startButton = document.getElementById('startVideoButton');
+const startButton = document.getElementById('startVideoButton');
 startButton.addEventListener('click', startVideo);
-let setupButton = document.getElementById('setUpButton');
+const setupButton = document.getElementById('setUpButton');
 setupButton.addEventListener('click', setUp);
-let hangUpButton = document.getElementById('hangUpButton');
+const hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
 window.addEventListener('beforeunload', async () => {
@@ -61,9 +65,11 @@ function showWarningIfNeeded(startupMode) {
 async function startVideo() {
   videoSelect.disabled = true;
   audioSelect.disabled = true;
+  cameraWidthInput.disabled = true;
+  cameraHeightInput.disabled = true;
   startButton.disabled = true;
   setupButton.disabled = false;
-  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value);
+  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value, cameraWidthInput.value, cameraHeightInput.value);
 }
 
 async function setUp() {
@@ -146,6 +152,13 @@ function showCodecSelect() {
 
 function showStatsMessage() {
   setInterval(async () => {
+    if (localVideo.videoWidth) {
+      localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth}x${localVideo.videoHeight} px`;
+    }
+    if (remoteVideo.videoWidth) {
+      remoteVideoStatsDiv.innerHTML = `<strong>Receiving resolution:</strong> ${remoteVideo.videoWidth}x${remoteVideo.videoHeight} px`;
+    }
+
     if (sendVideo == null || connectionId == null) {
       return;
     }
