@@ -7,7 +7,10 @@ namespace Unity.RenderStreaming
 {
     public class AvailableCodecsUtils
     {
-        private static readonly string[] s_excludeCodecMimeType = {"video/red", "video/ulpfec", "video/rtx"};
+        private static readonly string[] s_excludeCodecMimeType =
+        {
+            "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03"
+        };
         private static Dictionary<int, RTCRtpCodecCapability> s_availableVideoCodecs;
         private static Dictionary<int, RTCRtpCodecCapability> s_availableAudioCodecs;
 
