@@ -829,6 +829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderStreaming: {fileID: 1131364782}
+  videoStreamSender: {fileID: 1299133682}
 --- !u!1 &1166324968
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 0}
 --- !u!114 &1299133687
 MonoBehaviour:
   m_ObjectHideFlags: 0

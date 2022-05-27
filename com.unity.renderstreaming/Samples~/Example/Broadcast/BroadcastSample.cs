@@ -29,9 +29,13 @@ namespace Unity.RenderStreaming.Samples
                     .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
                 );
 #endif
+
+            if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
+            {
+                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
+            }
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             if (renderStreaming.runOnAwake)

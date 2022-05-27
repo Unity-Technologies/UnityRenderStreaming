@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using Unity.RenderStreaming.Signaling;
 using UnityEngine;
@@ -23,11 +25,15 @@ namespace Unity.RenderStreaming.Samples
 
     internal static class RenderStreamingSettings
     {
+        public const int DefaultStreamWidth = 1280;
+        public const int DefaultStreamHeight = 720;
+
         private static bool s_enableHWCodec = false;
         private static SignalingType s_signalingType = SignalingType.WebSocket;
         private static string s_signalingAddress = "localhost";
         private static float s_signalingInterval = 5;
         private static bool s_signalingSecured = false;
+        private static Vector2Int s_StreamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
 
         public static bool EnableHWCodec
         {
@@ -84,8 +90,15 @@ namespace Unity.RenderStreaming.Samples
                             $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
                     }
                 }
+
                 throw new InvalidOperationException();
             }
+        }
+
+        public static Vector2Int StreamSize
+        {
+            get { return s_StreamSize; }
+            set { s_StreamSize = value; }
         }
     }
 
@@ -96,6 +109,9 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private InputField inputFieldSignalingAddress;
         [SerializeField] private Toggle toggleSignalingSecured;
         [SerializeField] private InputField inputFieldSignalingInterval;
+        [SerializeField] private Dropdown streamSizeSelector;
+        [SerializeField] private InputField textureWidthInput;
+        [SerializeField] private InputField textureHeightInput;
 
         [SerializeField] private Button buttonBidirectional;
         [SerializeField] private Button buttonBroadcast;
@@ -106,19 +122,56 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button buttonAR;
         [SerializeField] private Button buttonMultiplay;
 
+        [SerializeField] private List<Vector2Int> streamSizeList = new List<Vector2Int>
+        {
+            new Vector2Int(640, 360),
+            new Vector2Int(1280, 720),
+            new Vector2Int(1920, 1080),
+            new Vector2Int(2560, 1440),
+            new Vector2Int(3840, 2160),
+            new Vector2Int(360, 640),
+            new Vector2Int(720, 1280),
+            new Vector2Int(1080, 1920),
+            new Vector2Int(1440, 2560),
+            new Vector2Int(2160, 3840),
+        };
+
         void Start()
         {
             toggleEnableHWCodec.isOn = RenderStreamingSettings.EnableHWCodec;
             dropdownSignalingType.value = (int)RenderStreamingSettings.SignalingType;
             inputFieldSignalingAddress.text = RenderStreamingSettings.SignalingAddress;
             toggleSignalingSecured.isOn = RenderStreamingSettings.SignalingSecured;
-            inputFieldSignalingInterval.text = RenderStreamingSettings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
+            inputFieldSignalingInterval.text =
+                RenderStreamingSettings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
 
             toggleEnableHWCodec.onValueChanged.AddListener(OnChangeHWCodec);
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
             toggleSignalingSecured.onValueChanged.AddListener(OnChangeSignalingSecured);
             inputFieldSignalingInterval.onValueChanged.AddListener(OnChangeSignalingInterval);
+
+            var optionList = streamSizeList.Select(size => new Dropdown.OptionData($" {size.x} x {size.y} ")).ToList();
+            optionList.Add(new Dropdown.OptionData(" Custom "));
+            streamSizeSelector.options = optionList;
+
+            var existInList = streamSizeList.Contains(RenderStreamingSettings.StreamSize);
+            if (existInList)
+            {
+                streamSizeSelector.value = streamSizeList.IndexOf(RenderStreamingSettings.StreamSize);
+            }
+            else
+            {
+                streamSizeSelector.value = optionList.Count - 1;
+                textureWidthInput.text = RenderStreamingSettings.StreamSize.x.ToString();
+                textureHeightInput.text = RenderStreamingSettings.StreamSize.y.ToString();
+                textureWidthInput.interactable = true;
+                textureHeightInput.interactable = true;
+            }
+
+            streamSizeSelector.onValueChanged.AddListener(OnChangeStreamSizeSelect);
+            textureWidthInput.onValueChanged.AddListener(OnChangeTextureWidthInput);
+            textureHeightInput.onValueChanged.AddListener(OnChangeTextureHeightInput);
 
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
@@ -198,18 +251,67 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
+        private void OnChangeStreamSizeSelect(int index)
+        {
+            var isCustom = index >= streamSizeList.Count;
+            textureWidthInput.interactable = isCustom;
+            textureHeightInput.interactable = isCustom;
+
+            if (isCustom)
+            {
+                return;
+            }
+
+            RenderStreamingSettings.StreamSize = streamSizeList[index];
+        }
+
+        private void OnChangeTextureWidthInput(string input)
+        {
+            var height = RenderStreamingSettings.StreamSize.y;
+
+            if (string.IsNullOrEmpty(input))
+            {
+                RenderStreamingSettings.StreamSize = new Vector2Int(RenderStreamingSettings.DefaultStreamWidth, height);
+                return;
+            }
+
+            if (int.TryParse(input, out var width))
+            {
+                RenderStreamingSettings.StreamSize = new Vector2Int(width, height);
+            }
+        }
+
+        private void OnChangeTextureHeightInput(string input)
+        {
+            var width = RenderStreamingSettings.StreamSize.x;
+
+            if (string.IsNullOrEmpty(input))
+            {
+                RenderStreamingSettings.StreamSize = new Vector2Int(width, RenderStreamingSettings.DefaultStreamHeight);
+                return;
+            }
+
+            if (int.TryParse(input, out var height))
+            {
+                RenderStreamingSettings.StreamSize = new Vector2Int(width, height);
+            }
+        }
+
         private void OnPressedBidirectional()
         {
             SceneManager.LoadScene("Bidirectional", LoadSceneMode.Single);
         }
+
         private void OnPressedBroadcast()
         {
             SceneManager.LoadScene("Broadcast", LoadSceneMode.Single);
         }
+
         private void OnPressedGyro()
         {
             SceneManager.LoadScene("Gyro", LoadSceneMode.Single);
         }
+
         private void OnPressedRenderPipeline()
         {
 #if URS_USE_URP_RUNTIME
@@ -220,14 +322,17 @@ namespace Unity.RenderStreaming.Samples
             throw new InvalidOperationException("HDRP or URP package is not found in this project.");
 #endif
         }
+
         private void OnPressedReceiver()
         {
             SceneManager.LoadScene("Receiver", LoadSceneMode.Single);
         }
+
         private void OnPressedWebBrowserInput()
         {
             SceneManager.LoadScene("WebBrowserInput", LoadSceneMode.Single);
         }
+
         private void OnPressedAR()
         {
             SceneManager.LoadScene("ARFoundation", LoadSceneMode.Single);
