@@ -52,7 +52,6 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
 
             receiveVideoViewer.OnUpdateReceiveTexture += OnUpdateReceiveTexture;
-            receiveAudioViewer.SetSource(remoteAudioSource);
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
                 source.loop = true;
@@ -100,6 +99,7 @@ namespace Unity.RenderStreaming.Samples
             connectionIdInput.interactable = false;
             videoCodecSelect.ChangeInteractable(false);
             receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveAudioViewer.SetSource(remoteAudioSource);
 
             connection.CreateConnection(connectionId);
             startButton.gameObject.SetActive(false);
