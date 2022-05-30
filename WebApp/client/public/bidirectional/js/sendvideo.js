@@ -11,13 +11,21 @@ export class SendVideo {
     this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
-  async startVideo(localVideo, videoSource, audioSource) {
+  async startVideo(localVideo, videoSource, audioSource, videoWidth, videoHeight) {
     try {
       this.localVideo = localVideo;
       const constraints = {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined },
         audio: { deviceId: audioSource ? { exact: audioSource } : undefined }
       };
+
+      if (videoWidth != null || videoWidth != 0) {
+        constraints.video.width = videoWidth;
+      }
+      if (videoHeight != null || videoHeight != 0) {
+        constraints.video.height = videoHeight;
+      }
+
       this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
       this.localVideo.srcObject = this.localStream;
       await localVideo.play();

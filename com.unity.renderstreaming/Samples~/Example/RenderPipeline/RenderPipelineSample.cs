@@ -5,9 +5,17 @@ namespace Unity.RenderStreaming.Samples
     class RenderPipelineSample : MonoBehaviour
     {
         [SerializeField] RenderStreaming renderStreaming;
+        [SerializeField] VideoStreamSender videoStreamSender;
 
-        // Start is called before the first frame update
-        void Start()
+        private void Awake()
+        {
+            if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
+            {
+                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
+            }
+        }
+
+        private void Start()
         {
             if (!renderStreaming.runOnAwake)
             {

@@ -59,6 +59,13 @@ namespace Unity.RenderStreaming.Samples
             dictObj.Add(data.connectionId, newObj);
 
             var sender = newObj.GetComponentInChildren<IStreamSender>();
+
+            if (sender is VideoStreamSender videoStreamSender &&
+                videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
+            {
+                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
+            }
+
             var inputChannel = newObj.GetComponentInChildren<InputReceiver>();
             var multiplayChannel = newObj.GetComponentInChildren<MultiplayChannel>();
             var playerController = newObj.GetComponentInChildren<PlayerController>();

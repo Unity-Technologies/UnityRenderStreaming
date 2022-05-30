@@ -20,6 +20,15 @@
       <label for="audioSource">Audio source: </label><select id="audioSource"></select>
     </div>
 
+    <div id="resolutionSelect">
+      <label for="videoResolution">Video resolution: </label><select id="videoResolution"></select>
+    </div>
+    <div id="resolutionInput">
+      <label for="cameraWidth">Camera width:</label><input id="cameraWidth" type="number" min="0" max="4096" disabled>
+      <label for="cameraHeight">Camera height:</label><input id="cameraHeight" type="number" min="0" max="4096"
+        disabled>
+    </div>
+
     <div id="buttons">
       <button type="button" id="startVideoButton">Start Video</button>
       <button type="button" id="setUpButton" disabled>Set Up</button>
@@ -29,17 +38,19 @@
     <div id="preview">
       <div id="local">
         <h2>Local</h2>
-        <video id="local_video" playsinline autoplay muted=true></video>
+        <video id="localVideo" playsinline autoplay muted=true></video>
+        <div id="localVideoStats"></div>
       </div>
       <div id="remote">
         <h2>Remote</h2>
-        <video id="remote_video" playsinline autoplay></video>
+        <video id="remoteVideo" playsinline autoplay></video>
+        <div id="remoteVideoStats"></div>
       </div>
     </div>
 
     <div class="box">
       <span>Connection ID:</span>
-      <textarea id="text_for_connection_id"></textarea>
+      <textarea id="textForConnectionId"></textarea>
     </div>
     <div class="box">
       <span>Codec preferences:</span>

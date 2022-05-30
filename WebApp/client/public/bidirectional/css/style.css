@@ -1,3 +1,7 @@
+div#select, div#resolution {
+  margin: 1em;
+}
+
 button {
   margin: 0 20px 5px 0;
   vertical-align: top;
@@ -5,9 +9,10 @@ button {
 }
 
 div#buttons {
+  border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   margin: 1em 0 1em 0;
-  padding: 0 0 1em 0;
+  padding: 1em 0 1em 0;
 }
 
 div#local {

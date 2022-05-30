@@ -1,18 +1,41 @@
 import { SendVideo } from "./sendvideo.js";
 import { getServerConfig } from "../../js/config.js";
 
-const localVideo = document.getElementById('local_video');
-const remoteVideo = document.getElementById('remote_video');
-const textForConnectionId = document.getElementById('text_for_connection_id');
+const defaultStreamWidth = 1280;
+const defaultStreamHeight = 720;
+const streamSizeList =
+  [
+    { width: 640, height: 360 },
+    { width: 1280, height: 720 },
+    { width: 1920, height: 1080 },
+    { width: 2560, height: 1440 },
+    { width: 3840, height: 2160 },
+    { width: 360, height: 640 },
+    { width: 720, height: 1280 },
+    { width: 1080, height: 1920 },
+    { width: 1440, height: 2560 },
+    { width: 2160, height: 3840 },
+  ];
+
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const localVideoStatsDiv = document.getElementById('localVideoStats');
+const remoteVideoStatsDiv = document.getElementById('remoteVideoStats');
+const textForConnectionId = document.getElementById('textForConnectionId');
 textForConnectionId.value = getRandom();
-let videoSelect = document.querySelector('select#videoSource');
-let audioSelect = document.querySelector('select#audioSource');
+const videoSelect = document.querySelector('select#videoSource');
+const audioSelect = document.querySelector('select#audioSource');
+const videoResolutionSelect = document.querySelector('select#videoResolution');
+const cameraWidthInput = document.querySelector('input#cameraWidth');
+const cameraHeightInput = document.querySelector('input#cameraHeight');
 
 const codecPreferences = document.getElementById('codecPreferences');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
 messageDiv.style.display = 'none';
+
+let useCustomResolution = false;
 
 setUpInputSelect();
 showCodecSelect();
@@ -31,11 +54,11 @@ sendVideo.ondisconnect = async (message) => {
 let useWebSocket;
 let connectionId;
 
-let startButton = document.getElementById('startVideoButton');
+const startButton = document.getElementById('startVideoButton');
 startButton.addEventListener('click', startVideo);
-let setupButton = document.getElementById('setUpButton');
+const setupButton = document.getElementById('setUpButton');
 setupButton.addEventListener('click', setUp);
-let hangUpButton = document.getElementById('hangUpButton');
+const hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
 window.addEventListener('beforeunload', async () => {
@@ -61,9 +84,24 @@ function showWarningIfNeeded(startupMode) {
 async function startVideo() {
   videoSelect.disabled = true;
   audioSelect.disabled = true;
+  videoResolutionSelect.disabled = true;
+  cameraWidthInput.disabled = true;
+  cameraHeightInput.disabled = true;
   startButton.disabled = true;
   setupButton.disabled = false;
-  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value);
+
+  let width = 0;
+  let height = 0;
+  if (useCustomResolution) {
+    width = cameraWidthInput.value ? cameraWidthInput.value : defaultStreamWidth;
+    height = cameraHeightInput.value ? cameraHeightInput.value : defaultStreamHeight;
+  } else {
+    const size = streamSizeList[videoResolutionSelect.value];
+    width = size.width;
+    height = size.height;
+  }
+
+  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value, width, height);
 }
 
 async function setUp() {
@@ -122,6 +160,27 @@ async function setUpInputSelect() {
       audioSelect.appendChild(option);
     }
   }
+
+  for (let i = 0; i < streamSizeList.length; i++) {
+    const streamSize = streamSizeList[i];
+    const option = document.createElement('option');
+    option.value = i;
+    option.text = `${streamSize.width} x ${streamSize.height}`;
+    videoResolutionSelect.appendChild(option);
+  }
+
+  const option = document.createElement('option');
+  option.value = streamSizeList.length;
+  option.text = 'Custom';
+  videoResolutionSelect.appendChild(option);
+  videoResolutionSelect.value = 1; // default select index (1280 x 720)
+
+  videoResolutionSelect.addEventListener('change', (event) => {
+    const isCustom = event.target.value >= streamSizeList.length;
+    cameraWidthInput.disabled = !isCustom;
+    cameraHeightInput.disabled = !isCustom;
+    useCustomResolution = isCustom;
+  });
 }
 
 function showCodecSelect() {
@@ -146,6 +205,13 @@ function showCodecSelect() {
 
 function showStatsMessage() {
   setInterval(async () => {
+    if (localVideo.videoWidth) {
+      localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth} x ${localVideo.videoHeight} px`;
+    }
+    if (remoteVideo.videoWidth) {
+      remoteVideoStatsDiv.innerHTML = `<strong>Receiving resolution:</strong> ${remoteVideo.videoWidth} x ${remoteVideo.videoHeight} px`;
+    }
+
     if (sendVideo == null || connectionId == null) {
       return;
     }
