@@ -26,9 +26,6 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("Time interval for polling from signaling server.")]
         private float interval = 5.0f;
 
-        [SerializeField, Tooltip("Enable or disable hardware encoder.")]
-        private bool hardwareEncoderSupport = true;
-
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
 
@@ -49,7 +46,7 @@ namespace Unity.RenderStreaming
             }
             return null;
         }
-		
+
 		static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context) {
             Type _type = GetType(type);
             if (_type == null) {
@@ -67,52 +64,45 @@ namespace Unity.RenderStreaming
             RTCConfiguration conf = new RTCConfiguration {iceServers = iceServers};
             ISignaling signaling = CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
-            _Run(conf, hardwareEncoderSupport, signaling, handlers.ToArray());
+            _Run(conf, signaling, handlers.ToArray());
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="hardwareEncoder"></param>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
         public void Run(
-            bool? hardwareEncoder = null,
             ISignaling signaling = null,
             SignalingHandlerBase[] handlers = null)
         {
-            _Run(null, hardwareEncoder, signaling, handlers);
+            _Run(null, signaling, handlers);
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="conf"></param>
-        /// <param name="hardwareEncoder"></param>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
         /// <remarks> To use this method, Need to depend WebRTC package </remarks>
         public void Run(
             RTCConfiguration conf,
-            bool? hardwareEncoder = null,
             ISignaling signaling = null,
             SignalingHandlerBase[] handlers = null
             )
         {
-            _Run(conf, hardwareEncoder, signaling, handlers);
+            _Run(conf, signaling, handlers);
         }
 
         private void _Run(
             RTCConfiguration? conf = null,
-            bool? hardwareEncoder = null,
             ISignaling signaling = null,
             SignalingHandlerBase[] handlers = null
             )
         {
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
-            if (hardwareEncoder != null)
-                hardwareEncoderSupport = hardwareEncoder.Value;
 
             if (signaling != null)
             {

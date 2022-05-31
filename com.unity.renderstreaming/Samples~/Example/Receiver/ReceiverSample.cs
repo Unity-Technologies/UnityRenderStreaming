@@ -64,9 +64,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
             inputSender = GetComponent<InputSender>();
             inputSender.OnStartedChannel += OnStartedChannel;
             videoCodecSelect.enabled = true;

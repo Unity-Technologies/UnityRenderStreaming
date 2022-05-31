@@ -96,9 +96,7 @@ namespace Unity.RenderStreaming.Samples
             playerInput.PerformPairingWithAllLocalDevices();
             playerController.CheckPairedDevices();
 
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling,
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
         }
@@ -108,9 +106,7 @@ namespace Unity.RenderStreaming.Samples
             var guestPlayer = GameObject.Instantiate(prefabGuest);
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling,
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
 
