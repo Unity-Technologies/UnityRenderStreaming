@@ -14,12 +14,12 @@ namespace Unity.RenderStreaming
         private static Dictionary<int, RTCRtpCodecCapability> s_availableVideoCodecs;
         private static Dictionary<int, RTCRtpCodecCapability> s_availableAudioCodecs;
 
-        public static bool TryGetAvailableVideoCodec(int index, out RTCRtpCodecCapability codec)
+        internal static bool TryGetAvailableVideoCodec(int index, out RTCRtpCodecCapability codec)
         {
             return s_availableVideoCodecs.TryGetValue(index, out codec);
         }
 
-        public static bool TryGetAvailableAudioCodec(int index, out RTCRtpCodecCapability codec)
+        internal static bool TryGetAvailableAudioCodec(int index, out RTCRtpCodecCapability codec)
         {
             return s_availableAudioCodecs.TryGetValue(index, out codec);
         }

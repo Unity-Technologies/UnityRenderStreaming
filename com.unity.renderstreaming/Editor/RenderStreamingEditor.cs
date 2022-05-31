@@ -19,7 +19,6 @@ namespace Unity.RenderStreaming.Editor
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"), new GUIContent("Signaling URL"));
                 ShowIceServerList(serializedObject.FindProperty("iceServers"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("hardwareEncoderSupport"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("handlers"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("runOnAwake"));
 
@@ -58,7 +57,7 @@ namespace Unity.RenderStreaming.Editor
             int i = 0;
 
             foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()){
-                try { 
+                try {
                     foreach (System.Type type in assembly.GetTypes()) {
                         if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
                             if(type.FullName == signalingType.stringValue){
