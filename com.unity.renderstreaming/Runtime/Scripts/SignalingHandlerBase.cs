@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -80,8 +81,20 @@ namespace Unity.RenderStreaming
         {
             sender.Track.Stop();
             sender.SetSender(connectionId, null);
-            if(ExistConnection(connectionId))
+            if (ExistConnection(connectionId))
                 RemoveTrack(connectionId, sender.Track);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="sender"></param>
+        public void SetSenderCodecs(string connectionId, IStreamSender sender)
+        {
+            var transceivers = m_handler.GetTransceivers(connectionId)
+                .Where(t => sender.Senders.Values.Contains(t.Sender));
+            sender.SetSenderCodec(connectionId, transceivers);
         }
 
         /// <summary>
@@ -91,11 +104,11 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
-            var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
+            var transceiver =
+                m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
             if (transceiver.Receiver != null)
                 receiver.SetReceiver(connectionId, transceiver.Receiver);
         }
-
 
         /// <summary>
         ///
@@ -112,10 +125,22 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
+        /// <param name="receiver"></param>
+        public void SetReceiverCodecs(string connectionId, IStreamReceiver receiver)
+        {
+            var transceivers = m_handler.GetTransceivers(connectionId)
+                .Where(t => t.Receiver == receiver.Receiver);
+            receiver.SetReceiverCodec(connectionId, transceivers);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
         /// <param name="channel"></param>
         public virtual void AddChannel(string connectionId, IDataChannel channel)
         {
-            if(channel.IsLocal)
+            if (channel.IsLocal)
             {
                 var _channel = m_handler.CreateChannel(connectionId, channel.Label);
                 channel.SetChannel(connectionId, _channel);
@@ -186,7 +211,6 @@ namespace Unity.RenderStreaming
     /// </summary>
     public delegate void OnStoppedChannelHandler(string connectionId);
 
-
     /// <summary>
     ///
     /// </summary>
@@ -198,7 +222,7 @@ namespace Unity.RenderStreaming
         MediaStreamTrack Track { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         IReadOnlyDictionary<string, RTCRtpSender> Senders { get; }
 
@@ -208,6 +232,13 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         void SetSender(string connectionId, RTCRtpSender sender);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="transceivers"></param>
+        void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
     }
 
     /// <summary>
@@ -221,7 +252,7 @@ namespace Unity.RenderStreaming
         MediaStreamTrack Track { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         RTCRtpReceiver Receiver { get; }
 
@@ -233,8 +264,16 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        /// <param name="track"></param>
-        void SetReceiver(string connectionId, RTCRtpReceiver sender);
+        /// <param name="connectionId"></param>
+        /// <param name="receiver"></param>
+        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="transceivers"></param>
+        void SetReceiverCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
     }
 
     public interface IDataChannel
@@ -247,7 +286,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        bool IsConnected { get;  }
+        bool IsConnected { get; }
 
         /// <summary>
         ///

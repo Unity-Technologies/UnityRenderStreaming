@@ -32,7 +32,7 @@ namespace Unity.RenderStreaming
         private AudioSource m_source;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="source"></param>
         public void SetSource(AudioSource source)

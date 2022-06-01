@@ -28,18 +28,11 @@ namespace Unity.RenderStreaming.Samples
         public const int DefaultStreamWidth = 1280;
         public const int DefaultStreamHeight = 720;
 
-        private static bool s_enableHWCodec = false;
         private static SignalingType s_signalingType = SignalingType.WebSocket;
         private static string s_signalingAddress = "localhost";
         private static float s_signalingInterval = 5;
         private static bool s_signalingSecured = false;
         private static Vector2Int s_StreamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
-
-        public static bool EnableHWCodec
-        {
-            get { return s_enableHWCodec; }
-            set { s_enableHWCodec = value; }
-        }
 
         public static SignalingType SignalingType
         {
@@ -104,7 +97,6 @@ namespace Unity.RenderStreaming.Samples
 
     internal class SceneSelectUI : MonoBehaviour
     {
-        [SerializeField] private Toggle toggleEnableHWCodec;
         [SerializeField] private Dropdown dropdownSignalingType;
         [SerializeField] private InputField inputFieldSignalingAddress;
         [SerializeField] private Toggle toggleSignalingSecured;
@@ -138,14 +130,12 @@ namespace Unity.RenderStreaming.Samples
 
         void Start()
         {
-            toggleEnableHWCodec.isOn = RenderStreamingSettings.EnableHWCodec;
             dropdownSignalingType.value = (int)RenderStreamingSettings.SignalingType;
             inputFieldSignalingAddress.text = RenderStreamingSettings.SignalingAddress;
             toggleSignalingSecured.isOn = RenderStreamingSettings.SignalingSecured;
             inputFieldSignalingInterval.text =
                 RenderStreamingSettings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
 
-            toggleEnableHWCodec.onValueChanged.AddListener(OnChangeHWCodec);
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
             toggleSignalingSecured.onValueChanged.AddListener(OnChangeSignalingSecured);
@@ -217,11 +207,6 @@ namespace Unity.RenderStreaming.Samples
             callback?.Invoke(ARSession.state == ARSessionState.Ready);
         }
 #endif
-
-        private void OnChangeHWCodec(bool enable)
-        {
-            RenderStreamingSettings.EnableHWCodec = enable;
-        }
 
         private void OnChangeSignalingType(int value)
         {

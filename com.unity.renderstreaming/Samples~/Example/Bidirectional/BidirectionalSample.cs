@@ -22,6 +22,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private MicrophoneStreamSender microphoneStreamer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection singleConnection;
+        [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         private string connectionId;
@@ -76,9 +77,10 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+
+            videoCodecSelect.enabled = true;
+            videoCodecSelect.ChangeInteractable(true);
         }
 
         private void SetUp()
@@ -86,6 +88,8 @@ namespace Unity.RenderStreaming.Samples
             setUpButton.interactable = false;
             hangUpButton.interactable = true;
             connectionIdInput.interactable = false;
+            videoCodecSelect.ChangeInteractable(false);
+            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
 
             singleConnection.CreateConnection(connectionId);
         }
@@ -99,6 +103,7 @@ namespace Unity.RenderStreaming.Samples
             hangUpButton.interactable = false;
             connectionIdInput.interactable = true;
             connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
+            videoCodecSelect.ChangeInteractable(true);
         }
     }
 }

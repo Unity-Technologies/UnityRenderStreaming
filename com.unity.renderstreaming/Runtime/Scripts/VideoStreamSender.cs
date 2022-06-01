@@ -35,8 +35,6 @@ namespace Unity.RenderStreaming
         /// </summary>
         public virtual Texture SendTexture { get; }
 
-
-
         /// <summary>
         /// todo::redesign
         /// </summary>

@@ -38,6 +38,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
+        [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         private string connectionId;
@@ -51,7 +52,6 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
 
             receiveVideoViewer.OnUpdateReceiveTexture += OnUpdateReceiveTexture;
-            receiveAudioViewer.SetSource(remoteAudioSource);
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
                 source.loop = true;
@@ -63,11 +63,11 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
             inputSender = GetComponent<InputSender>();
             inputSender.OnStartedChannel += OnStartedChannel;
+            videoCodecSelect.enabled = true;
+            videoCodecSelect.ChangeInteractable(true);
         }
 
         void OnUpdateReceiveTexture(Texture texture)
@@ -97,6 +97,9 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.text = connectionId;
             }
             connectionIdInput.interactable = false;
+            videoCodecSelect.ChangeInteractable(false);
+            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveAudioViewer.SetSource(remoteAudioSource);
 
             connection.CreateConnection(connectionId);
             startButton.gameObject.SetActive(false);
@@ -109,6 +112,7 @@ namespace Unity.RenderStreaming.Samples
             connectionId = String.Empty;
             connectionIdInput.text = String.Empty;
             connectionIdInput.interactable = true;
+            videoCodecSelect.ChangeInteractable(true);
             startButton.gameObject.SetActive(true);
             stopButton.gameObject.SetActive(false);
         }

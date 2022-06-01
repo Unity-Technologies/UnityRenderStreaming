@@ -72,7 +72,7 @@ namespace Unity.RenderStreaming
             {
                 track?.SetData(ref nativeArray, channels, m_sampleRate);
             }
-            // todo(kazuki):: Should catch only ObjectDisposedException but 
+            // todo(kazuki):: Should catch only ObjectDisposedException but
             // AudioStreamTrack also throws NullReferenceException.
             catch (Exception)
             {

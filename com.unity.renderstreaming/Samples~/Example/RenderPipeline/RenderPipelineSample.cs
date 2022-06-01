@@ -19,9 +19,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (!renderStreaming.runOnAwake)
             {
-                renderStreaming.Run(
-                    hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                    signaling: RenderStreamingSettings.Signaling);
+                renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
             }
         }
     }

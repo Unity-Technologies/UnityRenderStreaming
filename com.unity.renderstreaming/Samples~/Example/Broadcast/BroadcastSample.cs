@@ -40,9 +40,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(
-                hardwareEncoder: RenderStreamingSettings.EnableHWCodec,
-                signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
         }
