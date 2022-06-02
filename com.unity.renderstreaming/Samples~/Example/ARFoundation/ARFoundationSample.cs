@@ -26,7 +26,6 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Text textQuaternionZ;
         [SerializeField] private InputAction positionAction;
         [SerializeField] private InputAction quaternionAction;
-        [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         private string _connectionId;
@@ -48,9 +47,6 @@ namespace Unity.RenderStreaming.Samples
             {
                 renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
             }
-
-            videoCodecSelect.enabled = true;
-            videoCodecSelect.ChangeInteractable(true);
 
             if ((ARSession.state == ARSessionState.None ) ||
                 (ARSession.state == ARSessionState.CheckingAvailability))
@@ -121,8 +117,7 @@ namespace Unity.RenderStreaming.Samples
 
         void CreateConnection()
         {
-            videoCodecSelect.ChangeInteractable(false);
-            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
 
             _connectionId = System.Guid.NewGuid().ToString("N");
             connection.CreateConnection(_connectionId);
@@ -137,7 +132,6 @@ namespace Unity.RenderStreaming.Samples
 
             startButton.gameObject.SetActive(true);
             stopButton.gameObject.SetActive(false);
-            videoCodecSelect.ChangeInteractable(true);
         }
     }
 }

@@ -18,9 +18,6 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
-        [SerializeField] VideoCodecSelect videoCodecSelect;
-
-        private Role role;
 
         enum Role
         {
@@ -28,32 +25,11 @@ namespace Unity.RenderStreaming.Samples
             Guest = 1
         }
 
-        // Start is called before the first frame update
         void Start()
         {
             buttonStart.onClick.AddListener(OnClickButtonStart);
             inputFieldUsername.text = UnityEngine.Random.Range(0, 99999).ToString("00000");
             inputFieldUsername.onValueChanged.AddListener(OnValueChangedUserName);
-
-            var toggles = toggleGroupRole.GetComponentsInChildren<Toggle>();
-            var activeToggle = toggleGroupRole.ActiveToggles().FirstOrDefault();
-            var indexRole = Array.FindIndex(toggles, _ => _ == activeToggle);
-            role = (Role)indexRole;
-            videoCodecSelect.ChangeInteractable(role == Role.Guest);
-
-            foreach (var tuple in toggles.Select(((toggle, i) => new {toggle, i})))
-            {
-                tuple.toggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (!isOn)
-                    {
-                        return;
-                    }
-
-                    role = (Role)tuple.i;
-                    videoCodecSelect.ChangeInteractable(role == Role.Guest);
-                });
-            }
         }
 
         void OnValueChangedUserName(string value)
@@ -67,6 +43,11 @@ namespace Unity.RenderStreaming.Samples
         {
             var username = inputFieldUsername.text;
             var connectionId = Guid.NewGuid().ToString();
+
+            var toggles = toggleGroupRole.GetComponentsInChildren<Toggle>();
+            var activeToggle = toggleGroupRole.ActiveToggles().First();
+            var indexRole = Array.FindIndex(toggles, _ => _ == activeToggle);
+            var role = (Role)indexRole;
 
             panel.SetActive(false);
 
@@ -117,7 +98,7 @@ namespace Unity.RenderStreaming.Samples
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
-            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
