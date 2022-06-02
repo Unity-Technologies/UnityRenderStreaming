@@ -3745,7 +3745,6 @@ MonoBehaviour:
   menuCamera: {fileID: 1860463870}
   panel: {fileID: 538622256}
   videoImage: {fileID: 448649996}
-  videoCodecSelect: {fileID: 0}
 --- !u!114 &2000677260
 MonoBehaviour:
   m_ObjectHideFlags: 0

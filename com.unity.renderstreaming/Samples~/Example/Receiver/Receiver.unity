@@ -143,7 +143,7 @@ PrefabInstance:
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
@@ -1524,7 +1524,6 @@ MonoBehaviour:
   receiveVideoViewer: {fileID: 1915034401}
   receiveAudioViewer: {fileID: 1915034407}
   connection: {fileID: 1915034404}
-  videoCodecSelect: {fileID: 0}
 --- !u!114 &1915034406
 MonoBehaviour:
   m_ObjectHideFlags: 0

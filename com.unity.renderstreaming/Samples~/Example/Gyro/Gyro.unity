@@ -295,7 +295,7 @@ PrefabInstance:
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4037113455314838168, guid: 7aa5bec5b1e406445af144843fe4d62c,
         type: 3}
@@ -1860,4 +1860,3 @@ MonoBehaviour:
       m_Action: Vector 3
       m_Flags: 0
     m_Flags: 0
-  videoCodecSelect: {fileID: 0}
