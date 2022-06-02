@@ -20,7 +20,6 @@ namespace Unity.RenderStreaming.Samples
             [SerializeField] private Text textVelocityY;
             [SerializeField] private Text textVelocityZ;
             [SerializeField] private InputAction vector3Action;
-            [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         void Awake()
@@ -45,9 +44,6 @@ namespace Unity.RenderStreaming.Samples
             if (renderStreaming.runOnAwake)
                 return;
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
-
-            videoCodecSelect.enabled = true;
-            videoCodecSelect.ChangeInteractable(true);
         }
 
         void OnEnable()
@@ -79,8 +75,7 @@ namespace Unity.RenderStreaming.Samples
 
         void SendOffer()
         {
-            videoCodecSelect.ChangeInteractable(false);
-            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
 
             var connectionId = System.Guid.NewGuid().ToString("N");
             connection.CreateConnection(connectionId);

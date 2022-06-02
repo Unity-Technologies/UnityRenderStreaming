@@ -38,7 +38,6 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
-        [SerializeField] private VideoCodecSelect videoCodecSelect;
 #pragma warning restore 0649
 
         private string connectionId;
@@ -66,8 +65,6 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
             inputSender = GetComponent<InputSender>();
             inputSender.OnStartedChannel += OnStartedChannel;
-            videoCodecSelect.enabled = true;
-            videoCodecSelect.ChangeInteractable(true);
         }
 
         void OnUpdateReceiveTexture(Texture texture)
@@ -97,8 +94,7 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.text = connectionId;
             }
             connectionIdInput.interactable = false;
-            videoCodecSelect.ChangeInteractable(false);
-            receiveVideoViewer.FilterVideoCodecs(videoCodecSelect.SelectIndex);
+            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
             receiveAudioViewer.SetSource(remoteAudioSource);
 
             connection.CreateConnection(connectionId);
@@ -112,7 +108,6 @@ namespace Unity.RenderStreaming.Samples
             connectionId = String.Empty;
             connectionIdInput.text = String.Empty;
             connectionIdInput.interactable = true;
-            videoCodecSelect.ChangeInteractable(true);
             startButton.gameObject.SetActive(true);
             stopButton.gameObject.SetActive(false);
         }
