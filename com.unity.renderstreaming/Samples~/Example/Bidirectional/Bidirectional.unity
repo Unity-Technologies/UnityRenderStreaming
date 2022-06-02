@@ -4370,7 +4370,6 @@ MonoBehaviour:
   microphoneStreamer: {fileID: 1363584104}
   receiveAudioViewer: {fileID: 1915034408}
   singleConnection: {fileID: 1915034406}
-  videoCodecSelect: {fileID: 0}
 --- !u!114 &1915034402
 MonoBehaviour:
   m_ObjectHideFlags: 0
