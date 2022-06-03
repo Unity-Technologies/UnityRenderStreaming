@@ -35,6 +35,9 @@ namespace Unity.RenderStreaming.Samples
         private static Vector2Int s_streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
         private static int s_selectVideoCodecIndex = -1;
 
+        // todo(kazuki): This is be only a temporary measure.
+        private static int s_selectSenderVideoCodecIndex = -1;
+
         public static SignalingType SignalingType
         {
             get { return s_signalingType; }
@@ -100,6 +103,12 @@ namespace Unity.RenderStreaming.Samples
             get { return s_selectVideoCodecIndex; }
             set { s_selectVideoCodecIndex = value; }
         }
+
+        public static int SelectSenderVideoCodecIndex
+        {
+            get { return s_selectSenderVideoCodecIndex; }
+            set { s_selectSenderVideoCodecIndex = value; }
+        }
     }
 
     internal class SceneSelectUI : MonoBehaviour
@@ -111,7 +120,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Dropdown streamSizeSelector;
         [SerializeField] private InputField textureWidthInput;
         [SerializeField] private InputField textureHeightInput;
-        [SerializeField] private Dropdown videoCodecSelector;
+        [SerializeField] private Dropdown receiverVideoCodecSelector;
+        [SerializeField] private Dropdown senderVideoCodecSelector;
 
         [SerializeField] private Button buttonBidirectional;
         [SerializeField] private Button buttonBroadcast;
@@ -173,15 +183,25 @@ namespace Unity.RenderStreaming.Samples
 
             var videoCodecList = AvailableCodecsUtils.GetAvailableVideoCodecsName()
                 .Select(pair => new Dropdown.OptionData(pair.Value)).ToList();
-            videoCodecSelector.options.AddRange(videoCodecList);
+            receiverVideoCodecSelector.options.AddRange(videoCodecList);
+
+            // todo(kazuki): This is be only a temporary measure.
+            // AvailableCodecsUtils.GetAvailableVideoCodecsName returns list for receiver, not sender.
+            senderVideoCodecSelector.options.AddRange(videoCodecList);
 
             if (RenderStreamingSettings.SelectVideoCodecIndex >= 0 &&
                 RenderStreamingSettings.SelectVideoCodecIndex < videoCodecList.Count)
             {
-                videoCodecSelector.value = RenderStreamingSettings.SelectVideoCodecIndex + 1;
+                receiverVideoCodecSelector.value = RenderStreamingSettings.SelectVideoCodecIndex + 1;
             }
-            videoCodecSelector.onValueChanged.AddListener(OnChangeVideoCodecSelect);
+            if (RenderStreamingSettings.SelectSenderVideoCodecIndex >= 0 &&
+                RenderStreamingSettings.SelectSenderVideoCodecIndex < videoCodecList.Count)
+            {
+                senderVideoCodecSelector.value = RenderStreamingSettings.SelectSenderVideoCodecIndex + 1;
+            }
 
+            receiverVideoCodecSelector.onValueChanged.AddListener(OnChangeVideoCodecSelect);
+            senderVideoCodecSelector.onValueChanged.AddListener(OnChangeSenderVideoCodecSelect);
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
             buttonGyro.onClick.AddListener(OnPressedGyro);
@@ -304,6 +324,11 @@ namespace Unity.RenderStreaming.Samples
         private void OnChangeVideoCodecSelect(int index)
         {
             RenderStreamingSettings.SelectVideoCodecIndex = index - 1;
+        }
+
+        private void OnChangeSenderVideoCodecSelect(int index)
+        {
+            RenderStreamingSettings.SelectSenderVideoCodecIndex = index - 1;
         }
 
         private void OnPressedBidirectional()

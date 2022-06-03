@@ -34,6 +34,7 @@ namespace Unity.RenderStreaming.Samples
             {
                 videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
             }
+            videoStreamSender.FilterVideoCodecs(RenderStreamingSettings.SelectSenderVideoCodecIndex);
         }
 
         void Start()
