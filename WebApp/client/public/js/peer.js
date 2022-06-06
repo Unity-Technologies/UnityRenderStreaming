@@ -15,6 +15,7 @@ export default class Peer extends EventTarget {
     this.ignoreOffer = false;
     this.srdAnswerPending = false;
     this.log = str => void Logger.log(`[${_this.polite ? 'POLITE' : 'IMPOLITE'}] ${str}`);
+    this.warn = str => void Logger.warn(`[${_this.polite ? 'POLITE' : 'IMPOLITE'}] ${str}`);
     this.assert_equals = window.assert_equals ? window.assert_equals : (a, b, msg) => { if (a === b) { return; } throw new Error(`${msg} expected ${b} but got ${a}`); };
     this.interval = resendIntervalMsec;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
@@ -173,7 +174,8 @@ export default class Peer extends EventTarget {
     try {
       await this.pc.addIceCandidate(candidate);
     } catch (e) {
-      if (!this.ignoreOffer) this.log(e);
+      if (!this.ignoreOffer) 
+        this.warn(`${this.pc} this candidate can't accept current signaling state ${this.pc.signalingState}.`);
     }
   }
 

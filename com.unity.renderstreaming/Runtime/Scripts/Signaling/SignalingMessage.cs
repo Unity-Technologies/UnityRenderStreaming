@@ -96,5 +96,11 @@ namespace Unity.RenderStreaming
         public int sdpMLineIndex;
     }
 
+    [Serializable]
+    public class AllResData
+    {
+        public SignalingMessage[] messages;
+    }
+
 #pragma warning restore 0649
 }
