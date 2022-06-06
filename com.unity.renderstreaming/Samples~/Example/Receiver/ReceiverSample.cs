@@ -94,7 +94,7 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.text = connectionId;
             }
             connectionIdInput.interactable = false;
-            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
+            receiveVideoViewer.FilterCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
             receiveAudioViewer.SetSource(remoteAudioSource);
 
             connection.CreateConnection(connectionId);

@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming.Samples
 
         void SendOffer()
         {
-            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
+            receiveVideoViewer.FilterCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
 
             var connectionId = System.Guid.NewGuid().ToString("N");
             connection.CreateConnection(connectionId);

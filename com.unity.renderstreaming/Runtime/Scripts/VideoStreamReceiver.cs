@@ -1,3 +1,4 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -23,6 +24,29 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         public override TrackKind Kind { get { return TrackKind.Video; } }
+
+        /// <summary>
+        /// argument index must use dictionary key from GetAvailableVideoCodecsName
+        /// </summary>
+        /// <seealso cref="AvailableCodecsUtils.GetAvailableVideoCodecsName"/>
+        /// <param name="index"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public override void FilterCodecs(int index)
+        {
+            if (index < 0)
+            {
+                m_codecs.Clear();
+                return;
+            }
+
+            if (!AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var codec))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
+            }
+
+            m_codecs.Clear();
+            m_codecs.Add(codec);
+        }
 
         /// <summary>
         ///

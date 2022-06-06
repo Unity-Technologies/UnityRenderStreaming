@@ -1,3 +1,4 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -23,6 +24,28 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         public override TrackKind Kind { get { return TrackKind.Audio; } }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="index"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public override void FilterCodecs(int index)
+        {
+            if (index < 0)
+            {
+                m_codecs.Clear();
+                return;
+            }
+
+            if (!AvailableCodecsUtils.TryGetAvailableAudioCodec(index, out var codec))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
+            }
+
+            m_codecs.Clear();
+            m_codecs.Add(codec);
+        }
 
         /// <summary>
         ///

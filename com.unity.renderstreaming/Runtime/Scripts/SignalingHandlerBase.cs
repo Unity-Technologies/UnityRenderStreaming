@@ -89,18 +89,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="sender"></param>
-        public void SetSenderCodecs(string connectionId, IStreamSender sender)
-        {
-            var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => sender.Senders.Values.Contains(t.Sender));
-            sender.SetSenderCodec(connectionId, transceivers);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
@@ -130,7 +118,10 @@ namespace Unity.RenderStreaming
         {
             var transceivers = m_handler.GetTransceivers(connectionId)
                 .Where(t => t.Receiver == receiver.Receiver);
-            receiver.SetReceiverCodec(connectionId, transceivers);
+            foreach (var transceiver in transceivers)
+            {
+                transceiver.SetCodecPreferences(receiver.Codecs);
+            }
         }
 
         /// <summary>
@@ -232,13 +223,6 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         void SetSender(string connectionId, RTCRtpSender sender);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="transceivers"></param>
-        void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
     }
 
     /// <summary>
@@ -264,16 +248,14 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="receiver"></param>
-        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
+        RTCRtpCodecCapability[] Codecs { get; }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="transceivers"></param>
-        void SetReceiverCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
+        /// <param name="receiver"></param>
+        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
     }
 
     public interface IDataChannel
