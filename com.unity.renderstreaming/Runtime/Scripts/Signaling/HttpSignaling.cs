@@ -54,7 +54,7 @@ namespace Unity.RenderStreaming.Signaling
             if (m_running)
                 throw new InvalidOperationException("This object is already started.");
             m_running = true;
-            m_signalingThread = new Thread(HTTPPooling);
+            m_signalingThread = new Thread(HTTPPolling);
             m_signalingThread.Start();
         }
 
@@ -123,7 +123,7 @@ namespace Unity.RenderStreaming.Signaling
             HTTPDisonnect(connectionId);
         }
 
-        private void HTTPPooling()
+        private void HTTPPolling()
         {
             // ignore messages arrived before 30 secs ago
             m_lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
