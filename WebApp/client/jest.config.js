@@ -139,7 +139,9 @@ export default {
   testEnvironment: "jest-environment-jsdom",
 
   // Options that will be passed to the testEnvironment
-  // testEnvironmentOptions: {},
+  testEnvironmentOptions: {
+    url: "http://localhost:8081"
+  },
 
   // Adds a location field to test results
   // testLocationInResults: false,
@@ -166,9 +168,6 @@ export default {
 
   // This option set timeout each test
   testTimeout: 5000,
-
-  // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
-  testURL: "http://localhost:8081",
 
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
   // timers: "real",

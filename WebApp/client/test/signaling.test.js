@@ -4,6 +4,11 @@ import { setup, teardown } from 'jest-dev-server';
 import { Signaling, WebSocketSignaling } from "../public/js/signaling";
 import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep, serverExeName } from "./testutils";
+import { TextEncoder, TextDecoder } from 'util'
+
+// note: If set testEnvironment `jest-environment-jsdom`, TextEncoder/TextDecoder is not defined.
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 const portNumber = 8081;
 jest.setTimeout(10000);
