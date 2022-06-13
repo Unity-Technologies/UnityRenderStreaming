@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,7 +53,7 @@ namespace Unity.RenderStreaming.Signaling
             if (m_running)
                 throw new InvalidOperationException("This object is already started.");
             m_running = true;
-            m_signalingThread = new Thread(HTTPPooling);
+            m_signalingThread = new Thread(HTTPPolling);
             m_signalingThread.Start();
         }
 
@@ -89,7 +88,7 @@ namespace Unity.RenderStreaming.Signaling
             data.sdp = offer.sdp;
             data.type = "offer";
 
-            HTTPPost("signaling/offer", data);
+            ThreadPool.QueueUserWorkItem(_ => { HTTPPost("signaling/offer", data); });
         }
 
         public void SendAnswer(string connectionId, RTCSessionDescription answer)
@@ -99,7 +98,7 @@ namespace Unity.RenderStreaming.Signaling
             data.sdp = answer.sdp;
             data.type = "answer";
 
-            HTTPPost("signaling/answer", data);
+            ThreadPool.QueueUserWorkItem(_ => { HTTPPost("signaling/answer", data); });
         }
 
         public void SendCandidate(string connectionId, RTCIceCandidate candidate)
@@ -110,20 +109,20 @@ namespace Unity.RenderStreaming.Signaling
             data.sdpMLineIndex = candidate.SdpMLineIndex.GetValueOrDefault(0);
             data.sdpMid = candidate.SdpMid;
 
-            HTTPPost("signaling/candidate", data);
+            ThreadPool.QueueUserWorkItem(_ => { HTTPPost("signaling/candidate", data); });
         }
 
         public void OpenConnection(string connectionId)
         {
-            HTTPConnect(connectionId);
+            ThreadPool.QueueUserWorkItem(_ => { HTTPConnect(connectionId); });
         }
 
         public void CloseConnection(string connectionId)
         {
-            HTTPDisonnect(connectionId);
+            ThreadPool.QueueUserWorkItem(_ => { HTTPDisonnect(connectionId); });
         }
 
-        private void HTTPPooling()
+        private void HTTPPolling()
         {
             // ignore messages arrived before 30 secs ago
             m_lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
