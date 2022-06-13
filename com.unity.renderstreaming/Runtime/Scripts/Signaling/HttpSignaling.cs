@@ -18,11 +18,11 @@ namespace Unity.RenderStreaming.Signaling
         private Thread m_signalingThread;
 
         private string m_sessionId;
-        private long m_lastTimeGetAllRequest;
         private long m_lastTimeGetOfferRequest;
         private long m_lastTimeGetAnswerRequest;
         private long m_lastTimeGetCandidateRequest;
 
+        private HashSet<string> m_connection;
 	    public string Url { get { return m_url; } }
 	    public float Interval { get { return m_timeout; } }
 
@@ -37,10 +37,13 @@ namespace Unity.RenderStreaming.Signaling
                 ServicePointManager.ServerCertificateValidationCallback =
                     (sender, certificate, chain, errors) => true;
             }
+
+            m_connection = new HashSet<string>();
         }
 
         ~HttpSignaling()
         {
+            m_connection?.Clear();
             if(m_running)
                 Stop();
         }
@@ -122,10 +125,10 @@ namespace Unity.RenderStreaming.Signaling
         private void HTTPPolling()
         {
             // ignore messages arrived before 30 secs ago
-            m_lastTimeGetAllRequest = DateTime.UtcNow.Millisecond - 30000;
             m_lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
             m_lastTimeGetAnswerRequest = DateTime.UtcNow.Millisecond - 30000;
             m_lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
+
 
             while (m_running && string.IsNullOrEmpty(m_sessionId))
             {
@@ -145,7 +148,12 @@ namespace Unity.RenderStreaming.Signaling
             {
                 try
                 {
-                    HTTPGetAll();
+                    HTTPGetConnections();
+                    //ToDo workaround: The processing order needs to be determined by the time stamp
+                    HTTPGetAnswers();
+                    HTTPGetOffers();
+                    HTTPGetCandidates();
+
                     Thread.Sleep((int)(m_timeout * 1000));
                 }
                 catch (ThreadAbortException)
@@ -235,7 +243,6 @@ namespace Unity.RenderStreaming.Signaling
             request.ContentType = "application/json";
             request.KeepAlive = false;
             request.ContentLength = 0;
-            request.Timeout = (int)(m_timeout * 1000);
 
             Debug.Log($"Signaling: Connecting HTTP {m_url}");
 
@@ -311,7 +318,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (data == null) return false;
 
-            Debug.Log($"Signaling: HTTP create connection, connectionId: {connectionId}, polite:{data.polite}");
+            Debug.Log("Signaling: HTTP create connection, connectionId : " + connectionId);
             m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.polite), null);
             return true;
         }
@@ -341,64 +348,33 @@ namespace Unity.RenderStreaming.Signaling
             return true;
         }
 
-        private bool HTTPGetAll()
+        private bool HTTPGetConnections()
         {
             HttpWebRequest request =
-    (HttpWebRequest)WebRequest.Create($"{m_url}/signaling?fromtime={m_lastTimeGetAllRequest}");
+                (HttpWebRequest)WebRequest.Create($"{m_url}/signaling/connection");
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Headers.Add("Session-Id", m_sessionId);
             request.KeepAlive = false;
 
             HttpWebResponse response = HTTPGetResponse(request);
-            AllResData data = HTTPParseJsonResponse<AllResData>(response);
+            ConnectionResDataList list = HTTPParseJsonResponse<ConnectionResDataList>(response);
 
-            if (data == null) return false;
+            if (list == null) return false;
 
-            m_lastTimeGetAllRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
-                .ToJsMilliseconds();
-
-            foreach (var msg in data.messages)
+            foreach (var deleted in m_connection.Except(list.connections.Select(x => x.connectionId)).ToList())
             {
-                if (string.IsNullOrEmpty(msg.type))
-                    continue;
-
-                if(msg.type == "disconnect")
-                {
-                    m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, msg.connectionId), null);
-                }
-                else if (msg.type == "offer")
-                {
-                    DescData offer = new DescData();
-                    offer.connectionId = msg.connectionId;
-                    offer.sdp = msg.sdp;
-                    offer.polite = msg.polite;
-                    m_mainThreadContext.Post(d => OnOffer?.Invoke(this, offer), null);
-                }
-                else if (msg.type == "answer")
-                {
-                    DescData answer = new DescData
-                    {
-                        connectionId = msg.connectionId,
-                        sdp = msg.sdp
-                    };
-                    m_mainThreadContext.Post(d => OnAnswer?.Invoke(this, answer), null);
-                }
-                else if (msg.type == "candidate")
-                {
-                    CandidateData candidate = new CandidateData
-                    {
-                        connectionId = msg.connectionId,
-                        candidate = msg.candidate,
-                        sdpMLineIndex = msg.sdpMLineIndex,
-                        sdpMid = msg.sdpMid
-                    };
-                    m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
-                }
+                m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, deleted), null);
+                m_connection.Remove(deleted);
             }
+
+            foreach (var connection in list.connections)
+            {
+                m_connection.Add(connection.connectionId);
+            }
+
             return true;
         }
-
 
         private bool HTTPGetOffers()
         {
