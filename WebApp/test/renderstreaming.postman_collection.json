@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c93b5350-4bf1-43c0-af53-b521f877fe4a",
+		"_postman_id": "81f69f19-4db2-4baa-8210-c4a72f326a47",
 		"name": "renderstreaming",
 		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "837833"
 	},
 	"item": [
 		{
@@ -756,7 +757,7 @@
 							"    console.log(jsonData);",
 							"    pm.expect(jsonData.candidates.length).to.be.above(0);",
 							"    pm.expect(jsonData.candidates[0].connectionId).to.not.equal(null);",
-							"    pm.expect(jsonData.candidates[0].candidates.length).to.be.above(0);",
+							"    pm.expect(jsonData.candidates[0].candidates).to.not.equal(null);",
 							"});",
 							""
 						],
@@ -843,6 +844,104 @@
 							"key": "fromtime",
 							"value": "{{datetime}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All fromtime={{datetime}}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody(\"messages\");",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
+							"    pm.expect(jsonData.messages.length).to.be.above(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// datetime in the future",
+							"let datetime = Date.now() + 30;",
+							"pm.environment.set(\"datetime\", datetime);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Session-Id",
+						"type": "text",
+						"value": "{{session_Id}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}/signaling?fromtime={{datetime}}",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"signaling"
+					],
+					"query": [
+						{
+							"key": "fromtime",
+							"value": "{{datetime}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Config",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+							"pm.test(\"The response has a valid JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"    var jsonData = pm.response.json();",
+							"    console.log(jsonData);",
+							"    pm.response.to.have.jsonBody(\"useWebSocket\");",
+							"    pm.response.to.have.jsonBody(\"startupMode\");",
+							"    pm.response.to.have.jsonBody(\"logging\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{url}}/config",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"config"
 					]
 				}
 			},
@@ -966,44 +1065,6 @@
 					],
 					"path": [
 						"signaling"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Config",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
-							"pm.test(\"The response has a valid JSON body\", function () {",
-							"    pm.response.to.be.json;",
-							"    var jsonData = pm.response.json();",
-							"    console.log(jsonData);",
-							"    pm.response.to.have.jsonBody(\"useWebSocket\");",
-							"    pm.response.to.have.jsonBody(\"startupMode\");",
-							"    pm.response.to.have.jsonBody(\"logging\");",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://{{url}}/config",
-					"protocol": "http",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"config"
 					]
 				}
 			},

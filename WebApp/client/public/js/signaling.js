@@ -21,8 +21,13 @@ export class Signaling extends EventTarget {
     return 1000;
   }
 
-  url(method) {
-    return location.origin + '/signaling/' + method;
+  url(method, parameter='') {
+    let ret = location.origin + '/signaling';
+    if(method)
+      ret += '/' + method;
+    if(parameter)
+      ret += '?' + parameter;
+    return ret;
   }
 
   async start() {
@@ -31,10 +36,40 @@ export class Signaling extends EventTarget {
     this.sessionId = session.sessionId;
     this.running = true;
 
-    this.loopGetConnection();
-    this.loopGetOffer();
-    this.loopGetAnswer();
-    this.loopGetCandidate();
+    this.loopGetAll();
+  }
+
+  async loopGetAll() {
+    let lastTimeRequest = Date.now() - 30000;
+    while (this.running) {
+      const res = await this.getAll(lastTimeRequest);
+      lastTimeRequest = Date.parse(res.headers.get('Date'));
+
+      const data = await res.json();
+      const messages = data.messages;
+
+      for(const msg of messages) {
+        switch (msg.type) {
+          case "connect":
+            break;
+          case "disconnect":
+            this.dispatchEvent(new CustomEvent('disconnect', { detail: msg }));
+            break;
+          case "offer":
+            this.dispatchEvent(new CustomEvent('offer', { detail: msg } ));
+            break;
+          case "answer":
+            this.dispatchEvent(new CustomEvent('answer', { detail: msg } ));
+            break;
+          case "candidate":
+            this.dispatchEvent(new CustomEvent('candidate', { detail: msg }));
+            break;
+          default:
+            break;
+        }     
+      }
+      await this.sleep(this.interval);
+    }
   }
 
   async loopGetConnection() {
@@ -133,6 +168,8 @@ export class Signaling extends EventTarget {
     const data = { 'connectionId': connectionId };
     const res = await fetch(this.url('connection'), { method: 'PUT', headers: this.headers(), body: JSON.stringify(data) });
     const json = await res.json();
+    Logger.log(`Signaling: HTTP create connection, connectionId: ${json.connectionId}, polite:${json.polite}`);
+
     this.dispatchEvent(new CustomEvent('connect', { detail: json }));
     return json;
   }
@@ -147,13 +184,13 @@ export class Signaling extends EventTarget {
 
   async sendOffer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    Logger.log('sendOffer:', data);
+    Logger.log('sendOffer:' + data);
     await fetch(this.url('offer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   }
 
   async sendAnswer(connectionId, sdp) {
     const data = { 'sdp': sdp, 'connectionId': connectionId };
-    Logger.log('sendAnswer:', data);
+    Logger.log('sendAnswer:' + data);
     await fetch(this.url('answer'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   }
 
@@ -164,7 +201,7 @@ export class Signaling extends EventTarget {
       'sdpMid': sdpMid,
       'connectionId': connectionId
     };
-    Logger.log('sendCandidate:', data);
+    Logger.log('sendCandidate:' + data);
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   }
 
@@ -173,15 +210,19 @@ export class Signaling extends EventTarget {
   }
 
   async getOffer(fromTime = 0) {
-    return await fetch(this.url(`offer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`offer`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   }
 
   async getAnswer(fromTime = 0) {
-    return await fetch(this.url(`answer?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`answer`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   }
 
   async getCandidate(fromTime = 0) {
-    return await fetch(this.url(`candidate?fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+    return await fetch(this.url(`candidate`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
+  }
+
+  async getAll(fromTime = 0) {
+    return await fetch(this.url(``, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   }
 }
 
