@@ -41,8 +41,7 @@ namespace Unity.RenderStreaming.Signaling
 
         ~HttpSignaling()
         {
-            if(m_running)
-                Stop();
+            Stop();
         }
 
         public void Start()
@@ -56,9 +55,10 @@ namespace Unity.RenderStreaming.Signaling
 
         public void Stop()
         {
-            if (m_running)
+            m_running = false;
+
+            if (m_signalingThread != null)
             {
-                m_running = false;
                 if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
                 {
                     m_signalingThread.Abort();
