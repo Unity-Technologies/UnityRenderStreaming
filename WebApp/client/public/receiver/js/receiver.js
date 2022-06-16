@@ -103,7 +103,7 @@ export class Receiver {
         try {
           await _this.pc.onGotDescription(offer.connectionId, desc);
         } catch (error) {
-          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+          Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
         }
       }
     });
@@ -114,7 +114,7 @@ export class Receiver {
         try {
           await _this.pc.onGotDescription(answer.connectionId, desc);
         } catch (error) {
-          _this.ondisconnect(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
+          Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
         }
       }
     });

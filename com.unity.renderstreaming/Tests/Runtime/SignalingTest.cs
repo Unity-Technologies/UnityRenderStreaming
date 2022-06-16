@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
-using System.Linq;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
