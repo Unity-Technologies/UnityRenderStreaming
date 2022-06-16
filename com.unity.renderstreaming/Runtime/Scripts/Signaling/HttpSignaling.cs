@@ -185,7 +185,7 @@ namespace Unity.RenderStreaming.Signaling
             }
             catch (Exception e)
             {
-                Debug.LogError("Signaling: HTTP request error " + e);
+                Debug.LogError($"Signaling: HTTP request error. url:{request.RequestUri} exception:{e}");
             }
 
             return null;
@@ -235,7 +235,6 @@ namespace Unity.RenderStreaming.Signaling
             request.ContentType = "application/json";
             request.KeepAlive = false;
             request.ContentLength = 0;
-            request.Timeout = (int)(m_timeout * 1000);
 
             Debug.Log($"Signaling: Connecting HTTP {m_url}");
 
