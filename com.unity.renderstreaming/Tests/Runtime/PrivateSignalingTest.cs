@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -103,6 +101,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             };
             bool success = m_ServerProcess.Start();
             Assert.True(success);
+            Thread.Sleep(1000);
         }
 
         [OneTimeTearDown]
