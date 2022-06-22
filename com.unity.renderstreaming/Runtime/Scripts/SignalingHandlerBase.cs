@@ -104,8 +104,11 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
-            var transceiver =
-                m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.RecvOnly
+            };
+            var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, init);
             if (transceiver.Receiver != null)
                 receiver.SetReceiver(connectionId, transceiver.Receiver);
         }
