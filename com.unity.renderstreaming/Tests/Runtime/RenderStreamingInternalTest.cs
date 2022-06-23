@@ -14,6 +14,15 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
+    static class RenderStreamingInternalExtension
+    {
+        public static RTCRtpTransceiver AddSenderTrack(this RenderStreamingInternal target, string connectionId, MediaStreamTrack track)
+        {
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendRecv };
+            return target.AddTransceiver(connectionId, track, init);
+        }
+    }
+
     class RenderStreamingInternalTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest

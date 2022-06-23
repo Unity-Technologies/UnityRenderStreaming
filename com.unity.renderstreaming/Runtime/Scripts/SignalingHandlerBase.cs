@@ -66,9 +66,17 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public virtual void AddSender(string connectionId, IStreamSender sender)
+        public virtual void AddSender(string connectionId, IStreamSender sender, uint? framerate = null, uint? bitrate = null)
         {
-            var transceiver = m_handler.AddSenderTrack(connectionId, sender.Track);
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendRecv,
+                sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters() { maxFramerate = framerate, maxBitrate = bitrate}
+                }
+            };
+            var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
             sender.SetSender(connectionId, transceiver.Sender);
         }
 

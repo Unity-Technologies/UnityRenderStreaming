@@ -216,17 +216,6 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public RTCRtpTransceiver AddSenderTrack(string connectionId, MediaStreamTrack track)
-        {
-            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendRecv };
-            return AddTransceiver(connectionId, track, init);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="track"></param>
         public void RemoveSenderTrack(string connectionId, MediaStreamTrack track)
         {
             var sender = GetSenders(connectionId).First(s => s.Track == track);

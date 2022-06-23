@@ -108,14 +108,6 @@ namespace Unity.RenderStreaming
         void SendAnswer(string connectionId);
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="track"></param>
-        RTCRtpTransceiver AddSenderTrack(string connectionId, MediaStreamTrack track);
-
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="connectionId"></param>
