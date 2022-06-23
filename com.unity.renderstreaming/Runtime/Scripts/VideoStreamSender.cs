@@ -14,6 +14,10 @@ namespace Unity.RenderStreaming
     /// </summary>
     public sealed class FramerateAttribute : PropertyAttribute { }
 
+    /// <summary>
+    ///
+    /// </summary>
+    public sealed class BitrateAttribute : PropertyAttribute { }
 
     /// <summary>
     ///
@@ -36,6 +40,17 @@ namespace Unity.RenderStreaming
             }
             return sender.SetParameters(parameters);
         }
+
+        public static RTCError SetBitrate(this RTCRtpSender sender, uint? bitrate)
+        {
+            RTCRtpSendParameters parameters = sender.GetParameters();
+            foreach (var encoding in parameters.encodings)
+            {
+                encoding.maxBitrate = bitrate * 1000;
+                encoding.minBitrate = bitrate * 1000;
+            }
+            return sender.SetParameters(parameters);
+        }
     }
 
     /// <summary>
@@ -54,6 +69,13 @@ namespace Unity.RenderStreaming
         /// </summary>
         [SerializeField, Framerate]
         public uint framerate = 30;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField, Bitrate]
+        public uint bitrate = 1000;
+
 
         /// <summary>
         ///
@@ -81,6 +103,16 @@ namespace Unity.RenderStreaming
             foreach (var sender in Senders.Values)
             {
                 sender.SetFramerate(_framerate);
+            }
+        }
+
+        // todo(kazuki): refactor this
+        public void SetBitrate(uint bitrate)
+        {
+            uint? _bitrate = bitrate == 0 ? null : (uint?)bitrate;
+            foreach (var sender in Senders.Values)
+            {
+                sender.SetBitrate(_bitrate);
             }
         }
 

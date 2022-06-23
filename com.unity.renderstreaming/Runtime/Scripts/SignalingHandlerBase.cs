@@ -60,22 +60,37 @@ namespace Unity.RenderStreaming
             return m_handler.IsStable(connectionId);
         }
 
+        static RTCRtpTransceiverInit GetTransceiverInit(IStreamSender sender)
+        {
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendRecv,
+            };
+            if (sender is VideoStreamSender videoStreamSender)
+            {
+                init.sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters()
+                    {
+                        active = true,
+                        maxBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
+                        minBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
+                        maxFramerate = videoStreamSender.framerate == 0 ? null : (uint?)videoStreamSender.framerate,
+                    }
+                };
+            }
+            return init;
+        }
+
         /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
         /// <returns></returns>
-        public virtual void AddSender(string connectionId, IStreamSender sender, uint? framerate = null, uint? bitrate = null)
+        public virtual void AddSender(string connectionId, IStreamSender sender)
         {
-            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
-            {
-                direction = RTCRtpTransceiverDirection.SendRecv,
-                sendEncodings = new RTCRtpEncodingParameters[]
-                {
-                    new RTCRtpEncodingParameters() { maxFramerate = framerate, maxBitrate = bitrate}
-                }
-            };
+            RTCRtpTransceiverInit init = GetTransceiverInit(sender);
             var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
             sender.SetSender(connectionId, transceiver.Sender);
         }
