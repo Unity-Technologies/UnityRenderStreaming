@@ -37,14 +37,6 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-        // todo(kazuki): refactor this
-        private IEnumerator WaitForConnect(string connectionId)
-        {
-            var handler = GetComponent<Broadcast>();
-            yield return new WaitUntil(() => handler.IsConnected(connectionId));
-            videoStreamSender.SetFramerate(videoStreamSender.framerate);
-        }
-
         void Start()
         {
             if (renderStreaming.runOnAwake)
@@ -52,18 +44,12 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
-            videoStreamSender.OnStartedStream += OnStartedStream;
         }
 
         void OnStartedChannel(string connectionId)
         {
             inputReceiver.SetInputRange(videoStreamSender.streamingSize);
             inputReceiver.SetEnableInputPositionCorrection(true);
-        }
-
-        void OnStartedStream(string connectionId)
-        {
-            StartCoroutine(WaitForConnect(connectionId));
         }
     }
 }
