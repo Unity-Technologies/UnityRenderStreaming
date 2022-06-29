@@ -3,7 +3,7 @@ using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-////TODO: Move namespace to Unity.RenderStreaming.Samples 
+////TODO: Move namespace to Unity.RenderStreaming.Samples
 
 namespace Unity.RenderStreaming
 {
@@ -53,10 +53,10 @@ namespace Unity.RenderStreaming
             {
                 if (remoteInput != null)
                 {
-                    onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
-                    onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
-                    onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
-                    onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
+					onDeviceChange?.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Removed);
+					onDeviceChange?.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
+					onDeviceChange?.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
+					onDeviceChange?.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
                     remoteInput.Dispose();
                     remoteInput = null;
                 }
@@ -66,10 +66,10 @@ namespace Unity.RenderStreaming
                 remoteInput = RemoteInputReceiver.Create();
                 remoteInput.ActionButtonClick = OnButtonClick;
                 channel.OnMessage += remoteInput.ProcessInput;
-                onDeviceChange.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
-                onDeviceChange.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
-                onDeviceChange.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Added);
-                onDeviceChange.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Added);
+				onDeviceChange?.Invoke(remoteInput.RemoteGamepad, InputDeviceChange.Added);
+				onDeviceChange?.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Added);
+				onDeviceChange?.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Added);
+				onDeviceChange?.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Added);
             }
             base.SetChannel(connectionId, channel);
         }
