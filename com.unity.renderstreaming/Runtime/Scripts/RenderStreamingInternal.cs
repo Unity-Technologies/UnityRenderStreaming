@@ -413,7 +413,10 @@ namespace Unity.RenderStreaming
             {
                 return;
             }
-
+            foreach (var transceiver in peer.peer.GetTransceivers())
+            {
+                transceiver.Stop();
+            }
             peer.Dispose();
             _mapConnectionIdAndPeer.Remove(connectionId);
         }
