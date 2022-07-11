@@ -99,7 +99,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.4.0-exp.7",
+      "version": "2.4.0-exp.8",
       "depth": 1,
       "source": "registry",
       "dependencies": {
