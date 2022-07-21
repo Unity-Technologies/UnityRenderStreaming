@@ -6,9 +6,11 @@ setup();
 let playButton;
 let receiver;
 let useWebSocket;
+let elementVideo;
 
 const playerDiv = document.getElementById('player');
 const codecPreferences = document.getElementById('codecPreferences');
+const lockMouseCheck = document.getElementById('lockMouseCheck');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
@@ -59,7 +61,7 @@ function onClickPlayButton() {
   playButton.style.display = 'none';
 
   // add video player
-  const elementVideo = document.createElement('video');
+  elementVideo = document.createElement('video');
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
@@ -87,17 +89,65 @@ function onClickPlayButton() {
       }
     }
   });
+
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  elementVideo.addEventListener("click", _mouseClick, false);
 
   function onFullscreenChange() {
     if (document.webkitFullscreenElement || document.fullscreenElement) {
       playerDiv.style.position = "absolute";
       elementFullscreenButton.style.display = 'none';
+
+      if (lockMouseCheck.checked) {
+        if (document.webkitFullscreenElement.requestPointerLock) {
+          document.webkitFullscreenElement.requestPointerLock();
+        } else if (document.fullscreenElement.requestPointerLock) {
+          document.fullscreenElement.requestPointerLock()
+        } else if (document.mozFullScreenElement.requestPointerLock) {
+          document.mozFullScreenElement.requestPointerLock()
+        }
+
+        // Subscribe to events
+        document.addEventListener('mousemove', _mouseMove, false);
+        document.addEventListener('click', _mouseClickFullScreen, false);
+      }
     }
     else {
       playerDiv.style.position = "relative";
       elementFullscreenButton.style.display = 'block';
+
+      document.removeEventListener('mousemove', _mouseMove, false);
+      document.removeEventListener('click', _mouseClickFullScreen, false);
+    }
+  }
+
+  function _mouseMove(event) {
+    // Forward mouseMove event of fullscreen player directly to sender
+    // This is required, as the regular mousemove event doesn't fire when in fullscreen mode
+    receiver.sender._onMouseEvent(event);
+  }
+
+  function _mouseClick(event) {
+    // Restores pointer lock when we unfocus the player and click on it again
+    if (lockMouseCheck.checked) {
+      if (elementVideo.requestPointerLock) {
+        elementVideo.requestPointerLock().catch(function (error) { });
+      }
+    }
+  }
+
+  function _mouseClickFullScreen(event) {
+    // Restores pointer lock when we unfocus the fullscreen player and click on it again
+    if (lockMouseCheck.checked) {
+      if (document.webkitFullscreenElement.requestPointerLock) {
+        document.webkitFullscreenElement.requestPointerLock();
+      } else if (document.fullscreenElement.requestPointerLock) {
+        document.fullscreenElement.requestPointerLock();
+      } else if (document.mozFullScreenElement.requestPointerLock) {
+        document.mozFullScreenElement.requestPointerLock();
+      }
     }
   }
 }
