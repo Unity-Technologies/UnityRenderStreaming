@@ -163,7 +163,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.management": {
-      "version": "4.2.0",
+      "version": "4.0.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
