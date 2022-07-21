@@ -52,7 +52,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.3.0",
+      "version": "1.4.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -65,8 +65,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "2.4.0-exp.7",
-        "com.unity.inputsystem": "1.3.0"
+        "com.unity.webrtc": "2.4.0-exp.8",
+        "com.unity.inputsystem": "1.4.1"
       }
     },
     "com.unity.subsystemregistration": {
@@ -99,7 +99,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.4.0-exp.7",
+      "version": "2.4.0-exp.8",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -109,11 +109,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arcore": {
-      "version": "4.1.10",
+      "version": "4.2.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.xr.arsubsystems": "4.1.10",
+        "com.unity.xr.arsubsystems": "4.2.3",
         "com.unity.xr.management": "4.0.1",
         "com.unity.modules.androidjni": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0"
@@ -121,33 +121,34 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arfoundation": {
-      "version": "4.1.10",
+      "version": "4.2.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.xr.arsubsystems": "4.1.10",
+        "com.unity.xr.arsubsystems": "4.2.3",
         "com.unity.xr.management": "4.0.1",
         "com.unity.modules.particlesystem": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arkit": {
-      "version": "4.1.10",
+      "version": "4.2.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.editorcoroutines": "1.0.0",
-        "com.unity.xr.arsubsystems": "4.1.10",
+        "com.unity.xr.arsubsystems": "4.2.3",
         "com.unity.xr.management": "4.0.1"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arsubsystems": {
-      "version": "4.1.10",
+      "version": "4.2.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.subsystemregistration": "1.1.0"
+        "com.unity.subsystemregistration": "1.1.0",
+        "com.unity.xr.management": "4.0.1"
       },
       "url": "https://packages.unity.com"
     },

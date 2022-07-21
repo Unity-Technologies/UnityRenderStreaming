@@ -228,9 +228,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(true);
         }
 
-        //todo:: crash in dispose process on standalone linux
+        //todo:: crash in dispose process on standalone Linux and Android
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator AddStreamSource()
         {
             string connectionId = "12345";
