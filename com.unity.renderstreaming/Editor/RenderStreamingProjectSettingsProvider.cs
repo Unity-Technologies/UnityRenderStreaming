@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming
@@ -39,11 +42,54 @@ namespace Unity.RenderStreaming
             VisualElement newVisualElement = new VisualElement();
             template.CloneTree(newVisualElement);
             rootVisualElement.Add(newVisualElement);
+
+            CreateVideoCodecSetting();
+        }
+
+        internal VisualElementCache cache;
+
+        private void CreateVideoCodecSetting()
+        {
+            cache = new VisualElementCache(videoCodecSettingContainer);
+
+            const int itemCount = 10;
+            var items = new List<string>(itemCount);
+            for (int i = 0; i <= itemCount; i++)
+                items.Add(i.ToString());
+            Func<VisualElement> makeItem = () => new Label();
+            Action<VisualElement, int> bindItem = (e, i) => (e as Label).text = items[i];
+            videoCodecList.makeItem = makeItem;
+            videoCodecList.bindItem = bindItem;
+            videoCodecList.itemsSource = items;
+            videoCodecList.selectionType = SelectionType.Multiple;
+            videoCodecList.itemHeight = 16;
+            videoCodecList.reorderable = true;
+            videoCodecList.style.height = videoCodecList.itemHeight * items.Count;
+
+            addScopeButton.clickable.clicked += () =>
+            {
+                var item = items.Count.ToString();
+                items.Add(item);
+                videoCodecList.style.height = videoCodecList.itemHeight * items.Count;
+                videoCodecList.Refresh();
+            };
+            removeScopeButton.clickable.clicked += () =>
+            {
+                items.Remove(items.Last());
+                videoCodecList.style.height = videoCodecList.itemHeight * items.Count;
+                videoCodecList.Refresh();
+            };
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
             : base(path, scopes, keywords)
         {
         }
+
+        private Foldout videoCodecSettingFoldout => rootVisualElement.Q<Foldout>("videoCodecSettingFoldout");
+        private VisualElement videoCodecSettingContainer => rootVisualElement.Q<VisualElement>("videoCodecSettingContainer");
+        private ListView videoCodecList => cache.Get<ListView>("videoCodecList");
+        private Button addScopeButton => cache.Get<Button>("addCodecButton");
+        private Button removeScopeButton => cache.Get<Button>("removeCodecButton");
     }
 }
