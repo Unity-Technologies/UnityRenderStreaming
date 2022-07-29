@@ -53,20 +53,9 @@ namespace Unity.RenderStreaming.Editor.UI
                 evt.menu.AppendAction("Add 200", AddCodec, ValidateCodecStatus, "200");
             });
             contextualMenuManipulator.activators.Add(new ManipulatorActivationFilter {button = MouseButton.LeftMouse});
-            addScopeButton.AddManipulator(contextualMenuManipulator);
+            addCodecButton.AddManipulator(contextualMenuManipulator);
 
-
-            removeScopeButton.clickable.clicked += () =>
-            {
-                foreach (var selectItem in codecList.selectedItems.Cast<string>())
-                {
-                    draft.Remove(selectItem);
-                }
-
-                codecList.ClearSelection();
-                codecList.style.height = codecList.itemHeight * draft.Count;
-                codecList.Refresh();
-            };
+            removeCodecButton.clickable.clicked += RemoveCodec;
         }
 
         void AddCodec(DropdownMenuAction menuAction)
@@ -74,9 +63,26 @@ namespace Unity.RenderStreaming.Editor.UI
             if (menuAction.userData is string data && !string.IsNullOrEmpty(data))
             {
                 draft.Add(data);
-                codecList.style.height = codecList.itemHeight * draft.Count;
-                codecList.Refresh();
+                UpdateCodecList();
             }
+        }
+
+        void RemoveCodec()
+        {
+            foreach (var selectItem in codecList.selectedItems.Cast<string>())
+            {
+                draft.Remove(selectItem);
+            }
+
+            UpdateCodecList();
+        }
+
+        private void UpdateCodecList()
+        {
+            removeCodecButton.SetEnabled(codecList.itemsSource.Count > 0);
+            codecList.ClearSelection();
+            codecList.style.height = codecList.itemHeight * codecList.itemsSource.Count;
+            codecList.Refresh();
         }
 
         DropdownMenuAction.Status ValidateCodecStatus(DropdownMenuAction menuAction)
@@ -90,7 +96,7 @@ namespace Unity.RenderStreaming.Editor.UI
         }
 
         private ListView codecList => cache.Get<ListView>("codecList");
-        private Button addScopeButton => cache.Get<Button>("addCodecButton");
-        private Button removeScopeButton => cache.Get<Button>("removeCodecButton");
+        private Button addCodecButton => cache.Get<Button>("addCodecButton");
+        private Button removeCodecButton => cache.Get<Button>("removeCodecButton");
     }
 }
