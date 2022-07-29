@@ -16,6 +16,7 @@ namespace Unity.RenderStreaming.Editor.UI
         }
 
         //todo: change codecs model class
+        internal List<string> sourceList = new List<string> {"VP8", "VP9", "H264", "AV1"};
         internal List<string> draft;
 
         internal VisualElementCache cache;
@@ -31,11 +32,7 @@ namespace Unity.RenderStreaming.Editor.UI
             this.Add(newVisualElement);
 
             cache = new VisualElementCache(newVisualElement);
-
-            const int itemCount = 10;
-            draft = new List<string>(itemCount);
-            for (int i = 0; i <= itemCount; i++)
-                draft.Add(i.ToString());
+            draft = new List<string>(sourceList);
 
             Func<VisualElement> makeItem = () => new Label();
             Action<VisualElement, int> bindItem = (e, i) => (e as Label).text = draft[i];
@@ -49,7 +46,7 @@ namespace Unity.RenderStreaming.Editor.UI
 
             var contextualMenuManipulator = new ContextualMenuManipulator((evt) =>
             {
-                foreach (var item in draft)
+                foreach (var item in sourceList)
                 {
                     evt.menu.AppendAction($"Add {item}", AddCodec, ValidateCodecStatus, item);
                 }
