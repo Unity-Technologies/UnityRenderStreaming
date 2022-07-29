@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -17,9 +18,21 @@ namespace Unity.RenderStreaming.Editor.UI
 
         //todo: change codecs model class
         internal List<string> sourceList = new List<string> {"VP8", "VP9", "H264", "AV1"};
+
+#if UNITY_2021_3_OR_NEWER
         internal List<string> draft;
+#else
+        internal ObservableCollection<string> draft;
+#endif
 
         internal VisualElementCache cache;
+
+        public IList<string> CodecSetting => draft;
+
+        /// <summary>
+        /// Invoke if change CodecSetting list (Add, Remove, Change order)
+        /// </summary>
+        public event Action<IEnumerable<string>> onChangeCodecs;
 
         public CodecSettings()
         {
@@ -32,8 +45,15 @@ namespace Unity.RenderStreaming.Editor.UI
             this.Add(newVisualElement);
 
             cache = new VisualElementCache(newVisualElement);
-            draft = new List<string>(sourceList);
 
+#if UNITY_2021_3_OR_NEWER
+            draft = new List<string>(sourceList);
+#else
+            // workaround for unity 2020.3
+            // if unity 2021.3 later, prefer using ListView.itemIndexChanged event
+            draft = new ObservableCollection<string>(sourceList);
+            draft.CollectionChanged += (sender, args) => NotifyChangeCodecList();
+#endif
             Func<VisualElement> makeItem = () => new Label();
             Action<VisualElement, int> bindItem = (e, i) => (e as Label).text = draft[i];
             codecList.makeItem = makeItem;
@@ -41,8 +61,12 @@ namespace Unity.RenderStreaming.Editor.UI
             codecList.itemsSource = draft;
             codecList.selectionType = SelectionType.Multiple;
             codecList.itemHeight = 16;
-            codecList.reorderable = true;
             codecList.style.height = codecList.itemHeight * draft.Count;
+            codecList.reorderable = true;
+#if UNITY_2021_3_OR_NEWER
+            codecList.reorderMode = ListViewReorderMode.Animated;
+            codecList.itemIndexChanged += (b, a) => NotifyChangeCodecList();
+#endif
 
             var contextualMenuManipulator = new ContextualMenuManipulator((evt) =>
             {
@@ -62,8 +86,10 @@ namespace Unity.RenderStreaming.Editor.UI
             if (menuAction.userData is string data && !string.IsNullOrEmpty(data))
             {
                 draft.Add(data);
-                UpdateCodecList();
             }
+
+            NotifyChangeCodecList();
+            UpdateCodecList();
         }
 
         void RemoveCodec()
@@ -73,6 +99,7 @@ namespace Unity.RenderStreaming.Editor.UI
                 draft.Remove(selectItem);
             }
 
+            NotifyChangeCodecList();
             UpdateCodecList();
         }
 
@@ -81,7 +108,12 @@ namespace Unity.RenderStreaming.Editor.UI
             removeCodecButton.SetEnabled(codecList.itemsSource.Count > 0);
             codecList.ClearSelection();
             codecList.style.height = codecList.itemHeight * codecList.itemsSource.Count;
-            codecList.Refresh();
+            codecList.Rebuild();
+        }
+
+        private void NotifyChangeCodecList()
+        {
+            onChangeCodecs?.Invoke(draft);
         }
 
         DropdownMenuAction.Status ValidateCodecStatus(DropdownMenuAction menuAction)
