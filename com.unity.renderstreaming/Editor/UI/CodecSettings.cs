@@ -66,6 +66,8 @@ namespace Unity.RenderStreaming.Editor.UI
 #if UNITY_2021_3_OR_NEWER
             codecList.reorderMode = ListViewReorderMode.Animated;
             codecList.itemIndexChanged += (b, a) => NotifyChangeCodecList();
+            codecList.itemsAdded += addItems => NotifyChangeCodecList();
+            codecList.itemsRemoved += removeItems => NotifyChangeCodecList();
 #endif
 
             var contextualMenuManipulator = new ContextualMenuManipulator((evt) =>
@@ -88,7 +90,6 @@ namespace Unity.RenderStreaming.Editor.UI
                 draft.Add(data);
             }
 
-            NotifyChangeCodecList();
             UpdateCodecList();
         }
 
@@ -99,7 +100,6 @@ namespace Unity.RenderStreaming.Editor.UI
                 draft.Remove(selectItem);
             }
 
-            NotifyChangeCodecList();
             UpdateCodecList();
         }
 
@@ -108,7 +108,7 @@ namespace Unity.RenderStreaming.Editor.UI
             removeCodecButton.SetEnabled(codecList.itemsSource.Count > 0);
             codecList.ClearSelection();
             codecList.style.height = codecList.itemHeight * codecList.itemsSource.Count;
-            codecList.Rebuild();
+            codecList.Refresh();
         }
 
         private void NotifyChangeCodecList()
