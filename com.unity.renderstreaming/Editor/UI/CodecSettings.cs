@@ -49,8 +49,10 @@ namespace Unity.RenderStreaming.Editor.UI
 
             var contextualMenuManipulator = new ContextualMenuManipulator((evt) =>
             {
-                evt.menu.AppendAction("Add 100", AddCodec, ValidateCodecStatus, "100");
-                evt.menu.AppendAction("Add 200", AddCodec, ValidateCodecStatus, "200");
+                foreach (var item in draft)
+                {
+                    evt.menu.AppendAction($"Add {item}", AddCodec, ValidateCodecStatus, item);
+                }
             });
             contextualMenuManipulator.activators.Add(new ManipulatorActivationFilter {button = MouseButton.LeftMouse});
             addCodecButton.AddManipulator(contextualMenuManipulator);
