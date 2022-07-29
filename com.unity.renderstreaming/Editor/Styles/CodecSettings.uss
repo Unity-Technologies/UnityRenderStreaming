@@ -1,0 +1,7 @@
+#codecSettingContainer .bottom-buttons {
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding: 2px 0;
+  flex-shrink: 0;
+}
