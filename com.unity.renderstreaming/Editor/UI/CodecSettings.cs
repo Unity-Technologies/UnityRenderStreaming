@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming.Editor.UI
@@ -48,18 +49,38 @@ namespace Unity.RenderStreaming.Editor.UI
 
 #if UNITY_2021_3_OR_NEWER
             draft = new List<string>(sourceList);
+            Func<VisualElement> makeItem = () =>
+            {
+                return new Label {style = {unityTextAlign = TextAnchor.MiddleCenter}};
+            };
 #else
             // workaround for unity 2020.3
             // if unity 2021.3 later, prefer using ListView.itemIndexChanged event
             draft = new ObservableCollection<string>(sourceList);
             draft.CollectionChanged += (sender, args) => NotifyChangeCodecList();
-#endif
-            Func<VisualElement> makeItem = () => new Label();
-            Action<VisualElement, int> bindItem = (e, i) => (e as Label).text = draft[i];
+            Func<VisualElement> makeItem = () =>
+            {
+                var itemRoot = new VisualElement();
+                itemRoot.style.flexDirection= FlexDirection.Row;
+                var icon = new Image();
+                icon.style.alignSelf = Align.Center;
+                icon.style.height = 10;
+                icon.style.width = 10;
+                icon.style.backgroundImage = EditorGUIUtility.Load("align_vertically_center_active") as Texture2D;
+                itemRoot.Add(icon);
+                var label = new Label {style = {unityTextAlign = TextAnchor.MiddleCenter}};
+                itemRoot.Add(label);
+                return itemRoot;
+            };
+ #endif
+            Action<VisualElement, int> bindItem = (e, i) =>
+            {
+                e.contentContainer.Q<Label>().text = draft[i];
+            };
             codecList.makeItem = makeItem;
             codecList.bindItem = bindItem;
             codecList.itemsSource = draft;
-            codecList.selectionType = SelectionType.Multiple;
+            codecList.selectionType = SelectionType.Single;
             codecList.itemHeight = 16;
             codecList.style.height = codecList.itemHeight * draft.Count;
             codecList.reorderable = true;
@@ -69,6 +90,10 @@ namespace Unity.RenderStreaming.Editor.UI
             codecList.itemsAdded += addItems => NotifyChangeCodecList();
             codecList.itemsRemoved += removeItems => NotifyChangeCodecList();
 #endif
+            codecList.onSelectionChange += objects =>
+            {
+                removeCodecButton.SetEnabled(objects.Any() && codecList.itemsSource.Count > 1);
+            };
 
             var contextualMenuManipulator = new ContextualMenuManipulator((evt) =>
             {
@@ -80,10 +105,11 @@ namespace Unity.RenderStreaming.Editor.UI
             contextualMenuManipulator.activators.Add(new ManipulatorActivationFilter {button = MouseButton.LeftMouse});
             addCodecButton.AddManipulator(contextualMenuManipulator);
 
+            removeCodecButton.SetEnabled(false);
             removeCodecButton.clickable.clicked += RemoveCodec;
         }
 
-        void AddCodec(DropdownMenuAction menuAction)
+        private void AddCodec(DropdownMenuAction menuAction)
         {
             if (menuAction.userData is string data && !string.IsNullOrEmpty(data))
             {
@@ -93,7 +119,7 @@ namespace Unity.RenderStreaming.Editor.UI
             UpdateCodecList();
         }
 
-        void RemoveCodec()
+        private void RemoveCodec()
         {
             foreach (var selectItem in codecList.selectedItems.Cast<string>())
             {
@@ -105,7 +131,6 @@ namespace Unity.RenderStreaming.Editor.UI
 
         private void UpdateCodecList()
         {
-            removeCodecButton.SetEnabled(codecList.itemsSource.Count > 0);
             codecList.ClearSelection();
             codecList.style.height = codecList.itemHeight * codecList.itemsSource.Count;
             codecList.Refresh();
@@ -116,7 +141,7 @@ namespace Unity.RenderStreaming.Editor.UI
             onChangeCodecs?.Invoke(draft);
         }
 
-        DropdownMenuAction.Status ValidateCodecStatus(DropdownMenuAction menuAction)
+        private DropdownMenuAction.Status ValidateCodecStatus(DropdownMenuAction menuAction)
         {
             if (menuAction.userData is string data && !string.IsNullOrEmpty(data))
             {

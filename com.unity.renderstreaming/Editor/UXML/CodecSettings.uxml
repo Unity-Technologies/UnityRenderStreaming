@@ -4,8 +4,8 @@
     <ui:VisualElement name="codecSettingContainer">
         <ui:ListView name="codecList"/>
         <ui:VisualElement name="codecListButtons" class="bottom-buttons">
-            <ui:Button name="removeCodecButton" text="-"/>
             <ui:Button name="addCodecButton" text="+"/>
+            <ui:Button name="removeCodecButton" text="-"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
