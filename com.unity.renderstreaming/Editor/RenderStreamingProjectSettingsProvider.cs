@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.RenderStreaming.Editor.UI;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -39,6 +40,34 @@ namespace Unity.RenderStreaming
             VisualElement newVisualElement = new VisualElement();
             template.CloneTree(newVisualElement);
             rootVisualElement.Add(newVisualElement);
+
+            // video codec setting control
+            var videoCodecSetting = newVisualElement.Q<CodecSettings>("videoCodecSettings");
+            videoCodecSetting.onChangeCodecs += codecSetting => UnityEngine.Debug.Log(string.Join(",", codecSetting));
+
+            var videoCodecFoldout = newVisualElement.Q<Foldout>("videoCodecSettingFoldout");
+            videoCodecFoldout.style.display = DisplayStyle.None;
+
+            var autoVideoCodecToggle = newVisualElement.Q<Toggle>("autoVideoCodecSettingToggle");
+            autoVideoCodecToggle.value = true;
+            autoVideoCodecToggle.RegisterCallback<ChangeEvent<bool>>(evt =>
+            {
+                videoCodecFoldout.style.display = evt.newValue ? DisplayStyle.None : DisplayStyle.Flex;
+            });
+
+            // audio codec setting control
+            var audioCodecSetting = newVisualElement.Q<CodecSettings>("audioCodecSettings");
+            audioCodecSetting.onChangeCodecs += codecSetting => UnityEngine.Debug.Log(string.Join(",", codecSetting));
+
+            var audioCodecFoldout = newVisualElement.Q<Foldout>("audioCodecSettingFoldout");
+            audioCodecFoldout.style.display = DisplayStyle.None;
+
+            var autoAudioCodecToggle = newVisualElement.Q<Toggle>("autoAudioCodecSettingToggle");
+            autoAudioCodecToggle.value = true;
+            autoAudioCodecToggle.RegisterCallback<ChangeEvent<bool>>(evt =>
+            {
+                audioCodecFoldout.style.display = evt.newValue ? DisplayStyle.None : DisplayStyle.Flex;
+            });
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)

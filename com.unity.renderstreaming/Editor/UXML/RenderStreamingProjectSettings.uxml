@@ -3,8 +3,13 @@
          noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:VisualElement name="renderStreamingContainer">
         <ui:Label text="Render Streaming" name="titleLabel"/>
+        <ui:Toggle label="Auto Video Codec Setting" name="autoVideoCodecSettingToggle" />
         <ui:Foldout text="Video Codec Setting" name="videoCodecSettingFoldout">
             <urs:CodecSettings name="videoCodecSettings" />
+        </ui:Foldout>
+        <ui:Toggle label="Auto Audio Codec Setting" name="autoAudioCodecSettingToggle" />
+        <ui:Foldout text="Audio Codec Setting" name="audioCodecSettingFoldout">
+            <urs:CodecSettings name="audioCodecSettings" />
         </ui:Foldout>
     </ui:VisualElement>
 </ui:UXML>
