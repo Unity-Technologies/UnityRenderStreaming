@@ -44,29 +44,25 @@ namespace Unity.RenderStreaming
             // video codec setting control
             var videoCodecSetting = newVisualElement.Q<CodecSettings>("videoCodecSettings");
             videoCodecSetting.onChangeCodecs += codecSetting => UnityEngine.Debug.Log(string.Join(",", codecSetting));
-
-            var videoCodecFoldout = newVisualElement.Q<Foldout>("videoCodecSettingFoldout");
-            videoCodecFoldout.style.display = DisplayStyle.None;
+            videoCodecSetting.SetEnabled(false);
 
             var autoVideoCodecToggle = newVisualElement.Q<Toggle>("autoVideoCodecSettingToggle");
             autoVideoCodecToggle.value = true;
             autoVideoCodecToggle.RegisterCallback<ChangeEvent<bool>>(evt =>
             {
-                videoCodecFoldout.style.display = evt.newValue ? DisplayStyle.None : DisplayStyle.Flex;
+                videoCodecSetting.SetEnabled(!evt.newValue);
             });
 
             // audio codec setting control
             var audioCodecSetting = newVisualElement.Q<CodecSettings>("audioCodecSettings");
             audioCodecSetting.onChangeCodecs += codecSetting => UnityEngine.Debug.Log(string.Join(",", codecSetting));
-
-            var audioCodecFoldout = newVisualElement.Q<Foldout>("audioCodecSettingFoldout");
-            audioCodecFoldout.style.display = DisplayStyle.None;
+            audioCodecSetting.SetEnabled(false);
 
             var autoAudioCodecToggle = newVisualElement.Q<Toggle>("autoAudioCodecSettingToggle");
             autoAudioCodecToggle.value = true;
             autoAudioCodecToggle.RegisterCallback<ChangeEvent<bool>>(evt =>
             {
-                audioCodecFoldout.style.display = evt.newValue ? DisplayStyle.None : DisplayStyle.Flex;
+                audioCodecSetting.SetEnabled(!evt.newValue);
             });
         }
 
