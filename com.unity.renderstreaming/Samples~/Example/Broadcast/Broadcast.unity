@@ -1073,7 +1073,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   streamingSize: {x: 1280, y: 720}
   framerate: 0
-  bitrate: 0
   depth: 0
   antiAliasing: 1
 --- !u!114 &725451157
