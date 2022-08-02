@@ -60,6 +60,40 @@ namespace Unity.RenderStreaming
             return m_handler.IsStable(connectionId);
         }
 
+        static RTCRtpTransceiverInit GetTransceiverInit(IStreamSender sender)
+        {
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendRecv,
+            };
+            if (sender is VideoStreamSender videoStreamSender)
+            {
+                init.sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters()
+                    {
+                        active = true,
+                        maxBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
+                        minBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
+                        maxFramerate = videoStreamSender.frameRate == 0 ? null : (uint?)videoStreamSender.frameRate,
+                    }
+                };
+            }
+            if (sender is AudioStreamSender audioStreamSender)
+            {
+                init.sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters()
+                    {
+                        active = true,
+                        maxBitrate = audioStreamSender.bitrate == 0 ? null : (ulong?)audioStreamSender.bitrate * 1000,
+                        minBitrate = audioStreamSender.bitrate == 0 ? null : (ulong?)audioStreamSender.bitrate * 1000,
+                    }
+                };
+            }
+            return init;
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -68,7 +102,8 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)
         {
-            var transceiver = m_handler.AddSenderTrack(connectionId, sender.Track);
+            RTCRtpTransceiverInit init = GetTransceiverInit(sender);
+            var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
             sender.SetSender(connectionId, transceiver.Sender);
         }
 
@@ -104,8 +139,11 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
         {
-            var transceiver =
-                m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.RecvOnly
+            };
+            var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, init);
             if (transceiver.Receiver != null)
                 receiver.SetReceiver(connectionId, transceiver.Receiver);
         }
