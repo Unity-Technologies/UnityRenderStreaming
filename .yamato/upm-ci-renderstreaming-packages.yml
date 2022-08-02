@@ -13,10 +13,10 @@ pack_{{ package.name }}:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;    
+    - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
     - upm-ci package pack --package-path {{ package.packagename }}
   artifacts:
-    {{ package.name }}_package:  
+    {{ package.name }}_package:
       paths:
         - "upm-ci~/packages/**/*"
 
@@ -136,18 +136,20 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     model: {{ platform.model }}
 {% endif %}
   commands:
+    - pip config set global.index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
 {% if platform.name == "win" %}
-    - | 
+    - |
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
       upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
 {% else %}
-    - | 
+    - |
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
       upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
 {% endif %}
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -165,22 +167,24 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     model: {{ platform.model }}
 {% endif %}
   commands:
+    - pip config set global.index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
 {% if platform.name != "win" %}
     - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
 {% endif %}
     - upm-ci project pack --project-path {{ project.path }}
 {% if platform.name == "win" %}
-    - | 
+    - |
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
       upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
 {% else %}
-    - | 
+    - |
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
       upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
 {% endif %}
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -233,12 +237,12 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       TEST_TARGET: macos
       TEST_PLATFORM: {{ param.platform }}
       TEST_ARCHITECTURE: {{ platform.architecture }}
-      SCRIPTING_BACKEND: {{ param.backend }}  
+      SCRIPTING_BACKEND: {{ param.backend }}
       EDITOR_VERSION: {{ editor.version }}
   commands:
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
@@ -270,7 +274,7 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
@@ -295,14 +299,14 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     WEBAPP_NAME: {{ platform.packed_webapp_name }}
     TEST_TARGET: {{ platform.name }}
     TEST_PLATFORM: {{ param.platform }}
-    SCRIPTING_BACKEND: {{ param.backend }}  
+    SCRIPTING_BACKEND: {{ param.backend }}
     EDITOR_VERSION: {{ editor.version }}
     EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
     - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results: 
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
@@ -327,7 +331,7 @@ test_{{ package.name }}_{{ editor.version }}:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
 # todo(kazuki) :
-# editor/playmode test are not conducted on m1 mac 
+# editor/playmode test are not conducted on m1 mac
 # XCode command line tools has not installed on m1 mac device (Standalone test don't need to install them)
 {% if platform.name == "macos-m1" %}
 {% if param.platform == "standalone" %}
@@ -368,7 +372,7 @@ publish_dry_run_{{ package.name }}:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:  
+  artifacts:
     {{ package.name }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
@@ -393,7 +397,7 @@ publish_{{ package.name }}:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:  
+  artifacts:
     {{ package.name }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
