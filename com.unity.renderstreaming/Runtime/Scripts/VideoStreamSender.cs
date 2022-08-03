@@ -70,12 +70,24 @@ namespace Unity.RenderStreaming
         }
     }
 
+    internal static class RTCRtpTransceiverExtension 
+    {
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, string mimetype)
+        {            
+            var capabilities = RTCRtpSender.GetCapabilities(transceiver.Sender.Track.Kind);
+            var codecs = capabilities.codecs.Where(codec => codec.mimeType == mimetype);
+            return transceiver.SetCodecPreferences(codecs.ToArray());
+        }
+    }
+
     /// <summary>
     ///
     /// </summary>
     public class VideoStreamSender : StreamSenderBase
     {
+        // todo(kazuki): check default value.
         const float s_defaultFrameRate = 30;
+        // todo(kazuki): check default value.
         const uint s_defaultBitrate = 1000;
 
         //todo(kazuki): remove this value.

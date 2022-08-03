@@ -10,8 +10,11 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamSender : StreamSenderBase
     {
+        // todo(kazuki): check default value.
+        const uint s_defaultBitrate = 1000;
+
         [SerializeField]
-        private uint m_bitrate = 1000;
+        private uint m_bitrate = s_defaultBitrate;
 
         /// <summary>
         /// 

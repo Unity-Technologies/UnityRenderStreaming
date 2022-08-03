@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class VideoCodecSelect : MonoBehaviour
+    class VideoCodecSelect : MonoBehaviour
     {
         [SerializeField] private Dropdown m_codecSelectDropdown;
 
