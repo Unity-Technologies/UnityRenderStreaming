@@ -42,15 +42,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sender = go.AddComponent<VideoStreamSender>();
 
             float framerate = 24;
-            sender.SetFramerate(framerate);
+            sender.SetFrameRate(framerate);
             Assert.That(sender.frameRate, Is.EqualTo(framerate));
 
             framerate = 0;
-            sender.SetFramerate(framerate);
+            sender.SetFrameRate(framerate);
             Assert.That(sender.frameRate, Is.EqualTo(framerate));
 
             framerate = -1;
-            Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetFramerate(framerate));
+            Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetFrameRate(framerate));
 
             UnityEngine.Object.DestroyImmediate(go);
         }
@@ -62,7 +62,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sender = go.AddComponent<VideoStreamSender>();
 
             float scaleFactor = 0.5f;
-            sender.SetFramerate(scaleFactor);
+            sender.SetFrameRate(scaleFactor);
             Assert.That(sender.frameRate, Is.EqualTo(scaleFactor));
 
             scaleFactor = 0;

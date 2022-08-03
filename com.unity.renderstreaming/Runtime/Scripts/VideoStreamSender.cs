@@ -32,7 +32,7 @@ namespace Unity.RenderStreaming
 
     internal static class RTCRtpSenderExtension
     {
-        public static RTCError SetFramerate(this RTCRtpSender sender, uint framerate)
+        public static RTCError SetFrameRate(this RTCRtpSender sender, uint framerate)
         {
             if (sender.Track.Kind != TrackKind.Video)
                 throw new ArgumentException();
@@ -149,15 +149,15 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="framerate"></param>
-        public void SetFramerate(float framerate)
+        /// <param name="frameRate"></param>
+        public void SetFrameRate(float frameRate)
         {
-            if (framerate < 0)
-                throw new ArgumentOutOfRangeException("framerate", framerate, "The parameter must be greater than zero.");
-            m_frameRate = framerate;
+            if (frameRate < 0)
+                throw new ArgumentOutOfRangeException("framerate", frameRate, "The parameter must be greater than zero.");
+            m_frameRate = frameRate;
             foreach (var sender in Senders.Values)
             {
-                RTCError error = sender.SetFramerate((uint)m_frameRate);
+                RTCError error = sender.SetFrameRate((uint)m_frameRate);
                 if (error.errorType == RTCErrorType.None)
                     Debug.LogError(error.message);
             }
