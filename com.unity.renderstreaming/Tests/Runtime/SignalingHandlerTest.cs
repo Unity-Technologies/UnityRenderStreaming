@@ -40,6 +40,10 @@ namespace Unity.RenderStreaming.RuntimeTest
     class VideoStreamReceiverTest : StreamReceiverBase
     {
         public override TrackKind Kind { get { return TrackKind.Video; } }
+        public override void FilterCodecs(int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     class AudioStreamSourceTest : StreamSenderBase
@@ -57,6 +61,10 @@ namespace Unity.RenderStreaming.RuntimeTest
     class AudioStreamReceiverTest : StreamReceiverBase
     {
         public override TrackKind Kind { get { return TrackKind.Audio; } }
+        public override void FilterCodecs(int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     class DataChannelTest : DataChannelBase
