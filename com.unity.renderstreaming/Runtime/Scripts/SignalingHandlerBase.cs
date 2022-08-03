@@ -73,9 +73,10 @@ namespace Unity.RenderStreaming
                     new RTCRtpEncodingParameters()
                     {
                         active = true,
-                        maxBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
-                        minBitrate = videoStreamSender.bitrate == 0 ? null : (ulong?)videoStreamSender.bitrate * 1000,
-                        maxFramerate = videoStreamSender.frameRate == 0 ? null : (uint?)videoStreamSender.frameRate,
+                        maxBitrate = (ulong?)videoStreamSender.bitrate * 1000,
+                        minBitrate = (ulong?)videoStreamSender.bitrate * 1000,
+                        maxFramerate = (uint?)videoStreamSender.frameRate,
+                        scaleResolutionDownBy = videoStreamSender.scaleResolutionDown
                     }
                 };
             }
