@@ -216,19 +216,6 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
-        public RTCRtpTransceiver AddSenderTrack(string connectionId, MediaStreamTrack track)
-        {
-            var peer = _mapConnectionIdAndPeer[connectionId];
-            RTCRtpSender sender = peer.peer.AddTrack(track);
-            var transceiver = peer.peer.GetTransceivers().First(t => t.Sender == sender);
-            return transceiver;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="track"></param>
         public void RemoveSenderTrack(string connectionId, MediaStreamTrack track)
         {
             var sender = GetSenders(connectionId).First(s => s.Track == track);
@@ -242,10 +229,9 @@ namespace Unity.RenderStreaming
         /// <param name="track"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        public RTCRtpTransceiver AddTransceiver(string connectionId, MediaStreamTrack track, RTCRtpTransceiverDirection direction)
+        public RTCRtpTransceiver AddTransceiver(string connectionId, MediaStreamTrack track, RTCRtpTransceiverInit init = null)
         {
-            var transceiver = _mapConnectionIdAndPeer[connectionId].peer.AddTransceiver(track);
-            transceiver.Direction = direction;
+            var transceiver = _mapConnectionIdAndPeer[connectionId].peer.AddTransceiver(track, init);
             return transceiver;
         }
 
@@ -256,10 +242,9 @@ namespace Unity.RenderStreaming
         /// <param name="kind"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        public RTCRtpTransceiver AddTransceiver(string connectionId, TrackKind kind, RTCRtpTransceiverDirection direction)
+        public RTCRtpTransceiver AddTransceiver(string connectionId, TrackKind kind, RTCRtpTransceiverInit init = null)
         {
-            var transceiver = _mapConnectionIdAndPeer[connectionId].peer.AddTransceiver(kind);
-            transceiver.Direction = direction;
+            var transceiver = _mapConnectionIdAndPeer[connectionId].peer.AddTransceiver(kind, init);
             return transceiver;
         }
 

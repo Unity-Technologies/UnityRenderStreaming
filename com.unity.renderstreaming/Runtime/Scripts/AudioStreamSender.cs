@@ -10,6 +10,37 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamSender : StreamSenderBase
     {
+        // todo(kazuki): check default value.
+        const uint s_defaultBitrate = 1000;
+
+        [SerializeField]
+        private uint m_bitrate = s_defaultBitrate;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint bitrate
+        {
+            get { return m_bitrate; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bitrate"></param>
+        public void SetBitrate(uint bitrate)
+        {
+            if (bitrate < 0)
+                throw new ArgumentException();
+            m_bitrate = bitrate;
+            foreach (var sender in Senders.Values)
+            {
+                RTCError error = sender.SetBitrate(m_bitrate);
+                if (error.errorType == RTCErrorType.None)
+                    Debug.LogError(error.message);
+            }
+        }
+
         protected AudioStreamTrack track;
 
         int m_sampleRate = 0;

@@ -502,19 +502,21 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var transceivers1 = container1.instance.GetTransceivers(connectionId).ToList();
             var count1 = transceivers1.Count;
-            Assert.That(count1, Is.EqualTo(2), $"{nameof(transceivers1)} count is {count1}");
+            Assert.That(count1, Is.EqualTo(4), $"{nameof(transceivers1)} count is {count1}");
             Assert.That(transceivers1.Select(x => x.Direction),
                 Is.EquivalentTo(new[]
                 {
-                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv
+                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv,
+                    RTCRtpTransceiverDirection.RecvOnly, RTCRtpTransceiverDirection.RecvOnly,
                 }));
             var transceivers2 = container2.instance.GetTransceivers(connectionId).ToList();
             var count2 = transceivers2.Count;
-            Assert.That(count2, Is.EqualTo(2), $"{nameof(transceivers2)} count is {count2}");
+            Assert.That(count2, Is.EqualTo(4), $"{nameof(transceivers2)} count is {count2}");
             Assert.That(transceivers2.Select(x => x.Direction),
                 Is.EquivalentTo(new[]
                 {
-                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv
+                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv,
+                    RTCRtpTransceiverDirection.RecvOnly, RTCRtpTransceiverDirection.RecvOnly,
                 }));
 
 
