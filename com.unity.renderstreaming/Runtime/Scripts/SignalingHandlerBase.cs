@@ -168,7 +168,7 @@ namespace Unity.RenderStreaming
         public void SetReceiverCodecs(string connectionId, IStreamReceiver receiver)
         {
             var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => t.Receiver == receiver.Receiver);
+                .Where(t => t.Direction == RTCRtpTransceiverDirection.RecvOnly || t.Direction == RTCRtpTransceiverDirection.SendRecv);
             receiver.SetReceiverCodec(connectionId, transceivers);
         }
 
