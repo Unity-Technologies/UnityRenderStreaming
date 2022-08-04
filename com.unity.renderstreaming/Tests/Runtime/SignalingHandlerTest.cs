@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         protected override MediaStreamTrack CreateTrack()
         {
             m_camera = gameObject.AddComponent<Camera>();
-            return m_camera.CaptureStreamTrack(256, 256, 0);
+            return m_camera.CaptureStreamTrack(256, 256);
         }
     }
 
