@@ -221,7 +221,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[]
+        {
+            RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
+            RuntimePlatform.LinuxPlayer
+        })]
         public IEnumerator FilterCodec()
         {
             string connectionId = "12345";
@@ -612,7 +616,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[]
+        {
+            RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
+            RuntimePlatform.LinuxPlayer
+        })]
         public IEnumerator FilterCodecOnSender()
         {
             string connectionId = "12345";
@@ -713,7 +721,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[]
+        {
+            RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
+            RuntimePlatform.LinuxPlayer
+        })]
         public IEnumerator FilterCodecOnReceiver()
         {
             string connectionId = "12345";
