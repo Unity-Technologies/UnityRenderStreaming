@@ -32,7 +32,11 @@ namespace Unity.RenderStreaming.Samples
         private static string s_signalingAddress = "localhost";
         private static float s_signalingInterval = 5;
         private static bool s_signalingSecured = false;
-        private static Vector2Int s_StreamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
+        private static Vector2Int s_streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
+        private static int s_selectVideoCodecIndex = -1;
+
+        // todo(kazuki): This is be only a temporary measure.
+        private static int s_selectSenderVideoCodecIndex = -1;
 
         public static SignalingType SignalingType
         {
@@ -90,8 +94,20 @@ namespace Unity.RenderStreaming.Samples
 
         public static Vector2Int StreamSize
         {
-            get { return s_StreamSize; }
-            set { s_StreamSize = value; }
+            get { return s_streamSize; }
+            set { s_streamSize = value; }
+        }
+
+        public static int SelectVideoCodecIndex
+        {
+            get { return s_selectVideoCodecIndex; }
+            set { s_selectVideoCodecIndex = value; }
+        }
+
+        public static int SelectSenderVideoCodecIndex
+        {
+            get { return s_selectSenderVideoCodecIndex; }
+            set { s_selectSenderVideoCodecIndex = value; }
         }
     }
 
@@ -104,6 +120,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Dropdown streamSizeSelector;
         [SerializeField] private InputField textureWidthInput;
         [SerializeField] private InputField textureHeightInput;
+        [SerializeField] private Dropdown receiverVideoCodecSelector;
+        [SerializeField] private Dropdown senderVideoCodecSelector;
 
         [SerializeField] private Button buttonBidirectional;
         [SerializeField] private Button buttonBroadcast;
@@ -163,6 +181,27 @@ namespace Unity.RenderStreaming.Samples
             textureWidthInput.onValueChanged.AddListener(OnChangeTextureWidthInput);
             textureHeightInput.onValueChanged.AddListener(OnChangeTextureHeightInput);
 
+            var videoCodecList = AvailableCodecsUtils.GetAvailableVideoCodecsName()
+                .Select(pair => new Dropdown.OptionData(pair.Value)).ToList();
+            receiverVideoCodecSelector.options.AddRange(videoCodecList);
+
+            // todo(kazuki): This is be only a temporary measure.
+            // AvailableCodecsUtils.GetAvailableVideoCodecsName returns list for receiver, not sender.
+            senderVideoCodecSelector.options.AddRange(videoCodecList);
+
+            if (RenderStreamingSettings.SelectVideoCodecIndex >= 0 &&
+                RenderStreamingSettings.SelectVideoCodecIndex < videoCodecList.Count)
+            {
+                receiverVideoCodecSelector.value = RenderStreamingSettings.SelectVideoCodecIndex + 1;
+            }
+            if (RenderStreamingSettings.SelectSenderVideoCodecIndex >= 0 &&
+                RenderStreamingSettings.SelectSenderVideoCodecIndex < videoCodecList.Count)
+            {
+                senderVideoCodecSelector.value = RenderStreamingSettings.SelectSenderVideoCodecIndex + 1;
+            }
+
+            receiverVideoCodecSelector.onValueChanged.AddListener(OnChangeVideoCodecSelect);
+            senderVideoCodecSelector.onValueChanged.AddListener(OnChangeSenderVideoCodecSelect);
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
             buttonGyro.onClick.AddListener(OnPressedGyro);
@@ -280,6 +319,16 @@ namespace Unity.RenderStreaming.Samples
             {
                 RenderStreamingSettings.StreamSize = new Vector2Int(width, height);
             }
+        }
+
+        private void OnChangeVideoCodecSelect(int index)
+        {
+            RenderStreamingSettings.SelectVideoCodecIndex = index - 1;
+        }
+
+        private void OnChangeSenderVideoCodecSelect(int index)
+        {
+            RenderStreamingSettings.SelectSenderVideoCodecIndex = index - 1;
         }
 
         private void OnPressedBidirectional()

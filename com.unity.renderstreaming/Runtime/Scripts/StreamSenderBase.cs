@@ -83,7 +83,7 @@ namespace Unity.RenderStreaming
         {
             if (m_senderAudioCodecs.Count != 0)
             {
-                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Audio))
+                foreach (var transceiver in transceivers.Where(t => t.Sender.Track.Kind == TrackKind.Audio))
                 {
                     transceiver.SetCodecPreferences(m_senderAudioCodecs.ToArray());
                 }
@@ -91,7 +91,7 @@ namespace Unity.RenderStreaming
 
             if (m_senderVideoCodecs.Count != 0)
             {
-                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Video))
+                foreach (var transceiver in transceivers.Where(t => t.Sender.Track.Kind == TrackKind.Video))
                 {
                     transceiver.SetCodecPreferences(m_senderVideoCodecs.ToArray());
                 }
