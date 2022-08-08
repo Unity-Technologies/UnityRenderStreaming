@@ -271,6 +271,13 @@ namespace Unity.RenderStreaming.RuntimeTest
                     .Where(x => x is RTCOutboundRTPStreamStats)
                     .Cast<RTCOutboundRTPStreamStats>()
                     .FirstOrDefault(x => x.kind == "video");
+
+                if (outboundStats == null || string.IsNullOrEmpty(outboundStats.codecId))
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+
                 senderCodecStats = statsOp.Value.Stats.Values
                     .Where(x => x is RTCCodecStats)
                     .Cast<RTCCodecStats>()
@@ -661,6 +668,13 @@ namespace Unity.RenderStreaming.RuntimeTest
                     .Where(x => x is RTCOutboundRTPStreamStats)
                     .Cast<RTCOutboundRTPStreamStats>()
                     .FirstOrDefault(x => x.kind == "video");
+
+                if (outboundStats == null || string.IsNullOrEmpty(outboundStats.codecId))
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+
                 senderCodecStats = statsOp.Value.Stats.Values
                     .Where(x => x is RTCCodecStats)
                     .Cast<RTCCodecStats>()
@@ -680,6 +694,13 @@ namespace Unity.RenderStreaming.RuntimeTest
                     .Where(x => x is RTCInboundRTPStreamStats)
                     .Cast<RTCInboundRTPStreamStats>()
                     .FirstOrDefault(x => x.kind == "video");
+
+                if (inboundStats == null || string.IsNullOrEmpty(inboundStats.codecId))
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+
                 receiverCodecStats = statsOp.Value.Stats.Values
                     .Where(x => x is RTCCodecStats)
                     .Cast<RTCCodecStats>()
@@ -754,6 +775,13 @@ namespace Unity.RenderStreaming.RuntimeTest
                     .Where(x => x is RTCOutboundRTPStreamStats)
                     .Cast<RTCOutboundRTPStreamStats>()
                     .FirstOrDefault(x => x.kind == "video");
+
+                if (outboundStats == null || string.IsNullOrEmpty(outboundStats.codecId))
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+
                 senderCodecStats = statsOp.Value.Stats.Values
                     .Where(x => x is RTCCodecStats)
                     .Cast<RTCCodecStats>()
@@ -773,10 +801,18 @@ namespace Unity.RenderStreaming.RuntimeTest
                     .Where(x => x is RTCInboundRTPStreamStats)
                     .Cast<RTCInboundRTPStreamStats>()
                     .FirstOrDefault(x => x.kind == "video");
+
+                if (inboundStats == null || string.IsNullOrEmpty(inboundStats.codecId))
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    continue;
+                }
+
                 receiverCodecStats = statsOp.Value.Stats.Values
                     .Where(x => x is RTCCodecStats)
                     .Cast<RTCCodecStats>()
                     .FirstOrDefault(x => x.Id == inboundStats.codecId);
+
             }
             Assert.That(receiverCodecStats.mimeType, Is.EqualTo(capability.mimeType));
             Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
