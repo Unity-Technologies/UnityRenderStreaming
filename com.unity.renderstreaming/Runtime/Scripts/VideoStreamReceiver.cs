@@ -1,6 +1,6 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -11,6 +11,9 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class VideoStreamReceiver : StreamReceiverBase
     {
+        [SerializeField]
+        private Texture m_targetTexture;
+
         /// <summary>
         ///
         /// </summary>
@@ -28,9 +31,20 @@ namespace Unity.RenderStreaming
         public override TrackKind Kind { get { return TrackKind.Video; } }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
-        [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
+        public uint width
+        {
+            get { return (uint)m_targetTexture.width; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint height
+        {
+            get { return (uint)m_targetTexture.height; }
+        }
 
 
         private VideoCodecInfo m_codec;
@@ -46,7 +60,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public Texture ReceiveTexture => m_receiveTexture;
+        public Texture targetTexture => m_targetTexture;
 
         /// <summary>
         /// 
@@ -79,8 +93,6 @@ namespace Unity.RenderStreaming
                 throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
         }
 
-        private Texture m_receiveTexture;
-
         protected virtual void Start()
         {
             OnStartedStream += StartedStream;
@@ -93,16 +105,16 @@ namespace Unity.RenderStreaming
             {
                 videoTrack.OnVideoReceived += texture =>
                 {
-                    m_receiveTexture = texture;
-                    OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
+                    m_targetTexture = texture;
+                    OnUpdateReceiveTexture?.Invoke(m_targetTexture);
                 };
             }
         }
 
         private void StoppedStream(string connectionId)
         {
-            m_receiveTexture = null;
-            OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
+            m_targetTexture = null;
+            OnUpdateReceiveTexture?.Invoke(m_targetTexture);
         }
     }
 }

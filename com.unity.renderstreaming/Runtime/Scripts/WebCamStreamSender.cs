@@ -30,7 +30,6 @@ namespace Unity.RenderStreaming
 
         private WebCamTexture m_webCamTexture;
         private Coroutine m_startVideoCorutine;
-        public override Texture SendTexture => m_webCamTexture;
         public IEnumerable<string> WebCamNameList => WebCamTexture.devices.Select(x => x.name);
 
         protected override void OnDestroy()
@@ -83,7 +82,7 @@ namespace Unity.RenderStreaming
             }
 
             WebCamDevice userCameraDevice = WebCamTexture.devices[deviceIndex];
-            m_webCamTexture = new WebCamTexture(userCameraDevice.name, streamingSize.x, streamingSize.y, framerate);
+            m_webCamTexture = new WebCamTexture(userCameraDevice.name, (int)width, (int)height, framerate);
             OnUpdateWebCamTexture?.Invoke(m_webCamTexture);
             m_webCamTexture.Play();
             yield return new WaitUntil(() => m_webCamTexture.didUpdateThisFrame);
@@ -95,7 +94,7 @@ namespace Unity.RenderStreaming
             deviceIndex = index;
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             return new VideoStreamTrack(m_webCamTexture);
         }

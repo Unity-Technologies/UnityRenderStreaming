@@ -25,7 +25,6 @@ namespace Unity.RenderStreaming
         [SerializeField, RenderTextureAntiAliasing]
         private int antiAliasing = 1;
 
-        public override Texture SendTexture => m_sendTexture;
         private RenderTexture m_sendTexture;
         private RenderTexture m_screenTexture;
         private HashSet<string> connections = new HashSet<string>();
@@ -60,7 +59,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             RenderTexture rt;
             if (m_sendTexture != null)
@@ -88,7 +87,7 @@ namespace Unity.RenderStreaming
             {
                 RenderTextureFormat format =
                     WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
-                rt = new RenderTexture(streamingSize.x, streamingSize.y, depth, format) { antiAliasing = antiAliasing };
+                rt = new RenderTexture((int)width, (int)height, depth, format) { antiAliasing = antiAliasing };
                 rt.Create();
                 m_sendTexture = rt;
             }

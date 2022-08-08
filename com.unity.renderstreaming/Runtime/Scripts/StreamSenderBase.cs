@@ -26,6 +26,22 @@ namespace Unity.RenderStreaming
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
+        internal virtual MediaStreamTrack CreateTrack() { return null; }
+
+        internal virtual void ReplaceTrack(MediaStreamTrack track)
+        {
+            m_track = track;
+            foreach (var transceiver in Transceivers.Values)
+            {
+                transceiver.Sender.ReplaceTrack(m_track);
+            }
+        }
+
+        private MediaStreamTrack m_track;
+
+        private Dictionary<string, RTCRtpTransceiver> m_transceivers =
+            new Dictionary<string, RTCRtpTransceiver>();
+
         /// <summary>
         ///
         /// </summary>
@@ -42,21 +58,45 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public bool isPlaying
+        {
+            get
+            {
+                if (!Application.isPlaying)
+                    return false;
+                foreach (var transceiver in Transceivers.Values)
+                {
+                    if (string.IsNullOrEmpty(transceiver.Mid))
+                        continue;
+                    if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                        continue;
+                    return true;
+                }
+                return false;
+            }
+        }
+
         protected virtual void OnDestroy()
         {
             m_track?.Dispose();
             m_track = null;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        protected virtual MediaStreamTrack CreateTrack() { return null; }
+        protected virtual void OnEnable()
+        {
+            if (m_track?.ReadyState == TrackState.Live)
+            {
+                m_track.Enabled = true;
+            }
+        }
 
-        private Dictionary<string, RTCRtpTransceiver> m_transceivers =
-            new Dictionary<string, RTCRtpTransceiver>();
-        private MediaStreamTrack m_track;
+        protected virtual void OnDisable()
+        {
+            if(m_track?.ReadyState == TrackState.Live)
+            {
+                m_track.Enabled = false;
+            }
+        }
 
         /// <summary>
         ///
@@ -78,14 +118,5 @@ namespace Unity.RenderStreaming
                 OnStartedStream?.Invoke(connectionId);
             }
         }
-
-        protected virtual void OnEnable()
-        {
-        }
-
-        protected virtual void OnDisable()
-        {
-        }
-
     }
 }

@@ -51,10 +51,9 @@ namespace Unity.RenderStreaming.Samples
                 webCamStreamer.WebCamNameList.Select(x => new Dropdown.OptionData(x)).ToList();
             webCamStreamer.OnStartedStream += id => receiveVideoViewer.enabled = true;
             webCamStreamer.OnUpdateWebCamTexture += texture => localVideoImage.texture = texture;
-            if (webCamStreamer.streamingSize != RenderStreamingSettings.StreamSize)
-            {
-                webCamStreamer.streamingSize = RenderStreamingSettings.StreamSize;
-            }
+
+            webCamStreamer.width = (uint)RenderStreamingSettings.StreamSize.x;
+            webCamStreamer.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
             microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));

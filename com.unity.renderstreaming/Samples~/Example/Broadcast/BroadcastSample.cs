@@ -67,10 +67,8 @@ namespace Unity.RenderStreaming.Samples
             );
 #endif
 
-            if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
-            {
-                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
-            }
+            videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
+            videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
@@ -120,7 +118,7 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnStartedChannel(string connectionId)
         {
-            inputReceiver.SetInputRange(videoStreamSender.streamingSize);
+            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
             inputReceiver.SetEnableInputPositionCorrection(true);
         }
     }

@@ -22,11 +22,6 @@ namespace Unity.RenderStreaming
         [SerializeField, RenderTextureAntiAliasing]
         private int antiAliasing = 1;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public override Texture SendTexture => m_camera.targetTexture;
-
         private Camera m_camera;
 
         protected virtual void Awake()
@@ -34,7 +29,7 @@ namespace Unity.RenderStreaming
             m_camera = GetComponent<Camera>();
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             RenderTexture rt;
             if (m_camera.targetTexture != null)
@@ -59,7 +54,7 @@ namespace Unity.RenderStreaming
             else
             {
                 RenderTextureFormat format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
-                rt = new RenderTexture(streamingSize.x, streamingSize.y, depth, format)
+                rt = new RenderTexture((int)width, (int)height, depth, format)
                 {
                     antiAliasing = antiAliasing
                 };

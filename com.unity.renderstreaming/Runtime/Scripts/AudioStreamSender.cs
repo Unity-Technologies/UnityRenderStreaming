@@ -119,7 +119,7 @@ namespace Unity.RenderStreaming
             track = null;
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             track = new AudioStreamTrack();
             return track;

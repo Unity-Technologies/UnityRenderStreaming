@@ -9,10 +9,8 @@ namespace Unity.RenderStreaming.Samples
 
         private void Awake()
         {
-            if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
-            {
-                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
-            }
+            videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
+            videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
         }
 
         private void Start()

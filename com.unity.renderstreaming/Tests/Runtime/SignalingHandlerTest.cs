@@ -30,7 +30,7 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         private Camera m_camera;
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             m_camera = gameObject.AddComponent<Camera>();
             return m_camera.CaptureStreamTrack(256, 256, 0);
@@ -45,7 +45,7 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         private AudioSource m_audioSource;
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             m_audioSource = gameObject.AddComponent<AudioSource>();
             m_audioSource.clip = AudioClip.Create("test", 48000, 2, 48000, false);
