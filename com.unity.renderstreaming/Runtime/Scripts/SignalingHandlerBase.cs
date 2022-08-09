@@ -128,9 +128,10 @@ namespace Unity.RenderStreaming
         /// <param name="sender"></param>
         public void SetSenderCodecs(string connectionId, IStreamSender sender)
         {
-            var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => sender.Transceiver.Sender == t.Sender);
-            sender.SetSenderCodec(connectionId, transceivers);
+            if(sender.Transceivers.TryGetValue(connectionId, out RTCRtpTransceiver value))
+            {
+                sender.SetSenderCodec(connectionId, value);
+            }
         }
 
         /// <summary>
@@ -255,11 +256,6 @@ namespace Unity.RenderStreaming
     public interface IStreamSender
     {
         /// <summary>
-        ///
-        /// </summary>
-        RTCRtpTransceiver Transceiver { get; }
-
-        /// <summary>
         /// 
         /// </summary>
         MediaStreamTrack Track { get; }
@@ -267,9 +263,14 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="transceivers"></param>
-        void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
+        void SetSenderCodec(string connectionId, RTCRtpTransceiver transceiver);
 
         /// <summary>
         ///
@@ -292,7 +293,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        RTCRtpReceiver Receiver { get; }
+        RTCRtpTransceiver Transceiver { get; }
 
         /// <summary>
         ///

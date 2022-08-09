@@ -138,10 +138,12 @@ namespace Unity.RenderStreaming
         /// todo(kazuki)::rename `SetCodec`
         public void FilterCodec(string connectionId, int index)
         {
-            RTCRtpSendParameters parameters = Sender.GetParameters();
+            if (!Transceivers.TryGetValue(connectionId, out var transceiver))
+                return;
+            RTCRtpSendParameters parameters = transceiver.Sender.GetParameters();
             var encodings = parameters.encodings.ToList().GetRange(index, 1);
             parameters.encodings = encodings.ToArray();
-            Sender.SetParameters(parameters);
+            transceiver.Sender.SetParameters(parameters);
         }
 
         /// <summary>
@@ -153,9 +155,12 @@ namespace Unity.RenderStreaming
             if (frameRate < 0)
                 throw new ArgumentOutOfRangeException("framerate", frameRate, "The parameter must be greater than zero.");
             m_frameRate = frameRate;
-            RTCError error = Sender.SetFrameRate((uint)m_frameRate);
-            if (error.errorType == RTCErrorType.None)
-                Debug.LogError(error.message);
+            foreach (var transceiver in Transceivers.Values)
+            {
+                RTCError error = transceiver.Sender.SetFrameRate((uint)m_frameRate);
+                if (error.errorType == RTCErrorType.None)
+                    Debug.LogError(error.message);
+            }
         }
         
         /// <summary>
@@ -165,9 +170,12 @@ namespace Unity.RenderStreaming
         public void SetBitrate(uint bitrate)
         {
             m_bitrate = bitrate;
-            RTCError error = Sender.SetBitrate(m_bitrate);
-            if (error.errorType == RTCErrorType.None)
-                Debug.LogError(error.message);
+            foreach (var transceiver in Transceivers.Values)
+            {
+                RTCError error = transceiver.Sender.SetBitrate(m_bitrate);
+                if (error.errorType == RTCErrorType.None)
+                    Debug.LogError(error.message);
+            }
         }
 
         /// <summary>
@@ -181,9 +189,12 @@ namespace Unity.RenderStreaming
             if (1f < scaleFactor)
                 throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be lower than one.");
             m_scaleFactor = scaleFactor;
-            RTCError error = Sender.SetScaleResolutionDown(m_scaleFactor);
-            if (error.errorType == RTCErrorType.None)
-                Debug.LogError(error.message);
+            foreach (var transceiver in Transceivers.Values)
+            {
+                RTCError error = transceiver.Sender.SetScaleResolutionDown(m_scaleFactor);
+                if (error.errorType == RTCErrorType.None)
+                    Debug.LogError(error.message);
+            }
         }
     }
 }
