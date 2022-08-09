@@ -61,19 +61,31 @@ namespace Unity.RenderStreaming
         public static RTCError SetBitrate(this RTCRtpSender sender, uint? bitrate)
         {
             RTCRtpSendParameters parameters = sender.GetParameters();
-            foreach (var encoding in parameters.encodings)
+
+            if (bitrate == null || bitrate == 0)
             {
-                encoding.maxBitrate = bitrate * 1000;
-                encoding.minBitrate = bitrate * 1000;
+                foreach (var encoding in parameters.encodings)
+                {
+                    encoding.maxBitrate = null;
+                    encoding.minBitrate = null;
+                }
+            }
+            else
+            {
+                foreach (var encoding in parameters.encodings)
+                {
+                    encoding.maxBitrate = bitrate * 1000;
+                    encoding.minBitrate = bitrate * 1000;
+                }
             }
             return sender.SetParameters(parameters);
         }
     }
 
-    internal static class RTCRtpTransceiverExtension 
+    internal static class RTCRtpTransceiverExtension
     {
         public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, string mimetype)
-        {            
+        {
             var capabilities = RTCRtpSender.GetCapabilities(transceiver.Sender.Track.Kind);
             var codecs = capabilities.codecs.Where(codec => codec.mimeType == mimetype);
             return transceiver.SetCodecPreferences(codecs.ToArray());
@@ -104,7 +116,7 @@ namespace Unity.RenderStreaming
         private float m_scaleFactor = 1f;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float frameRate
         {
@@ -112,7 +124,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint bitrate
         {
@@ -147,7 +159,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="frameRate"></param>
         public void SetFrameRate(float frameRate)
@@ -162,13 +174,15 @@ namespace Unity.RenderStreaming
                     Debug.LogError(error.message);
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="bitrate"></param>
         public void SetBitrate(uint bitrate)
         {
+            if (bitrate < 0)
+                throw new ArgumentOutOfRangeException("bitrate", frameRate, "The parameter must be greater than zero.");
             m_bitrate = bitrate;
             foreach (var sender in Senders.Values)
             {
@@ -179,15 +193,13 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        /// <param name="scaleFactor"></param>
+        /// <param name="scaleFactor">The parameter must be greater than 1.0f.</param>
         public void SetScaleResolutionDown(float scaleFactor)
         {
-            if (scaleFactor < 0)
-                throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be greater than zero.");
-            if (1f < scaleFactor)
-                throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be lower than one.");
+            if (scaleFactor < 1.0f)
+                throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be greater than 1.0f. Scaleup is not allowed.");
             m_scaleFactor = scaleFactor;
             foreach (var sender in Senders.Values)
             {

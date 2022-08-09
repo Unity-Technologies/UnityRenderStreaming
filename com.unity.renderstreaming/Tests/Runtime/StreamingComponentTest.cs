@@ -61,18 +61,18 @@ namespace Unity.RenderStreaming.RuntimeTest
             var go = new GameObject();
             var sender = go.AddComponent<VideoStreamSender>();
 
-            float scaleFactor = 0.5f;
-            sender.SetFrameRate(scaleFactor);
-            Assert.That(sender.frameRate, Is.EqualTo(scaleFactor));
+            float scaleFactor = 2;
+            sender.SetScaleResolutionDown(scaleFactor);
+            Assert.That(sender.scaleResolutionDown, Is.EqualTo(scaleFactor));
 
-            scaleFactor = 0;
+            scaleFactor = 1;
             sender.SetScaleResolutionDown(scaleFactor);
             Assert.That(sender.scaleResolutionDown, Is.EqualTo(scaleFactor));
 
             scaleFactor = -1;
             Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetScaleResolutionDown(scaleFactor));
 
-            scaleFactor = 2;
+            scaleFactor = 0.5f;
             Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetScaleResolutionDown(scaleFactor));
 
             UnityEngine.Object.DestroyImmediate(go);
