@@ -26,10 +26,9 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Dropdown scaleResolutionDownSelector;
         [SerializeField] private Dropdown framerateSelector;
 
-        private Dictionary<string, uint?> bandwidthOptions =
-            new Dictionary<string, uint?>()
+        private Dictionary<string, uint> bandwidthOptions =
+            new Dictionary<string, uint>()
             {
-                { "undefined", null },
                 { "10000", 10000 },
                 { "2000", 2000 },
                 { "1000", 1000 },
@@ -78,6 +77,7 @@ namespace Unity.RenderStreaming.Samples
             bandwidthSelector.options = bandwidthOptions
                 .Select(pair => new Dropdown.OptionData {text = pair.Key})
                 .ToList();
+            framerateSelector.SetValueWithoutNotify(2); // todo: detect default select index
             bandwidthSelector.onValueChanged.AddListener(ChangeBandwidth);
             scaleResolutionDownSelector.options = scaleResolutionDownOptions
                 .Select(pair => new Dropdown.OptionData {text = pair.Key})
@@ -93,7 +93,7 @@ namespace Unity.RenderStreaming.Samples
 
         private void ChangeBandwidth(int index)
         {
-            var bandwidth = bandwidthOptions.Values.ElementAt(index).GetValueOrDefault(0);
+            var bandwidth = bandwidthOptions.Values.ElementAt(index);
             videoStreamSender.SetBitrate(bandwidth);
         }
 

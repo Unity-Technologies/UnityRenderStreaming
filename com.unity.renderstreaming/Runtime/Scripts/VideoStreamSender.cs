@@ -181,6 +181,8 @@ namespace Unity.RenderStreaming
         /// <param name="bitrate"></param>
         public void SetBitrate(uint bitrate)
         {
+            if (bitrate < 0)
+                throw new ArgumentOutOfRangeException("bitrate", frameRate, "The parameter must be greater than zero.");
             m_bitrate = bitrate;
             foreach (var sender in Senders.Values)
             {
