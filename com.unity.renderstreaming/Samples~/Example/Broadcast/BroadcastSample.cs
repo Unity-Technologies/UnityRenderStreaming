@@ -58,6 +58,7 @@ namespace Unity.RenderStreaming.Samples
                 { "10", 10f },
                 { "5", 5f },
             };
+
         private void Awake()
         {
 #if URS_USE_AR_FOUNDATION
@@ -93,30 +94,18 @@ namespace Unity.RenderStreaming.Samples
         private void ChangeBandwidth(int index)
         {
             var bandwidth = bandwidthOptions.Values.ElementAt(index).GetValueOrDefault(0);
-            if (bandwidth == videoStreamSender.bitrate)
-            {
-                return;
-            }
             videoStreamSender.SetBitrate(bandwidth);
         }
 
         private void ChangeScaleResolutionDown(int index)
         {
             var scale = scaleResolutionDownOptions.Values.ElementAt(index);
-            if (Mathf.Abs(scale - videoStreamSender.scaleResolutionDown) < Mathf.Epsilon)
-            {
-                return;
-            }
             videoStreamSender.SetScaleResolutionDown(scale);
         }
 
         private void ChangeFramerate(int index)
         {
             var framerate = framerateOptions.Values.ElementAt(index);
-            if (Mathf.Abs(framerate - videoStreamSender.frameRate) < Mathf.Epsilon)
-            {
-                return;
-            }
             videoStreamSender.SetFrameRate(framerate);
         }
 
