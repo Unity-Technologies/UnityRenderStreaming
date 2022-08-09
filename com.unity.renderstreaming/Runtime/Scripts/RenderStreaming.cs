@@ -48,6 +48,7 @@ namespace Unity.RenderStreaming
         {
             RenderStreamingInternal.DomainUnload();
             RenderStreamingInternal.DomainLoad();
+            EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
         }
 
         static Type GetType(string typeName) {
