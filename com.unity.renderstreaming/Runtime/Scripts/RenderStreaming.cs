@@ -6,8 +6,15 @@ using UnityEngine;
 using Unity.WebRTC;
 using Unity.RenderStreaming.Signaling;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Unity.RenderStreaming
 {
+#if UNITY_EDITOR
+    [InitializeOnLoad]
+#endif
     public sealed class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -36,6 +43,12 @@ namespace Unity.RenderStreaming
         private RenderStreamingInternal m_instance;
         private SignalingEventProvider m_provider;
         private bool m_running;
+
+        static RenderStreaming()
+        {
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+        }
 
         static Type GetType(string typeName) {
             var type = Type.GetType(typeName);
