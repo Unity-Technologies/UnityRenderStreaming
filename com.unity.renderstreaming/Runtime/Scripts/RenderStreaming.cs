@@ -12,9 +12,6 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming
 {
-#if UNITY_EDITOR
-    [InitializeOnLoad]
-#endif
     public sealed class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
@@ -44,12 +41,23 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
-        static RenderStreaming()
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        static void InitializeOnEditor()
         {
             RenderStreamingInternal.DomainUnload();
             RenderStreamingInternal.DomainLoad();
             EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
         }
+#else
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeOnRuntime()
+        {
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+            Application.quitting += RenderStreamingInternal.DomainUnload;
+        }
+#endif
 
         static Type GetType(string typeName) {
             var type = Type.GetType(typeName);
