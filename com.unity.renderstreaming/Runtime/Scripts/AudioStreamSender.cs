@@ -33,12 +33,10 @@ namespace Unity.RenderStreaming
             if (bitrate < 0)
                 throw new ArgumentException();
             m_bitrate = bitrate;
-            foreach (var sender in Senders.Values)
-            {
-                RTCError error = sender.SetBitrate(m_bitrate);
-                if (error.errorType == RTCErrorType.None)
-                    Debug.LogError(error.message);
-            }
+
+            RTCError error = Sender.SetBitrate(m_bitrate);
+            if (error.errorType == RTCErrorType.None)
+                Debug.LogError(error.message);
         }
 
         protected AudioStreamTrack track;

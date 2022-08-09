@@ -19,7 +19,7 @@ namespace Unity.RenderStreaming
             handler.onGotOffer += OnGotOffer;
             handler.onGotAnswer += OnGotAnswer;
             handler.onAddChannel += OnAddChannel;
-            handler.onAddReceiver += OnAddReceiver;
+            handler.onAddTransceiver += OnAddReceiver;
         }
 
         public bool Subscribe(Component comp)
@@ -128,12 +128,12 @@ namespace Unity.RenderStreaming
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.addChannelHandler);
         }
 
-        private void OnAddReceiver(string connectionId, RTCRtpReceiver receiver)
+        private void OnAddReceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
             var data = new SignalingEventData(EventSystem.current)
             {
                 connectionId = connectionId,
-                receiver = receiver
+                transceiver = transceiver
             };
             ExecuteEventToAllTargets(data, ExecuteSignalingEvents.addReceiverHandler);
         }

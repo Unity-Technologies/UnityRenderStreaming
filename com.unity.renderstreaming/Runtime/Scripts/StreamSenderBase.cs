@@ -12,6 +12,11 @@ namespace Unity.RenderStreaming
     public abstract class StreamSenderBase : MonoBehaviour, IStreamSender
     {
         /// <summary>
+        /// 
+        /// </summary>
+        public RTCRtpTransceiver Transceiver => m_transceiver;
+
+        /// <summary>
         ///
         /// </summary>
         public OnStartedStreamHandler OnStartedStream { get; set; }
@@ -20,22 +25,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public IReadOnlyDictionary<string, RTCRtpSender> Senders => m_senders;
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        protected virtual MediaStreamTrack CreateTrack() { return null; }
-
-        private MediaStreamTrack m_track;
-
-        private Dictionary<string, RTCRtpSender> m_senders =
-            new Dictionary<string, RTCRtpSender>();
 
         /// <summary>
         ///
@@ -53,20 +42,31 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        /// <returns></returns>
+        protected virtual MediaStreamTrack CreateTrack() { return null; }
+
+        internal RTCRtpSender Sender => m_transceiver?.Sender;
+
+        private MediaStreamTrack m_track;
+        private RTCRtpTransceiver m_transceiver;
+
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
-        public virtual void SetSender(string connectionId, RTCRtpSender sender)
+        public virtual void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
             if (connectionId == null)
                 throw new ArgumentNullException("connectionId is null");
-            if (sender == null)
+            m_transceiver = transceiver;
+            if (m_transceiver == null)
             {
-                m_senders.Remove(connectionId);
                 OnStoppedStream?.Invoke(connectionId);
             }
             else
             {
-                m_senders.Add(connectionId, sender);
                 OnStartedStream?.Invoke(connectionId);
             }
         }

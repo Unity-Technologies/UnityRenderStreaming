@@ -44,7 +44,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        event Action<string, RTCRtpReceiver> onAddReceiver;
+        event Action<string, RTCRtpTransceiver> onAddTransceiver;
 
         /// <summary>
         ///

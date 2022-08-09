@@ -363,7 +363,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             bool isGotAnswer2 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onAddTransceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
@@ -441,7 +441,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             bool isGotAnswer1 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onAddTransceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
 
             var camObj = new GameObject("Camera");

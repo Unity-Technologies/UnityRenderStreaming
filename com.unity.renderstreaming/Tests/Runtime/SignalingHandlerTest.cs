@@ -145,7 +145,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
 
             Assert.That(streamer.Track, Is.Not.Null);
-            Assert.That(streamer.Senders, Is.Empty);
+            Assert.That(streamer.Sender, Is.Null);
 
             container.test.component.AddComponent(streamer);
             container.Dispose();
@@ -267,7 +267,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             RTCCodecStats senderCodecStats = null;
             while (senderCodecStats == null)
             {
-                var statsOp = streamer.Senders[connectionId].GetStats();
+                var statsOp = streamer.Sender.GetStats();
                 yield return statsOp;
                 Assert.That(statsOp.IsError, Is.False);
 
@@ -319,14 +319,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
 
             Assert.That(streamer.Track, Is.Not.Null);
-            Assert.That(streamer.Senders, Is.Empty);
+            Assert.That(streamer.Sender, Is.Null);
 
             container.test.component.AddComponent(streamer);
             container.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
 
             Assert.That(streamer.Track, Is.Not.Null);
-            Assert.That(streamer.Senders, Is.Not.Empty);
+            Assert.That(streamer.Sender, Is.Not.Null);
 
             container.test.component.DeleteConnection(connectionId);
             yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
@@ -665,7 +665,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             RTCCodecStats senderCodecStats = null;
             while (senderCodecStats == null)
             {
-                var statsOp = streamer.Senders[connectionId].GetStats();
+                var statsOp = streamer.Sender.GetStats();
                 yield return statsOp;
                 Assert.That(statsOp.IsError, Is.False);
 
@@ -770,7 +770,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             RTCCodecStats senderCodecStats = null;
             while (senderCodecStats == null)
             {
-                var statsOp = streamer.Senders[connectionId].GetStats();
+                var statsOp = streamer.Sender.GetStats();
                 yield return statsOp;
                 Assert.That(statsOp.IsError, Is.False);
 
