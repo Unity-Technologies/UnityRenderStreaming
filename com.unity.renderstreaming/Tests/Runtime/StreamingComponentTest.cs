@@ -13,6 +13,11 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             IEnumerable<VideoCodecInfo> codecs = VideoStreamSender.GetAvailableCodecs();
             Assert.That(codecs, Is.Not.Empty);
+            foreach (var codec in codecs)
+            {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+            }
             Assert.That(codecs.Any(codec => codec.name == "VP8"));
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
             Assert.That(codecs.Any(codec => codec.name == "AV1X"));
@@ -112,6 +117,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(codecs, Is.Not.Empty);
             foreach(var codec in codecs)
             {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
                 Assert.That(codec.channelCount, Is.GreaterThan(0));
                 Assert.That(codec.sampleRate, Is.GreaterThan(0));
             }

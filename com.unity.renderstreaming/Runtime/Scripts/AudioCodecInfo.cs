@@ -11,6 +11,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public string name { get { return capability.mimeType.Split('/')[1]; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string mimeType { get { return capability.mimeType; } }
 
         /// <summary>
