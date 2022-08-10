@@ -25,6 +25,11 @@ namespace Unity.RenderStreaming
 
         internal RTCRtpCodecCapability capability;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(AudioCodecInfo other)
         {
             if (other == null)

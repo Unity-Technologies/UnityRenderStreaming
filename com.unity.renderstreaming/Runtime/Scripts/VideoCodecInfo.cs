@@ -11,6 +11,9 @@ namespace Unity.RenderStreaming
     {
         const string KeyCodecImplementation = "implementation_name";
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string name { get { return capability.mimeType.Split('/')[1]; } }
 
         /// <summary>
@@ -23,6 +26,11 @@ namespace Unity.RenderStreaming
         /// </summary>
         public string CodecImplementation { get { return parameters[KeyCodecImplementation]; } }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(VideoCodecInfo other)
         {
             if (other == null)
@@ -62,12 +70,26 @@ namespace Unity.RenderStreaming
         }
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
     public enum VP9Profile
     {
+        /// <summary>
+        /// 
+        /// </summary>
         Profile0 = 0,
+        /// <summary>
+        /// 
+        /// </summary>
         Profile1 = 1,
+        /// <summary>
+        /// 
+        /// </summary>
         Profile2 = 2,
+        /// <summary>
+        /// 
+        /// </summary>
         Profile3 = 3,
     }
 
@@ -96,10 +118,25 @@ namespace Unity.RenderStreaming
     /// </summary>
     public enum H264Profile
     {
+        /// <summary>
+        /// 
+        /// </summary>
         ConstrainedBaseline = 0x42e0,
+        /// <summary>
+        /// 
+        /// </summary>
         Baseline = 0x4200,
+        /// <summary>
+        /// 
+        /// </summary>
         ProfileMain = 0x4d00,
+        /// <summary>
+        /// 
+        /// </summary>
         ConstrainedHigh = 0x640c,
+        /// <summary>
+        /// 
+        /// </summary>
         High = 0x6400,
     }
 
@@ -109,10 +146,18 @@ namespace Unity.RenderStreaming
     public class H264CodecInfo : VideoCodecInfo
     {
         const string KeyProfileLevelId = "profile-level-id";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public H264Profile profile
         {
             get { return (H264Profile)Enum.ToObject(typeof(H264Profile), Convert.ToInt32(parameters[KeyProfileLevelId], 16) >> 8); }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int level { get { return Convert.ToInt32(parameters[KeyProfileLevelId], 16) & 0xFF; } }
 
         internal H264CodecInfo(RTCRtpCodecCapability caps) : base(caps)
