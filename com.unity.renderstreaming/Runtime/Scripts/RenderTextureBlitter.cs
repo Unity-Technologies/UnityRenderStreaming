@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 #if URS_USE_HDRP_RUNTIME
 #if UNITY_2019_1 || UNITY_2019_2 //HDRP 5.x, 6.x
@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming
 #if URS_USE_HDRP_RUNTIME
     [RequireComponent(typeof(HDAdditionalCameraData))]
 #endif
-    public class RenderTextureBlitter : MonoBehaviour
+    internal class RenderTextureBlitter : MonoBehaviour
     {
         [SerializeField] Camera m_rtCamera = null;
 

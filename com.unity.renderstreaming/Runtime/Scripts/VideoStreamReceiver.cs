@@ -1,5 +1,8 @@
 using Unity.WebRTC;
 using UnityEngine;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Unity.RenderStreaming
 {
@@ -34,6 +37,16 @@ namespace Unity.RenderStreaming
         /// </summary>
         public Texture ReceiveTexture => m_receiveTexture;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
+        {
+            string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03" };
+            var capabilities = RTCRtpReceiver.GetCapabilities(TrackKind.Video);
+            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => VideoCodecInfo.Create(codec));
+        }
         private Texture m_receiveTexture;
 
         protected virtual void Start()
