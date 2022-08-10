@@ -59,6 +59,12 @@ namespace Unity.RenderStreaming
                 OnStartedStream?.Invoke(connectionId);
         }
 
+        protected virtual void OnDestroy()
+        {
+            Track?.Dispose();
+            Track = null;
+        }
+
         private List<RTCRtpCodecCapability> m_receiverAudioCodecs = new List<RTCRtpCodecCapability>();
         private List<RTCRtpCodecCapability> m_receiverVideoCodecs = new List<RTCRtpCodecCapability>();
 
