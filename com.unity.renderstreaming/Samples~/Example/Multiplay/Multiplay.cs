@@ -66,7 +66,7 @@ namespace Unity.RenderStreaming.Samples
                 {
                     videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
                 }
-                videoStreamSender.FilterVideoCodecs(RenderStreamingSettings.SelectSenderVideoCodecIndex);
+                videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
             }
 
             var inputChannel = newObj.GetComponentInChildren<InputReceiver>();

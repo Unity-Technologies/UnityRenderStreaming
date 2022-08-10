@@ -35,8 +35,15 @@ namespace Unity.RenderStreaming
         {
             if (other == null)
                 return false;
-            return this.capability.mimeType == other.capability.mimeType
-                && this.capability.sdpFmtpLine == other.capability.sdpFmtpLine;
+            return Equals(other.capability);
+        }
+
+        internal bool Equals(RTCRtpCodecCapability other)
+        {
+            if (other == null)
+                return false;
+            return this.capability.mimeType == other.mimeType
+                && this.capability.sdpFmtpLine == other.sdpFmtpLine;
         }
 
         internal RTCRtpCodecCapability capability;

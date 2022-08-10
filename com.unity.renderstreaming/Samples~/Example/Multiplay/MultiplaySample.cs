@@ -98,7 +98,7 @@ namespace Unity.RenderStreaming.Samples
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
-            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
+            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);

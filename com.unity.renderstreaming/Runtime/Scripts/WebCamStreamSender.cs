@@ -44,7 +44,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             if (m_webCamTexture == null)
             {
@@ -56,7 +56,7 @@ namespace Unity.RenderStreaming
             m_webCamTexture?.Play();
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             if (m_startVideoCorutine != null)
             {

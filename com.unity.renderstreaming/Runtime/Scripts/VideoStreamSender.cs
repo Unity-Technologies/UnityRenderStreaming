@@ -59,11 +59,17 @@ namespace Unity.RenderStreaming
 
     internal static class RTCRtpTransceiverExtension
     {
-        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, string mimetype)
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, VideoCodecInfo[] codecs)
         {
-            var capabilities = RTCRtpSender.GetCapabilities(transceiver.Sender.Track.Kind);
-            var codecs = capabilities.codecs.Where(codec => codec.mimeType == mimetype);
-            return transceiver.SetCodecPreferences(codecs.ToArray());
+            if (codecs == null || !codecs.Any())
+                throw new ArgumentNullException("codecs", "codecs is null or empty");
+            return transceiver.SetCodecPreferences(codecs.Select(codec => codec.capability).ToArray());
+        }
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, AudioCodecInfo[] codecs)
+        {
+            if (codecs == null || !codecs.Any())
+                throw new ArgumentNullException("codecs", "codecs is null or empty");
+            return transceiver.SetCodecPreferences(codecs.Select(codec => codec.capability).ToArray());
         }
     }
 
@@ -92,6 +98,8 @@ namespace Unity.RenderStreaming
 
         [SerializeField]
         private float m_scaleFactor = 1f;
+
+        private VideoCodecInfo m_codec;
 
         /// <summary>
         ///
@@ -125,6 +133,13 @@ namespace Unity.RenderStreaming
             get { return m_scaleFactor; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public VideoCodecInfo codec
+        {
+            get { return m_codec; }
+        }
 
         /// <summary>
         ///
@@ -133,18 +148,23 @@ namespace Unity.RenderStreaming
         public virtual Texture SendTexture { get; }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
-        /// <param name="index"></param>
-        /// todo(kazuki)::rename `SetCodec`
-        public void FilterCodec(string connectionId, int index)
+        /// <param name="mimeType"></param>
+        public void SetCodec(VideoCodecInfo codec)
         {
-            if (!Transceivers.TryGetValue(connectionId, out var transceiver))
-                return;
-            RTCRtpSendParameters parameters = transceiver.Sender.GetParameters();
-            var encodings = parameters.encodings.ToList().GetRange(index, 1);
-            parameters.encodings = encodings.ToArray();
-            transceiver.Sender.SetParameters(parameters);
+            m_codec = codec;
+            foreach (var transceiver in Transceivers.Values)
+            {
+                if(!string.IsNullOrEmpty(transceiver.Mid))
+                    continue;
+                if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                    continue;
+
+                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
+                if (error != RTCErrorType.None)
+                    throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
+            }
         }
 
         /// <summary>
@@ -171,7 +191,7 @@ namespace Unity.RenderStreaming
             {
                 RTCError error = transceiver.Sender.SetFrameRate((uint)m_frameRate);
                 if (error.errorType != RTCErrorType.None)
-                    Debug.LogError(error.message);
+                    throw new InvalidOperationException($"Set codec is failed. {error.message}");
             }
         }
 
@@ -189,7 +209,7 @@ namespace Unity.RenderStreaming
             {
                 RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
                 if (error.errorType != RTCErrorType.None)
-                    Debug.LogError(error.message);
+                    throw new InvalidOperationException($"Set codec is failed. {error.message}");
             }
         }
 
@@ -206,7 +226,7 @@ namespace Unity.RenderStreaming
             {
                 RTCError error = transceiver.Sender.SetScaleResolutionDown(m_scaleFactor);
                 if (error.errorType != RTCErrorType.None)
-                    Debug.LogError(error.message);
+                    throw new InvalidOperationException($"Set codec is failed. {error.message}");
             }
         }
     }

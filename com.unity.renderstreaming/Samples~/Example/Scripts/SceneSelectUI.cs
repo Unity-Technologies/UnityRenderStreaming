@@ -33,10 +33,8 @@ namespace Unity.RenderStreaming.Samples
         private static float s_signalingInterval = 5;
         private static bool s_signalingSecured = false;
         private static Vector2Int s_streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
-        private static int s_selectVideoCodecIndex = -1;
-
-        // todo(kazuki): This is be only a temporary measure.
-        private static int s_selectSenderVideoCodecIndex = -1;
+        private static VideoCodecInfo s_receiverVideoCodec = null;
+        private static VideoCodecInfo s_senderVideoCodec = null;
 
         public static SignalingType SignalingType
         {
@@ -69,23 +67,23 @@ namespace Unity.RenderStreaming.Samples
                 switch (s_signalingType)
                 {
                     case SignalingType.Furioos:
-                    {
-                        var schema = s_signalingSecured ? "https" : "http";
-                        return new FurioosSignaling(
-                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
-                    }
+                        {
+                            var schema = s_signalingSecured ? "https" : "http";
+                            return new FurioosSignaling(
+                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                        }
                     case SignalingType.WebSocket:
-                    {
-                        var schema = s_signalingSecured ? "wss" : "ws";
-                        return new WebSocketSignaling(
-                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
-                    }
+                        {
+                            var schema = s_signalingSecured ? "wss" : "ws";
+                            return new WebSocketSignaling(
+                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                        }
                     case SignalingType.Http:
-                    {
-                        var schema = s_signalingSecured ? "https" : "http";
-                        return new HttpSignaling(
-                            $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
-                    }
+                        {
+                            var schema = s_signalingSecured ? "https" : "http";
+                            return new HttpSignaling(
+                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                        }
                 }
 
                 throw new InvalidOperationException();
@@ -98,16 +96,16 @@ namespace Unity.RenderStreaming.Samples
             set { s_streamSize = value; }
         }
 
-        public static int SelectVideoCodecIndex
+        public static VideoCodecInfo ReceiverVideoCodec
         {
-            get { return s_selectVideoCodecIndex; }
-            set { s_selectVideoCodecIndex = value; }
+            get { return s_receiverVideoCodec; }
+            set { s_receiverVideoCodec = value; }
         }
 
-        public static int SelectSenderVideoCodecIndex
+        public static VideoCodecInfo SenderVideoCodec
         {
-            get { return s_selectSenderVideoCodecIndex; }
-            set { s_selectSenderVideoCodecIndex = value; }
+            get { return s_senderVideoCodec; }
+            set { s_senderVideoCodec = value; }
         }
     }
 
@@ -132,7 +130,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button buttonAR;
         [SerializeField] private Button buttonMultiplay;
 
-        [SerializeField] private List<Vector2Int> streamSizeList = new List<Vector2Int>
+        [SerializeField]
+        private List<Vector2Int> streamSizeList = new List<Vector2Int>
         {
             new Vector2Int(640, 360),
             new Vector2Int(1280, 720),
@@ -145,6 +144,20 @@ namespace Unity.RenderStreaming.Samples
             new Vector2Int(1440, 2560),
             new Vector2Int(2160, 3840),
         };
+
+        static string CodecTitle(VideoCodecInfo codec)
+        {
+            switch (codec)
+            {
+                case H264CodecInfo h264Codec:
+                    return $"{h264Codec.mimeType} {h264Codec.profile} {h264Codec.level.ToString().Insert(1, ".")} {h264Codec.CodecImplementation}";
+                case VP9CodecInfo V9Codec:
+                    return $"{V9Codec.mimeType} {V9Codec.profile} {V9Codec.CodecImplementation}";
+                default:
+                    return $"{codec.mimeType} {codec.CodecImplementation}";
+            }
+            throw new ArgumentException();
+        }
 
         void Start()
         {
@@ -181,26 +194,18 @@ namespace Unity.RenderStreaming.Samples
             textureWidthInput.onValueChanged.AddListener(OnChangeTextureWidthInput);
             textureHeightInput.onValueChanged.AddListener(OnChangeTextureHeightInput);
 
-            var videoCodecList = AvailableCodecsUtils.GetAvailableVideoCodecsName()
-                .Select(pair => new Dropdown.OptionData(pair.Value)).ToList();
-            receiverVideoCodecSelector.options.AddRange(videoCodecList);
+            var receiverVideoCodecList = VideoStreamReceiver.GetAvailableCodecs()
+                .Select(codec => new Dropdown.OptionData(CodecTitle(codec))).ToList();
+            receiverVideoCodecSelector.options.AddRange(receiverVideoCodecList);
 
-            // todo(kazuki): This is be only a temporary measure.
-            // AvailableCodecsUtils.GetAvailableVideoCodecsName returns list for receiver, not sender.
-            senderVideoCodecSelector.options.AddRange(videoCodecList);
+            var senderVideoCodecList = VideoStreamSender.GetAvailableCodecs()
+                .Select(codec => new Dropdown.OptionData(CodecTitle(codec))).ToList();
+            senderVideoCodecSelector.options.AddRange(senderVideoCodecList);
 
-            if (RenderStreamingSettings.SelectVideoCodecIndex >= 0 &&
-                RenderStreamingSettings.SelectVideoCodecIndex < videoCodecList.Count)
-            {
-                receiverVideoCodecSelector.value = RenderStreamingSettings.SelectVideoCodecIndex + 1;
-            }
-            if (RenderStreamingSettings.SelectSenderVideoCodecIndex >= 0 &&
-                RenderStreamingSettings.SelectSenderVideoCodecIndex < videoCodecList.Count)
-            {
-                senderVideoCodecSelector.value = RenderStreamingSettings.SelectSenderVideoCodecIndex + 1;
-            }
+            receiverVideoCodecSelector.value = Array.FindIndex(VideoStreamReceiver.GetAvailableCodecs().ToArray(), codec => codec.Equals(RenderStreamingSettings.ReceiverVideoCodec)) + 1;
+            senderVideoCodecSelector.value = Array.FindIndex(VideoStreamSender.GetAvailableCodecs().ToArray(), codec => codec.Equals(RenderStreamingSettings.SenderVideoCodec)) + 1;
 
-            receiverVideoCodecSelector.onValueChanged.AddListener(OnChangeVideoCodecSelect);
+            receiverVideoCodecSelector.onValueChanged.AddListener(OnChangeReceiverVideoCodecSelect);
             senderVideoCodecSelector.onValueChanged.AddListener(OnChangeSenderVideoCodecSelect);
             buttonBidirectional.onClick.AddListener(OnPressedBidirectional);
             buttonBroadcast.onClick.AddListener(OnPressedBroadcast);
@@ -321,14 +326,20 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-        private void OnChangeVideoCodecSelect(int index)
-        {
-            RenderStreamingSettings.SelectVideoCodecIndex = index - 1;
-        }
-
         private void OnChangeSenderVideoCodecSelect(int index)
         {
-            RenderStreamingSettings.SelectSenderVideoCodecIndex = index - 1;
+            if (index == 0)
+                RenderStreamingSettings.SenderVideoCodec = null;
+            else
+                RenderStreamingSettings.SenderVideoCodec = VideoStreamSender.GetAvailableCodecs().ElementAt(index - 1);
+        }
+
+        private void OnChangeReceiverVideoCodecSelect(int index)
+        {
+            if (index == 0)
+                RenderStreamingSettings.ReceiverVideoCodec = null;
+            else
+                RenderStreamingSettings.ReceiverVideoCodec = VideoStreamReceiver.GetAvailableCodecs().ElementAt(index - 1);
         }
 
         private void OnPressedBidirectional()

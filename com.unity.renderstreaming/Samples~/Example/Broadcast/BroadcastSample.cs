@@ -72,7 +72,7 @@ namespace Unity.RenderStreaming.Samples
                 videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
             }
 
-            videoStreamSender.FilterVideoCodecs(RenderStreamingSettings.SelectSenderVideoCodecIndex);
+            videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
             bandwidthSelector.options = bandwidthOptions
                 .Select(pair => new Dropdown.OptionData {text = pair.Key})

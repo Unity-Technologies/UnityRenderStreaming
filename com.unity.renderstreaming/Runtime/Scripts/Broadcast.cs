@@ -55,9 +55,9 @@ namespace Unity.RenderStreaming
 
         public void OnAddReceiver(SignalingEventData data)
         {
-            var receiver = streams.OfType<IStreamReceiver>().
-                FirstOrDefault(r => r.Track == null);
-            receiver?.SetTransceiver(data.connectionId, data.transceiver);
+            var track = data.transceiver.Receiver.Track;
+            var receiver = streams.OfType<IStreamReceiver>().FirstOrDefault((r => r.Kind == track.Kind));
+            SetReceiver(data.connectionId, receiver, data.transceiver);
         }
 
         public void OnOffer(SignalingEventData data)
@@ -72,11 +72,6 @@ namespace Unity.RenderStreaming
             foreach (var source in streams.OfType<IStreamSender>())
             {
                 AddSender(data.connectionId, source);
-                SetSenderCodecs(data.connectionId, source);
-            }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                SetReceiverCodecs(data.connectionId, receiver);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
