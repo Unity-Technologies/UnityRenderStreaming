@@ -21,18 +21,20 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(codecs.Any(codec => codec.name == "VP8"));
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
             Assert.That(codecs.Any(codec => codec.name == "AV1X"));
-            Assert.That(codecs.Any(codec => codec.name == "H264"));
 
             var codec1 = codecs.First(codec => codec.name == "VP9");
             Assert.That(codec1, Is.TypeOf<VP9CodecInfo>());
             VP9CodecInfo vp9Codec = codec1 as VP9CodecInfo;
             Assert.That(vp9Codec.profile, Is.Not.Zero);
 
-            var codec2 = codecs.First(codec => codec.name == "H264");
-            Assert.That(codec2, Is.TypeOf<H264CodecInfo>());
-            H264CodecInfo h264Codec = codec2 as H264CodecInfo;
-            Assert.That(h264Codec.level, Is.GreaterThan(0));
-            Assert.That(h264Codec.profile, Is.Not.Zero);
+            var codec2 = codecs.FirstOrDefault(codec => codec.name == "H264");
+            if(codec2 != null)
+            {
+                Assert.That(codec2, Is.TypeOf<H264CodecInfo>());
+                H264CodecInfo h264Codec = codec2 as H264CodecInfo;
+                Assert.That(h264Codec.level, Is.GreaterThan(0));
+                Assert.That(h264Codec.profile, Is.Not.Zero);
+            }
         }
 
         [Test]
