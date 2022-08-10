@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public RTCRtpReceiver Receiver => m_receiver;
+        public RTCRtpTransceiver Transceiver => m_transceiver;
 
         /// <summary>
         ///
@@ -27,7 +27,7 @@ namespace Unity.RenderStreaming
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
 
-        private RTCRtpReceiver m_receiver;
+        private RTCRtpTransceiver m_transceiver;
 
 
         /// <summary>
@@ -45,11 +45,15 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
-        public virtual void SetReceiver(string connectionId, RTCRtpReceiver receiver)
+        public virtual void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
-            m_receiver = receiver;
-            Track = m_receiver?.Track;
-            if (m_receiver == null)
+            if (connectionId == null)
+                throw new ArgumentNullException("connectionId", "connectionId is null");
+
+            m_transceiver = transceiver;
+            Track = m_transceiver?.Receiver.Track;
+
+            if (m_transceiver == null)
                 OnStoppedStream?.Invoke(connectionId);
             else
                 OnStartedStream?.Invoke(connectionId);

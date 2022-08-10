@@ -105,7 +105,7 @@ namespace Unity.RenderStreaming
         {
             RTCRtpTransceiverInit init = GetTransceiverInit(sender);
             var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
-            sender.SetSender(connectionId, transceiver.Sender);
+            sender.SetTransceiver(connectionId, transceiver);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Unity.RenderStreaming
         public virtual void RemoveSender(string connectionId, IStreamSender sender)
         {
             sender.Track.Stop();
-            sender.SetSender(connectionId, null);
+            sender.SetTransceiver(connectionId, null);
             if (ExistConnection(connectionId))
                 RemoveTrack(connectionId, sender.Track);
         }
@@ -128,9 +128,10 @@ namespace Unity.RenderStreaming
         /// <param name="sender"></param>
         public void SetSenderCodecs(string connectionId, IStreamSender sender)
         {
-            var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => sender.Senders.Values.Contains(t.Sender));
-            sender.SetSenderCodec(connectionId, transceivers);
+            if(sender.Transceivers.TryGetValue(connectionId, out RTCRtpTransceiver value))
+            {
+                sender.SetSenderCodec(connectionId, value);
+            }
         }
 
         /// <summary>
@@ -146,7 +147,7 @@ namespace Unity.RenderStreaming
             };
             var transceiver = m_handler.AddTransceiver(connectionId, receiver.Kind, init);
             if (transceiver.Receiver != null)
-                receiver.SetReceiver(connectionId, transceiver.Receiver);
+                receiver.SetTransceiver(connectionId, transceiver);
         }
 
         /// <summary>
@@ -156,8 +157,7 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void RemoveReceiver(string connectionId, IStreamReceiver receiver)
         {
-            //receiver.
-            receiver.SetReceiver(connectionId, null);
+            receiver.SetTransceiver(connectionId, null);
         }
 
         /// <summary>
@@ -256,28 +256,28 @@ namespace Unity.RenderStreaming
     public interface IStreamSender
     {
         /// <summary>
-        ///
+        /// 
         /// </summary>
         MediaStreamTrack Track { get; }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
-        IReadOnlyDictionary<string, RTCRtpSender> Senders { get; }
+        IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers { get; }
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="sender"></param>
-        void SetSender(string connectionId, RTCRtpSender sender);
-
-        /// <summary>
-        ///
+        /// 
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="transceivers"></param>
-        void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
+        void SetSenderCodec(string connectionId, RTCRtpTransceiver transceiver);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="transceiver"></param>
+        void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver);
     }
 
     /// <summary>
@@ -293,7 +293,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        RTCRtpReceiver Receiver { get; }
+        RTCRtpTransceiver Transceiver { get; }
 
         /// <summary>
         ///
@@ -304,8 +304,8 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="receiver"></param>
-        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
+        /// <param name="transceiver"></param>
+        void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver);
 
         /// <summary>
         ///

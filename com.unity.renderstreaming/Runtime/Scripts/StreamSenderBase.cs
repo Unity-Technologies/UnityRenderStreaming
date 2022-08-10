@@ -14,28 +14,17 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        public IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers => m_transceivers;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public OnStartedStreamHandler OnStartedStream { get; set; }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public IReadOnlyDictionary<string, RTCRtpSender> Senders => m_senders;
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        protected virtual MediaStreamTrack CreateTrack() { return null; }
-
-        private MediaStreamTrack m_track;
-
-        private Dictionary<string, RTCRtpSender> m_senders =
-            new Dictionary<string, RTCRtpSender>();
 
         /// <summary>
         ///
@@ -62,20 +51,30 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        /// <returns></returns>
+        protected virtual MediaStreamTrack CreateTrack() { return null; }
+
+        private Dictionary<string, RTCRtpTransceiver> m_transceivers =
+            new Dictionary<string, RTCRtpTransceiver>();
+        private MediaStreamTrack m_track;
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
-        public virtual void SetSender(string connectionId, RTCRtpSender sender)
+        public virtual void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
             if (connectionId == null)
                 throw new ArgumentNullException("connectionId is null");
-            if (sender == null)
+            if (transceiver == null)
             {
-                m_senders.Remove(connectionId);
+                m_transceivers.Remove(connectionId);
                 OnStoppedStream?.Invoke(connectionId);
             }
             else
             {
-                m_senders.Add(connectionId, sender);
+                m_transceivers.Add(connectionId, transceiver);
                 OnStartedStream?.Invoke(connectionId);
             }
         }
@@ -88,11 +87,11 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="transceivers"></param>
-        public void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers)
+        public void SetSenderCodec(string connectionId, RTCRtpTransceiver transceiver)
         {
             if (m_senderAudioCodecs.Count != 0)
             {
-                foreach (var transceiver in transceivers.Where(t => t.Sender.Track.Kind == TrackKind.Audio))
+                if(transceiver.Sender.Track.Kind == TrackKind.Audio)
                 {
                     transceiver.SetCodecPreferences(m_senderAudioCodecs.ToArray());
                 }
@@ -100,7 +99,7 @@ namespace Unity.RenderStreaming
 
             if (m_senderVideoCodecs.Count != 0)
             {
-                foreach (var transceiver in transceivers.Where(t => t.Sender.Track.Kind == TrackKind.Video))
+                if (transceiver.Sender.Track.Kind == TrackKind.Video)
                 {
                     transceiver.SetCodecPreferences(m_senderVideoCodecs.ToArray());
                 }

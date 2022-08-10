@@ -79,7 +79,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public event Action<string, RTCRtpReceiver> onAddReceiver;
+        public event Action<string, RTCRtpTransceiver> onAddTransceiver;
 
         /// <summary>
         ///
@@ -381,7 +381,7 @@ namespace Unity.RenderStreaming
             pc.OnConnectionStateChange = state => OnConnectionStateChange(connectionId, state);
             pc.OnTrack = trackEvent =>
             {
-                onAddReceiver?.Invoke(connectionId, trackEvent.Receiver);
+                onAddTransceiver?.Invoke(connectionId, trackEvent.Transceiver);
             };
             pc.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded(connectionId));
             return peer;

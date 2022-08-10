@@ -111,8 +111,8 @@ namespace Unity.RenderStreaming
 
             var receiver = streams.OfType<IStreamReceiver>()
                 .FirstOrDefault((r =>
-                    r.Track == null && r.Kind == data.receiver.Track.Kind && data.receiver.Track.Enabled));
-            receiver?.SetReceiver(connectionId, data.receiver);
+                    r.Track == null && r.Kind == data.transceiver.Receiver.Track.Kind && data.transceiver.Receiver.Track.Enabled));
+            receiver?.SetTransceiver(connectionId, data.transceiver);
         }
 
         public void OnAddChannel(SignalingEventData data)
