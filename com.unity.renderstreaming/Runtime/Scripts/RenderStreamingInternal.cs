@@ -95,7 +95,15 @@ namespace Unity.RenderStreaming
         private bool _runningResendCoroutine;
         private float _resendInterval = 3.0f;
 
-        static List<RenderStreamingInternal> s_list = new List<RenderStreamingInternal>();
+        internal static void DomainLoad()
+        {
+            WebRTC.WebRTC.Initialize();
+        }
+
+        internal static void DomainUnload()
+        {
+            WebRTC.WebRTC.Dispose();
+        }
 
         /// <summary>
         ///
@@ -108,11 +116,6 @@ namespace Unity.RenderStreaming
             if (dependencies.startCoroutine == null)
                 throw new ArgumentException("Coroutine action instance is null.");
 
-            if (s_list.Count == 0)
-            {
-                WebRTC.WebRTC.Initialize();
-            }
-
             _config = dependencies.config;
             _startCoroutine = dependencies.startCoroutine;
             _resendInterval = dependencies.resentOfferInterval;
@@ -124,8 +127,6 @@ namespace Unity.RenderStreaming
             _signaling.OnAnswer += OnAnswer;
             _signaling.OnIceCandidate += OnIceCandidate;
             _signaling.Start();
-
-            s_list.Add(this);
             _startCoroutine(WebRTC.WebRTC.Update());
         }
 
@@ -156,12 +157,6 @@ namespace Unity.RenderStreaming
             _signaling.OnOffer -= OnOffer;
             _signaling.OnAnswer -= OnAnswer;
             _signaling.OnIceCandidate -= OnIceCandidate;
-
-            s_list.Remove(this);
-            if (s_list.Count == 0)
-            {
-                WebRTC.WebRTC.Dispose();
-            }
 
             this._disposed = true;
             GC.SuppressFinalize(this);

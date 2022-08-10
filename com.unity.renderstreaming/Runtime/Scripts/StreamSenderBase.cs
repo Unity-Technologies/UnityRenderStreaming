@@ -51,6 +51,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        virtual protected void OnDestroy()
+        {
+            m_track?.Dispose();
+            m_track = null;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>

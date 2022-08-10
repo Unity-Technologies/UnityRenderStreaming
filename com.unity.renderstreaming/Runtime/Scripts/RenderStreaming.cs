@@ -6,6 +6,10 @@ using UnityEngine;
 using Unity.WebRTC;
 using Unity.RenderStreaming.Signaling;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Unity.RenderStreaming
 {
     public sealed class RenderStreaming : MonoBehaviour
@@ -36,6 +40,24 @@ namespace Unity.RenderStreaming
         private RenderStreamingInternal m_instance;
         private SignalingEventProvider m_provider;
         private bool m_running;
+
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        static void InitializeOnEditor()
+        {
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+            EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
+        }
+#else
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeOnRuntime()
+        {
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+            Application.quitting += RenderStreamingInternal.DomainUnload;
+        }
+#endif
 
         static Type GetType(string typeName) {
             var type = Type.GetType(typeName);

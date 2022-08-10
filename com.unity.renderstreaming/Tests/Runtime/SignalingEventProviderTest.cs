@@ -169,14 +169,12 @@ namespace Unity.RenderStreaming.RuntimeTest
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            WebRTC.WebRTC.Initialize();
             m_eventSystem = new GameObject("EventSystem").AddComponent<EventSystem>();
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            WebRTC.WebRTC.Dispose();
             UnityEngine.Object.DestroyImmediate(m_eventSystem);
         }
 

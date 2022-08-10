@@ -33,25 +33,10 @@ namespace Unity.RenderStreaming
         {
             if (s_availableVideoCodecs == null)
             {
-                bool alreadyInitialized = false;
-                try
-                {
-                    WebRTC.WebRTC.Initialize();
-                }
-                catch (InvalidOperationException)
-                {
-                    alreadyInitialized = true;
-                }
-
                 s_availableVideoCodecs = RTCRtpReceiver.GetCapabilities(TrackKind.Video).codecs
                     .Where(codec => !s_excludeCodecMimeType.Contains(codec.mimeType))
                     .Select((codec, index) => new {codec, index})
                     .ToDictionary(t => t.index, t => t.codec);
-
-                if (!alreadyInitialized)
-                {
-                    WebRTC.WebRTC.Dispose();
-                }
             }
 
             return s_availableVideoCodecs.ToDictionary(pair => pair.Key, pair =>
@@ -70,24 +55,9 @@ namespace Unity.RenderStreaming
         {
             if (s_availableAudioCodecs == null)
             {
-                bool alreadyInitialized = false;
-                try
-                {
-                    WebRTC.WebRTC.Initialize();
-                }
-                catch (InvalidOperationException)
-                {
-                    alreadyInitialized = true;
-                }
-
                 s_availableAudioCodecs = RTCRtpReceiver.GetCapabilities(TrackKind.Audio).codecs
                     .Select((codec, index) => new {codec, index})
                     .ToDictionary(t => t.index, t => t.codec);
-
-                if (!alreadyInitialized)
-                {
-                    WebRTC.WebRTC.Dispose();
-                }
             }
 
             return s_availableAudioCodecs.ToDictionary(pair => pair.Key, pair =>
