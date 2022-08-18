@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming
         private bool m_running;
 
 #if UNITY_EDITOR
-        [InitializeOnLoadMethod]
+        [InitializeOnEnterPlayMode]
         static void InitializeOnEditor()
         {
             RenderStreamingInternal.DomainUnload();
