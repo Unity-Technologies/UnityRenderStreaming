@@ -55,14 +55,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             var go = new GameObject();
             var sender = go.AddComponent<VideoStreamSender>();
 
-            uint bitrate = 2000;
-            sender.SetBitrate(bitrate);
-            Assert.That(sender.bitrate, Is.EqualTo(bitrate));
+            uint minBitrate = 1000;
+            uint maxBitrate = 2000;
+            sender.SetBitrate(minBitrate, maxBitrate);
+            Assert.That(sender.minBitrate, Is.EqualTo(minBitrate));
+            Assert.That(sender.maxBitrate, Is.EqualTo(maxBitrate));
 
-            bitrate = 0;
-            sender.SetBitrate(bitrate);
-            Assert.That(sender.bitrate, Is.EqualTo(bitrate));
-
+            minBitrate = 3000;
+            Assert.Throws<ArgumentException>(() => sender.SetBitrate(minBitrate, maxBitrate));
             UnityEngine.Object.DestroyImmediate(go);
         }
 
@@ -144,14 +144,16 @@ namespace Unity.RenderStreaming.RuntimeTest
             var go = new GameObject();
             var sender = go.AddComponent<AudioStreamSender>();
 
-            uint bitrate = 2000;
-            sender.SetBitrate(bitrate);
-            Assert.That(sender.bitrate, Is.EqualTo(bitrate));
+            uint minBitrate = 1000;
+            uint maxBitrate = 2000;
+            sender.SetBitrate(minBitrate, maxBitrate);
+            Assert.That(sender.minBitrate, Is.EqualTo(minBitrate));
+            Assert.That(sender.maxBitrate, Is.EqualTo(maxBitrate));
 
-            bitrate = 0;
-            sender.SetBitrate(bitrate);
-            Assert.That(sender.bitrate, Is.EqualTo(bitrate));
+            minBitrate = 3000;
+            Assert.Throws<ArgumentException>(() => sender.SetBitrate(minBitrate, maxBitrate));
             UnityEngine.Object.DestroyImmediate(go);
+
         }
 
     }
