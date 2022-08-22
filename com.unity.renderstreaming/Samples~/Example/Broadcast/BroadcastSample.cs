@@ -93,8 +93,8 @@ namespace Unity.RenderStreaming.Samples
 
         private void ChangeBandwidth(int index)
         {
-            var bandwidth = bandwidthOptions.Values.ElementAt(index);
-            videoStreamSender.SetBitrate(bandwidth);
+            var bitrate = bandwidthOptions.Values.ElementAt(index);
+            videoStreamSender.SetBitrate(bitrate, bitrate);
         }
 
         private void ChangeScaleResolutionDown(int index)

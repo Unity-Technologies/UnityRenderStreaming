@@ -16,14 +16,25 @@ namespace Unity.RenderStreaming
         const uint s_defaultBitrate = 1000;
 
         [SerializeField]
-        private uint m_bitrate = s_defaultBitrate;
+        private uint m_minBitrate = s_defaultBitrate;
+
+        [SerializeField]
+        private uint m_maxBitrate = s_defaultBitrate;
 
         /// <summary>
         /// 
         /// </summary>
-        public uint bitrate
+        public uint minBitrate
         {
-            get { return m_bitrate; }
+            get { return m_minBitrate; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint maxBitrate
+        {
+            get { return m_maxBitrate; }
         }
 
         /// <summary>
@@ -41,14 +52,15 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         /// <param name="bitrate"></param>
-        public void SetBitrate(uint bitrate)
+        public void SetBitrate(uint minBitrate, uint maxBitrate)
         {
-            if (bitrate < 0)
-                throw new ArgumentException();
-            m_bitrate = bitrate;
+            if (minBitrate > maxBitrate)
+                throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
+            m_minBitrate = minBitrate;
+            m_maxBitrate = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_bitrate);
+                RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
                 if (error.errorType == RTCErrorType.None)
                     Debug.LogError(error.message);
             }

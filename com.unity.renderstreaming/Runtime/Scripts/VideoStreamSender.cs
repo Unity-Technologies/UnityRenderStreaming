@@ -59,25 +59,14 @@ namespace Unity.RenderStreaming
             return sender.SetParameters(parameters);
         }
 
-        public static RTCError SetBitrate(this RTCRtpSender sender, uint? bitrate)
+        public static RTCError SetBitrate(this RTCRtpSender sender, uint? minBitrate, uint? maxBitrate)
         {
             RTCRtpSendParameters parameters = sender.GetParameters();
 
-            if (bitrate == null || bitrate == 0)
+            foreach (var encoding in parameters.encodings)
             {
-                foreach (var encoding in parameters.encodings)
-                {
-                    encoding.maxBitrate = null;
-                    encoding.minBitrate = null;
-                }
-            }
-            else
-            {
-                foreach (var encoding in parameters.encodings)
-                {
-                    encoding.maxBitrate = bitrate * 1000;
-                    encoding.minBitrate = bitrate * 1000;
-                }
+                encoding.minBitrate = minBitrate * 1000;
+                encoding.maxBitrate = maxBitrate * 1000;
             }
             return sender.SetParameters(parameters);
         }
@@ -111,7 +100,10 @@ namespace Unity.RenderStreaming
         private float m_frameRate = s_defaultFrameRate;
 
         [SerializeField]
-        private uint m_bitrate = s_defaultBitrate;
+        private uint m_minBitrate = s_defaultBitrate;
+
+        [SerializeField]
+        private uint m_maxBitrate = s_defaultBitrate;
 
         [SerializeField]
         private float m_scaleFactor = 1f;
@@ -127,9 +119,17 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public uint bitrate
+        public uint minBitrate
         {
-            get { return m_bitrate; }
+            get { return m_minBitrate; }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public uint maxBitrate
+        {
+            get { return m_maxBitrate; }
         }
 
         /// <summary>
@@ -194,14 +194,15 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="bitrate"></param>
-        public void SetBitrate(uint bitrate)
+        public void SetBitrate(uint minBitrate, uint maxBitrate)
         {
-            if (bitrate < 0)
-                throw new ArgumentOutOfRangeException("bitrate", frameRate, "The parameter must be greater than zero.");
-            m_bitrate = bitrate;
+            if (minBitrate > maxBitrate)
+                throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
+            m_minBitrate = minBitrate;
+            m_maxBitrate = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_bitrate);
+                RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
                 if (error.errorType == RTCErrorType.None)
                     Debug.LogError(error.message);
             }
