@@ -158,6 +158,9 @@ namespace Unity.RenderStreaming
             _signaling.OnAnswer -= OnAnswer;
             _signaling.OnIceCandidate -= OnIceCandidate;
 
+            foreach(var pair in _mapConnectionIdAndPeer)
+                pair.Value.Dispose();
+
             this._disposed = true;
             GC.SuppressFinalize(this);
         }

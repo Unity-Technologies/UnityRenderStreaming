@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -30,6 +32,17 @@ namespace Unity.RenderStreaming
         public AudioSource Source => m_source;
 
         private AudioSource m_source;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        static public IEnumerable<AudioCodecInfo> GetAvailableCodecs()
+        {
+            var excludeCodecMimeType = new[] { "audio/CN", "audio/telephone-event" };
+            var capabilities = RTCRtpReceiver.GetCapabilities(TrackKind.Audio);
+            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => new AudioCodecInfo(codec));
+        }
 
         /// <summary>
         ///

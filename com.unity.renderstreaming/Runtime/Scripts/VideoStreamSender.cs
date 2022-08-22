@@ -1,6 +1,7 @@
 using Unity.WebRTC;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Unity.RenderStreaming
@@ -8,27 +9,27 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
-    public sealed class StreamingSizeAttribute : PropertyAttribute { }
+    internal sealed class StreamingSizeAttribute : PropertyAttribute { }
 
     /// <summary>
     ///
     /// </summary>
-    public sealed class FramerateAttribute : PropertyAttribute { }
+    internal sealed class FramerateAttribute : PropertyAttribute { }
 
     /// <summary>
     ///
     /// </summary>
-    public sealed class BitrateAttribute : PropertyAttribute { }
+    internal sealed class BitrateAttribute : PropertyAttribute { }
 
     /// <summary>
     ///
     /// </summary>
-    public sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute { }
+    internal sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute { }
 
     /// <summary>
     ///
     /// </summary>
-    public sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
+    internal sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
 
     internal static class RTCRtpSenderExtension
     {
@@ -131,6 +132,9 @@ namespace Unity.RenderStreaming
             get { return m_bitrate; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public float scaleResolutionDown
         {
             get { return m_scaleFactor; }
@@ -159,13 +163,24 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
+        {
+            string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03" };
+            var capabilities = RTCRtpSender.GetCapabilities(TrackKind.Video);
+            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => VideoCodecInfo.Create(codec));
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="frameRate"></param>
         public void SetFrameRate(float frameRate)
         {
             if (frameRate < 0)
-                throw new ArgumentOutOfRangeException("framerate", frameRate, "The parameter must be greater than zero.");
+                throw new ArgumentOutOfRangeException("frameRate", frameRate, "The parameter must be greater than zero.");
             m_frameRate = frameRate;
             foreach (var transceiver in Transceivers.Values)
             {

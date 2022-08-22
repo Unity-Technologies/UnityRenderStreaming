@@ -33,8 +33,10 @@ namespace Unity.RenderStreaming
         public override Texture SendTexture => m_webCamTexture;
         public IEnumerable<string> WebCamNameList => WebCamTexture.devices.Select(x => x.name);
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             if (m_webCamTexture != null)
             {
                 m_webCamTexture.Stop();

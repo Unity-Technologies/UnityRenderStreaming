@@ -43,8 +43,10 @@ namespace Unity.RenderStreaming
             OnStoppedStream += id => connections.Remove(id);
         }
 
-        protected void OnDestroy()
+        override protected void OnDestroy()
         {
+            base.OnDestroy();
+
             if (m_sendTexture != null)
             {
                 DestroyImmediate(m_sendTexture);

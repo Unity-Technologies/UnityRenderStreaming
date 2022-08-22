@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        virtual protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             m_track?.Dispose();
             m_track = null;
