@@ -6,29 +6,14 @@ using System.Linq;
 
 namespace Unity.RenderStreaming
 {
-    /// <summary>
-    ///
-    /// </summary>
     internal sealed class StreamingSizeAttribute : PropertyAttribute { }
 
-    /// <summary>
-    ///
-    /// </summary>
-    internal sealed class FramerateAttribute : PropertyAttribute { }
+    internal sealed class FrameRateAttribute : PropertyAttribute { }
 
-    /// <summary>
-    ///
-    /// </summary>
     internal sealed class BitrateAttribute : PropertyAttribute { }
 
-    /// <summary>
-    ///
-    /// </summary>
     internal sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute { }
 
-    /// <summary>
-    ///
-    /// </summary>
     internal sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
 
     internal static class RTCRtpSenderExtension
@@ -96,7 +81,7 @@ namespace Unity.RenderStreaming
         [SerializeField, StreamingSize]
         public Vector2Int streamingSize = new Vector2Int(1280, 720);
 
-        [SerializeField]
+        [SerializeField, FrameRate]
         private float m_frameRate = s_defaultFrameRate;
 
         [SerializeField]
