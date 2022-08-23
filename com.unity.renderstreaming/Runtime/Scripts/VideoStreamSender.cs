@@ -185,7 +185,7 @@ namespace Unity.RenderStreaming
             foreach (var transceiver in Transceivers.Values)
             {
                 RTCError error = transceiver.Sender.SetFrameRate((uint)m_frameRate);
-                if (error.errorType == RTCErrorType.None)
+                if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
         }
@@ -203,7 +203,7 @@ namespace Unity.RenderStreaming
             foreach (var transceiver in Transceivers.Values)
             {
                 RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
-                if (error.errorType == RTCErrorType.None)
+                if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
         }
@@ -220,7 +220,7 @@ namespace Unity.RenderStreaming
             foreach (var transceiver in Transceivers.Values)
             {
                 RTCError error = transceiver.Sender.SetScaleResolutionDown(m_scaleFactor);
-                if (error.errorType == RTCErrorType.None)
+                if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
         }
