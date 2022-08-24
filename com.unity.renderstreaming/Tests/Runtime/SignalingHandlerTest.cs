@@ -284,7 +284,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            // Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             container2.test.component.DeleteConnection(connectionId);
 
