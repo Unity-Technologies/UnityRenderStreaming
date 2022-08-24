@@ -61,7 +61,7 @@ namespace Unity.RenderStreaming
             foreach (var transceiver in Transceivers.Values)
             {
                 RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
-                if (error.errorType == RTCErrorType.None)
+                if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
         }
