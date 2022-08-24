@@ -102,7 +102,6 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
-
                 if (lastSenderStats.Any() || lastReceiverStats.Any())
                 {
                     baseText.gameObject.SetActive(false);
@@ -122,10 +121,8 @@ namespace Unity.RenderStreaming.Samples
             {
                 if (stats is RTCInboundRTPStreamStats inboundStats)
                 {
-                    builder.AppendLine($"{nameof(RTCInboundRTPStreamStats)}");
-                    if (inboundStats.codecId != null &&
-                        report.TryGetValue(inboundStats.codecId, out var stats2) &&
-                        stats2 is RTCCodecStats codecStats)
+                    builder.AppendLine(inboundStats.Id);
+                    if (inboundStats.codecId != null && report.Get(inboundStats.codecId) is RTCCodecStats codecStats)
                     {
                         builder.AppendLine(
                             $"Codec: {codecStats.mimeType} {codecStats.sdpFmtpLine}, payloadType={codecStats.payloadType}.");
@@ -147,10 +144,8 @@ namespace Unity.RenderStreaming.Samples
                 }
                 else if (stats is RTCOutboundRTPStreamStats outboundStats)
                 {
-                    builder.AppendLine($"{nameof(RTCOutboundRTPStreamStats)}");
-                    if (outboundStats.codecId != null &&
-                        report.TryGetValue(outboundStats.codecId, out var stats4) &&
-                        stats4 is RTCCodecStats codecStats)
+                    builder.AppendLine(outboundStats.Id);
+                    if (outboundStats.codecId != null && report.Get(outboundStats.codecId) is RTCCodecStats codecStats)
                     {
                         builder.AppendLine(
                             $"Codec: {codecStats.mimeType} {codecStats.sdpFmtpLine}, payloadType={codecStats.payloadType}.");
@@ -171,6 +166,7 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
             }
+
             return builder.ToString();
         }
 
