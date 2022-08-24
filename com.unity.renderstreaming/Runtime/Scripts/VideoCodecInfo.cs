@@ -103,9 +103,16 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public VP9Profile profile
+        public VP9Profile? profile
         {
-            get { return (VP9Profile)Enum.ToObject(typeof(VP9Profile), Convert.ToInt32(parameters[KeyProfileId])); }
+            get
+            {
+                if(parameters.TryGetValue(KeyProfileId, out var value))
+                {
+                    return (VP9Profile)Enum.ToObject(typeof(VP9Profile), Convert.ToInt32(value));
+                }
+                return null;
+            }
         }
 
         internal VP9CodecInfo(RTCRtpCodecCapability caps) : base(caps)
