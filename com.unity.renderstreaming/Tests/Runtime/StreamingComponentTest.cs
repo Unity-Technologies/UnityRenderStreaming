@@ -113,6 +113,41 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    class VideoStreamReceiverTest
+    {
+        [Test]
+        public void GetAvailableCodec()
+        {
+            IEnumerable<VideoCodecInfo> codecs = VideoStreamReceiver.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+            Assert.That(codecs.Any(codec => codec.name == "VP8"));
+            Assert.That(codecs.Any(codec => codec.name == "VP9"));
+            Assert.That(codecs.Any(codec => codec.name == "AV1X"));
+
+            foreach (var codec in codecs)
+            {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+                Assert.That(codec.CodecImplementation, Is.Not.Empty);
+
+                switch (codec)
+                {
+                    case VP9CodecInfo vp9codec:
+                        Assert.That(vp9codec.name, Is.EqualTo("VP9"));
+                        Assert.That(vp9codec.profile, Is.Not.Zero);
+                        break;
+                    case H264CodecInfo h264codec:
+                        Assert.That(h264codec.name, Is.EqualTo("H264"));
+                        Assert.That(h264codec.level, Is.GreaterThan(0));
+                        Assert.That(h264codec.profile, Is.Not.Zero);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     class AudioStreamSenderTest
     {
         [Test]
