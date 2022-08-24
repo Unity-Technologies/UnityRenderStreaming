@@ -13,27 +13,30 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             IEnumerable<VideoCodecInfo> codecs = VideoStreamSender.GetAvailableCodecs();
             Assert.That(codecs, Is.Not.Empty);
-            foreach (var codec in codecs)
-            {
-                Assert.That(codec.name, Is.Not.Empty);
-                Assert.That(codec.mimeType, Is.Not.Empty);
-            }
             Assert.That(codecs.Any(codec => codec.name == "VP8"));
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
             Assert.That(codecs.Any(codec => codec.name == "AV1X"));
 
-            var codec1 = codecs.First(codec => codec.name == "VP9");
-            Assert.That(codec1, Is.TypeOf<VP9CodecInfo>());
-            VP9CodecInfo vp9Codec = codec1 as VP9CodecInfo;
-            Assert.That(vp9Codec.profile, Is.Not.Zero);
-
-            var codec2 = codecs.FirstOrDefault(codec => codec.name == "H264");
-            if(codec2 != null)
+            foreach(var codec in codecs)
             {
-                Assert.That(codec2, Is.TypeOf<H264CodecInfo>());
-                H264CodecInfo h264Codec = codec2 as H264CodecInfo;
-                Assert.That(h264Codec.level, Is.GreaterThan(0));
-                Assert.That(h264Codec.profile, Is.Not.Zero);
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+                Assert.That(codec.CodecImplementation, Is.Not.Empty);
+
+                switch (codec)
+                {
+                    case VP9CodecInfo vp9codec:
+                        Assert.That(vp9codec.name, Is.EqualTo("VP9"));
+                        Assert.That(vp9codec.profile, Is.Not.Zero);
+                        break;
+                    case H264CodecInfo h264codec:
+                        Assert.That(h264codec.name, Is.EqualTo("H264"));
+                        Assert.That(h264codec.level, Is.GreaterThan(0));
+                        Assert.That(h264codec.profile, Is.Not.Zero);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -110,6 +113,41 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
+    class VideoStreamReceiverTest
+    {
+        [Test]
+        public void GetAvailableCodec()
+        {
+            IEnumerable<VideoCodecInfo> codecs = VideoStreamReceiver.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+            Assert.That(codecs.Any(codec => codec.name == "VP8"));
+            Assert.That(codecs.Any(codec => codec.name == "VP9"));
+            Assert.That(codecs.Any(codec => codec.name == "AV1X"));
+
+            foreach (var codec in codecs)
+            {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+                Assert.That(codec.CodecImplementation, Is.Not.Empty);
+
+                switch (codec)
+                {
+                    case VP9CodecInfo vp9codec:
+                        Assert.That(vp9codec.name, Is.EqualTo("VP9"));
+                        Assert.That(vp9codec.profile, Is.Not.Zero);
+                        break;
+                    case H264CodecInfo h264codec:
+                        Assert.That(h264codec.name, Is.EqualTo("H264"));
+                        Assert.That(h264codec.level, Is.GreaterThan(0));
+                        Assert.That(h264codec.profile, Is.Not.Zero);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     class AudioStreamSenderTest
     {
         [Test]
@@ -155,6 +193,22 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
 
         }
+    }
 
+    class AudioStreamReceiverTest
+    {
+        [Test]
+        public void GetAvailableCodec()
+        {
+            IEnumerable<AudioCodecInfo> codecs = AudioStreamReceiver.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+            foreach (var codec in codecs)
+            {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+                Assert.That(codec.channelCount, Is.GreaterThan(0));
+                Assert.That(codec.sampleRate, Is.GreaterThan(0));
+            }
+        }
     }
 }
