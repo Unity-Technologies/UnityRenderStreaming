@@ -26,7 +26,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class StreamSourceTest : StreamSenderBase
+    class VideoStreamSenderTester : VideoStreamSender
     {
         private Camera m_camera;
 
@@ -37,12 +37,12 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class VideoStreamReceiverTest : StreamReceiverBase
+    class VideoStreamReceiverTester : StreamReceiverBase
     {
         public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
-    class AudioStreamSourceTest : StreamSenderBase
+    class AudioStreamSenderTester : AudioStreamSender
     {
         private AudioSource m_audioSource;
 
@@ -54,7 +54,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class AudioStreamReceiverTest : StreamReceiverBase
+    class AudioStreamReceiverTester : StreamReceiverBase
     {
         public override TrackKind Kind { get { return TrackKind.Audio; } }
     }
@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void AddStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
-            var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
@@ -176,7 +176,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<AudioStreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<AudioStreamSenderTester>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
@@ -184,7 +184,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<AudioStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<AudioStreamReceiverTester>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
@@ -232,7 +232,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
@@ -243,7 +243,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             container1.test.component.AddComponent(streamer);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedStream2 = false;
             bool isStoppedStream2 = false;
 
@@ -316,7 +316,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
-            var streamer = container.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
@@ -393,7 +393,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedStream0 = false;
             bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
@@ -406,7 +406,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
@@ -517,22 +517,22 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
             // prepare caller
-            var videoStreamer1 = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var videoStreamer1 = container1.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedVideoSourceStream1 = false;
             bool isStoppedVideoSourceStream1 = false;
             videoStreamer1.OnStartedStream += _ => isStartedVideoSourceStream1 = true;
             videoStreamer1.OnStoppedStream += _ => isStoppedVideoSourceStream1 = true;
-            var audioStreamer1 = container1.test.gameObject.AddComponent<AudioStreamSourceTest>();
+            var audioStreamer1 = container1.test.gameObject.AddComponent<AudioStreamSenderTester>();
             bool isStartedAudioSourceStream1 = false;
             bool isStoppedAudioSourceStream1 = false;
             audioStreamer1.OnStartedStream += _ => isStartedAudioSourceStream1 = true;
             audioStreamer1.OnStoppedStream += _ => isStoppedAudioSourceStream1 = true;
-            var videoReceiver1 = container1.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var videoReceiver1 = container1.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedVideoReceiveStream1 = false;
             bool isStoppedVideoReceiveStream1 = false;
             videoReceiver1.OnStartedStream += _ => isStartedVideoReceiveStream1 = true;
             videoReceiver1.OnStoppedStream += _ => isStoppedVideoReceiveStream1 = true;
-            var audioReceiver1 = container1.test.gameObject.AddComponent<AudioStreamReceiverTest>();
+            var audioReceiver1 = container1.test.gameObject.AddComponent<AudioStreamReceiverTester>();
             bool isStartedAudioReceiveStream1 = false;
             bool isStoppedAudioReceiveStream1 = false;
             audioReceiver1.OnStartedStream += _ => isStartedAudioReceiveStream1 = true;
@@ -544,22 +544,22 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.AddComponent(audioReceiver1);
 
             // prepare callee
-            var videoStreamer2 = container2.test.gameObject.AddComponent<StreamSourceTest>();
+            var videoStreamer2 = container2.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedVideoSourceStream2 = false;
             bool isStoppedVideoSourceStream2 = false;
             videoStreamer2.OnStartedStream += _ => isStartedVideoSourceStream2 = true;
             videoStreamer2.OnStoppedStream += _ => isStoppedVideoSourceStream2 = true;
-            var audioStreamer2 = container2.test.gameObject.AddComponent<AudioStreamSourceTest>();
+            var audioStreamer2 = container2.test.gameObject.AddComponent<AudioStreamSenderTester>();
             bool isStartedAudioSourceStream2 = false;
             bool isStoppedAudioSourceStream2 = false;
             audioStreamer2.OnStartedStream += _ => isStartedAudioSourceStream2 = true;
             audioStreamer2.OnStoppedStream += _ => isStoppedAudioSourceStream2 = true;
-            var videoReceiver2 = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var videoReceiver2 = container2.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedVideoReceiveStream2 = false;
             bool isStoppedVideoReceiveStream2 = false;
             videoReceiver2.OnStartedStream += _ => isStartedVideoReceiveStream2 = true;
             videoReceiver2.OnStoppedStream += _ => isStoppedVideoReceiveStream2 = true;
-            var audioReceiver2 = container2.test.gameObject.AddComponent<AudioStreamReceiverTest>();
+            var audioReceiver2 = container2.test.gameObject.AddComponent<AudioStreamReceiverTester>();
             bool isStartedAudioReceiveStream2 = false;
             bool isStoppedAudioReceiveStream2 = false;
             audioReceiver2.OnStartedStream += _ => isStartedAudioReceiveStream2 = true;
@@ -627,7 +627,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedStream0 = false;
             bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
@@ -643,7 +643,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
@@ -732,7 +732,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
             var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
 
-            var streamer = container1.test.gameObject.AddComponent<StreamSourceTest>();
+            var streamer = container1.test.gameObject.AddComponent<VideoStreamSenderTester>();
             bool isStartedStream0 = false;
             bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
@@ -745,7 +745,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 
-            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTest>();
+            var receiver = container2.test.gameObject.AddComponent<VideoStreamReceiverTester>();
             bool isStartedStream1 = false;
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;

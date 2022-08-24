@@ -193,6 +193,22 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
 
         }
+    }
 
+    class AudioStreamReceiverTest
+    {
+        [Test]
+        public void GetAvailableCodec()
+        {
+            IEnumerable<AudioCodecInfo> codecs = AudioStreamReceiver.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+            foreach (var codec in codecs)
+            {
+                Assert.That(codec.name, Is.Not.Empty);
+                Assert.That(codec.mimeType, Is.Not.Empty);
+                Assert.That(codec.channelCount, Is.GreaterThan(0));
+                Assert.That(codec.sampleRate, Is.GreaterThan(0));
+            }
+        }
     }
 }
