@@ -52,12 +52,20 @@ namespace Unity.RenderStreaming
             /// therefore the package initialization must be completed just after launching Editor.
             /// In the future, we will remove this workaround after improving the initialization of the
             /// WebRTC package.
-            if (Application.isBatchMode)
-                return;
+            if(!IsYamato)
+            {
+                if (Application.isBatchMode)
+                    return;
+            }
             RenderStreamingInternal.DomainUnload();
             RenderStreamingInternal.DomainLoad();
             EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
         }
+
+        /// <summary>
+        /// Executed from the auto testing environment or not.
+        /// </summary>
+        static bool IsYamato => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("YAMATO_JOB_ID"));
 #else
         [RuntimeInitializeOnLoadMethod]
         static void InitializeOnRuntime()
