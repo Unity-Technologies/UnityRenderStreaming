@@ -12,6 +12,12 @@ namespace Unity.RenderStreaming.Samples
         private List<string> connectionIds = new List<string>();
         private List<Component> streams = new List<Component>();
         private Dictionary<string, GameObject> dictObj = new Dictionary<string, GameObject>();
+        private ShowStatsUI statsUI;
+
+        public void SetStatsUI(ShowStatsUI statsUI)
+        {
+            this.statsUI = statsUI;
+        }
 
         public void OnDeletedConnection(SignalingEventData eventData)
         {
@@ -67,6 +73,11 @@ namespace Unity.RenderStreaming.Samples
                     videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
                 }
                 videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
+            }
+
+            if (sender is StreamSenderBase senderBase)
+            {
+                statsUI.AddSenderBase(senderBase);
             }
 
             var inputChannel = newObj.GetComponentInChildren<InputReceiver>();

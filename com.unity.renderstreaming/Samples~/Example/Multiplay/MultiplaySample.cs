@@ -18,6 +18,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
+        [SerializeField] ShowStatsUI statsUI;
 
         enum Role
         {
@@ -68,6 +69,7 @@ namespace Unity.RenderStreaming.Samples
 
             var instance = GameObject.Instantiate(prefabHost);
             var handler = instance.GetComponent<Multiplay>();
+            handler.SetStatsUI(statsUI);
 
             // host player
             var hostPlayer = GameObject.Instantiate(prefabPlayer);
@@ -99,6 +101,7 @@ namespace Unity.RenderStreaming.Samples
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
             receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
+            statsUI.AddReceiverBase(receiveVideoViewer);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
