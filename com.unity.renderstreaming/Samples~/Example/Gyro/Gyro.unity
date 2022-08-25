@@ -1843,6 +1843,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
+        type: 3}
+      propertyPath: senderBaseList.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
+        type: 3}
+      propertyPath: receiverBaseList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
+        type: 3}
+      propertyPath: receiverBaseList.Array.data[0]
+      value: 
+      objectReference: {fileID: 1915034401}
     - target: {fileID: 4584148620787798253, guid: 562feaa3a43a01841a00c6ac89b133fb,
         type: 3}
       propertyPath: m_Name
