@@ -251,7 +251,7 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Codec: {codecStats.mimeType}");
                         if (!string.IsNullOrEmpty(codecStats.sdpFmtpLine))
                         {
-                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(";"))
+                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(';'))
                             {
                                 builder.AppendLine($" - {fmtp}");
                             }
@@ -296,7 +296,7 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Codec: {codecStats.mimeType}");
                         if (!string.IsNullOrEmpty(codecStats.sdpFmtpLine))
                         {
-                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(";"))
+                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(';'))
                             {
                                 builder.AppendLine($" - {fmtp}");
                             }
