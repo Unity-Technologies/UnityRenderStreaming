@@ -6,6 +6,20 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
+    internal static class RTCRtpTransceiverExtension
+    {
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, VideoCodecInfo[] codecs)
+        {
+            var caps = codecs?.Select(codec => codec.capability).ToArray();
+            return transceiver.SetCodecPreferences(caps);
+        }
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, AudioCodecInfo[] codecs)
+        {
+            var caps = codecs.Select(codec => codec.capability).ToArray();
+            return transceiver.SetCodecPreferences(caps);
+        }
+    }
+
     /// <summary>
     ///
     /// </summary>
@@ -109,9 +123,7 @@ namespace Unity.RenderStreaming
             if (sender is VideoStreamSender videoStreamSender)
             {
                 if (videoStreamSender.codec == null)
-                {
-                    return VideoStreamSender.GetAvailableCodecs().ToArray();
-                }
+                    return new VideoCodecInfo[] { };
                 return new VideoCodecInfo[] { videoStreamSender.codec };
             }
             throw new ArgumentException("sender is not for video streaming.", "sender");
@@ -122,9 +134,7 @@ namespace Unity.RenderStreaming
             if (sender is AudioStreamSender audioStreamSender)
             {
                 if (audioStreamSender.codec == null)
-                {
-                    return AudioStreamSender.GetAvailableCodecs().ToArray();
-                }
+                    return new AudioCodecInfo[] { };
                 return new AudioCodecInfo[] { audioStreamSender.codec };
             }
             throw new ArgumentException("sender is not for audio streaming.", "sender");
@@ -135,9 +145,7 @@ namespace Unity.RenderStreaming
             if (receiver is VideoStreamReceiver videoStreamReceiver)
             {
                 if (videoStreamReceiver.codec == null)
-                {
-                    return VideoStreamReceiver.GetAvailableCodecs().ToArray();
-                }
+                    return new VideoCodecInfo[] { };
                 return new VideoCodecInfo[] { videoStreamReceiver.codec };
             }
             throw new ArgumentException("receiver is not for video streaming.", "receiver");
@@ -148,9 +156,7 @@ namespace Unity.RenderStreaming
             if (receiver is AudioStreamReceiver audioStreamReceiver)
             {
                 if (audioStreamReceiver.codec == null)
-                {
-                    return AudioStreamReceiver.GetAvailableCodecs().ToArray();
-                }
+                    return new AudioCodecInfo[] { };
                 return new AudioCodecInfo[] { audioStreamReceiver.codec };
             }
             throw new ArgumentException("receiver is not for audio streaming.", "receiver");

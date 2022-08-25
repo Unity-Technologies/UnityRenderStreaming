@@ -57,22 +57,6 @@ namespace Unity.RenderStreaming
         }
     }
 
-    internal static class RTCRtpTransceiverExtension
-    {
-        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, VideoCodecInfo[] codecs)
-        {
-            if (codecs == null || !codecs.Any())
-                throw new ArgumentNullException("codecs", "codecs is null or empty");
-            return transceiver.SetCodecPreferences(codecs.Select(codec => codec.capability).ToArray());
-        }
-        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, AudioCodecInfo[] codecs)
-        {
-            if (codecs == null || !codecs.Any())
-                throw new ArgumentNullException("codecs", "codecs is null or empty");
-            return transceiver.SetCodecPreferences(codecs.Select(codec => codec.capability).ToArray());
-        }
-    }
-
     /// <summary>
     ///
     /// </summary>
