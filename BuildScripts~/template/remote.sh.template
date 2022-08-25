@@ -4,6 +4,7 @@
 # python version is random on each VM
 export PATH=$PATH:/usr/local/bin:/Users/bokken/Library/Python/3.7/bin:/Users/bokken/Library/Python/3.8/bin
 export ARTIFACT_DIR=${PWD}/test-results
+export YAMATO_JOB_ID=${YAMATO_JOB_ID}
 
 # TEST_TARGET = `ios` or `macos`
 # TEST_PLATFORM = `editmode` or `playmode` or `standalone`
