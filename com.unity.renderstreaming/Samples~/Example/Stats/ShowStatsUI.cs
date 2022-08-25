@@ -15,8 +15,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private GameObject scrollView;
         [SerializeField] private RectTransform displayParent;
         [SerializeField] private Text baseText;
-        [SerializeField] private List<StreamSenderBase> senderBaseList;
-        [SerializeField] private List<StreamReceiverBase> receiverBaseList;
+        [SerializeField] private List<SignalingHandlerBase> signalingHandlerBase;
 
         private Dictionary<string, HashSet<RTCRtpSender>> activeSenderList =
             new Dictionary<string, HashSet<RTCRtpSender>>();
@@ -29,29 +28,34 @@ namespace Unity.RenderStreaming.Samples
 
         private void Awake()
         {
-            showStatsButton.onClick.AddListener(() =>
-            {
-                scrollView.gameObject.SetActive(true);
-                hideStatsButton.gameObject.SetActive(true);
-                showStatsButton.gameObject.SetActive(false);
-            });
+            showStatsButton.onClick.AddListener(ShowStats);
+            hideStatsButton.onClick.AddListener(HideStats);
 
-            hideStatsButton.onClick.AddListener(() =>
+            foreach (var streamBase in signalingHandlerBase.SelectMany(x => x.Streams))
             {
-                scrollView.gameObject.SetActive(false);
-                showStatsButton.gameObject.SetActive(true);
-                hideStatsButton.gameObject.SetActive(false);
-            });
-
-            foreach (var senderBase in senderBaseList)
-            {
-                SetUpSenderBase(senderBase);
+                if (streamBase is StreamSenderBase senderBase)
+                {
+                    SetUpSenderBase(senderBase);
+                }
+                if (streamBase is StreamReceiverBase receiverBase)
+                {
+                    SetUpReceiverBase(receiverBase);
+                }
             }
+        }
 
-            foreach (var receiverBase in receiverBaseList)
-            {
-                SetUpReceiverBase(receiverBase);
-            }
+        public void ShowStats()
+        {
+            scrollView.gameObject.SetActive(true);
+            hideStatsButton.gameObject.SetActive(true);
+            showStatsButton.gameObject.SetActive(false);
+        }
+
+        public void HideStats()
+        {
+            scrollView.gameObject.SetActive(false);
+            showStatsButton.gameObject.SetActive(true);
+            hideStatsButton.gameObject.SetActive(false);
         }
 
         private void SetUpSenderBase(StreamSenderBase senderBase)
@@ -283,28 +287,6 @@ namespace Unity.RenderStreaming.Samples
             }
 
             return builder.ToString();
-        }
-
-        public void AddSenderBase(StreamSenderBase sender)
-        {
-            if (senderBaseList.Contains(sender))
-            {
-                return;
-            }
-
-            senderBaseList.Add(sender);
-            SetUpSenderBase(sender);
-        }
-
-        public void AddReceiverBase(StreamReceiverBase receiver)
-        {
-            if (receiverBaseList.Contains(receiver))
-            {
-                return;
-            }
-
-            receiverBaseList.Add(receiver);
-            SetUpReceiverBase(receiver);
         }
     }
 }
