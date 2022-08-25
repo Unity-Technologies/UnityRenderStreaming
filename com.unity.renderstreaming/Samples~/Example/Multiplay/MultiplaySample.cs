@@ -69,7 +69,6 @@ namespace Unity.RenderStreaming.Samples
 
             var instance = GameObject.Instantiate(prefabHost);
             var handler = instance.GetComponent<Multiplay>();
-            handler.SetStatsUI(statsUI);
 
             // host player
             var hostPlayer = GameObject.Instantiate(prefabPlayer);
@@ -79,6 +78,7 @@ namespace Unity.RenderStreaming.Samples
             playerInput.PerformPairingWithAllLocalDevices();
             playerController.CheckPairedDevices();
 
+            statsUI.AddSignalingHandler(handler);
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
@@ -89,6 +89,7 @@ namespace Unity.RenderStreaming.Samples
             var guestPlayer = GameObject.Instantiate(prefabGuest);
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
+            statsUI.AddSignalingHandler(handler);
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
