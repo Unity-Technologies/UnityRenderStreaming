@@ -1,5 +1,6 @@
 import { SendVideo } from "./sendvideo.js";
 import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
 
 const defaultStreamWidth = 1280;
 const defaultStreamHeight = 720;
@@ -203,6 +204,8 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+let lastStats;
+
 function showStatsMessage() {
   setInterval(async () => {
     if (localVideo.videoWidth) {
@@ -221,21 +224,11 @@ function showStatsMessage() {
       return;
     }
 
-    let message = "";
-    stats.forEach(stat => {
-      if (stat.type === 'inbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
-        const codec = stats.get(stat.codecId);
-        message += `Using for receive video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation} \n`;
-      }
-      if (stat.type === 'outbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
-        const codec = stats.get(stat.codecId);
-        message += `Using for send video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Encoder: ${stat.encoderImplementation} \n`;
-      }
-    });
-
-    if (message != "") {
+    const array = createDisplayStringArray(stats, lastStats);
+    if (array.length) {
       messageDiv.style.display = 'block';
-      messageDiv.innerText = message;
+      messageDiv.innerHTML = array.join('<br>');
     }
+    lastStats = stats;
   }, 1000);
 }

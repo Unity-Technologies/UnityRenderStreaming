@@ -1,5 +1,6 @@
 import { Receiver } from "./receiver.js";
 import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
 
 setup();
 
@@ -215,6 +216,8 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+let lastStats;
+
 function showStatsMessage() {
   setInterval(async () => {
     if (receiver == null) {
@@ -225,13 +228,12 @@ function showStatsMessage() {
     if (stats == null) {
       return;
     }
-    stats.forEach(stat => {
-      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video') || stat.codecId === undefined) {
-        return;
-      }
-      const codec = stats.get(stat.codecId);
+
+    const array = createDisplayStringArray(stats, lastStats);
+    if (array.length) {
       messageDiv.style.display = 'block';
-      messageDiv.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
-    });
+      messageDiv.innerHTML = array.join('<br>');
+    }
+    lastStats = stats;
   }, 1000);
 }
