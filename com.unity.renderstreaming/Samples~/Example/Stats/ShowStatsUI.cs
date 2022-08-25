@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,8 +142,7 @@ namespace Unity.RenderStreaming.Samples
                     var report = op.Value;
                     if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
                     {
-                        var displayString = CreateDisplayString(report, statsDisplay.lastReport);
-                        statsDisplay.display.text = displayString;
+                        statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
                         statsDisplay.lastReport = report;
                     }
                     else
@@ -167,8 +167,7 @@ namespace Unity.RenderStreaming.Samples
                     var report = op.Value;
                     if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
                     {
-                        var displayString = CreateDisplayString(report, statsDisplay.lastReport);
-                        statsDisplay.display.text = displayString;
+                        statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
                         statsDisplay.lastReport = report;
                     }
                     else
@@ -180,18 +179,8 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
-                if (lastSenderStats.Any() || lastReceiverStats.Any())
-                {
-                    baseText.gameObject.SetActive(false);
-                    // Correct scroll view contents height
-                    var size = displayParent.sizeDelta;
-                    size.y = baseText.GetComponent<RectTransform>().sizeDelta.y * (displayParent.childCount - 1) + 100;
-                    displayParent.sizeDelta = size;
-                }
-                else
-                {
-                    baseText.gameObject.SetActive(true);
-                }
+                var noStatsData = !lastSenderStats.Any() && !lastReceiverStats.Any();
+                baseText.gameObject.SetActive(noStatsData);
             }
         }
 
@@ -203,16 +192,34 @@ namespace Unity.RenderStreaming.Samples
             {
                 if (stats is RTCInboundRTPStreamStats inboundStats)
                 {
-                    builder.AppendLine(inboundStats.Id);
+                    builder.AppendLine($"{inboundStats.kind} receiving stream stats");
                     if (inboundStats.codecId != null && report.Get(inboundStats.codecId) is RTCCodecStats codecStats)
                     {
-                        builder.AppendLine(
-                            $"Codec: {codecStats.mimeType} {codecStats.sdpFmtpLine}, payloadType={codecStats.payloadType}.");
+                        builder.AppendLine($"Codec: {codecStats.mimeType}");
+                        if (!string.IsNullOrEmpty(codecStats.sdpFmtpLine))
+                        {
+                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(";"))
+                            {
+                                builder.AppendLine($" - {fmtp}");
+                            }
+                        }
+                        if (codecStats.payloadType > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.payloadType)}={codecStats.payloadType}");
+                        }
+                        if (codecStats.clockRate > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.clockRate)}={codecStats.clockRate}");
+                        }
+                        if (codecStats.channels > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.channels)}={codecStats.channels}");
+                        }
                     }
 
                     if (inboundStats.kind == "video")
                     {
-                        builder.AppendLine($"Decoder: {inboundStats.decoderImplementation}.");
+                        builder.AppendLine($"Decoder: {inboundStats.decoderImplementation}");
                         builder.AppendLine($"Resolution: {inboundStats.frameWidth}x{inboundStats.frameHeight}");
                         builder.AppendLine($"Framerate: {inboundStats.framesPerSecond}");
                     }
@@ -227,16 +234,34 @@ namespace Unity.RenderStreaming.Samples
                 }
                 else if (stats is RTCOutboundRTPStreamStats outboundStats)
                 {
-                    builder.AppendLine(outboundStats.Id);
+                    builder.AppendLine($"{outboundStats.kind} sending stream stats");
                     if (outboundStats.codecId != null && report.Get(outboundStats.codecId) is RTCCodecStats codecStats)
                     {
-                        builder.AppendLine(
-                            $"Codec: {codecStats.mimeType} {codecStats.sdpFmtpLine}, payloadType={codecStats.payloadType}.");
+                        builder.AppendLine($"Codec: {codecStats.mimeType}");
+                        if (!string.IsNullOrEmpty(codecStats.sdpFmtpLine))
+                        {
+                            foreach (var fmtp in codecStats.sdpFmtpLine.Split(";"))
+                            {
+                                builder.AppendLine($" - {fmtp}");
+                            }
+                        }
+                        if (codecStats.payloadType > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.payloadType)}={codecStats.payloadType}");
+                        }
+                        if (codecStats.clockRate > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.clockRate)}={codecStats.clockRate}");
+                        }
+                        if (codecStats.channels > 0)
+                        {
+                            builder.AppendLine($" - {nameof(codecStats.channels)}={codecStats.channels}");
+                        }
                     }
 
                     if (outboundStats.kind == "video")
                     {
-                        builder.AppendLine($"Encoder: {outboundStats.encoderImplementation}.");
+                        builder.AppendLine($"Encoder: {outboundStats.encoderImplementation}");
                         builder.AppendLine($"Resolution: {outboundStats.frameWidth}x{outboundStats.frameHeight}");
                         builder.AppendLine($"Framerate: {outboundStats.framesPerSecond}");
                     }
