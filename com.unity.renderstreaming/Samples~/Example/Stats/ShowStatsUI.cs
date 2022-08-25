@@ -56,7 +56,8 @@ namespace Unity.RenderStreaming.Samples
             {
                 yield return waitSec;
 
-                foreach (var transceiver in senderBaseList.SelectMany(x => x.Transceivers.Values))
+                foreach (var transceiver in senderBaseList.SelectMany(x => x.Transceivers.Values)
+                             .Where(x => x != null && x.Sender != null))
                 {
                     var op = transceiver.Sender.GetStats();
                     yield return op;
@@ -81,10 +82,16 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
-                foreach (var transceiver in receiverBaseList.Select(x => x.Transceiver))
+                foreach (var transceiver in receiverBaseList.Select(x => x.Transceiver)
+                             .Where(x => x != null && x.Receiver != null))
                 {
                     var op = transceiver.Receiver.GetStats();
                     yield return op;
+
+                    if (op.IsError)
+                    {
+                        continue;
+                    }
 
                     var report = op.Value;
                     if (lastReceiverStats.TryGetValue(transceiver.Receiver, out var statsDisplay))
@@ -135,7 +142,7 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Framerate: {inboundStats.framesPerSecond}");
                     }
 
-                    if (lastReport.Get(inboundStats.Id) is RTCInboundRTPStreamStats lastInboundStats)
+                    if (lastReport.TryGetValue(inboundStats.Id, out var lastStats) && lastStats is RTCInboundRTPStreamStats lastInboundStats)
                     {
                         var duration = (double)(inboundStats.Timestamp - lastInboundStats.Timestamp) / 1000000;
                         var bitrate = (ulong)(8 * (inboundStats.bytesReceived - lastInboundStats.bytesReceived) / duration);
@@ -158,10 +165,10 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Framerate: {outboundStats.framesPerSecond}");
                     }
 
-                    if (lastReport.Get(outboundStats.Id) is RTCOutboundRTPStreamStats lastOutBoundStats)
+                    if (lastReport.TryGetValue(outboundStats.Id, out var lastStats) && lastStats is RTCOutboundRTPStreamStats lastOutboundStats)
                     {
-                        var duration = (double)(outboundStats.Timestamp - lastOutBoundStats.Timestamp) / 1000000;
-                        var bitrate = (ulong)(8 * (outboundStats.bytesSent - lastOutBoundStats.bytesSent) / duration);
+                        var duration = (double)(outboundStats.Timestamp - lastOutboundStats.Timestamp) / 1000000;
+                        var bitrate = (ulong)(8 * (outboundStats.bytesSent - lastOutboundStats.bytesSent) / duration);
                         builder.AppendLine($"Bitrate: {bitrate}");
                     }
                 }
