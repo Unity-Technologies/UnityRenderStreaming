@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,102 +16,40 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private GameObject scrollView;
         [SerializeField] private RectTransform displayParent;
         [SerializeField] private Text baseText;
-        [SerializeField] private List<SignalingHandlerBase> signalingHandlerBase;
+        [SerializeField] private List<SignalingHandlerBase> signalingHandlerList;
 
         private Dictionary<string, HashSet<RTCRtpSender>> activeSenderList =
             new Dictionary<string, HashSet<RTCRtpSender>>();
-        private Dictionary<string, HashSet<RTCRtpReceiver>> activeReceiverList =
-            new Dictionary<string, HashSet<RTCRtpReceiver>>();
+
+        private Dictionary<StreamReceiverBase, HashSet<RTCRtpReceiver>> activeReceiverList =
+            new Dictionary<StreamReceiverBase, HashSet<RTCRtpReceiver>>();
+
         private Dictionary<RTCRtpSender, StatsDisplay> lastSenderStats =
             new Dictionary<RTCRtpSender, StatsDisplay>();
+
         private Dictionary<RTCRtpReceiver, StatsDisplay> lastReceiverStats =
             new Dictionary<RTCRtpReceiver, StatsDisplay>();
+
+        private HashSet<StreamSenderBase> alreadySetupSenderList = new HashSet<StreamSenderBase>();
 
         private void Awake()
         {
             showStatsButton.onClick.AddListener(ShowStats);
             hideStatsButton.onClick.AddListener(HideStats);
-
-            foreach (var streamBase in signalingHandlerBase.SelectMany(x => x.Streams))
-            {
-                if (streamBase is StreamSenderBase senderBase)
-                {
-                    SetUpSenderBase(senderBase);
-                }
-                if (streamBase is StreamReceiverBase receiverBase)
-                {
-                    SetUpReceiverBase(receiverBase);
-                }
-            }
         }
 
-        public void ShowStats()
+        private void ShowStats()
         {
             scrollView.gameObject.SetActive(true);
             hideStatsButton.gameObject.SetActive(true);
             showStatsButton.gameObject.SetActive(false);
         }
 
-        public void HideStats()
+        private void HideStats()
         {
             scrollView.gameObject.SetActive(false);
             showStatsButton.gameObject.SetActive(true);
             hideStatsButton.gameObject.SetActive(false);
-        }
-
-        private void SetUpSenderBase(StreamSenderBase senderBase)
-        {
-            senderBase.OnStartedStream += id =>
-            {
-                if (senderBase.Transceivers.TryGetValue(id, out var transceiver))
-                {
-                    if (!activeSenderList.ContainsKey(id))
-                    {
-                        activeSenderList[id] = new HashSet<RTCRtpSender>();
-                    }
-
-                    activeSenderList[id].Add(transceiver.Sender);
-                }
-            };
-            senderBase.OnStoppedStream += id =>
-            {
-                if (activeSenderList.TryGetValue(id, out var hashSet))
-                {
-                    foreach (var sender in hashSet)
-                    {
-                        DestroyImmediate(lastSenderStats[sender].display.gameObject);
-                        lastSenderStats.Remove(sender);
-                    }
-                }
-
-                activeSenderList.Remove(id);
-            };
-        }
-
-        private void SetUpReceiverBase(StreamReceiverBase receiverBase)
-        {
-            receiverBase.OnStartedStream += id =>
-            {
-                if (!activeReceiverList.ContainsKey(id))
-                {
-                    activeReceiverList[id] = new HashSet<RTCRtpReceiver>();
-                }
-
-                activeReceiverList[id].Add(receiverBase.Transceiver.Receiver);
-            };
-            receiverBase.OnStoppedStream += id =>
-            {
-                if (activeReceiverList.TryGetValue(id, out var hashSet))
-                {
-                    foreach (var receiver in hashSet)
-                    {
-                        DestroyImmediate(lastReceiverStats[receiver].display.gameObject);
-                        lastReceiverStats.Remove(receiver);
-                    }
-                }
-
-                activeReceiverList.Remove(id);
-            };
         }
 
         private void Start()
@@ -124,6 +63,17 @@ namespace Unity.RenderStreaming.Samples
             lastReceiverStats.Clear();
             activeSenderList.Clear();
             activeReceiverList.Clear();
+            alreadySetupSenderList.Clear();
+        }
+
+        public void AddSignalingHandler(SignalingHandlerBase handlerBase)
+        {
+            if (signalingHandlerList.Contains(handlerBase))
+            {
+                return;
+            }
+
+            signalingHandlerList.Add(handlerBase);
         }
 
         class StatsDisplay
@@ -139,6 +89,19 @@ namespace Unity.RenderStreaming.Samples
             while (true)
             {
                 yield return waitSec;
+
+                foreach (var streamBase in signalingHandlerList.SelectMany(x => x.Streams))
+                {
+                    if (streamBase is StreamSenderBase senderBase)
+                    {
+                        SetUpSenderBase(senderBase);
+                    }
+
+                    if (streamBase is StreamReceiverBase receiverBase)
+                    {
+                        SetUpReceiverBase(receiverBase);
+                    }
+                }
 
                 foreach (var sender in activeSenderList.Values.SelectMany(x => x))
                 {
@@ -194,6 +157,86 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
+        private void SetUpSenderBase(StreamSenderBase senderBase)
+        {
+            if (alreadySetupSenderList.Contains(senderBase))
+            {
+                return;
+            }
+
+            senderBase.OnStartedStream += id =>
+            {
+                if (!activeSenderList.ContainsKey(id))
+                {
+                    activeSenderList[id] = new HashSet<RTCRtpSender>();
+                }
+
+                if (senderBase.Transceivers.TryGetValue(id, out var transceiver))
+                {
+                    activeSenderList[id].Add(transceiver.Sender);
+                }
+            };
+            senderBase.OnStoppedStream += id =>
+            {
+                if (activeSenderList.TryGetValue(id, out var hashSet))
+                {
+                    foreach (var sender in hashSet)
+                    {
+                        DestroyImmediate(lastSenderStats[sender].display.gameObject);
+                        lastSenderStats.Remove(sender);
+                    }
+                }
+
+                activeSenderList.Remove(id);
+            };
+
+            foreach (var pair in senderBase.Transceivers)
+            {
+                if (!activeSenderList.ContainsKey(pair.Key))
+                {
+                    activeSenderList[pair.Key] = new HashSet<RTCRtpSender>();
+                }
+
+                activeSenderList[pair.Key].Add(pair.Value.Sender);
+            }
+
+            alreadySetupSenderList.Add(senderBase);
+        }
+
+        private void SetUpReceiverBase(StreamReceiverBase receiverBase)
+        {
+            if (activeReceiverList.ContainsKey(receiverBase))
+            {
+                return;
+            }
+
+            activeReceiverList[receiverBase] = new HashSet<RTCRtpReceiver>();
+
+            receiverBase.OnStartedStream += id =>
+            {
+                activeReceiverList[receiverBase].Add(receiverBase.Transceiver.Receiver);
+            };
+            receiverBase.OnStoppedStream += id =>
+            {
+                if (activeReceiverList.TryGetValue(receiverBase, out var hashSet))
+                {
+                    foreach (var receiver in hashSet)
+                    {
+                        DestroyImmediate(lastReceiverStats[receiver].display.gameObject);
+                        lastReceiverStats.Remove(receiver);
+                    }
+                }
+
+                activeReceiverList.Remove(receiverBase);
+            };
+
+            var transceiver = receiverBase.Transceiver;
+            if (transceiver != null && transceiver.Receiver != null)
+            {
+                activeReceiverList[receiverBase].Add(transceiver.Receiver);
+            }
+        }
+
         private static string CreateDisplayString(RTCStatsReport report, RTCStatsReport lastReport)
         {
             var builder = new StringBuilder();
@@ -213,14 +256,17 @@ namespace Unity.RenderStreaming.Samples
                                 builder.AppendLine($" - {fmtp}");
                             }
                         }
+
                         if (codecStats.payloadType > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.payloadType)}={codecStats.payloadType}");
                         }
+
                         if (codecStats.clockRate > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.clockRate)}={codecStats.clockRate}");
                         }
+
                         if (codecStats.channels > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.channels)}={codecStats.channels}");
@@ -255,14 +301,17 @@ namespace Unity.RenderStreaming.Samples
                                 builder.AppendLine($" - {fmtp}");
                             }
                         }
+
                         if (codecStats.payloadType > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.payloadType)}={codecStats.payloadType}");
                         }
+
                         if (codecStats.clockRate > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.clockRate)}={codecStats.clockRate}");
                         }
+
                         if (codecStats.channels > 0)
                         {
                             builder.AppendLine($" - {nameof(codecStats.channels)}={codecStats.channels}");
