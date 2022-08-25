@@ -1443,6 +1443,16 @@ PrefabInstance:
       propertyPath: senderBaseList.Array.data[1]
       value: 
       objectReference: {fileID: 1299133686}
+    - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
+        type: 3}
+      propertyPath: signalingHandlerBase.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
+        type: 3}
+      propertyPath: signalingHandlerBase.Array.data[0]
+      value: 
+      objectReference: {fileID: 1131364784}
     - target: {fileID: 4584148620787798253, guid: 562feaa3a43a01841a00c6ac89b133fb,
         type: 3}
       propertyPath: m_Name
