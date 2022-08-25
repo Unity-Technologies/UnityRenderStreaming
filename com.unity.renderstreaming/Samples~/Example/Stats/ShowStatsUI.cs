@@ -14,18 +14,92 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private GameObject scrollView;
         [SerializeField] private RectTransform displayParent;
         [SerializeField] private Text baseText;
-
         [SerializeField] private List<StreamSenderBase> senderBaseList;
         [SerializeField] private List<StreamReceiverBase> receiverBaseList;
+
+        private Dictionary<string, HashSet<RTCRtpSender>> activeSenderList =
+            new Dictionary<string, HashSet<RTCRtpSender>>();
+        private Dictionary<string, HashSet<RTCRtpReceiver>> activeReceiverList =
+            new Dictionary<string, HashSet<RTCRtpReceiver>>();
+        private Dictionary<RTCRtpSender, StatsDisplay> lastSenderStats =
+            new Dictionary<RTCRtpSender, StatsDisplay>();
+        private Dictionary<RTCRtpReceiver, StatsDisplay> lastReceiverStats =
+            new Dictionary<RTCRtpReceiver, StatsDisplay>();
 
         private void Awake()
         {
             toggle.onValueChanged.AddListener(SwitchToggle);
+
+            foreach (var senderBase in senderBaseList)
+            {
+                SetUpSenderBase(senderBase);
+            }
+
+            foreach (var receiverBase in receiverBaseList)
+            {
+                SetUpReceiverBase(receiverBase);
+            }
         }
+
 
         private void SwitchToggle(bool isOn)
         {
             scrollView.SetActive(isOn);
+        }
+
+        private void SetUpSenderBase(StreamSenderBase senderBase)
+        {
+            senderBase.OnStartedStream += id =>
+            {
+                if (senderBase.Transceivers.TryGetValue(id, out var transceiver))
+                {
+                    if (!activeSenderList.ContainsKey(id))
+                    {
+                        activeSenderList[id] = new HashSet<RTCRtpSender>();
+                    }
+
+                    activeSenderList[id].Add(transceiver.Sender);
+                }
+            };
+            senderBase.OnStoppedStream += id =>
+            {
+                if (activeSenderList.TryGetValue(id, out var hashSet))
+                {
+                    foreach (var sender in hashSet)
+                    {
+                        DestroyImmediate(lastSenderStats[sender].display.gameObject);
+                        lastSenderStats.Remove(sender);
+                    }
+                }
+
+                activeSenderList.Remove(id);
+            };
+        }
+
+        private void SetUpReceiverBase(StreamReceiverBase receiverBase)
+        {
+            receiverBase.OnStartedStream += id =>
+            {
+                if (!activeReceiverList.ContainsKey(id))
+                {
+                    activeReceiverList[id] = new HashSet<RTCRtpReceiver>();
+                }
+
+                activeReceiverList[id].Add(receiverBase.Transceiver.Receiver);
+            };
+            receiverBase.OnStoppedStream += id =>
+            {
+                if (activeReceiverList.TryGetValue(id, out var hashSet))
+                {
+                    foreach (var receiver in hashSet)
+                    {
+                        DestroyImmediate(lastReceiverStats[receiver].display.gameObject);
+                        lastReceiverStats.Remove(receiver);
+                    }
+                }
+
+                activeReceiverList.Remove(id);
+            };
         }
 
         private void Start()
@@ -37,10 +111,9 @@ namespace Unity.RenderStreaming.Samples
         {
             lastSenderStats.Clear();
             lastReceiverStats.Clear();
+            activeSenderList.Clear();
+            activeReceiverList.Clear();
         }
-
-        private Dictionary<RTCRtpSender, StatsDisplay> lastSenderStats = new Dictionary<RTCRtpSender, StatsDisplay>();
-        private Dictionary<RTCRtpReceiver, StatsDisplay> lastReceiverStats = new Dictionary<RTCRtpReceiver, StatsDisplay>();
 
         class StatsDisplay
         {
@@ -56,10 +129,9 @@ namespace Unity.RenderStreaming.Samples
             {
                 yield return waitSec;
 
-                foreach (var transceiver in senderBaseList.SelectMany(x => x.Transceivers.Values)
-                             .Where(x => x != null && x.Sender != null))
+                foreach (var sender in activeSenderList.Values.SelectMany(x => x))
                 {
-                    var op = transceiver.Sender.GetStats();
+                    var op = sender.GetStats();
                     yield return op;
                     if (op.IsError)
                     {
@@ -67,7 +139,7 @@ namespace Unity.RenderStreaming.Samples
                     }
 
                     var report = op.Value;
-                    if (lastSenderStats.TryGetValue(transceiver.Sender, out var statsDisplay))
+                    if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
                     {
                         var displayString = CreateDisplayString(report, statsDisplay.lastReport);
                         statsDisplay.display.text = displayString;
@@ -78,14 +150,13 @@ namespace Unity.RenderStreaming.Samples
                         var text = Instantiate(baseText, displayParent);
                         text.text = "";
                         text.gameObject.SetActive(true);
-                        lastSenderStats[transceiver.Sender] = new StatsDisplay {display = text, lastReport = report};
+                        lastSenderStats[sender] = new StatsDisplay {display = text, lastReport = report};
                     }
                 }
 
-                foreach (var transceiver in receiverBaseList.Select(x => x.Transceiver)
-                             .Where(x => x != null && x.Receiver != null))
+                foreach (var receiver in activeReceiverList.Values.SelectMany(x => x))
                 {
-                    var op = transceiver.Receiver.GetStats();
+                    var op = receiver.GetStats();
                     yield return op;
 
                     if (op.IsError)
@@ -94,7 +165,7 @@ namespace Unity.RenderStreaming.Samples
                     }
 
                     var report = op.Value;
-                    if (lastReceiverStats.TryGetValue(transceiver.Receiver, out var statsDisplay))
+                    if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
                     {
                         var displayString = CreateDisplayString(report, statsDisplay.lastReport);
                         statsDisplay.display.text = displayString;
@@ -105,7 +176,7 @@ namespace Unity.RenderStreaming.Samples
                         var text = Instantiate(baseText, displayParent);
                         text.text = "";
                         text.gameObject.SetActive(true);
-                        lastReceiverStats[transceiver.Receiver] = new StatsDisplay {display = text, lastReport = report};
+                        lastReceiverStats[receiver] = new StatsDisplay {display = text, lastReport = report};
                     }
                 }
 
@@ -116,6 +187,10 @@ namespace Unity.RenderStreaming.Samples
                     var size = displayParent.sizeDelta;
                     size.y = baseText.GetComponent<RectTransform>().sizeDelta.y * (displayParent.childCount - 1) + 100;
                     displayParent.sizeDelta = size;
+                }
+                else
+                {
+                    baseText.gameObject.SetActive(true);
                 }
             }
         }
@@ -142,7 +217,8 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Framerate: {inboundStats.framesPerSecond}");
                     }
 
-                    if (lastReport.TryGetValue(inboundStats.Id, out var lastStats) && lastStats is RTCInboundRTPStreamStats lastInboundStats)
+                    if (lastReport.TryGetValue(inboundStats.Id, out var lastStats) &&
+                        lastStats is RTCInboundRTPStreamStats lastInboundStats)
                     {
                         var duration = (double)(inboundStats.Timestamp - lastInboundStats.Timestamp) / 1000000;
                         var bitrate = (ulong)(8 * (inboundStats.bytesReceived - lastInboundStats.bytesReceived) / duration);
@@ -165,7 +241,8 @@ namespace Unity.RenderStreaming.Samples
                         builder.AppendLine($"Framerate: {outboundStats.framesPerSecond}");
                     }
 
-                    if (lastReport.TryGetValue(outboundStats.Id, out var lastStats) && lastStats is RTCOutboundRTPStreamStats lastOutboundStats)
+                    if (lastReport.TryGetValue(outboundStats.Id, out var lastStats) &&
+                        lastStats is RTCOutboundRTPStreamStats lastOutboundStats)
                     {
                         var duration = (double)(outboundStats.Timestamp - lastOutboundStats.Timestamp) / 1000000;
                         var bitrate = (ulong)(8 * (outboundStats.bytesSent - lastOutboundStats.bytesSent) / duration);
@@ -185,6 +262,7 @@ namespace Unity.RenderStreaming.Samples
             }
 
             senderBaseList.Add(sender);
+            SetUpSenderBase(sender);
         }
 
         public void AddReceiverBase(StreamReceiverBase receiver)
@@ -195,6 +273,7 @@ namespace Unity.RenderStreaming.Samples
             }
 
             receiverBaseList.Add(receiver);
+            SetUpReceiverBase(receiver);
         }
     }
 }

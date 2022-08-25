@@ -77,7 +77,7 @@ namespace Unity.RenderStreaming.Samples
 
             if (sender is StreamSenderBase senderBase)
             {
-                statsUI.AddSenderBase(senderBase);
+                statsUI?.AddSenderBase(senderBase);
             }
 
             var inputChannel = newObj.GetComponentInChildren<InputReceiver>();
