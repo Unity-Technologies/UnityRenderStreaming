@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,8 @@ namespace Unity.RenderStreaming.Samples
 {
     public class ShowStatsUI : MonoBehaviour
     {
-        [SerializeField] private Toggle toggle;
+        [SerializeField] private Button showStatsButton;
+        [SerializeField] private Button hideStatsButton;
         [SerializeField] private GameObject scrollView;
         [SerializeField] private RectTransform displayParent;
         [SerializeField] private Text baseText;
@@ -29,7 +29,19 @@ namespace Unity.RenderStreaming.Samples
 
         private void Awake()
         {
-            toggle.onValueChanged.AddListener(SwitchToggle);
+            showStatsButton.onClick.AddListener(() =>
+            {
+                scrollView.gameObject.SetActive(true);
+                hideStatsButton.gameObject.SetActive(true);
+                showStatsButton.gameObject.SetActive(false);
+            });
+
+            hideStatsButton.onClick.AddListener(() =>
+            {
+                scrollView.gameObject.SetActive(false);
+                showStatsButton.gameObject.SetActive(true);
+                hideStatsButton.gameObject.SetActive(false);
+            });
 
             foreach (var senderBase in senderBaseList)
             {
@@ -40,12 +52,6 @@ namespace Unity.RenderStreaming.Samples
             {
                 SetUpReceiverBase(receiverBase);
             }
-        }
-
-
-        private void SwitchToggle(bool isOn)
-        {
-            scrollView.SetActive(isOn);
         }
 
         private void SetUpSenderBase(StreamSenderBase senderBase)
