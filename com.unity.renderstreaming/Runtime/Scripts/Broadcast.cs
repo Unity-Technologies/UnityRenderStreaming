@@ -8,10 +8,11 @@ namespace Unity.RenderStreaming
         IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler,
         IAddReceiverHandler
     {
-        [SerializeField]
-        private List<Component> streams = new List<Component>();
+        [SerializeField] private List<Component> streams = new List<Component>();
 
         private List<string> connectionIds = new List<string>();
+
+        public override IEnumerable<Component> Streams => streams;
 
         public void AddComponent(Component component)
         {

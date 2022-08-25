@@ -30,6 +30,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        public virtual IEnumerable<Component> Streams => null;
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="connectionId"></param>
         public virtual void CreateConnection(string connectionId)
         {
@@ -303,12 +308,12 @@ namespace Unity.RenderStreaming
     public interface IStreamSender
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         MediaStreamTrack Track { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers { get; }
 
