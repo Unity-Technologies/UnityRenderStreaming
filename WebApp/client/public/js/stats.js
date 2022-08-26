@@ -42,9 +42,9 @@ export function createDisplayStringArray(report, lastReport) {
 
       if (lastReport && lastReport.has(stat.id)) {
         const lastStats = lastReport.get(stat.id);
-        const duration = (stat.timestamp - lastStats.timestamp) / 1000000;
-        const bitrate = (8 * (stat.bytesReceived - lastStats.bytesReceived) / duration);
-        array.push(`Bitrate: ${bitrate}`);
+        const duration = (stat.timestamp - lastStats.timestamp) / 1000;
+        const bitrate = (8 * (stat.bytesReceived - lastStats.bytesReceived) / duration) / 1000;
+        array.push(`Bitrate: ${bitrate.toFixed(2)} kbit/sec`);
       }
     } else if (stat.type === 'outbound-rtp') {
       array.push(`${stat.kind} sending stream stats`);
@@ -80,9 +80,9 @@ export function createDisplayStringArray(report, lastReport) {
 
       if (lastReport && lastReport.has(stat.id)) {
         const lastStats = lastReport.get(stat.id);
-        const duration = (stat.timestamp - lastStats.timestamp) / 1000000;
-        const bitrate = (8 * (stat.bytesSent - lastStats.bytesSent) / duration);
-        array.push(`Bitrate: ${bitrate}`);
+        const duration = (stat.timestamp - lastStats.timestamp) / 1000;
+        const bitrate = (8 * (stat.bytesSent - lastStats.bytesSent) / duration) / 1000;
+        array.push(`Bitrate: ${bitrate.toFixed(2)} kbit/sec`);
       }
     }
   });

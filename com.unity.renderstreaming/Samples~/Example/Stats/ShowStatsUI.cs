@@ -284,8 +284,8 @@ namespace Unity.RenderStreaming.Samples
                         lastStats is RTCInboundRTPStreamStats lastInboundStats)
                     {
                         var duration = (double)(inboundStats.Timestamp - lastInboundStats.Timestamp) / 1000000;
-                        var bitrate = (ulong)(8 * (inboundStats.bytesReceived - lastInboundStats.bytesReceived) / duration);
-                        builder.AppendLine($"Bitrate: {bitrate}");
+                        var bitrate = (8 * (inboundStats.bytesReceived - lastInboundStats.bytesReceived) / duration) / 1000;
+                        builder.AppendLine($"Bitrate: {bitrate:F2} kbit/sec");
                     }
                 }
                 else if (stats is RTCOutboundRTPStreamStats outboundStats)
@@ -329,8 +329,8 @@ namespace Unity.RenderStreaming.Samples
                         lastStats is RTCOutboundRTPStreamStats lastOutboundStats)
                     {
                         var duration = (double)(outboundStats.Timestamp - lastOutboundStats.Timestamp) / 1000000;
-                        var bitrate = (ulong)(8 * (outboundStats.bytesSent - lastOutboundStats.bytesSent) / duration);
-                        builder.AppendLine($"Bitrate: {bitrate}");
+                        var bitrate = (8 * (outboundStats.bytesSent - lastOutboundStats.bytesSent) / duration) / 1000;
+                        builder.AppendLine($"Bitrate: {bitrate:F2} kbit/sec");
                     }
                 }
             }
