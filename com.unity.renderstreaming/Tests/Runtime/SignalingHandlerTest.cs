@@ -37,9 +37,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class VideoStreamReceiverTester : StreamReceiverBase
+    class VideoStreamReceiverTester : VideoStreamReceiver
     {
-        public override TrackKind Kind { get { return TrackKind.Video; } }
     }
 
     class AudioStreamSenderTester : AudioStreamSender
@@ -54,9 +53,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
     }
 
-    class AudioStreamReceiverTester : StreamReceiverBase
+    class AudioStreamReceiverTester : AudioStreamReceiver
     {
-        public override TrackKind Kind { get { return TrackKind.Audio; } }
     }
 
     class DataChannelTest : DataChannelBase
@@ -226,7 +224,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
             RuntimePlatform.LinuxPlayer
         })]
-        public IEnumerator FilterCodec()
+
+        public IEnumerator SetCodec()
         {
             string connectionId = "12345";
             var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
@@ -237,9 +236,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStoppedStream1 = false;
             streamer.OnStartedStream += _ => isStartedStream1 = true;
             streamer.OnStoppedStream += _ => isStoppedStream1 = true;
-            var index = AvailableCodecsUtils.GetAvailableVideoCodecsName().FirstOrDefault(x => x.Value.Contains("VP9")).Key;
-            Assert.That(AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var capability), Is.True);
-            streamer.FilterVideoCodecs(index);
+            var codec = VideoStreamSender.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("VP9"));
+            Assert.That(codec, Is.Not.Null);
+            streamer.SetCodec(codec);
 
             container1.test.component.AddComponent(streamer);
 
@@ -284,8 +283,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 senderCodecStats =
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
-            Assert.That(senderCodecStats.mimeType, Is.EqualTo(capability.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             container2.test.component.DeleteConnection(connectionId);
 
@@ -587,7 +586,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(transceivers1.Select(x => x.Direction),
                 Is.EquivalentTo(new[]
                 {
-                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv,
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.SendOnly,
                     RTCRtpTransceiverDirection.RecvOnly, RTCRtpTransceiverDirection.RecvOnly,
                 }));
             var transceivers2 = container2.instance.GetTransceivers(connectionId).ToList();
@@ -596,7 +595,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(transceivers2.Select(x => x.Direction),
                 Is.EquivalentTo(new[]
                 {
-                    RTCRtpTransceiverDirection.SendRecv, RTCRtpTransceiverDirection.SendRecv,
+                    RTCRtpTransceiverDirection.SendOnly, RTCRtpTransceiverDirection.SendOnly,
                     RTCRtpTransceiverDirection.RecvOnly, RTCRtpTransceiverDirection.RecvOnly,
                 }));
 
@@ -621,7 +620,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
             RuntimePlatform.LinuxPlayer
         })]
-        public IEnumerator FilterCodecOnSender()
+        public IEnumerator SetCodecOnSender()
         {
             string connectionId = "12345";
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
@@ -632,9 +631,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStoppedStream0 = false;
             streamer.OnStartedStream += _ => isStartedStream0 = true;
             streamer.OnStoppedStream += _ => isStoppedStream0 = true;
-            var index = AvailableCodecsUtils.GetAvailableVideoCodecsName().FirstOrDefault(x => x.Value.Contains("VP9")).Key;
-            Assert.That(AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var capability), Is.True);
-            streamer.FilterVideoCodecs(index);
+            var codec = VideoStreamSender.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("VP9"));
+            Assert.That(codec, Is.Not.Null);
+            streamer.SetCodec(codec);
+
 
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
@@ -682,8 +682,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 senderCodecStats =
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
-            Assert.That(senderCodecStats.mimeType, Is.EqualTo(capability.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             RTCCodecStats receiverCodecStats = null;
             while (receiverCodecStats == null)
@@ -705,8 +705,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 receiverCodecStats =
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == inboundStats.codecId) as RTCCodecStats;
             }
-            Assert.That(receiverCodecStats.mimeType, Is.EqualTo(capability.mimeType));
-            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(receiverCodecStats.mimeType, Is.EqualTo(codec.mimeType));
+            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
@@ -726,7 +726,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
             RuntimePlatform.LinuxPlayer
         })]
-        public IEnumerator FilterCodecOnReceiver()
+        public IEnumerator SetCodecOnReceiver()
         {
             string connectionId = "12345";
             var container1 = TestContainer<SingleConnectionBehaviourTest>.Create("test1");
@@ -750,9 +750,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStoppedStream1 = false;
             receiver.OnStartedStream += _ => isStartedStream1 = true;
             receiver.OnStoppedStream += _ => isStoppedStream1 = true;
-            var index = AvailableCodecsUtils.GetAvailableVideoCodecsName().FirstOrDefault(x => x.Value.Contains("VP9")).Key;
-            Assert.That(AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var capability), Is.True);
-            receiver.FilterVideoCodecs(index);
+            var codec = VideoStreamSender.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("VP9"));
+            Assert.That(codec, Is.Not.Null);
+            streamer.SetCodec(codec);
 
             Assert.That(receiver.Track, Is.Null);
             Assert.That(receiver.Transceiver, Is.Null);
@@ -787,8 +787,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 senderCodecStats =
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
-            Assert.That(senderCodecStats.mimeType, Is.EqualTo(capability.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             RTCCodecStats receiverCodecStats = null;
             while (receiverCodecStats == null)
@@ -810,8 +810,8 @@ namespace Unity.RenderStreaming.RuntimeTest
                 receiverCodecStats =
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == inboundStats.codecId) as RTCCodecStats;
             }
-            Assert.That(receiverCodecStats.mimeType, Is.EqualTo(capability.mimeType));
-            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(capability.sdpFmtpLine));
+            Assert.That(receiverCodecStats.mimeType, Is.EqualTo(codec.mimeType));
+            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);

@@ -111,6 +111,24 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             UnityEngine.Object.DestroyImmediate(go);
         }
+
+        [Test]
+        public void SetCodec()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<VideoStreamSender>();
+            Assert.That(sender.codec, Is.Null);
+
+            var codecs = VideoStreamSender.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+
+            var codec = codecs.First();
+            sender.SetCodec(codec);
+            Assert.That(sender.codec, Is.EqualTo(codec));
+
+            sender.SetCodec(null);
+            Assert.That(sender.codec, Is.Null);
+        }
     }
 
     class VideoStreamReceiverTest
@@ -192,6 +210,24 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.Throws<ArgumentException>(() => sender.SetBitrate(minBitrate, maxBitrate));
             UnityEngine.Object.DestroyImmediate(go);
 
+        }
+
+        [Test]
+        public void SetCodec()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<AudioStreamSender>();
+            Assert.That(sender.codec, Is.Null);
+
+            var codecs = AudioStreamSender.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+
+            var codec = codecs.First();
+            sender.SetCodec(codec);
+            Assert.That(sender.codec, Is.EqualTo(codec));
+
+            sender.SetCodec(null);
+            Assert.That(sender.codec, Is.Null);
         }
     }
 

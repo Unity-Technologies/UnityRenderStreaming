@@ -117,7 +117,7 @@ namespace Unity.RenderStreaming.Samples
 
         void CreateConnection()
         {
-            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
+            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
 
             _connectionId = System.Guid.NewGuid().ToString("N");
             connection.CreateConnection(_connectionId);

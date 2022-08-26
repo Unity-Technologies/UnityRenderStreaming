@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
@@ -18,7 +19,7 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         public static RTCRtpTransceiver AddSenderTrack(this RenderStreamingInternal target, string connectionId, MediaStreamTrack track)
         {
-            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendRecv };
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendOnly };
             return target.AddTransceiver(connectionId, track, init);
         }
     }
@@ -186,13 +187,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection);
             Assert.That(isCreatedConnection, Is.True);
+            Assert.That(target.GetTransceivers(connectionId).Count(), Is.EqualTo(0));
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
             var transceiver = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(target.GetTransceivers(connectionId).Count(), Is.EqualTo(1));
             target.RemoveSenderTrack(connectionId, track);
 
             bool isDeletedConnection = false;
@@ -269,13 +272,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver1 = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target.AddSenderTrack(connectionId, track2);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
@@ -374,7 +377,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after adding a Track
             var transceiver = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
             Assert.That(isAddReceiver1, Is.True);
@@ -448,7 +451,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target2.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
@@ -645,11 +648,11 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             RTCRtpTransceiverInit init1 = new RTCRtpTransceiverInit()
             {
-                direction = RTCRtpTransceiverDirection.SendRecv
+                direction = RTCRtpTransceiverDirection.SendOnly
             };
             RTCRtpTransceiverInit init2 = new RTCRtpTransceiverInit()
             {
-                direction = RTCRtpTransceiverDirection.SendRecv
+                direction = RTCRtpTransceiverDirection.SendOnly
             };
             target1.AddTransceiver(connectionId, TrackKind.Audio, init1);
             target2.AddTransceiver(connectionId, TrackKind.Audio, init2);

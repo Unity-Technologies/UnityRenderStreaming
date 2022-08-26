@@ -84,8 +84,8 @@ namespace Unity.RenderStreaming.Samples
             setUpButton.interactable = false;
             hangUpButton.interactable = true;
             connectionIdInput.interactable = false;
-            receiveVideoViewer.FilterVideoCodecs(RenderStreamingSettings.SelectVideoCodecIndex);
-            webCamStreamer.FilterVideoCodecs(RenderStreamingSettings.SelectSenderVideoCodecIndex);
+            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
+            webCamStreamer.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
             singleConnection.CreateConnection(connectionId);
         }

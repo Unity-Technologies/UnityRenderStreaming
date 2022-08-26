@@ -21,6 +21,20 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private uint m_maxBitrate = s_defaultBitrate;
 
+        private AudioCodecInfo m_codec;
+
+        protected AudioStreamTrack track;
+
+        private int m_sampleRate = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AudioCodecInfo codec
+        {
+            get { return m_codec; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -66,10 +80,26 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected AudioStreamTrack track;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mimeType"></param>
+        public void SetCodec(AudioCodecInfo codec)
+        {
+            m_codec = codec;
 
-        int m_sampleRate = 0;
+            foreach (var transceiver in Transceivers.Values)
+            {
+                if (!string.IsNullOrEmpty(transceiver.Mid))
+                    continue;
+                if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                    continue;
 
+                RTCErrorType error = transceiver.SetCodec(new AudioCodecInfo[] { m_codec });
+                if (error != RTCErrorType.None)
+                    throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
+            }
+        }
 
         protected virtual void Awake()
         {
@@ -97,7 +127,7 @@ namespace Unity.RenderStreaming
             return track;
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             OnAudioConfigurationChanged(false);
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
@@ -106,7 +136,7 @@ namespace Unity.RenderStreaming
                 track.Enabled = true;
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
 
