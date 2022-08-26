@@ -102,7 +102,6 @@ namespace Unity.RenderStreaming.Samples
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
             receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
-            statsUI.AddReceiverBase(receiveVideoViewer);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
