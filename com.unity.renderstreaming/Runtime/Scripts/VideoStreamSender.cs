@@ -16,6 +16,10 @@ namespace Unity.RenderStreaming
 
     internal sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
 
+    internal sealed class WebCamDeviceAttribute : PropertyAttribute { }
+
+    internal sealed class ScaleResolutionAttribute : PropertyAttribute { }
+
     internal static class RTCRtpSenderExtension
     {
         public static RTCError SetFrameRate(this RTCRtpSender sender, uint framerate)
@@ -31,7 +35,7 @@ namespace Unity.RenderStreaming
             return sender.SetParameters(parameters);
         }
 
-        public static RTCError SetScaleResolutionDown(this RTCRtpSender sender, double scaleFactor)
+        public static RTCError SetScaleResolutionDown(this RTCRtpSender sender, double? scaleFactor)
         {
             if (sender.Track.Kind != TrackKind.Video)
                 throw new ArgumentException();
@@ -90,7 +94,7 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private uint m_maxBitrate = s_defaultBitrate;
 
-        [SerializeField]
+        [SerializeField, ScaleResolution]
         private float m_scaleFactor = 1f;
 
         /// <summary>
@@ -201,10 +205,12 @@ namespace Unity.RenderStreaming
         {
             if (scaleFactor < 1.0f)
                 throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be greater than 1.0f. Scaleup is not allowed.");
+
             m_scaleFactor = scaleFactor;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetScaleResolutionDown(m_scaleFactor);
+                double? value = Mathf.Approximately(m_scaleFactor, 1) ? (double?)null : m_scaleFactor;
+                RTCError error = transceiver.Sender.SetScaleResolutionDown(value);
                 if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
