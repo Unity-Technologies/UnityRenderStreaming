@@ -40,7 +40,6 @@ let useCustomResolution = false;
 
 setUpInputSelect();
 showCodecSelect();
-showStatsMessage();
 
 let sendVideo = new SendVideo();
 sendVideo.ondisconnect = async (message) => {
@@ -124,11 +123,13 @@ async function setUp() {
   codecPreferences.disabled = true;
 
   await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket, selectedCodecs);
+  showStatsMessage();
 }
 
 async function hangUp() {
   hangUpButton.disabled = true;
   setupButton.disabled = false;
+  clearStatsMessage();
   await sendVideo.hangUp(connectionId);
   textForConnectionId.value = getRandom();
   connectionId = null;
@@ -205,9 +206,10 @@ function showCodecSelect() {
 }
 
 let lastStats;
+let intervalId;
 
 function showStatsMessage() {
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     if (localVideo.videoWidth) {
       localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth} x ${localVideo.videoHeight} px`;
     }
@@ -231,4 +233,14 @@ function showStatsMessage() {
     }
     lastStats = stats;
   }, 1000);
+}
+
+function clearStatsMessage() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  lastStats = null;
+  intervalId = null;
+  localVideoStatsDiv.innerHTML = '';
+  remoteVideoStatsDiv.innerHTML = '';
 }

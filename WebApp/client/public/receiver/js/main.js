@@ -171,6 +171,7 @@ async function setupVideoPlayer(elements) {
 
   await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
+  showStatsMessage();
 
   return videoPlayer;
 }
@@ -181,6 +182,7 @@ async function onDisconnect(message) {
     messageDiv.innerText = message;
   }
 
+  clearStatsMessage();
   clearChildren(playerDiv);
   await receiver.stop();
   receiver = null;
@@ -217,9 +219,10 @@ function showCodecSelect() {
 }
 
 let lastStats;
+let intervalId;
 
 function showStatsMessage() {
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     if (receiver == null) {
       return;
     }
@@ -236,4 +239,12 @@ function showStatsMessage() {
     }
     lastStats = stats;
   }, 1000);
+}
+
+function clearStatsMessage() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  lastStats = null;
+  intervalId = null;
 }
