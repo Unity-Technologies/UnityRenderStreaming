@@ -134,12 +134,12 @@ async function setupVideoPlayer(elements) {
 }
 
 async function onDisconnect(message) {
+  clearStatsMessage();
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;
   }
 
-  clearStatsMessage();
   clearChildren(playerDiv);
   await videoPlayer.stop();
   videoPlayer = null;
@@ -204,4 +204,6 @@ function clearStatsMessage() {
   }
   lastStats = null;
   intervalId = null;
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
 }

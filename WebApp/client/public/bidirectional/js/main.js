@@ -43,12 +43,12 @@ showCodecSelect();
 
 let sendVideo = new SendVideo();
 sendVideo.ondisconnect = async (message) => {
+  await hangUp();
+
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;
   }
-
-  await hangUp();
 };
 
 let useWebSocket;
@@ -127,9 +127,9 @@ async function setUp() {
 }
 
 async function hangUp() {
+  clearStatsMessage();
   hangUpButton.disabled = true;
   setupButton.disabled = false;
-  clearStatsMessage();
   await sendVideo.hangUp(connectionId);
   textForConnectionId.value = getRandom();
   connectionId = null;
@@ -243,4 +243,6 @@ function clearStatsMessage() {
   intervalId = null;
   localVideoStatsDiv.innerHTML = '';
   remoteVideoStatsDiv.innerHTML = '';
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
 }
