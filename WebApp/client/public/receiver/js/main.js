@@ -1,5 +1,6 @@
 import { Receiver } from "./receiver.js";
 import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
 
 setup();
 
@@ -34,7 +35,6 @@ async function setup() {
   showWarningIfNeeded(res.startupMode);
   showCodecSelect();
   showPlayButton();
-  showStatsMessage();
 }
 
 function showWarningIfNeeded(startupMode) {
@@ -170,11 +170,13 @@ async function setupVideoPlayer(elements) {
 
   await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
+  showStatsMessage();
 
   return videoPlayer;
 }
 
 async function onDisconnect(message) {
+  clearStatsMessage();
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;
@@ -215,8 +217,11 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+let lastStats;
+let intervalId;
+
 function showStatsMessage() {
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     if (receiver == null) {
       return;
     }
@@ -225,13 +230,22 @@ function showStatsMessage() {
     if (stats == null) {
       return;
     }
-    stats.forEach(stat => {
-      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video') || stat.codecId === undefined) {
-        return;
-      }
-      const codec = stats.get(stat.codecId);
+
+    const array = createDisplayStringArray(stats, lastStats);
+    if (array.length) {
       messageDiv.style.display = 'block';
-      messageDiv.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
-    });
+      messageDiv.innerHTML = array.join('<br>');
+    }
+    lastStats = stats;
   }, 1000);
+}
+
+function clearStatsMessage() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  lastStats = null;
+  intervalId = null;
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
 }

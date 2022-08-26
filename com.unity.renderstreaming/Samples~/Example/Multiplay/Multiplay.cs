@@ -13,6 +13,8 @@ namespace Unity.RenderStreaming.Samples
         private List<Component> streams = new List<Component>();
         private Dictionary<string, GameObject> dictObj = new Dictionary<string, GameObject>();
 
+        public override IEnumerable<Component> Streams => streams;
+
         public void OnDeletedConnection(SignalingEventData eventData)
         {
             Disconnect(eventData.connectionId);
@@ -30,7 +32,7 @@ namespace Unity.RenderStreaming.Samples
             connectionIds.Remove(connectionId);
 
             var obj = dictObj[connectionId];
-            var sender = obj.GetComponentInChildren<IStreamSender>();
+            var sender = obj.GetComponentInChildren<StreamSenderBase>();
             var inputChannel = obj.GetComponentInChildren<InputReceiver>();
             var multiplayChannel = obj.GetComponentInChildren<MultiplayChannel>();
 
@@ -40,6 +42,10 @@ namespace Unity.RenderStreaming.Samples
             RemoveSender(connectionId, sender);
             RemoveChannel(connectionId, inputChannel);
             RemoveChannel(connectionId, multiplayChannel);
+
+            streams.Remove(sender);
+            streams.Remove(inputChannel);
+            streams.Remove(multiplayChannel);
 
             if (ExistConnection(connectionId))
                 DeleteConnection(connectionId);
@@ -58,7 +64,7 @@ namespace Unity.RenderStreaming.Samples
             var newObj = Instantiate(prefab, initialPosition, Quaternion.identity);
             dictObj.Add(data.connectionId, newObj);
 
-            var sender = newObj.GetComponentInChildren<IStreamSender>();
+            var sender = newObj.GetComponentInChildren<StreamSenderBase>();
 
             if (sender is VideoStreamSender videoStreamSender)
             {
@@ -76,6 +82,10 @@ namespace Unity.RenderStreaming.Samples
             if (multiplayChannel.OnChangeLabel == null)
                 multiplayChannel.OnChangeLabel = new ChangeLabelEvent();
             multiplayChannel.OnChangeLabel.AddListener(playerController.SetLabel);
+
+            streams.Add(sender);
+            streams.Add(inputChannel);
+            streams.Add(multiplayChannel);
 
             AddSender(data.connectionId, sender);
             AddChannel(data.connectionId, inputChannel);

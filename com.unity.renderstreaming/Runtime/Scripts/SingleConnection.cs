@@ -12,6 +12,8 @@ namespace Unity.RenderStreaming
 
         private string connectionId;
 
+        public override IEnumerable<Component> Streams => streams;
+
         public void AddComponent(Component component)
         {
             streams.Add(component);

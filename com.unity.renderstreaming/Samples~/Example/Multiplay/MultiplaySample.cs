@@ -18,6 +18,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] GameObject menuCamera;
         [SerializeField] GameObject panel;
         [SerializeField] RawImage videoImage;
+        [SerializeField] ShowStatsUI statsUI;
 
         enum Role
         {
@@ -77,6 +78,7 @@ namespace Unity.RenderStreaming.Samples
             playerInput.PerformPairingWithAllLocalDevices();
             playerController.CheckPairedDevices();
 
+            statsUI.AddSignalingHandler(handler);
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
@@ -87,6 +89,7 @@ namespace Unity.RenderStreaming.Samples
             var guestPlayer = GameObject.Instantiate(prefabGuest);
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
+            statsUI.AddSignalingHandler(handler);
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
