@@ -35,7 +35,6 @@ async function setup() {
   showWarningIfNeeded(res.startupMode);
   showCodecSelect();
   showPlayButton();
-  showStatsMessage();
 }
 
 function showWarningIfNeeded(startupMode) {

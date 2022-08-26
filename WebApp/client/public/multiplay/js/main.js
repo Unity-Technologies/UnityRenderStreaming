@@ -40,7 +40,6 @@ async function setup() {
   useWebSocket = res.useWebSocket;
   showWarningIfNeeded(res.startupMode);
   showCodecSelect();
-  showStatsMessage();
   showPlayButton();
 }
 
