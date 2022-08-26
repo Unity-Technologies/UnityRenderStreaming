@@ -175,7 +175,7 @@ namespace Unity.RenderStreaming
             {
                 RTCError error = transceiver.Sender.SetFrameRate((uint)m_frameRate);
                 if (error.errorType != RTCErrorType.None)
-                    throw new InvalidOperationException($"Set codec is failed. {error.message}");
+                    throw new InvalidOperationException($"Set framerate is failed. {error.message}");
             }
         }
 
