@@ -110,14 +110,6 @@ namespace Unity.RenderStreaming
             return init;
         }
 
-        internal static RTCRtpTransceiverInit GetTransceiverInit(IStreamReceiver receiver)
-        {
-            return new RTCRtpTransceiverInit()
-            {
-                direction = RTCRtpTransceiverDirection.RecvOnly,
-            };
-        }
-
         internal static VideoCodecInfo[] GetVideoCodecInfo(IStreamSender sender)
         {
             if (sender is VideoStreamSender videoStreamSender)
@@ -206,7 +198,6 @@ namespace Unity.RenderStreaming
         /// <param name="transceiver"></param>
         public virtual void SetReceiver(string connectionId, IStreamReceiver receiver, RTCRtpTransceiver transceiver)
         {
-            RTCRtpTransceiverInit init = GetTransceiverInit(receiver);
             if (receiver is VideoStreamReceiver)
             {
                 transceiver.SetCodec(GetVideoCodecInfo(receiver));
