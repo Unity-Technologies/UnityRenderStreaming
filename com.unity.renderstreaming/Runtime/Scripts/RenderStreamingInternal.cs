@@ -190,23 +190,12 @@ namespace Unity.RenderStreaming
 
         public bool IsConnected(string connectionId)
         {
-            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
-                return false;
-
-            return peer.peer.ConnectionState == RTCPeerConnectionState.Connected;
+            return _mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer) && peer.IsConnected();
         }
 
         public bool IsStable(string connectionId)
         {
-            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
-                return false;
-
-            if (peer.makingOffer || peer.waitingAnswer)
-            {
-                return false;
-            }
-
-            return peer.peer.SignalingState == RTCSignalingState.Stable;
+            return _mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer) && peer.IsStable();
         }
 
         /// <summary>
@@ -301,18 +290,7 @@ namespace Unity.RenderStreaming
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
                 return;
-            if (!IsStable(connectionId))
-            {
-                if (!pc.waitingAnswer)
-                {
-                    throw new InvalidOperationException(
-                        $"{pc} sendoffer needs in stable state, current state is {pc.peer.SignalingState}");
-                }
-
-                _signaling.SendOffer(connectionId, pc.peer.LocalDescription);
-                return;
-            }
-            _startCoroutine(SendOfferCoroutine(connectionId, pc));
+            pc.SendOffer();
         }
 
         /// <summary>
@@ -321,22 +299,18 @@ namespace Unity.RenderStreaming
         /// <param name="connectionId"></param>
         public void SendAnswer(string connectionId)
         {
-            _startCoroutine(SendAnswerCoroutine(connectionId, _mapConnectionIdAndPeer[connectionId]));
+            if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
+                return;
+            pc.SendAnswer();
         }
 
         IEnumerator ResendOfferCoroutine()
         {
             while (_runningResendCoroutine)
             {
-                foreach (var pair in _mapConnectionIdAndPeer.Where(x => x.Value.waitingAnswer))
+                foreach (var peer in _mapConnectionIdAndPeer.Where(x => x.Value.waitingAnswer))
                 {
-                    float timeout = pair.Value.timeSinceStartWaitingAnswer + _resendInterval;
-
-                    if (timeout < Time.realtimeSinceStartup)
-                    {
-                        _signaling.SendOffer(pair.Key, pair.Value.peer.LocalDescription);
-                        pair.Value.RestartTimerForWaitingAnswer();
-                    }
+                    peer.Value.SendOffer();
                 }
                 yield return 0;
             }
@@ -368,25 +342,19 @@ namespace Unity.RenderStreaming
         {
             if (_mapConnectionIdAndPeer.TryGetValue(connectionId, out var peer))
             {
-                peer.peer.Close();
+                peer.Dispose();
             }
 
-            var pc = new RTCPeerConnection();
-            peer = new PeerConnection(pc, polite);
+            peer = new PeerConnection(polite, _config, _resendInterval, _startCoroutine);
             _mapConnectionIdAndPeer[connectionId] = peer;
 
-            pc.SetConfiguration(ref _config);
-            pc.OnDataChannel = channel => { OnDataChannel(connectionId, channel); };
-            pc.OnIceCandidate = candidate =>
-            {
-                _signaling.SendCandidate(connectionId, candidate);
-            };
-            pc.OnConnectionStateChange = state => OnConnectionStateChange(connectionId, state);
-            pc.OnTrack = trackEvent =>
-            {
-                onAddTransceiver?.Invoke(connectionId, trackEvent.Transceiver);
-            };
-            pc.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded(connectionId));
+            peer.OnConnectHandler += () => onConnect?.Invoke(connectionId);
+            peer.OnDisconnectHandler += () => onDisconnect?.Invoke(connectionId);
+            peer.OnDataChannelHandler += channel => onAddChannel?.Invoke(connectionId, channel);;
+            peer.OnTrackEventHandler += e => onAddTransceiver?.Invoke(connectionId, e.Transceiver);
+            peer.SendOfferHandler += desc => _signaling?.SendOffer(connectionId, desc);
+            peer.SendAnswerHandler += desc => _signaling?.SendAnswer(connectionId, desc);
+            peer.SendCandidateHandler += candidate => _signaling?.SendCandidate(connectionId, candidate);
             return peer;
         }
 
@@ -399,62 +367,6 @@ namespace Unity.RenderStreaming
 
             peer.Dispose();
             _mapConnectionIdAndPeer.Remove(connectionId);
-        }
-
-        void OnDataChannel(string connectionId, RTCDataChannel channel)
-        {
-            onAddChannel?.Invoke(connectionId, channel);
-        }
-
-        void OnConnectionStateChange(string connectionId, RTCPeerConnectionState state)
-        {
-            switch (state)
-            {
-                case RTCPeerConnectionState.Connected:
-                    onConnect?.Invoke(connectionId);
-                    break;
-                case RTCPeerConnectionState.Disconnected:
-                    onDisconnect?.Invoke(connectionId);
-                    break;
-            }
-        }
-
-        IEnumerator OnNegotiationNeeded(string connectionId)
-        {
-            yield return new WaitWhile(() => !IsStable(connectionId));
-            SendOffer(connectionId);
-        }
-
-        IEnumerator SendOfferCoroutine(string connectionId, PeerConnection pc)
-        {
-            // waiting other setLocalDescription process
-            yield return new WaitWhile(() => !IsStable(connectionId));
-
-            if (!ExistConnection(connectionId))
-                yield break;
-
-            Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
-                $"{pc} negotiationneeded always fires in stable state");
-            Assert.AreEqual(pc.makingOffer, false, $"{pc} negotiationneeded not already in progress");
-
-            pc.makingOffer = true;
-            var opLocalDesc = pc.peer.SetLocalDescription();
-            yield return opLocalDesc;
-
-            if (opLocalDesc.IsError)
-            {
-                Debug.LogError($"{pc} {opLocalDesc.Error.message}");
-                pc.makingOffer = false;
-                yield break;
-            }
-
-            Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.HaveLocalOffer,
-                $"{pc} negotiationneeded not racing with onmessage");
-            Assert.AreEqual(pc.peer.LocalDescription.type, RTCSdpType.Offer, $"{pc} negotiationneeded SLD worked");
-            pc.makingOffer = false;
-            pc.waitingAnswer = true;
-
-            _signaling.SendOffer(connectionId, pc.peer.LocalDescription);
         }
 
         void OnAnswer(ISignaling signaling, DescData e)
@@ -470,31 +382,8 @@ namespace Unity.RenderStreaming
 
         IEnumerator GotAnswerCoroutine(string connectionId, PeerConnection pc, string sdp)
         {
-            var description = new RTCSessionDescription();
-            description.type = RTCSdpType.Answer;
-            description.sdp = sdp;
-
-            // waiting other setLocalDescription process
-            yield return new WaitWhile(() => pc.makingOffer || pc.makingAnswer);
-
-            pc.waitingAnswer = false;
-            pc.srdAnswerPending = true;
-
-            var opRemoteDesc = pc.peer.SetRemoteDescription(ref description);
-            yield return opRemoteDesc;
-
-            if (opRemoteDesc.IsError)
-            {
-                Debug.LogError($"{pc} {opRemoteDesc.Error.message}");
-                pc.srdAnswerPending = false;
-                yield break;
-            }
-
-            Assert.AreEqual(pc.peer.RemoteDescription.type, RTCSdpType.Answer, $"{pc} Answer was set");
-            Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable, $"{pc} answered");
-            pc.srdAnswerPending = false;
-
-            onGotAnswer?.Invoke(connectionId, sdp);
+            var description = new RTCSessionDescription {type = RTCSdpType.Answer, sdp = sdp};
+            yield return pc.OnGotDescription(description, () => onGotAnswer?.Invoke(connectionId, sdp));
         }
 
         void OnIceCandidate(ISignaling signaling, CandidateData e)
@@ -508,11 +397,7 @@ namespace Unity.RenderStreaming
             {
                 candidate = e.candidate, sdpMLineIndex = e.sdpMLineIndex, sdpMid = e.sdpMid
             };
-
-            if (!pc.peer.AddIceCandidate(new RTCIceCandidate(option)) && !pc.ignoreOffer)
-            {
-                Debug.LogWarning($"{pc} this candidate can't accept current signaling state {pc.peer.SignalingState}.");
-            }
+            pc.OnGotIceCandidate(new RTCIceCandidate(option));
         }
 
         void OnOffer(ISignaling signaling, DescData e)
@@ -528,59 +413,8 @@ namespace Unity.RenderStreaming
 
         IEnumerator GotOfferCoroutine(string connectionId, PeerConnection pc, string sdp)
         {
-            RTCSessionDescription description;
-            description.type = RTCSdpType.Offer;
-            description.sdp = sdp;
-
-            var isStable =
-                pc.peer.SignalingState == RTCSignalingState.Stable ||
-                (pc.peer.SignalingState == RTCSignalingState.HaveLocalOffer && pc.srdAnswerPending);
-            pc.ignoreOffer = !pc.polite && (pc.makingOffer || !isStable);
-            if (pc.ignoreOffer || pc.makingAnswer)
-            {
-                Debug.LogWarning($"{pc} glare - ignoreOffer {nameof(pc.peer.SignalingState)}:{pc.peer.SignalingState}");
-                yield break;
-            }
-
-            // waiting other setRemoteDescription process
-            yield return new WaitWhile(() => pc.srdAnswerPending);
-            pc.waitingAnswer = false;
-
-            var opRemoteDesc = pc.peer.SetRemoteDescription(ref description);
-            yield return opRemoteDesc;
-
-            if (opRemoteDesc.IsError)
-            {
-                Debug.LogError($"{pc} {opRemoteDesc.Error.message}");
-                yield break;
-            }
-
-            Assert.AreEqual(pc.peer.RemoteDescription.type, RTCSdpType.Offer, $"{pc} SRD worked");
-            Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.HaveRemoteOffer, $"{pc} Remote offer");
-
-            onGotOffer?.Invoke(connectionId, sdp);
-        }
-
-        IEnumerator SendAnswerCoroutine(string connectionId, PeerConnection pc)
-        {
-            pc.makingAnswer = true;
-
-            var opLocalDesc = pc.peer.SetLocalDescription();
-            yield return opLocalDesc;
-
-            if (opLocalDesc.IsError)
-            {
-                Debug.LogError($"{pc} {opLocalDesc.Error.message}");
-                pc.makingAnswer = false;
-                yield break;
-            }
-
-            Assert.AreEqual(pc.peer.LocalDescription.type, RTCSdpType.Answer, $"{pc} onmessage SLD worked");
-            Assert.AreEqual(pc.peer.SignalingState, RTCSignalingState.Stable,
-                $"{pc} onmessage not racing with negotiationneeded");
-            pc.makingAnswer = false;
-
-            _signaling.SendAnswer(connectionId, pc.peer.LocalDescription);
+            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Offer, sdp = sdp};
+            yield return pc.OnGotDescription(description, () => onGotOffer?.Invoke(connectionId, sdp));
         }
     }
 }

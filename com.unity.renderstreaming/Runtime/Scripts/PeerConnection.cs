@@ -1,52 +1,93 @@
 using System;
+using System.Collections;
 using Unity.WebRTC;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Unity.RenderStreaming
 {
     internal class PeerConnection : IDisposable
     {
-        public readonly RTCPeerConnection peer;
-        public readonly bool polite;
+        public delegate void OnConnectEvent();
 
-        public bool makingOffer;
-        public bool ignoreOffer;
-        public bool srdAnswerPending;
-        public bool makingAnswer;
+        public delegate void OnDisconnectEvent();
 
-        bool disposed = false;
+        public delegate void OnDataChannelEvent(RTCDataChannel channel);
+
+        public delegate void OnTrackEvent(RTCTrackEvent trackEvent);
+
+        public delegate void SendOfferEvent(RTCSessionDescription description);
+
+        public delegate void SendAnswerEvent(RTCSessionDescription description);
+
+        public delegate void SendCandidateEvent(RTCIceCandidate candidate);
+
+        public OnConnectEvent OnConnectHandler;
+        public OnDisconnectEvent OnDisconnectHandler;
+        public OnDataChannelEvent OnDataChannelHandler;
+        public OnTrackEvent OnTrackEventHandler;
+        public SendOfferEvent SendOfferHandler;
+        public SendAnswerEvent SendAnswerHandler;
+        public SendCandidateEvent SendCandidateHandler;
+
+        public RTCPeerConnection peer => _peer;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool waitingAnswer
         {
             get => _waitingAnswer;
-            set {
+            private set
+            {
                 _waitingAnswer = value;
-                timeSinceStartWaitingAnswer =
-                    _waitingAnswer ? UnityEngine.Time.realtimeSinceStartup : 0;
+                _timeSinceStartWaitingAnswer =
+                    _waitingAnswer ? Time.realtimeSinceStartup : 0;
             }
         }
 
-        /// <summary>
-        /// see Time.realtimeSinceStartup
-        /// </summary>
-        public float timeSinceStartWaitingAnswer { get; private set; }
+        private readonly RTCPeerConnection _peer;
+        private readonly bool _polite;
+        private readonly Func<IEnumerator, Coroutine> _startCoroutine;
 
+        // resend offer
+        private readonly float _resendInterval;
         private bool _waitingAnswer;
+        private float _timeSinceStartWaitingAnswer;
 
-        public PeerConnection(RTCPeerConnection peer, bool polite)
-        {
-            this.peer = peer;
-            this.polite = polite;
-        }
+        // processing local description
+        private bool _sldPending;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void RestartTimerForWaitingAnswer()
+        // processing got description
+        private bool _ignoreOffer;
+        private bool _srdAnswerPending;
+
+
+        private bool _disposed = false;
+
+        public PeerConnection(bool polite, RTCConfiguration config, float resendInterval, Func<IEnumerator, Coroutine> startCoroutine)
         {
-            timeSinceStartWaitingAnswer = UnityEngine.Time.realtimeSinceStartup;
+            _polite = polite;
+            _resendInterval = resendInterval;
+            _startCoroutine = startCoroutine;
+
+            _peer = new RTCPeerConnection(ref config);
+            _peer.OnDataChannel = channel => OnDataChannelHandler?.Invoke(channel);
+            _peer.OnIceCandidate = candidate => SendCandidateHandler?.Invoke(candidate);
+            _peer.OnTrack = trackEvent => OnTrackEventHandler?.Invoke(trackEvent);
+            _peer.OnConnectionStateChange = state =>
+            {
+                switch (state)
+                {
+                    case RTCPeerConnectionState.Connected:
+                        OnConnectHandler?.Invoke();
+                        break;
+                    case RTCPeerConnectionState.Disconnected:
+                        OnDisconnectHandler?.Invoke();
+                        break;
+                }
+            };
+            _peer.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded());
         }
 
         ~PeerConnection()
@@ -56,30 +97,173 @@ namespace Unity.RenderStreaming
 
         public override string ToString()
         {
-            var str = polite ? "polite" : "impolite";
+            var str = _polite ? "polite" : "impolite";
             return $"[{str}-{base.ToString()}]";
         }
 
         public void Dispose()
         {
-            if (peer == null)
+            if (_peer == null)
             {
                 return;
             }
-            if (disposed)
+
+            if (_disposed)
                 return;
 
-            peer.OnTrack = null;
-            peer.OnDataChannel = null;
-            peer.OnIceCandidate = null;
-            peer.OnNegotiationNeeded = null;
-            peer.OnConnectionStateChange = null;
-            peer.OnIceConnectionChange = null;
-            peer.OnIceGatheringStateChange = null;
-            peer.Dispose();
+            _peer.OnTrack = null;
+            _peer.OnDataChannel = null;
+            _peer.OnIceCandidate = null;
+            _peer.OnNegotiationNeeded = null;
+            _peer.OnConnectionStateChange = null;
+            _peer.OnIceConnectionChange = null;
+            _peer.OnIceGatheringStateChange = null;
+            _peer.Dispose();
 
-            disposed = true;
+            _disposed = true;
             GC.SuppressFinalize(this);
+        }
+
+        private IEnumerator OnNegotiationNeeded()
+        {
+            var waitStable = new WaitUntil(IsStable);
+            yield return waitStable;
+            SendOffer();
+        }
+
+        public bool IsConnected()
+        {
+            return _peer.ConnectionState == RTCPeerConnectionState.Connected;
+        }
+
+        public bool IsStable()
+        {
+            if (_sldPending || waitingAnswer)
+            {
+                return false;
+            }
+
+            return _peer.SignalingState == RTCSignalingState.Stable;
+        }
+
+        public void SendOffer()
+        {
+            if (!IsStable())
+            {
+                if (!_waitingAnswer)
+                {
+                    throw new InvalidOperationException(
+                        $"{_peer} sendoffer needs in stable state, current state is {_peer.SignalingState}");
+                }
+
+                var timeout = _timeSinceStartWaitingAnswer + _resendInterval;
+
+                if (timeout < Time.realtimeSinceStartup)
+                {
+                    SendOfferHandler?.Invoke(_peer.LocalDescription);
+                    _timeSinceStartWaitingAnswer = Time.realtimeSinceStartup;
+                }
+                return;
+            }
+
+            _startCoroutine(SendOfferCoroutine());
+        }
+
+        private IEnumerator SendOfferCoroutine()
+        {
+            var wait = new WaitWhile(() => !IsStable() || _sldPending);
+            yield return wait;
+
+            Assert.AreEqual(_peer.SignalingState, RTCSignalingState.Stable);
+            Assert.AreEqual(_sldPending, false);
+
+            _sldPending = true;
+
+            var opLocalDesc = _peer.SetLocalDescription();
+            yield return opLocalDesc;
+
+            if (opLocalDesc.IsError)
+            {
+                Debug.LogError($"{this} {opLocalDesc.Error.message}");
+                _sldPending = false;
+                yield break;
+            }
+
+            Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Offer);
+            Assert.AreEqual(_peer.SignalingState, RTCSignalingState.HaveLocalOffer);
+            _sldPending = false;
+            waitingAnswer = true;
+
+            SendOfferHandler?.Invoke(_peer.LocalDescription);
+        }
+
+        public void SendAnswer()
+        {
+            _startCoroutine(SendAnswerCoroutine());
+        }
+
+        private IEnumerator SendAnswerCoroutine()
+        {
+            var wait = new WaitWhile(() => _sldPending);
+            yield return wait;
+
+            _sldPending = true;
+
+            var opLocalDesc = _peer.SetLocalDescription();
+            yield return opLocalDesc;
+
+            if (opLocalDesc.IsError)
+            {
+                Debug.LogError($"{this} {opLocalDesc.Error.message}");
+                _sldPending = false;
+                yield break;
+            }
+
+            Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Answer);
+            Assert.AreEqual(_peer.SignalingState, RTCSignalingState.Stable);
+            _sldPending = false;
+
+            SendAnswerHandler?.Invoke(_peer.LocalDescription);
+        }
+
+        public IEnumerator OnGotDescription(RTCSessionDescription description, Action onComplete)
+        {
+            var wait = new WaitWhile(() => _sldPending);
+            yield return wait;
+
+            var isStable = _peer.SignalingState == RTCSignalingState.Stable ||
+                           (_peer.SignalingState == RTCSignalingState.HaveLocalOffer && _srdAnswerPending);
+            _ignoreOffer = description.type == RTCSdpType.Offer && !_polite && (_sldPending || !isStable);
+
+            if (_ignoreOffer)
+            {
+                Debug.LogWarning($"{this} glare - ignoreOffer signalingState:{_peer.SignalingState}");
+                yield break;
+            }
+
+            waitingAnswer = false;
+            _srdAnswerPending = description.type == RTCSdpType.Answer;
+
+            var remoteDescOp = _peer.SetRemoteDescription(ref description);
+            yield return remoteDescOp;
+            if (remoteDescOp.IsError)
+            {
+                Debug.LogError($"{this} {remoteDescOp.Error.message}");
+                _srdAnswerPending = false;
+                yield break;
+            }
+
+            _srdAnswerPending = false;
+            onComplete?.Invoke();
+        }
+
+        public void OnGotIceCandidate(RTCIceCandidate candidate)
+        {
+            if (!_peer.AddIceCandidate(candidate))
+            {
+                if (!_ignoreOffer)
+                    Debug.LogWarning($"{this} this candidate can't accept current signaling state {_peer.SignalingState}");
+            }
         }
     }
 }
