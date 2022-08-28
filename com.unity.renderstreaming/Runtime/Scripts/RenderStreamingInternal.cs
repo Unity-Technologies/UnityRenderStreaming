@@ -30,6 +30,11 @@ namespace Unity.RenderStreaming
         public Func<IEnumerator, Coroutine> startCoroutine;
 
         /// <summary>
+        ///
+        /// </summary>
+        public Action<Coroutine> stopCoroutine;
+
+        /// <summary>
         /// unit is second;
         /// </summary>
         public float resentOfferInterval;
@@ -90,6 +95,7 @@ namespace Unity.RenderStreaming
         private readonly ISignaling _signaling;
         private RTCConfiguration _config;
         private readonly Func<IEnumerator, Coroutine> _startCoroutine;
+        private readonly Action<Coroutine> _stopCoroutine;
         private readonly Dictionary<string, PeerConnection> _mapConnectionIdAndPeer =
             new Dictionary<string, PeerConnection>();
         private bool _runningResendCoroutine;
@@ -118,6 +124,7 @@ namespace Unity.RenderStreaming
 
             _config = dependencies.config;
             _startCoroutine = dependencies.startCoroutine;
+            _stopCoroutine = dependencies.stopCoroutine;
             _resendInterval = dependencies.resentOfferInterval;
             _signaling = dependencies.signaling;
             _signaling.OnStart += OnStart;
@@ -345,7 +352,7 @@ namespace Unity.RenderStreaming
                 peer.Dispose();
             }
 
-            peer = new PeerConnection(polite, _config, _resendInterval, _startCoroutine);
+            peer = new PeerConnection(polite, _config, _resendInterval, _startCoroutine, _stopCoroutine);
             _mapConnectionIdAndPeer[connectionId] = peer;
 
             peer.OnConnectHandler += () => onConnect?.Invoke(connectionId);

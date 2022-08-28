@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -49,6 +50,8 @@ namespace Unity.RenderStreaming
         private readonly RTCPeerConnection _peer;
         private readonly bool _polite;
         private readonly Func<IEnumerator, Coroutine> _startCoroutine;
+        private readonly Action<Coroutine> _stopCoroutine;
+        private readonly HashSet<WeakReference<Coroutine>> _processingCoroutineList = new HashSet<WeakReference<Coroutine>>();
 
         // resend offer
         private readonly float _resendInterval;
@@ -65,11 +68,12 @@ namespace Unity.RenderStreaming
 
         private bool _disposed = false;
 
-        public PeerConnection(bool polite, RTCConfiguration config, float resendInterval, Func<IEnumerator, Coroutine> startCoroutine)
+        public PeerConnection(bool polite, RTCConfiguration config, float resendInterval, Func<IEnumerator, Coroutine> startCoroutine, Action<Coroutine> stopCoroutine)
         {
             _polite = polite;
             _resendInterval = resendInterval;
             _startCoroutine = startCoroutine;
+            _stopCoroutine = stopCoroutine;
 
             _peer = new RTCPeerConnection(ref config);
             _peer.OnDataChannel = channel => OnDataChannelHandler?.Invoke(channel);
@@ -87,7 +91,14 @@ namespace Unity.RenderStreaming
                         break;
                 }
             };
-            _peer.OnNegotiationNeeded = () => _startCoroutine(OnNegotiationNeeded());
+            _peer.OnNegotiationNeeded = () => StartCoroutine(OnNegotiationNeeded());
+        }
+
+        private void StartCoroutine(IEnumerator enumerator)
+        {
+            var co = _startCoroutine(enumerator);
+            _processingCoroutineList.RemoveWhere(x => !x.TryGetTarget(out _));
+            _processingCoroutineList.Add(new WeakReference<Coroutine>(co));
         }
 
         ~PeerConnection()
@@ -103,22 +114,29 @@ namespace Unity.RenderStreaming
 
         public void Dispose()
         {
-            if (_peer == null)
-            {
-                return;
-            }
-
             if (_disposed)
                 return;
 
-            _peer.OnTrack = null;
-            _peer.OnDataChannel = null;
-            _peer.OnIceCandidate = null;
-            _peer.OnNegotiationNeeded = null;
-            _peer.OnConnectionStateChange = null;
-            _peer.OnIceConnectionChange = null;
-            _peer.OnIceGatheringStateChange = null;
-            _peer.Dispose();
+            foreach (var weakCo in _processingCoroutineList)
+            {
+                if (weakCo.TryGetTarget(out var co))
+                {
+                    _stopCoroutine?.Invoke(co);
+                }
+            }
+            _processingCoroutineList.Clear();
+
+            if (_peer != null)
+            {
+                _peer.OnTrack = null;
+                _peer.OnDataChannel = null;
+                _peer.OnIceCandidate = null;
+                _peer.OnNegotiationNeeded = null;
+                _peer.OnConnectionStateChange = null;
+                _peer.OnIceConnectionChange = null;
+                _peer.OnIceGatheringStateChange = null;
+                _peer.Dispose();
+            }
 
             _disposed = true;
             GC.SuppressFinalize(this);
@@ -166,7 +184,7 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            _startCoroutine(SendOfferCoroutine());
+            StartCoroutine(SendOfferCoroutine());
         }
 
         private IEnumerator SendOfferCoroutine()
@@ -199,7 +217,7 @@ namespace Unity.RenderStreaming
 
         public void SendAnswer()
         {
-            _startCoroutine(SendAnswerCoroutine());
+            StartCoroutine(SendAnswerCoroutine());
         }
 
         private IEnumerator SendAnswerCoroutine()

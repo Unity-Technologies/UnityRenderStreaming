@@ -162,6 +162,7 @@ namespace Unity.RenderStreaming
                 config = _conf,
                 signaling = _signaling,
                 startCoroutine = StartCoroutine,
+                stopCoroutine = StopCoroutine,
                 resentOfferInterval = interval,
             };
             var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
