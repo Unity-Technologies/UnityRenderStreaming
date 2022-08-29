@@ -11,6 +11,7 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty propertyMinimum;
         SerializedProperty propertyMaximum;
         bool cache = false;
+        bool changed = false;
         int minLimit;
         int maxLimit;
 
@@ -56,6 +57,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 propertyMinimum.intValue = min;
                 propertyMaximum.intValue = max;
+                changed = true;
             }
             EditorGUI.EndProperty();
 
@@ -69,6 +71,7 @@ namespace Unity.RenderStreaming.Editor
                 min = Mathf.Max(min, minLimit);
                 min = Mathf.Min(min, max);
                 propertyMinimum.intValue = min;
+                changed = true;
             }
 
             // max value
@@ -81,6 +84,21 @@ namespace Unity.RenderStreaming.Editor
                 max = Mathf.Min(max, maxLimit);
                 max = Mathf.Max(min, max);
                 propertyMaximum.intValue = max;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                if (Application.isPlaying)
+                {
+                    var objectReferenceValue = property.serializedObject.targetObject;
+                    var type = objectReferenceValue.GetType();
+                    var attribute = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                    var methodName = "SetBitrate";
+                    var method = type.GetMethod(methodName, attribute);
+                    method.Invoke(objectReferenceValue, new object[] { (uint)min, (uint)max });
+                }
+                changed = false;
             }
         }
 
