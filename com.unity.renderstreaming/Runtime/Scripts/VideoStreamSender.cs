@@ -568,6 +568,9 @@ namespace Unity.RenderStreaming
 
             public override VideoStreamTrack CreateTrack()
             {
+                /// Screen.width/height returns size of the active window.
+                /// However, it is mandatory to get size of the game view when player mode.
+                /// UnityStats is used here because it returns the size of game view anytime.
 #if UNITY_EDITOR
                 string[] screenres = UnityEditor.UnityStats.screenRes.Split('x');
                 int screenWidth = int.Parse(screenres[0]);
