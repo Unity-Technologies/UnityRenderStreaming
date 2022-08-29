@@ -384,13 +384,8 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            _startCoroutine(GotAnswerCoroutine(e.connectionId, pc, e.sdp));
-        }
-
-        IEnumerator GotAnswerCoroutine(string connectionId, PeerConnection pc, string sdp)
-        {
-            var description = new RTCSessionDescription {type = RTCSdpType.Answer, sdp = sdp};
-            yield return pc.OnGotDescription(description, () => onGotAnswer?.Invoke(connectionId, sdp));
+            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Answer, sdp = e.sdp};
+            _startCoroutine(pc.OnGotDescription(description, () => onGotAnswer?.Invoke(e.connectionId, e.sdp)));
         }
 
         void OnIceCandidate(ISignaling signaling, CandidateData e)
@@ -415,13 +410,8 @@ namespace Unity.RenderStreaming
                 pc = CreatePeerConnection(connectionId, e.polite);
             }
 
-            _startCoroutine(GotOfferCoroutine(connectionId, pc, e.sdp));
-        }
-
-        IEnumerator GotOfferCoroutine(string connectionId, PeerConnection pc, string sdp)
-        {
-            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Offer, sdp = sdp};
-            yield return pc.OnGotDescription(description, () => onGotOffer?.Invoke(connectionId, sdp));
+            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Offer, sdp = e.sdp};
+            _startCoroutine(pc.OnGotDescription(description, () => onGotOffer?.Invoke(connectionId, e.sdp)));
         }
     }
 }
