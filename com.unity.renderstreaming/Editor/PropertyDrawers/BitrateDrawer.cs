@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming.Editor
         int maxLimit;
 
         readonly GUIContent s_bitrateLabel =
-            EditorGUIUtility.TrTextContent("Bitrate (kbits/sec)", "A range of bitrate of video streaming.");
+            EditorGUIUtility.TrTextContent("Bitrate (kbits/sec)", "A range of bitrate of streaming.");
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
