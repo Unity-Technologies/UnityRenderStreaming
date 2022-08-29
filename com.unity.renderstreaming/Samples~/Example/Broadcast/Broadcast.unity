@@ -2060,10 +2060,9 @@ GameObject:
   - component: {fileID: 725451154}
   - component: {fileID: 725451151}
   - component: {fileID: 725451155}
-  - component: {fileID: 725451156}
   - component: {fileID: 725451157}
   - component: {fileID: 725451153}
-  - component: {fileID: 725451152}
+  - component: {fileID: 725451156}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -2093,42 +2092,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
---- !u!328 &725451152
-VideoPlayer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725451149}
-  m_Enabled: 1
-  m_VideoClip: {fileID: 0}
-  m_TargetCameraAlpha: 1
-  m_TargetCamera3DLayout: 0
-  m_TargetCamera: {fileID: 725451154}
-  m_TargetTexture: {fileID: 0}
-  m_TimeReference: 0
-  m_TargetMaterialRenderer: {fileID: 0}
-  m_TargetMaterialProperty: _MainTex
-  m_RenderMode: 0
-  m_AspectRatio: 2
-  m_DataSource: 1
-  m_PlaybackSpeed: 1
-  m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
-  m_Url: "file://C:/Users/kazuk/OneDrive/\u753B\u50CF/\u30D3\u30C7\u30AA \u30D7\u30ED\u30B8\u30A7\u30AF\u30C8/WebRTC~
-    - Bandwidth - Android - Unity 2020.3.25f1 [CODE COVERAGE] _DX11_ 2021-12-24 17-23-39_Trim.mp4"
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 00
-  m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
-  m_SkipOnDrop: 1
-  m_Looping: 1
-  m_WaitForFirstFrame: 1
-  m_FrameReadyEventEnabled: 0
-  m_VideoShaders: []
 --- !u!114 &725451153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2311,8 +2274,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_minBitrate: 1000
-  m_maxBitrate: 1000
+  m_bitrate:
+    min: 0
+    max: 200
 --- !u!114 &725451156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2322,22 +2286,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf9651170f6623244a2730f432ff0531, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_streamingSize: {x: 1280, y: 720}
+  m_textureSize: {x: 1280, y: 720}
   m_source: 1
   m_camera: {fileID: 0}
+  m_texture: {fileID: 0}
+  m_webCamDeviceIndex: 0
   m_depth: 0
   m_antiAliasing: 1
-  m_webcamTexture: {fileID: 0}
-  m_texture: {fileID: 0}
   m_frameRate: 30
-  m_minBitrate: 1000
-  m_maxBitrate: 1000
+  m_bitrate:
+    min: 0
+    max: 1000
   m_scaleFactor: 1
-  depth: 0
-  antiAliasing: 1
+  m_autoRequestUserAuthorization: 1
 --- !u!114 &725451157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2581,7 +2545,7 @@ PrefabInstance:
         type: 3}
       propertyPath: senderBaseList.Array.data[0]
       value: 
-      objectReference: {fileID: 725451156}
+      objectReference: {fileID: 0}
     - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
         type: 3}
       propertyPath: senderBaseList.Array.data[1]

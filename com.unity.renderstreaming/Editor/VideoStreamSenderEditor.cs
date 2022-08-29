@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,6 +32,13 @@ namespace Unity.RenderStreaming.Editor
                 pair.Value.valueChanged.RemoveListener(action);
             }
         }
+
+        public static Dictionary<VideoStreamSource, AnimBool> Create(VideoStreamSource initialValue)
+        {
+            return Enum.GetValues(typeof(VideoStreamSource))
+                .Cast<VideoStreamSource>()
+                .ToDictionary(source => source, source => new AnimBool(source == initialValue));
+        }
     }
 
 
@@ -58,8 +64,7 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty m_camera;
         SerializedProperty m_texture;
         SerializedProperty m_frameRate;
-        SerializedProperty m_minBitrate;
-        SerializedProperty m_maxBitrate;
+        SerializedProperty m_bitrate;
         SerializedProperty m_scaleFactor;
         SerializedProperty m_depth;
         SerializedProperty m_antiAliasing;
@@ -67,27 +72,25 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty m_webCamDeviceIndex;
         SerializedProperty m_autoRequestUserAuthorization;
 
-        Dictionary<VideoStreamSource, AnimBool> m_videoSource;
-        Vector2 m_bitrate;
+        static Dictionary<VideoStreamSource, AnimBool> m_videoSource;
 
         void OnEnable()
         {
-            if (m_videoSource == null)
-                m_videoSource = Enum.GetValues(typeof(VideoStreamSource)).Cast<VideoStreamSource>().ToDictionary(source => source, source => new AnimBool());
-            m_videoSource.AddListener(Repaint);
-
             m_source = serializedObject.FindProperty("m_source");
             m_camera = serializedObject.FindProperty("m_camera");
             m_texture = serializedObject.FindProperty("m_texture");
             m_webCamDeviceIndex = serializedObject.FindProperty("m_webCamDeviceIndex");
             m_textureSize = serializedObject.FindProperty("m_textureSize");
             m_frameRate = serializedObject.FindProperty("m_frameRate");
-            m_minBitrate = serializedObject.FindProperty("m_minBitrate");
-            m_maxBitrate = serializedObject.FindProperty("m_maxBitrate");
+            m_bitrate = serializedObject.FindProperty("m_bitrate");
             m_scaleFactor = serializedObject.FindProperty("m_scaleFactor");
             m_depth = serializedObject.FindProperty("m_depth");
             m_antiAliasing = serializedObject.FindProperty("m_antiAliasing");
             m_autoRequestUserAuthorization = serializedObject.FindProperty("m_autoRequestUserAuthorization");
+
+            if (m_videoSource == null)
+                m_videoSource = DictionaryExtension.Create((VideoStreamSource)m_source.intValue);
+            m_videoSource.AddListener(Repaint);
         }
 
         void OnDisable()
@@ -103,12 +106,19 @@ namespace Unity.RenderStreaming.Editor
 
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(m_source, s_Styles.dataSourceContent);
-            HandleDataSourceField();
+
+            bool disableEditMediaSource = Application.isPlaying;
+
+            /// todo(kazuki): Make available to change video source parameters in runtime.
+            using (new EditorGUI.DisabledScope(disableEditMediaSource))
+            {
+                EditorGUILayout.PropertyField(m_source, s_Styles.dataSourceContent);
+                HandleDataSourceField();
+            }
 
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(m_frameRate, s_Styles.frameRateContent);
-            HandleBitrateField();
+            EditorGUILayout.PropertyField(m_bitrate, s_Styles.frameRateContent);
 
             EditorGUILayout.PropertyField(m_scaleFactor, s_Styles.scaleFactorContent);
 
@@ -147,27 +157,6 @@ namespace Unity.RenderStreaming.Editor
                 EditorGUILayout.PropertyField(m_textureSize);
             }
             EditorGUILayout.EndFadeGroup();
-        }
-
-        private void HandleBitrateField()
-        {
-            m_bitrate.x = m_minBitrate.intValue;
-            m_bitrate.y = m_maxBitrate.intValue;
-
-            EditorGUILayout.MinMaxSlider(s_Styles.bitrateContent, ref m_bitrate.x, ref m_bitrate.y, 0, 10000);
-
-            int min = (int)m_bitrate.x;
-            int max = (int)m_bitrate.y;
-
-            EditorGUI.indentLevel++;
-            min = EditorGUILayout.IntField("Min Bitrate", min);
-            max = EditorGUILayout.IntField("Max Bitrate", max);
-            EditorGUI.indentLevel--;
-
-            if (m_minBitrate.intValue == min && m_minBitrate.intValue == max)
-                return;
-            m_minBitrate.intValue = min;
-            m_maxBitrate.intValue = max;
         }
     }
 }

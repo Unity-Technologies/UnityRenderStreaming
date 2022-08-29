@@ -97,11 +97,12 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class VideoStreamSender : StreamSenderBase
     {
-        // todo(kazuki): check default value.
-        const float s_defaultFrameRate = 30;
+        static readonly float s_defaultFrameRate = 30;
 
-        const uint s_defaultMinBitrate = 0;
-        const uint s_defaultMaxBitrate = 1000;
+        static readonly uint s_defaultMinBitrate = 0;
+        static readonly uint s_defaultMaxBitrate = 1000;
+
+        static readonly int s_defaultDepth = 16;
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]
@@ -120,7 +121,7 @@ namespace Unity.RenderStreaming
         private int m_webCamDeviceIndex;
 
         [SerializeField, RenderTextureDepthBuffer]
-        private int m_depth = 0;
+        private int m_depth = s_defaultDepth;
 
         [SerializeField, RenderTextureAntiAliasing]
         private int m_antiAliasing = 1;
@@ -202,6 +203,21 @@ namespace Unity.RenderStreaming
                 m_webCamDeviceIndex = value;
                 if (isPlaying)
                     ReplaceTrack(CreateTrack());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public WebCamTexture sourceWebCamTexture
+        {
+            get
+            {
+                if(m_sourceImpl is VideoStreamSourceWebCam source)
+                {
+                    return source.webCamTexture;
+                }
+                return null;
             }
         }
 
@@ -620,6 +636,8 @@ namespace Unity.RenderStreaming
             bool m_autoRequestUserAuthorization;
             float m_frameRate;
             WebCamTexture m_webcamTexture;
+
+            public WebCamTexture webCamTexture => m_webcamTexture;
 
             public VideoStreamSourceWebCam(VideoStreamSender parent) : base(parent)
             {

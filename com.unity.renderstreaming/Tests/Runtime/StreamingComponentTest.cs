@@ -112,6 +112,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 sender.sourceDeviceIndex = 0;
                 track = sender.CreateTrack();
                 Assert.That(track, Is.Not.Null);
+                Assert.That(sender.sourceWebCamTexture, Is.Not.Null);
                 track.Dispose();
             }
 
