@@ -566,7 +566,7 @@ namespace Unity.RenderStreaming
                 m_behaviour = parent;
             }
 
-            public override VideoStreamTrack CreateTrack()
+            static Vector2Int GetScreenSize()
             {
                 /// Screen.width/height returns size of the active window.
                 /// However, it is mandatory to get size of the game view when player mode.
@@ -575,12 +575,25 @@ namespace Unity.RenderStreaming
                 string[] screenres = UnityEditor.UnityStats.screenRes.Split('x');
                 int screenWidth = int.Parse(screenres[0]);
                 int screenHeight = int.Parse(screenres[1]);
+
+                /// Set Screen.width/height forcely because UnityStats returns zero when batch mode.
+                if (screenWidth == 0 || screenHeight == 0)
+                {
+                    screenWidth = Screen.width;
+                    screenHeight = Screen.height;
+                }
 #else
                 int screenWidth = Screen.width;
                 int screenHeight = Screen.height;
 #endif
+                return new Vector2Int(screenWidth, screenHeight);
+            }
+
+            public override VideoStreamTrack CreateTrack()
+            {
+                Vector2Int screenSize = GetScreenSize();
                 m_screenTexture =
-                    new RenderTexture(screenWidth, screenHeight, depth, RenderTextureFormat.Default) { antiAliasing = antiAliasing };
+                    new RenderTexture(screenSize.x, screenSize.y, depth, RenderTextureFormat.Default) { antiAliasing = antiAliasing };
                 m_screenTexture.Create();
 
                 RenderTextureFormat format =
