@@ -12,14 +12,12 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamSender : StreamSenderBase
     {
-        // todo(kazuki): check default value.
-        const uint s_defaultBitrate = 1000;
+        const uint s_defaultMinBitrate = 0;
+        const uint s_defaultMaxBitrate = 200;
 
-        [SerializeField]
-        private uint m_minBitrate = s_defaultBitrate;
+        [SerializeField, Bitrate(0, 1000)]
+        private Range m_bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
-        [SerializeField]
-        private uint m_maxBitrate = s_defaultBitrate;
 
         private AudioCodecInfo m_codec;
 
@@ -40,7 +38,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint minBitrate
         {
-            get { return m_minBitrate; }
+            get { return m_bitrate.min; }
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint maxBitrate
         {
-            get { return m_maxBitrate; }
+            get { return m_bitrate.max; }
         }
 
         /// <summary>
@@ -70,11 +68,11 @@ namespace Unity.RenderStreaming
         {
             if (minBitrate > maxBitrate)
                 throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
-            m_minBitrate = minBitrate;
-            m_maxBitrate = maxBitrate;
+            m_bitrate.min = minBitrate;
+            m_bitrate.max = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
+                RTCError error = transceiver.Sender.SetBitrate(m_bitrate.min, m_bitrate.max);
                 if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }

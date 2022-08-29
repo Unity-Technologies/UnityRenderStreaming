@@ -67,8 +67,6 @@ namespace Unity.RenderStreaming.Editor
             }
             if (!Mathf.Approximately(value, newValue))
             {
-                property.floatValue = newValue;
-
                 if(Application.isPlaying)
                 {
                     var objectReferenceValue = property.serializedObject.targetObject;
@@ -77,6 +75,10 @@ namespace Unity.RenderStreaming.Editor
                     var methodName = "SetFrameRate";
                     var method = type.GetMethod(methodName, attribute);
                     method.Invoke(objectReferenceValue, new object[] { newValue });
+                }
+                else
+                {
+                    property.floatValue = newValue;
                 }
             }
             EditorGUI.EndProperty();
