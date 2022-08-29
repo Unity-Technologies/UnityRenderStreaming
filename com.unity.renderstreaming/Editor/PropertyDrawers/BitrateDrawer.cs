@@ -15,11 +15,11 @@ namespace Unity.RenderStreaming.Editor
         int minLimit;
         int maxLimit;
 
-        readonly GUIContent s_bitrateLabel =
+        static readonly GUIContent s_bitrateLabel =
             EditorGUIUtility.TrTextContent("Bitrate (kbits/sec)", "A range of bitrate of streaming.");
-        readonly GUIContent s_minBitrateLabel =
+        static readonly GUIContent s_minBitrateLabel =
             EditorGUIUtility.TrTextContent("Min");
-        readonly GUIContent s_maxBitrateLabel =
+        static readonly GUIContent s_maxBitrateLabel =
             EditorGUIUtility.TrTextContent("Max");
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -39,7 +39,7 @@ namespace Unity.RenderStreaming.Editor
             var rect = position;
             rect.height = EditorGUIUtility.singleLineHeight;
 
-            label = EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.BeginProperty(position, label, property);
 
             float minValue = propertyMinimum.intValue;
             float maxValue = propertyMaximum.intValue;

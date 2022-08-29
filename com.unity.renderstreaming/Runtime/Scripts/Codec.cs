@@ -4,11 +4,32 @@ using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
 {
+    internal static class RTCRtpCodecCapabilityExtension
+    {
+        public static string GetCodecName(this RTCRtpCodecCapability cap)
+        {
+            return cap.mimeType.Split('/')[1];
+        }
+    }        
+
     [Serializable]
     internal struct Codec<T> : IEquatable<RTCRtpCodecCapability>
     {
-        public string mimeType;
+        public string codecName;
         public string sdpFmtpLine;
+
+        public string mimeType
+        {
+            get
+            {
+                Type type = typeof(T);
+                if (type == typeof(VideoStreamSender) || type == typeof(VideoStreamReceiver))
+                    return $"video/{codecName}";
+                if (type == typeof(AudioStreamSender) || type == typeof(AudioStreamReceiver))
+                    return $"audio/{codecName}";
+                throw new InvalidOperationException();
+            }
+        }
 
         public static IEnumerable<VideoCodecInfo> GetAvailableVideoCodecs(Type type)
         {
@@ -74,7 +95,7 @@ namespace Unity.RenderStreaming
         {
             return new Codec<T>()
             {
-                mimeType = capability.mimeType,
+                codecName = capability.GetCodecName(),
                 sdpFmtpLine = capability.sdpFmtpLine
             };
         }

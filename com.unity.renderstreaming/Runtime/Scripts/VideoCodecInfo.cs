@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return capability.mimeType.Split('/')[1]; } }
+        public string name { get { return capability.GetCodecName(); } }
 
         /// <summary>
         /// 
