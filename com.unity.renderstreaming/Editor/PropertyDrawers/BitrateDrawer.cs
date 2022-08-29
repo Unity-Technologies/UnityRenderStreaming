@@ -16,6 +16,10 @@ namespace Unity.RenderStreaming.Editor
 
         readonly GUIContent s_bitrateLabel =
             EditorGUIUtility.TrTextContent("Bitrate (kbits/sec)", "A range of bitrate of streaming.");
+        readonly GUIContent s_minBitrateLabel =
+            EditorGUIUtility.TrTextContent("Min");
+        readonly GUIContent s_maxBitrateLabel =
+            EditorGUIUtility.TrTextContent("Max");
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -43,7 +47,7 @@ namespace Unity.RenderStreaming.Editor
             EditorGUI.BeginChangeCheck();
 
             rect = EditorGUI.PrefixLabel(rect, s_bitrateLabel);
-            EditorGUI.MinMaxSlider(rect, new GUIContent(), ref minValue, ref maxValue, minLimit, maxLimit);
+            EditorGUI.MinMaxSlider(rect, ref minValue, ref maxValue, minLimit, maxLimit);
 
             int min = (int)minValue;
             int max = (int)maxValue;
@@ -59,7 +63,7 @@ namespace Unity.RenderStreaming.Editor
             EditorGUI.BeginChangeCheck();
 
             rect.y += EditorGUIUtility.singleLineHeight;
-            min = EditorGUI.IntField(rect, new GUIContent("Min"), min);
+            min = EditorGUI.IntField(rect, s_minBitrateLabel, min);
             if (EditorGUI.EndChangeCheck())
             {
                 min = Mathf.Max(min, minLimit);
@@ -71,7 +75,7 @@ namespace Unity.RenderStreaming.Editor
             EditorGUI.BeginChangeCheck();
 
             rect.y += EditorGUIUtility.singleLineHeight;
-            max = EditorGUI.IntField(rect, new GUIContent("Max"), max);
+            max = EditorGUI.IntField(rect, s_maxBitrateLabel, max);
             if (EditorGUI.EndChangeCheck())
             {
                 max = Mathf.Min(max, maxLimit);
