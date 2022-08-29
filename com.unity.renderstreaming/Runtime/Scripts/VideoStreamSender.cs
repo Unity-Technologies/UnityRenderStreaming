@@ -10,7 +10,17 @@ namespace Unity.RenderStreaming
 
     internal sealed class FrameRateAttribute : PropertyAttribute { }
 
-    internal sealed class BitrateAttribute : PropertyAttribute { }
+    internal sealed class BitrateAttribute : PropertyAttribute
+    {
+        public int minValue;
+        public int maxValue;
+
+        public BitrateAttribute(int minValue, int maxValue)
+        {
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+        }
+    }
 
     internal sealed class RenderTextureAntiAliasingAttribute : PropertyAttribute { }
 
@@ -19,6 +29,15 @@ namespace Unity.RenderStreaming
     internal sealed class WebCamDeviceAttribute : PropertyAttribute { }
 
     internal sealed class ScaleResolutionAttribute : PropertyAttribute { }
+
+    [Serializable]
+    internal struct Range
+    {
+        public uint min;
+        public uint max;
+
+        public Range(uint min, uint max) { this.min = min; this.max = max; }
+    }
 
     internal static class RTCRtpSenderExtension
     {
@@ -68,8 +87,9 @@ namespace Unity.RenderStreaming
     {
         // todo(kazuki): check default value.
         const float s_defaultFrameRate = 30;
-        // todo(kazuki): check default value.
-        const uint s_defaultBitrate = 1000;
+
+        const uint s_defaultMinBitrate = 0;
+        const uint s_defaultMaxBitrate = 1000;
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]
@@ -78,11 +98,8 @@ namespace Unity.RenderStreaming
         [SerializeField, FrameRate]
         private float m_frameRate = s_defaultFrameRate;
 
-        [SerializeField]
-        private uint m_minBitrate = s_defaultBitrate;
-
-        [SerializeField]
-        private uint m_maxBitrate = s_defaultBitrate;
+        [SerializeField, Bitrate(0, 10000)]
+        private Range m_bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
         [SerializeField, ScaleResolution]
         private float m_scaleFactor = 1f;
@@ -102,7 +119,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint minBitrate
         {
-            get { return m_minBitrate; }
+            get { return m_bitrate.min; }
         }
 
         /// <summary>
@@ -110,7 +127,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint maxBitrate
         {
-            get { return m_maxBitrate; }
+            get { return m_bitrate.max; }
         }
 
         /// <summary>
@@ -191,11 +208,11 @@ namespace Unity.RenderStreaming
         {
             if (minBitrate > maxBitrate)
                 throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
-            m_minBitrate = minBitrate;
-            m_maxBitrate = maxBitrate;
+            m_bitrate.min = minBitrate;
+            m_bitrate.max = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_minBitrate, m_maxBitrate);
+                RTCError error = transceiver.Sender.SetBitrate(m_bitrate.min, m_bitrate.max);
                 if (error.errorType != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. {error.message}");
             }
