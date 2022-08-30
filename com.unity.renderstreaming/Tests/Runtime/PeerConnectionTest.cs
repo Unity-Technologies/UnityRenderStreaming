@@ -579,5 +579,386 @@ namespace Unity.RenderStreaming.RuntimeTest
             peer2.Dispose();
         }
 
+        [UnityTest, Timeout(5000)]
+        public IEnumerator CalledOnConnect()
+        {
+            var peer1 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer = false;
+            RTCSessionDescription offerDesc = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer = true;
+                offerDesc = description;
+            };
+            var isGotConnect1 = false;
+            peer1.OnConnectHandler += () => isGotConnect1 = true;
+
+            var isGotSendAnswer = false;
+            RTCSessionDescription answerDesc = default;
+            peer2.SendAnswerHandler += description =>
+            {
+                isGotSendAnswer = true;
+                answerDesc = description;
+            };
+            var isGotConnect2 = false;
+            peer2.OnConnectHandler += () => isGotConnect2 = true;
+
+            var transceiver = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer);
+            Assert.That(isGotSendOffer, Is.True);
+            Assert.That(offerDesc.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            peer2.SendAnswer();
+            yield return new WaitUntil(() => isGotSendAnswer);
+            Assert.That(isGotSendAnswer, Is.True);
+            Assert.That(answerDesc.type, Is.EqualTo(RTCSdpType.Answer));
+            Assert.That(answerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            isComplete = false;
+            yield return peer1.OnGotDescription(answerDesc, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            yield return new WaitUntil(() => isGotConnect1 && isGotConnect2);
+            Assert.That(isGotConnect1, Is.True);
+            Assert.That(isGotConnect2, Is.True);
+
+            transceiver.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        public IEnumerator SendOfferTwiceImmediately()
+        {
+            var peer1 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+
+            var isGotSendOffer = false;
+            RTCSessionDescription offerDesc = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer = true;
+                offerDesc = description;
+            };
+
+            var transceiver = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver, Is.Not.Null);
+
+            peer1.SendOffer();
+            peer1.SendOffer();
+
+            yield return new WaitUntil(() => isGotSendOffer);
+            Assert.That(isGotSendOffer, Is.True);
+            Assert.That(offerDesc.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            transceiver.Dispose();
+            peer1.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        public IEnumerator SendAnswerTwiceImmediately()
+        {
+            var peer1 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer = false;
+            RTCSessionDescription offerDesc = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer = true;
+                offerDesc = description;
+            };
+
+            var isGotSendAnswer = false;
+            RTCSessionDescription answerDesc = default;
+            peer2.SendAnswerHandler += description =>
+            {
+                isGotSendAnswer = true;
+                answerDesc = description;
+            };
+
+            var transceiver = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer);
+            Assert.That(isGotSendOffer, Is.True);
+            Assert.That(offerDesc.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            peer2.SendAnswer();
+            peer2.SendAnswer();
+
+            yield return new WaitUntil(() => isGotSendAnswer);
+            Assert.That(isGotSendAnswer, Is.True);
+            Assert.That(answerDesc.type, Is.EqualTo(RTCSdpType.Answer));
+            Assert.That(answerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            transceiver.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        public IEnumerator OnGotOfferDescriptionAfterSendOfferImmediatelyInPolite()
+        {
+            var peer1 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer1 = false;
+            RTCSessionDescription offerDesc1 = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer1 = true;
+                offerDesc1 = description;
+            };
+
+            var isGotSendOffer2 = false;
+            RTCSessionDescription offerDesc2 = default;
+            peer2.SendOfferHandler += description =>
+            {
+                isGotSendOffer2 = true;
+                offerDesc2 = description;
+            };
+
+            var isGotSendAnswer = false;
+            RTCSessionDescription answerDesc = default;
+            peer2.SendAnswerHandler += description =>
+            {
+                isGotSendAnswer = true;
+                answerDesc = description;
+            };
+
+            var transceiver1 = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver1, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer1);
+            Assert.That(isGotSendOffer1, Is.True);
+            Assert.That(offerDesc1.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc1.sdp, Is.Not.Null.Or.Empty);
+
+            var transceiver2 = peer2.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver2, Is.Not.Null);
+
+            //workaround: Need to wait 1 frame for negotiationneeded to be processed
+            yield return 0;
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc1, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            yield return new WaitForSeconds(ResendOfferInterval);
+            Assert.That(isGotSendOffer2, Is.False, "need waiting offer cause receive remote offer");
+
+            peer2.SendAnswer();
+            yield return new WaitUntil(() => isGotSendAnswer);
+            Assert.That(isGotSendAnswer, Is.True);
+            Assert.That(answerDesc.type, Is.EqualTo(RTCSdpType.Answer));
+            Assert.That(answerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            yield return new WaitUntil(() => isGotSendOffer2);
+            Assert.That(isGotSendOffer2, Is.True);
+            Assert.That(offerDesc2.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc2.sdp, Is.Not.Null.Or.Empty);
+
+            transceiver1.Dispose();
+            transceiver2.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        public IEnumerator OnGotOfferDescriptionAfterSendOfferImmediatelyInImPolite()
+        {
+            var peer1 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(false, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer1 = false;
+            RTCSessionDescription offerDesc1 = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer1 = true;
+                offerDesc1 = description;
+            };
+
+            var isGotSendOffer2 = false;
+            RTCSessionDescription offerDesc2 = default;
+            peer2.SendOfferHandler += description =>
+            {
+                isGotSendOffer2 = true;
+                offerDesc2 = description;
+            };
+
+            var transceiver1 = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver1, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer1);
+            Assert.That(isGotSendOffer1, Is.True);
+            Assert.That(offerDesc1.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc1.sdp, Is.Not.Null.Or.Empty);
+
+            var transceiver2 = peer2.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver2, Is.Not.Null);
+
+            //workaround: Need to wait 1 frame for negotiationneeded to be processed
+            yield return 0;
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc1, () => isComplete = true);
+            Assert.That(isComplete, Is.False, "need ignore offer cause peer2 is impolite");
+
+            yield return new WaitUntil(() => isGotSendOffer2);
+            Assert.That(isGotSendOffer2, Is.True);
+            Assert.That(offerDesc2.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc2.sdp, Is.Not.Null.Or.Empty);
+
+            transceiver1.Dispose();
+            transceiver2.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        [TestCase(true, ExpectedResult = null)]
+        [TestCase(false, ExpectedResult = null)]
+        public IEnumerator OnGotAnswerDescriptionAfterSendOfferImmediately(bool polite)
+        {
+            var peer1 = new PeerConnection(polite, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer1 = false;
+            RTCSessionDescription offerDesc1 = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer1 = true;
+                offerDesc1 = description;
+            };
+
+            var isGotSendAnswer = false;
+            RTCSessionDescription answerDesc = default;
+            peer2.SendAnswerHandler += description =>
+            {
+                isGotSendAnswer = true;
+                answerDesc = description;
+            };
+
+            var transceiver1 = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver1, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer1);
+            Assert.That(isGotSendOffer1, Is.True);
+            Assert.That(offerDesc1.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc1.sdp, Is.Not.Null.Or.Empty);
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc1, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            peer2.SendAnswer();
+            yield return new WaitUntil(() => isGotSendAnswer);
+            Assert.That(isGotSendAnswer, Is.True);
+            Assert.That(answerDesc.type, Is.EqualTo(RTCSdpType.Answer));
+            Assert.That(answerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            yield return new WaitForSeconds(ResendOfferInterval);
+            peer1.SendOffer();
+
+            isComplete = false;
+            yield return peer1.OnGotDescription(answerDesc, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            transceiver1.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
+
+        [UnityTest, Timeout(5000)]
+        [TestCase(true, ExpectedResult = null)]
+        [TestCase(false, ExpectedResult = null)]
+        public IEnumerator OnGotOfferDescriptionAfterSendAnswerImmediately(bool polite)
+        {
+            var peer1 = new PeerConnection(polite, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer1, Is.Not.Null);
+            var peer2 = new PeerConnection(true, config, ResendOfferInterval,
+                test.component.StartCoroutine, test.component.StopCoroutine);
+            Assert.That(peer2, Is.Not.Null);
+
+            var isGotSendOffer1 = false;
+            RTCSessionDescription offerDesc1 = default;
+            peer1.SendOfferHandler += description =>
+            {
+                isGotSendOffer1 = true;
+                offerDesc1 = description;
+            };
+
+            var isGotSendAnswer = false;
+            RTCSessionDescription answerDesc = default;
+            peer2.SendAnswerHandler += description =>
+            {
+                isGotSendAnswer = true;
+                answerDesc = description;
+            };
+
+            var transceiver1 = peer1.peer.AddTransceiver(TrackKind.Video);
+            Assert.That(transceiver1, Is.Not.Null);
+
+            yield return new WaitUntil(() => isGotSendOffer1);
+            Assert.That(isGotSendOffer1, Is.True);
+            Assert.That(offerDesc1.type, Is.EqualTo(RTCSdpType.Offer));
+            Assert.That(offerDesc1.sdp, Is.Not.Null.Or.Empty);
+
+            var isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc1, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+            peer2.SendAnswer();
+
+            isComplete = false;
+            yield return peer2.OnGotDescription(offerDesc1, () => isComplete = true);
+            Assert.That(isComplete, Is.True);
+
+            yield return new WaitUntil(() => isGotSendAnswer);
+            Assert.That(isGotSendAnswer, Is.True);
+            Assert.That(answerDesc.type, Is.EqualTo(RTCSdpType.Answer));
+            Assert.That(answerDesc.sdp, Is.Not.Null.Or.Empty);
+
+            transceiver1.Dispose();
+            peer1.Dispose();
+            peer2.Dispose();
+        }
     }
 }
