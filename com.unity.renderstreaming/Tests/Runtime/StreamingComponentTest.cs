@@ -8,8 +8,6 @@ using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    /// todo:
-    [UnityPlatform(exclude = new[] { RuntimePlatform.IPhonePlayer, RuntimePlatform.Android })]
     class VideoStreamSenderTest
     {
         [Test]
@@ -56,7 +54,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
         }
 
+        /// todo:
         [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.IPhonePlayer, RuntimePlatform.Android })]
         public void CreateTrack()
         {
             var go = new GameObject();
