@@ -275,13 +275,17 @@ namespace Unity.RenderStreaming
             onComplete?.Invoke();
         }
 
-        public void OnGotIceCandidate(RTCIceCandidate candidate)
+        public bool OnGotIceCandidate(RTCIceCandidate candidate)
         {
             if (!_peer.AddIceCandidate(candidate))
             {
                 if (!_ignoreOffer)
                     Debug.LogWarning($"{this} this candidate can't accept current signaling state {_peer.SignalingState}");
+
+                return false;
             }
+
+            return true;
         }
     }
 }
