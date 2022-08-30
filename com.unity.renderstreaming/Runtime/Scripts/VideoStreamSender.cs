@@ -378,7 +378,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        internal void SetTextureSize(Vector2Int size)
+        public void SetTextureSize(Vector2Int size)
         {
             if (m_source == VideoStreamSource.Texture)
                 throw new InvalidOperationException("Video source is set Texture.");
@@ -495,7 +495,7 @@ namespace Unity.RenderStreaming
         class VideoStreamSourceTexture : VideoStreamSourceImpl
         {
             Texture m_texture;
-            RenderTexture m_copyTexture;
+            Texture m_copyTexture;
             private Coroutine m_coroutineScreenCapture;
             private MonoBehaviour m_behaviour;
 
@@ -514,9 +514,8 @@ namespace Unity.RenderStreaming
                     WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
                 if (m_texture.graphicsFormat == format)
                     return new VideoStreamTrack(m_texture);
-                m_copyTexture = new RenderTexture(width, height, depth, format) { antiAliasing = antiAliasing };
-                m_copyTexture.Create();
 
+                m_copyTexture = new Texture2D(width, height, format, TextureCreationFlags.None);
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
                 return new VideoStreamTrack(m_copyTexture);
             }
@@ -549,7 +548,7 @@ namespace Unity.RenderStreaming
                 {
                     yield return new WaitForEndOfFrame();
 
-                    Graphics.Blit(m_texture, m_copyTexture);
+                    Graphics.ConvertTexture(m_texture, m_copyTexture);
                 }
             }
         }
@@ -557,7 +556,7 @@ namespace Unity.RenderStreaming
         class VideoStreamSourceScreen : VideoStreamSourceImpl, IDisposable
         {
             private RenderTexture m_screenTexture;
-            private RenderTexture m_screenCopyTexture;
+            private Texture m_screenCopyTexture;
             private Coroutine m_coroutineScreenCapture;
             private MonoBehaviour m_behaviour;
 
@@ -596,10 +595,8 @@ namespace Unity.RenderStreaming
                     new RenderTexture(screenSize.x, screenSize.y, depth, RenderTextureFormat.Default) { antiAliasing = antiAliasing };
                 m_screenTexture.Create();
 
-                RenderTextureFormat format =
-                    WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
-                m_screenCopyTexture = new RenderTexture(width, height, depth, format) { antiAliasing = antiAliasing };
-                m_screenCopyTexture.Create();
+                GraphicsFormat format = WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
+                m_screenCopyTexture = new Texture2D(width, height, format, TextureCreationFlags.None);
 
                 // The texture obtained by ScreenCapture.CaptureScreenshotIntoRenderTexture is different between OpenGL and other Graphics APIs.
                 // In OpenGL, we got a texture that is not inverted, so need flip when sending.
@@ -617,7 +614,7 @@ namespace Unity.RenderStreaming
                 {
                     yield return new WaitForEndOfFrame();
                     ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
-                    Graphics.Blit(m_screenTexture, m_screenCopyTexture);
+                    Graphics.ConvertTexture(m_screenTexture, m_screenCopyTexture);
                 }
             }
 
@@ -629,7 +626,6 @@ namespace Unity.RenderStreaming
                 Destroy(m_screenTexture);
                 m_screenTexture = null;
 
-                m_screenCopyTexture.Release();
                 Destroy(m_screenCopyTexture);
                 m_screenCopyTexture = null;
 
