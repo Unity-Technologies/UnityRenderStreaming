@@ -97,6 +97,9 @@ namespace Unity.RenderStreaming
         [SerializeField, StreamingSize]
         public Vector2Int streamingSize = new Vector2Int(1280, 720);
 
+        [SerializeField, Codec]
+        private Codec<VideoStreamSender> m_codec;
+
         [SerializeField, FrameRate]
         private float m_frameRate = s_defaultFrameRate;
 
@@ -105,9 +108,6 @@ namespace Unity.RenderStreaming
 
         [SerializeField, ScaleResolution]
         private float m_scaleFactor = 1f;
-
-        [SerializeField, Codec]
-        private Codec<VideoStreamSender> m_codec;
 
         /// <summary>
         ///

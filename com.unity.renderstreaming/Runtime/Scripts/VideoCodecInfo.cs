@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class VideoCodecInfo : IEquatable<VideoCodecInfo>
     {
-        const string KeyCodecImplementation = "implementation_name";
+        static readonly string KeyCodecImplementation = "implementation_name";
 
         /// <summary>
         /// 
@@ -24,7 +24,12 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string CodecImplementation { get { return parameters[KeyCodecImplementation]; } }
+        public string codecImplementation { get { return parameters[KeyCodecImplementation]; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string sdpFmtpLine { get { return capability.sdpFmtpLine; } }
 
         /// <summary>
         /// 

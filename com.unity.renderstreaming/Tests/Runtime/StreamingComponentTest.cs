@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 Assert.That(codec.name, Is.Not.Empty);
                 Assert.That(codec.mimeType, Is.Not.Empty);
-                Assert.That(codec.CodecImplementation, Is.Not.Empty);
+                Assert.That(codec.codecImplementation, Is.Not.Empty);
 
                 switch (codec)
                 {
@@ -146,7 +146,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 Assert.That(codec.name, Is.Not.Empty);
                 Assert.That(codec.mimeType, Is.Not.Empty);
-                Assert.That(codec.CodecImplementation, Is.Not.Empty);
+                Assert.That(codec.codecImplementation, Is.Not.Empty);
 
                 switch (codec)
                 {

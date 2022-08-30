@@ -150,11 +150,11 @@ namespace Unity.RenderStreaming.Samples
             switch (codec)
             {
                 case H264CodecInfo h264Codec:
-                    return $"{h264Codec.mimeType} {h264Codec.profile} {h264Codec.level.ToString().Insert(1, ".")} {h264Codec.CodecImplementation}";
+                    return $"{h264Codec.mimeType} {h264Codec.profile} {h264Codec.level.ToString().Insert(1, ".")} {h264Codec.codecImplementation}";
                 case VP9CodecInfo V9Codec:
-                    return $"{V9Codec.mimeType} {V9Codec.profile} {V9Codec.CodecImplementation}";
+                    return $"{V9Codec.mimeType} {V9Codec.profile} {V9Codec.codecImplementation}";
                 default:
-                    return $"{codec.mimeType} {codec.CodecImplementation}";
+                    return $"{codec.mimeType} {codec.codecImplementation}";
             }
             throw new ArgumentException();
         }
