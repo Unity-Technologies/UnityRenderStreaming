@@ -54,9 +54,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
         }
 
-        /// todo:
         [Test]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.IPhonePlayer, RuntimePlatform.Android })]
         public void CreateTrack()
         {
             var go = new GameObject();
@@ -106,6 +104,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             track.Dispose();
 
             // With WebCam
+#if !(UNITY_IPHONE || UNITY_ANDROID)
             if(WebCamTexture.devices.Length > 0 && Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 sender.source = VideoStreamSource.WebCamera;
@@ -118,7 +117,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 Assert.That(sender.sourceWebCamTexture, Is.Not.Null);
                 track.Dispose();
             }
-
+#endif
             UnityEngine.Object.DestroyImmediate(go);
         }
 
