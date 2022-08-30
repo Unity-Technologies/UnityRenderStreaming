@@ -32,6 +32,7 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty propertySdpFmtpLine;
         IEnumerable<VideoCodecInfo> codecs;
         string[] codecNames = new string[] { "Default" };
+        string[] codecDetails = new string[] {};
         string[] sdpFmtpLines = new string[] {};
 
         int selectCodecIndex = 0;
@@ -45,6 +46,19 @@ namespace Unity.RenderStreaming.Editor
         static bool HasProfile(VideoCodecInfo codec)
         {
             return codec is H264CodecInfo || codec is VP9CodecInfo;
+        }
+
+        static string GetCodecDetail(VideoCodecInfo codec)
+        {
+            if(codec is H264CodecInfo h264Codec)
+            {
+                return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
+            }
+            else if(codec is VP9CodecInfo vp9codec)
+            {
+                return $"Profile {(int)vp9codec.profile}";
+            }
+            return null;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -87,7 +101,9 @@ namespace Unity.RenderStreaming.Editor
                 {
                     codecName = codecNames[selectCodecIndex];
                     propertyCodecName.stringValue = codecNames[selectCodecIndex];
-                    sdpFmtpLines = codecs.Where(codec => codec.name == codecName).Select(codec => codec.sdpFmtpLine).ToArray();
+                    var selectedCodecs = codecs.Where(codec => codec.name == codecName);
+                    codecDetails = selectedCodecs.Select(codec => GetCodecDetail(codec)).ToArray();
+                    sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
                     propertySdpFmtpLine.stringValue = sdpFmtpLines[0];
                 }
                 else
@@ -101,14 +117,14 @@ namespace Unity.RenderStreaming.Editor
             int codecIndex = selectCodecIndex - 1;
             if (0 < codecIndex)
             {
-                if (HasProfile(codecs.ElementAt(codecIndex)) && 0 < sdpFmtpLines.Length)
+                if (HasProfile(codecs.ElementAt(codecIndex)) && 0 < codecDetails.Length)
                 {
                     // sdp fmtp line
                     rect.y += EditorGUIUtility.singleLineHeight;
                     EditorGUI.BeginProperty(rect, label, propertyCodecName);
 
                     EditorGUI.BeginChangeCheck();
-                    selectSdpFmtpLineIndex = EditorGUI.Popup(rect, selectSdpFmtpLineIndex, sdpFmtpLines);
+                    selectSdpFmtpLineIndex = EditorGUI.Popup(rect, selectSdpFmtpLineIndex, codecDetails);
 
                     if (EditorGUI.EndChangeCheck())
                     {
