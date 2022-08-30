@@ -85,11 +85,26 @@ namespace Unity.RenderStreaming
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum VideoStreamSource
     {
+        /// <summary>
+        /// 
+        /// </summary>
         Camera = 0,
+        /// <summary>
+        /// 
+        /// </summary>
         Screen = 1,
+        /// <summary>
+        /// 
+        /// </summary>
         WebCamera = 2,
+        /// <summary>
+        /// 
+        /// </summary>
         Texture = 3
     }
     /// <summary>
@@ -151,14 +166,14 @@ namespace Unity.RenderStreaming
             get { return m_source; }
             set
             {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
                 m_source = value;
                 if (m_texture != null)
                 {
                     m_textureSize.x = m_texture.width;
                     m_textureSize.y = m_texture.height;
                 }
-                if (isPlaying)
-                    ReplaceTrack(CreateTrack());
             }
         }
 
@@ -170,9 +185,9 @@ namespace Unity.RenderStreaming
             get { return m_camera; }
             set
             {
-                m_camera = value;
                 if (isPlaying)
-                    ReplaceTrack(CreateTrack());
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_camera = value;
             }
         }
 
@@ -184,11 +199,11 @@ namespace Unity.RenderStreaming
             get { return m_texture; }
             set
             {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
                 m_texture = value;
                 m_textureSize.x = m_texture.width;
                 m_textureSize.y = m_texture.height;
-                if (isPlaying)
-                    ReplaceTrack(CreateTrack());
             }
         }
 
@@ -200,9 +215,9 @@ namespace Unity.RenderStreaming
             get { return m_webCamDeviceIndex; }
             set
             {
-                m_webCamDeviceIndex = value;
                 if (isPlaying)
-                    ReplaceTrack(CreateTrack());
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_webCamDeviceIndex = value;
             }
         }
 
@@ -299,6 +314,9 @@ namespace Unity.RenderStreaming
         /// <param name="mimeType"></param>
         public void SetCodec(VideoCodecInfo codec)
         {
+            if (isPlaying)
+                throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+
             m_codec = (Codec<VideoStreamSender>)codec;
             foreach (var transceiver in Transceivers.Values)
             {
