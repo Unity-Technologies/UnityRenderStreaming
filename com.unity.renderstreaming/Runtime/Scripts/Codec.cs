@@ -8,7 +8,7 @@ namespace Unity.RenderStreaming
     {
         public static string GetCodecName(this RTCRtpCodecCapability cap)
         {
-            return cap.mimeType.Split('/')[1];
+            return cap?.mimeType.Split('/')[1];
         }
     }        
 
@@ -83,20 +83,20 @@ namespace Unity.RenderStreaming
 
         public static explicit operator Codec<T>(VideoCodecInfo codec)
         {
-            return (Codec<T>)codec.capability;
+            return (Codec<T>)codec?.capability;
         }
 
         public static explicit operator Codec<T>(AudioCodecInfo codec)
         {
-            return (Codec<T>)codec.capability;
+            return (Codec<T>)codec?.capability;
         }
 
         public static explicit operator Codec<T>(RTCRtpCodecCapability capability)
         {
             return new Codec<T>()
             {
-                codecName = capability.GetCodecName(),
-                sdpFmtpLine = capability.sdpFmtpLine
+                codecName = capability?.GetCodecName(),
+                sdpFmtpLine = capability?.sdpFmtpLine
             };
         }
 

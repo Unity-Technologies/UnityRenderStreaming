@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,24 +6,6 @@ using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
-    static class SerializedPropertyExtension
-    {
-        public static SerializedProperty FindPropertyInChildren(this SerializedProperty target, string propertyName)
-        {
-            SerializedProperty property = null;
-            while (target.Next(true))
-            {
-                if (target.name == propertyName)
-                {
-                    property = target.Copy();
-                    break;
-                }
-            }
-            target.Reset();
-            return property;
-        }
-    }
-
     [CustomPropertyDrawer(typeof(CodecAttribute))]
     class CodecDrawer : PropertyDrawer
     {
@@ -40,7 +21,7 @@ namespace Unity.RenderStreaming.Editor
         bool cache = false;
         bool changed = false;
 
-        readonly GUIContent s_codecLabel =
+        static readonly GUIContent s_codecLabel =
             EditorGUIUtility.TrTextContent("Codec", "Video encoding codec.");
 
         static bool HasProfile(VideoCodecInfo codec)

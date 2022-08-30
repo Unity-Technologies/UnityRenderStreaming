@@ -26,10 +26,8 @@ namespace Unity.RenderStreaming.Editor
         {
             if (!cache)
             {
-                property.Next(true);
-                propertyMinimum = property.Copy();
-                property.Next(true);
-                propertyMaximum = property.Copy();
+                propertyMinimum = property.FindPropertyInChildren("min");
+                propertyMaximum = property.FindPropertyInChildren("max");
                 var attr = attribute as BitrateAttribute;
                 minLimit = attr.minValue;
                 maxLimit = attr.maxValue;
