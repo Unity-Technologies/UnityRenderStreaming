@@ -10,55 +10,43 @@ namespace Unity.RenderStreaming.Editor
     [CustomPropertyDrawer(typeof(CodecAttribute))]
     class CodecDrawer : PropertyDrawer
     {
-        //readonly GUIContent[] frameRateText =
-        //{
-        //    EditorGUIUtility.TrTextContent("Default"),
-        //    EditorGUIUtility.TrTextContent("10"),
-        //    EditorGUIUtility.TrTextContent("15"),
-        //    EditorGUIUtility.TrTextContent("20"),
-        //    EditorGUIUtility.TrTextContent("30"),
-        //    EditorGUIUtility.TrTextContent("60"),
-        //};
-
-        //readonly float?[] frameRateValues =
-        //{
-        //    null,
-        //    10,
-        //    15,
-        //    20,
-        //    30,
-        //    60
-        //};
-
         SerializedProperty propertyCodecName;
         SerializedProperty propertySdpFmtpLine;
         IEnumerable<VideoCodecInfo> codecs;
         string[] codecNames = new string[] { "Default" };
+        int selectIndex = 0;
         bool cache = false;
+        bool changed = false;
 
         readonly GUIContent s_codecLabel =
             EditorGUIUtility.TrTextContent("Codec", "Video encoding codec.");
 
+        static bool HasProfile(VideoCodecInfo codec)
+        {
+            return codec is H264CodecInfo || codec is VP9CodecInfo;
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.BeginProperty(position, label, property);
-
             if (!cache)
             {
                 property.Next(true);
                 propertyCodecName = property.Copy();
                 property.Next(true);
                 propertySdpFmtpLine = property.Copy();
-                //var attr = attribute as BitrateAttribute;
-                //minLimit = attr.minValue;
-                //maxLimit = attr.maxValue;
                 codecs = VideoStreamSender.GetAvailableCodecs();
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).ToArray();
+                property.Reset();
                 cache = true;
             }
 
+            var rect = position;
+            rect.height = EditorGUIUtility.singleLineHeight;
+
+            EditorGUI.BeginProperty(rect, label, propertyCodecName);
+
             string codecName = propertyCodecName.stringValue;
-            int selectIndex = 0;
+//            int selectIndex = 0;
             if (!string.IsNullOrEmpty(codecName))
             {
                 while (selectIndex < codecNames.Length && codecName != codecNames[selectIndex])
@@ -71,38 +59,31 @@ namespace Unity.RenderStreaming.Editor
                 selectIndex = 0;
             }
 
-            var rect = position;
             rect = EditorGUI.PrefixLabel(rect, s_codecLabel);
             EditorGUI.BeginChangeCheck();
             selectIndex = EditorGUI.Popup(rect, selectIndex, codecNames);
+            string newValue = selectIndex == 0 ? null : codecNames[selectIndex];
 
-            //// default value
-            //if (selectIndex == frameRateValues.Length)
-            //    selectIndex = 0;
-
-            //var popupRect = position;
-            //popupRect.height = EditorGUIUtility.singleLineHeight;
-
-            //selectIndex = EditorGUI.Popup(popupRect, s_FramerateLabel,
-            //    selectIndex, frameRateText);
-
-            //float newValue;
-            //var cutomValueRect = position;
-            //cutomValueRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            //cutomValueRect.height = 0;
-
-            //if (0 < selectIndex && selectIndex < frameRateValues.Length)
-            //{
-            //    newValue = frameRateValues[selectIndex].Value;
-            //}
-            //else
-            //{
-            //    newValue = 0;
-            //}
             if (EditorGUI.EndChangeCheck())
             {
-                string newValue = selectIndex == 0 ? null : codecNames[selectIndex];
+                propertyCodecName.stringValue = newValue;
+            }
+            EditorGUI.EndProperty();
 
+            rect.y += EditorGUIUtility.singleLineHeight;
+
+            EditorGUI.BeginProperty(rect, label, propertyCodecName);
+
+            // sdp fmtp line
+            EditorGUI.BeginChangeCheck();
+            if (EditorGUI.EndChangeCheck())
+            {
+                propertySdpFmtpLine.stringValue = newValue;
+            }
+            EditorGUI.EndProperty();
+
+            if (changed)
+            {
                 if (Application.isPlaying)
                 {
                     var objectReferenceValue = property.serializedObject.targetObject;
@@ -112,12 +93,8 @@ namespace Unity.RenderStreaming.Editor
                     var method = type.GetMethod(methodName, attribute);
                     method.Invoke(objectReferenceValue, new object[] { newValue });
                 }
-                else
-                {
-                    propertyCodecName.stringValue = newValue;
-                }
+                changed = false;
             }
-            EditorGUI.EndProperty();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -125,11 +102,11 @@ namespace Unity.RenderStreaming.Editor
             if (property == null)
                 throw new System.ArgumentNullException(nameof(property));
 
-            var height = 0f;
-
-            // Popup.
-            height += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            return height;
+            int codecIndex = selectIndex - 1;
+            int lineCount = 1;
+            if(0 < codecIndex && HasProfile(codecs.ElementAt(codecIndex)))
+                lineCount = 2;
+            return EditorGUIUtility.singleLineHeight * lineCount;
         }
     }
 }

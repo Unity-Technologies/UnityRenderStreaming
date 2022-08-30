@@ -33,13 +33,14 @@ namespace Unity.RenderStreaming.Editor
                 var attr = attribute as BitrateAttribute;
                 minLimit = attr.minValue;
                 maxLimit = attr.maxValue;
+                property.Reset();
                 cache = true;
             }
 
             var rect = position;
             rect.height = EditorGUIUtility.singleLineHeight;
 
-            EditorGUI.BeginProperty(position, label, property);
+            EditorGUI.BeginProperty(rect, label, property);
 
             float minValue = propertyMinimum.intValue;
             float maxValue = propertyMaximum.intValue;
