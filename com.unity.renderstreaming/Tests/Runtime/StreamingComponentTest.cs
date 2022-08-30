@@ -103,7 +103,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             track.Dispose();
 
             // With WebCam
-            if(WebCamTexture.devices.Length > 0)
+            if(WebCamTexture.devices.Length > 0 && Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 sender.source = VideoStreamSource.WebCamera;
                 Assert.That(sender.sourceDeviceIndex, Is.EqualTo(0));
