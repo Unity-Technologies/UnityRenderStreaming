@@ -58,8 +58,8 @@ namespace Unity.RenderStreaming
         private bool _waitingAnswer;
         private float _timeSinceStartWaitingAnswer;
 
-        // processing local description
-        private bool _sldPending;
+        // processing set description
+        private bool _processingSetDescription;
 
         // processing got description
         private bool _ignoreOffer;
@@ -109,7 +109,8 @@ namespace Unity.RenderStreaming
         public override string ToString()
         {
             var str = _polite ? "polite" : "impolite";
-            return $"[{str}-{base.ToString()}]";
+            return
+                $"[{str}-{nameof(PeerConnection)} {nameof(_peer.ConnectionState)}:{_peer.ConnectionState} {nameof(_peer.IceConnectionState)}:{_peer.IceConnectionState} {nameof(_peer.SignalingState)}:{_peer.SignalingState} {nameof(_peer.GatheringState)}:{_peer.GatheringState}]";
         }
 
         public void Dispose()
@@ -144,8 +145,8 @@ namespace Unity.RenderStreaming
 
         private IEnumerator OnNegotiationNeeded()
         {
-            var waitStable = new WaitUntil(IsStable);
-            yield return waitStable;
+            var waitProcessSetDescription = new WaitWhile(() => _processingSetDescription);
+            yield return waitProcessSetDescription;
             SendOffer();
         }
 
@@ -156,22 +157,24 @@ namespace Unity.RenderStreaming
 
         public bool IsStable()
         {
-            if (_sldPending || waitingAnswer)
-            {
-                return false;
-            }
-
-            return _peer.SignalingState == RTCSignalingState.Stable;
+            return _peer.SignalingState == RTCSignalingState.Stable ||
+                   (_peer.SignalingState == RTCSignalingState.HaveLocalOffer && _srdAnswerPending);
         }
 
         public void SendOffer()
         {
+            if (_processingSetDescription)
+            {
+                Debug.LogWarning($"{this} already processing other set description");
+                return;
+            }
+
             if (!IsStable())
             {
                 if (!_waitingAnswer)
                 {
                     throw new InvalidOperationException(
-                        $"{_peer} sendoffer needs in stable state, current state is {_peer.SignalingState}");
+                        $"{this} sendoffer needs in stable state, current state is {_peer.SignalingState}");
                 }
 
                 var timeout = _timeSinceStartWaitingAnswer + _resendInterval;
@@ -189,13 +192,11 @@ namespace Unity.RenderStreaming
 
         private IEnumerator SendOfferCoroutine()
         {
-            var wait = new WaitWhile(() => !IsStable() || _sldPending);
-            yield return wait;
-
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.Stable);
-            Assert.AreEqual(_sldPending, false);
+            Assert.AreEqual(_processingSetDescription, false);
+            Assert.AreEqual(waitingAnswer, false);
 
-            _sldPending = true;
+            _processingSetDescription = true;
 
             var opLocalDesc = _peer.SetLocalDescription();
             yield return opLocalDesc;
@@ -203,13 +204,13 @@ namespace Unity.RenderStreaming
             if (opLocalDesc.IsError)
             {
                 Debug.LogError($"{this} {opLocalDesc.Error.message}");
-                _sldPending = false;
+                _processingSetDescription = false;
                 yield break;
             }
 
             Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Offer);
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.HaveLocalOffer);
-            _sldPending = false;
+            _processingSetDescription = false;
             waitingAnswer = true;
 
             SendOfferHandler?.Invoke(_peer.LocalDescription);
@@ -217,15 +218,21 @@ namespace Unity.RenderStreaming
 
         public void SendAnswer()
         {
+            if (_processingSetDescription)
+            {
+                Debug.LogWarning($"{this} already processing other set description");
+                return;
+            }
+
             StartCoroutine(SendAnswerCoroutine());
         }
 
         private IEnumerator SendAnswerCoroutine()
         {
-            var wait = new WaitWhile(() => _sldPending);
-            yield return wait;
+            Assert.AreEqual(_peer.SignalingState, RTCSignalingState.HaveRemoteOffer);
+            Assert.AreEqual(_processingSetDescription, false);
 
-            _sldPending = true;
+            _processingSetDescription = true;
 
             var opLocalDesc = _peer.SetLocalDescription();
             yield return opLocalDesc;
@@ -233,34 +240,33 @@ namespace Unity.RenderStreaming
             if (opLocalDesc.IsError)
             {
                 Debug.LogError($"{this} {opLocalDesc.Error.message}");
-                _sldPending = false;
+                _processingSetDescription = false;
                 yield break;
             }
 
             Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Answer);
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.Stable);
-            _sldPending = false;
+            _processingSetDescription = false;
 
             SendAnswerHandler?.Invoke(_peer.LocalDescription);
         }
 
         public IEnumerator OnGotDescription(RTCSessionDescription description, Action onComplete)
         {
-            var wait = new WaitWhile(() => _sldPending);
-            yield return wait;
+            var waitOtherProcess = new WaitWhile(() => _processingSetDescription);
+            yield return waitOtherProcess;
 
-            var isStable = _peer.SignalingState == RTCSignalingState.Stable ||
-                           (_peer.SignalingState == RTCSignalingState.HaveLocalOffer && _srdAnswerPending);
-            _ignoreOffer = description.type == RTCSdpType.Offer && !_polite && (_sldPending || !isStable);
+            _ignoreOffer = description.type == RTCSdpType.Offer && !_polite && (_processingSetDescription || !IsStable());
 
             if (_ignoreOffer)
             {
-                Debug.LogWarning($"{this} glare - ignoreOffer signalingState:{_peer.SignalingState}");
+                Debug.LogWarning($"{this} glare - ignoreOffer.");
                 yield break;
             }
 
             waitingAnswer = false;
             _srdAnswerPending = description.type == RTCSdpType.Answer;
+            _processingSetDescription = true;
 
             var remoteDescOp = _peer.SetRemoteDescription(ref description);
             yield return remoteDescOp;
@@ -268,10 +274,12 @@ namespace Unity.RenderStreaming
             {
                 Debug.LogError($"{this} {remoteDescOp.Error.message}");
                 _srdAnswerPending = false;
+                _processingSetDescription = false;
                 yield break;
             }
 
             _srdAnswerPending = false;
+            _processingSetDescription = false;
             onComplete?.Invoke();
         }
 
@@ -280,7 +288,7 @@ namespace Unity.RenderStreaming
             if (!_peer.AddIceCandidate(candidate))
             {
                 if (!_ignoreOffer)
-                    Debug.LogWarning($"{this} this candidate can't accept current signaling state {_peer.SignalingState}");
+                    Debug.LogWarning($"{this} this candidate can't accept on state.");
 
                 return false;
             }
