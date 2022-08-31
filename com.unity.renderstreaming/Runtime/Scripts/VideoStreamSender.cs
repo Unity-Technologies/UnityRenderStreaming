@@ -39,6 +39,8 @@ namespace Unity.RenderStreaming
         public Range(uint min, uint max) { this.min = min; this.max = max; }
     }
 
+    internal sealed class CodecAttribute : PropertyAttribute { }
+
     internal static class RTCRtpSenderExtension
     {
         public static RTCError SetFrameRate(this RTCRtpSender sender, uint framerate)
@@ -95,6 +97,9 @@ namespace Unity.RenderStreaming
         [SerializeField, StreamingSize]
         public Vector2Int streamingSize = new Vector2Int(1280, 720);
 
+        [SerializeField, Codec]
+        private Codec<VideoStreamSender> m_codec;
+
         [SerializeField, FrameRate]
         private float m_frameRate = s_defaultFrameRate;
 
@@ -103,8 +108,6 @@ namespace Unity.RenderStreaming
 
         [SerializeField, ScaleResolution]
         private float m_scaleFactor = 1f;
-
-        private VideoCodecInfo m_codec;
 
         /// <summary>
         ///
@@ -143,7 +146,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public VideoCodecInfo codec
         {
-            get { return m_codec; }
+            get { return (VideoCodecInfo)m_codec; }
         }
 
         /// <summary>
@@ -158,7 +161,7 @@ namespace Unity.RenderStreaming
         /// <param name="mimeType"></param>
         public void SetCodec(VideoCodecInfo codec)
         {
-            m_codec = codec;
+            m_codec = (Codec<VideoStreamSender>)codec;
             foreach (var transceiver in Transceivers.Values)
             {
                 if(!string.IsNullOrEmpty(transceiver.Mid))
@@ -166,7 +169,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
+                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { (VideoCodecInfo)m_codec });
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
             }
