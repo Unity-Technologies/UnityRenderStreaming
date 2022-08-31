@@ -104,9 +104,9 @@ function onClickPlayButton() {
         if (document.webkitFullscreenElement.requestPointerLock) {
           document.webkitFullscreenElement.requestPointerLock();
         } else if (document.fullscreenElement.requestPointerLock) {
-          document.fullscreenElement.requestPointerLock()
+          document.fullscreenElement.requestPointerLock();
         } else if (document.mozFullScreenElement.requestPointerLock) {
-          document.mozFullScreenElement.requestPointerLock()
+          document.mozFullScreenElement.requestPointerLock();
         }
 
         // Subscribe to events
@@ -129,16 +129,16 @@ function onClickPlayButton() {
     receiver.sender._onMouseEvent(event);
   }
 
-  function _mouseClick(event) {
+  function _mouseClick() {
     // Restores pointer lock when we unfocus the player and click on it again
     if (lockMouseCheck.checked) {
       if (elementVideo.requestPointerLock) {
-        elementVideo.requestPointerLock().catch(function (error) { });
+        elementVideo.requestPointerLock().catch(function () { });
       }
     }
   }
 
-  function _mouseClickFullScreen(event) {
+  function _mouseClickFullScreen() {
     // Restores pointer lock when we unfocus the fullscreen player and click on it again
     if (lockMouseCheck.checked) {
       if (document.webkitFullscreenElement.requestPointerLock) {

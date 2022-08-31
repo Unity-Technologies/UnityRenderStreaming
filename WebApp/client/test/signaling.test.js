@@ -4,9 +4,11 @@ import { setup, teardown } from 'jest-dev-server';
 import { Signaling, WebSocketSignaling } from "../public/js/signaling";
 import { MockSignaling, reset } from "./mocksignaling";
 import { waitFor, sleep, serverExeName } from "./testutils";
-import { TextEncoder, TextDecoder } from 'util'
+import { TextEncoder, TextDecoder } from 'util';
 
 // note: If set testEnvironment `jest-environment-jsdom`, TextEncoder/TextDecoder is not defined.
+/* global global */
+/* eslint no-undef: "error" */
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
