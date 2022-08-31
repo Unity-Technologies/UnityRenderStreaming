@@ -68,10 +68,8 @@ namespace Unity.RenderStreaming.Samples
 
             if (sender is VideoStreamSender videoStreamSender)
             {
-                if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
-                {
-                    videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
-                }
+                videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
+                videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
                 videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
             }
 

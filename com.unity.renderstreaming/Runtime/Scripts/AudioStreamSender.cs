@@ -12,8 +12,8 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class AudioStreamSender : StreamSenderBase
     {
-        const uint s_defaultMinBitrate = 0;
-        const uint s_defaultMaxBitrate = 200;
+        static readonly uint s_defaultMinBitrate = 0;
+        static readonly uint s_defaultMaxBitrate = 200;
 
         [SerializeField, Bitrate(0, 1000)]
         private Range m_bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
@@ -119,7 +119,7 @@ namespace Unity.RenderStreaming
             track = null;
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             track = new AudioStreamTrack();
             return track;

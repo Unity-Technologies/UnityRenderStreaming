@@ -17,7 +17,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private RawImage localVideoImage;
         [SerializeField] private RawImage remoteVideoImage;
         [SerializeField] private AudioSource receiveAudioSource;
-        [SerializeField] private WebCamStreamSender webCamStreamer;
+        [SerializeField] private VideoStreamSender webCamStreamer;
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private MicrophoneStreamSender microphoneStreamer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
@@ -46,15 +46,13 @@ namespace Unity.RenderStreaming.Samples
             hangUpButton.onClick.AddListener(HangUp);
             connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
             connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
-            webcamSelectDropdown.onValueChanged.AddListener(index => webCamStreamer.SetDeviceIndex(index));
-            webcamSelectDropdown.options =
-                webCamStreamer.WebCamNameList.Select(x => new Dropdown.OptionData(x)).ToList();
+            webcamSelectDropdown.onValueChanged.AddListener(index => webCamStreamer.sourceDeviceIndex = index);
+            webcamSelectDropdown.options = WebCamTexture.devices.Select(x => x.name).Select(x => new Dropdown.OptionData(x)).ToList();
             webCamStreamer.OnStartedStream += id => receiveVideoViewer.enabled = true;
-            webCamStreamer.OnUpdateWebCamTexture += texture => localVideoImage.texture = texture;
-            if (webCamStreamer.streamingSize != RenderStreamingSettings.StreamSize)
-            {
-                webCamStreamer.streamingSize = RenderStreamingSettings.StreamSize;
-            }
+            webCamStreamer.OnStartedStream += _ => localVideoImage.texture = webCamStreamer.sourceWebCamTexture;
+
+            webCamStreamer.width = (uint)RenderStreamingSettings.StreamSize.x;
+            webCamStreamer.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
             microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));

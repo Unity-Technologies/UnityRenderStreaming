@@ -25,6 +25,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Dropdown bandwidthSelector;
         [SerializeField] private Dropdown scaleResolutionDownSelector;
         [SerializeField] private Dropdown framerateSelector;
+        [SerializeField] private Dropdown resolutionSelector;
 
         private Dictionary<string, uint> bandwidthOptions =
             new Dictionary<string, uint>()
@@ -58,6 +59,17 @@ namespace Unity.RenderStreaming.Samples
                 { "5", 5f },
             };
 
+        private Dictionary<string, Vector2Int> resolutionOptions =
+            new Dictionary<string, Vector2Int>
+            {
+                { "640x480", new Vector2Int(640, 480) },
+                { "1280x720", new Vector2Int(1280, 720) },
+                { "1600x1200", new Vector2Int(1600, 1200) },
+                { "1920x1200", new Vector2Int(1920, 1200) },
+                { "2560x1440", new Vector2Int(2560, 1440) },
+            };
+
+
         private void Awake()
         {
 #if URS_USE_AR_FOUNDATION
@@ -67,28 +79,32 @@ namespace Unity.RenderStreaming.Samples
             );
 #endif
 
-            if (videoStreamSender.streamingSize != RenderStreamingSettings.StreamSize)
-            {
-                videoStreamSender.streamingSize = RenderStreamingSettings.StreamSize;
-            }
+            videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
+            videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
             bandwidthSelector.options = bandwidthOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
             framerateSelector.SetValueWithoutNotify(2); // todo: detect default select index
             bandwidthSelector.onValueChanged.AddListener(ChangeBandwidth);
             scaleResolutionDownSelector.options = scaleResolutionDownOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
             scaleResolutionDownSelector.onValueChanged.AddListener(ChangeScaleResolutionDown);
 
             framerateSelector.options = framerateOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
             framerateSelector.SetValueWithoutNotify(2); // todo: detect default select index
             framerateSelector.onValueChanged.AddListener(ChangeFramerate);
+
+            resolutionSelector.options = resolutionOptions
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
+                .ToList();
+            resolutionSelector.SetValueWithoutNotify(1); // todo: detect default select index
+            resolutionSelector.onValueChanged.AddListener(ChangeResolution);
         }
 
         private void ChangeBandwidth(int index)
@@ -109,6 +125,13 @@ namespace Unity.RenderStreaming.Samples
             videoStreamSender.SetFrameRate(framerate);
         }
 
+        private void ChangeResolution(int index)
+        {
+            var resolution = resolutionOptions.Values.ElementAt(index);
+
+            videoStreamSender.SetTextureSize(resolution);
+        }
+
         private void Start()
         {
             if (renderStreaming.runOnAwake)
@@ -120,7 +143,7 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnStartedChannel(string connectionId)
         {
-            inputReceiver.SetInputRange(videoStreamSender.streamingSize);
+            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
             inputReceiver.SetEnableInputPositionCorrection(true);
         }
     }

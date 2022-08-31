@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -77,7 +78,22 @@ namespace Unity.RenderStreaming.Editor
                 cutomValueRect.height = EditorGUIUtility.singleLineHeight;
                 newValue = EditorGUI.Vector2IntField(cutomValueRect, s_customValueLabel, value);
             }
-            property.vector2IntValue = newValue;
+            if(property.vector2IntValue != newValue)
+            {
+                if (Application.isPlaying)
+                {
+                    var objectReferenceValue = property.serializedObject.targetObject;
+                    var type = objectReferenceValue.GetType();
+                    var attribute = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                    var methodName = "SetTextureSize";
+                    var method = type.GetMethod(methodName, attribute);
+                    method.Invoke(objectReferenceValue, new object[] { newValue });
+                }
+                else
+                {
+                    property.vector2IntValue = newValue;
+                }
+            }
 
             var helpBoxRect = position;
             helpBoxRect.y = cutomValueRect.y + cutomValueRect.height + EditorGUIUtility.standardVerticalSpacing;
