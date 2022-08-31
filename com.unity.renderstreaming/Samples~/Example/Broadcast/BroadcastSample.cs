@@ -105,8 +105,6 @@ namespace Unity.RenderStreaming.Samples
                 .ToList();
             resolutionSelector.SetValueWithoutNotify(1); // todo: detect default select index
             resolutionSelector.onValueChanged.AddListener(ChangeResolution);
-
-
         }
 
         private void ChangeBandwidth(int index)
