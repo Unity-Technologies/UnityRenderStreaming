@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming
         private int m_antiAliasing = 1;
 
         [SerializeField, Codec]
-        private Codec<VideoStreamSender> m_codec;
+        private VideoCodecInfo m_codec;
 
         [SerializeField, FrameRate]
         private float m_frameRate = s_defaultFrameRate;
@@ -298,7 +298,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public VideoCodecInfo codec
         {
-            get { return (VideoCodecInfo)m_codec; }
+            get { return m_codec; }
         }
 
 
@@ -311,13 +311,13 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="mimeType"></param>
+        /// <param name="codec"></param>
         public void SetCodec(VideoCodecInfo codec)
         {
             if (isPlaying)
                 throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
 
-            m_codec = (Codec<VideoStreamSender>)codec;
+            m_codec = codec;
             foreach (var transceiver in Transceivers.Values)
             {
                 if (!string.IsNullOrEmpty(transceiver.Mid))
@@ -325,7 +325,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { (VideoCodecInfo)m_codec });
+                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
             }

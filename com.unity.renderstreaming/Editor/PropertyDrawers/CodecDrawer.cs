@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,9 +10,62 @@ namespace Unity.RenderStreaming.Editor
     [CustomPropertyDrawer(typeof(CodecAttribute))]
     class CodecDrawer : PropertyDrawer
     {
+        interface Codec
+        {
+            public string name { get; }
+            public string sdpFmtpLine { get; }
+            public string optionTitle { get; }
+        }
+
+        class AudioCodec : Codec
+        {
+            public string name { get { return codec_.name; } }
+            public string sdpFmtpLine { get { return codec_.sdpFmtpLine; } }
+
+            public string optionTitle
+            {
+                get
+                {
+                    return null;
+                }
+            }
+
+            public AudioCodec(AudioCodecInfo codec)
+            {
+                codec_ = codec;
+            }
+            AudioCodecInfo codec_;
+        }
+
+        class VideoCodec : Codec
+        {
+            public string name { get { return codec_.name; } }
+            public string sdpFmtpLine { get { return codec_.sdpFmtpLine; } }
+            public string optionTitle
+            {
+                get
+                {
+                    if (codec_ is H264CodecInfo h264Codec)
+                    {
+                        return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
+                    }
+                    else if (codec_ is VP9CodecInfo vp9codec)
+                    {
+                        return $"Profile {(int)vp9codec.profile}";
+                    }
+                    return null;
+                }
+            }
+            public VideoCodec(VideoCodecInfo codec)
+            {
+                codec_ = codec;
+            }
+            VideoCodecInfo codec_;
+        }
+
         SerializedProperty propertyCodecName;
         SerializedProperty propertySdpFmtpLine;
-        IEnumerable<VideoCodecInfo> codecs;
+        IEnumerable<Codec> codecs;
         string[] codecNames = new string[] { "Default" };
         string[] codecOptions = new string[] {};
         string[] sdpFmtpLines = new string[] {};
@@ -25,42 +79,37 @@ namespace Unity.RenderStreaming.Editor
         static readonly GUIContent s_codecLabel =
             EditorGUIUtility.TrTextContent("Codec", "Video encoding codec.");
 
-        static string GetCodecOption(VideoCodecInfo codec)
-        {
-            if(codec is H264CodecInfo h264Codec)
-            {
-                return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
-            }
-            else if(codec is VP9CodecInfo vp9codec)
-            {
-                return $"Profile {(int)vp9codec.profile}";
-            }
-            return null;
-        }
-
-        static IEnumerable<VideoCodecInfo> GetAvailableCodecs(Object target)
+        static IEnumerable<Codec> GetAvailableCodecs(UnityEngine.Object target)
         {
             if(target is VideoStreamSender)
             {
-                return VideoStreamSender.GetAvailableCodecs();
+                return VideoStreamSender.GetAvailableCodecs().Select(codec => new VideoCodec(codec));
             }
             else if (target is VideoStreamReceiver)
             {
-                return VideoStreamReceiver.GetAvailableCodecs();
+                return VideoStreamReceiver.GetAvailableCodecs().Select(codec => new VideoCodec(codec));
             }
-            return Enumerable.Empty<VideoCodecInfo>();
+            else if (target is AudioStreamSender)
+            {
+                return AudioStreamSender.GetAvailableCodecs().Select(codec => new AudioCodec(codec));
+            }
+            else if (target is AudioStreamReceiver)
+            {
+                return AudioStreamReceiver.GetAvailableCodecs().Select(codec => new AudioCodec(codec));
+            }
+            throw new ArgumentException();
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!cache)
             {
-                propertyCodecName = property.FindPropertyInChildren("codecName");
-                propertySdpFmtpLine = property.FindPropertyInChildren("sdpFmtpLine");
+                propertyCodecName = property.FindPropertyInChildren("m_codecName");
+                propertySdpFmtpLine = property.FindPropertyInChildren("m_sdpFmtpLine");
                 codecs = GetAvailableCodecs(property.serializedObject.targetObject);
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).Distinct().ToArray();
                 var selectedCodecs = codecs.Where(codec => codec.name == propertyCodecName.stringValue);
-                codecOptions = selectedCodecs.Select(codec => GetCodecOption(codec)).ToArray();
+                codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                 sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
                 hasCodecOptions = codecOptions.Length > 1;
                 cache = true;
@@ -95,7 +144,7 @@ namespace Unity.RenderStreaming.Editor
                     codecName = codecNames[selectCodecIndex];
                     propertyCodecName.stringValue = codecNames[selectCodecIndex];
                     var selectedCodecs = codecs.Where(codec => codec.name == codecName);
-                    codecOptions = selectedCodecs.Select(codec => GetCodecOption(codec)).ToArray();
+                    codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                     sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
                     hasCodecOptions = codecOptions.Length > 1;
                     propertySdpFmtpLine.stringValue = sdpFmtpLines[0];

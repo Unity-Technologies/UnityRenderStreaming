@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -6,12 +8,18 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class AudioCodecInfo : IEquatable<AudioCodecInfo>
     {
+        [SerializeField]
+        private string m_codecName;
+        [SerializeField]
+        private string m_sdpFmtpLine;
+
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return capability.GetCodecName(); } }
+        public string name { get { return m_codecName; } }
 
         /// <summary>
         /// 
@@ -27,6 +35,11 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         public int sampleRate { get { return capability.clockRate.Value; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string sdpFmtpLine { get { return m_sdpFmtpLine; } }
 
         internal RTCRtpCodecCapability capability;
 
@@ -46,6 +59,8 @@ namespace Unity.RenderStreaming
         internal AudioCodecInfo(RTCRtpCodecCapability caps)
         {
             capability = caps;
+            m_codecName = capability.GetCodecName();
+            m_sdpFmtpLine = capability.sdpFmtpLine;
         }
     }
 }

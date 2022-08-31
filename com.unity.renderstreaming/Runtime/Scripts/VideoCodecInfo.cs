@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -7,14 +8,20 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class VideoCodecInfo : IEquatable<VideoCodecInfo>
     {
         static readonly string KeyCodecImplementation = "implementation_name";
 
+        [SerializeField]
+        private string m_codecName;
+        [SerializeField]
+        private string m_sdpFmtpLine;
+
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return capability.GetCodecName(); } }
+        public string name { get { return m_codecName; } }
 
         /// <summary>
         /// 
@@ -29,7 +36,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string sdpFmtpLine { get { return capability.sdpFmtpLine; } }
+        public string sdpFmtpLine { get { return m_sdpFmtpLine; } }
 
         /// <summary>
         /// 
@@ -71,6 +78,8 @@ namespace Unity.RenderStreaming
         protected VideoCodecInfo(RTCRtpCodecCapability caps)
         {
             capability = caps;
+            m_codecName = capability.GetCodecName();
+            m_sdpFmtpLine = capability.sdpFmtpLine;
 
             string[] subs = capability.sdpFmtpLine.Split(';');
 
