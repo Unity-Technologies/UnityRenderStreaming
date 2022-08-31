@@ -12,9 +12,9 @@ namespace Unity.RenderStreaming.Editor
     {
         interface Codec
         {
-            public string name { get; }
-            public string sdpFmtpLine { get; }
-            public string optionTitle { get; }
+            string name { get; }
+            string sdpFmtpLine { get; }
+            string optionTitle { get; }
         }
 
         class AudioCodec : Codec
