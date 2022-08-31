@@ -68,6 +68,7 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty m_scaleFactor;
         SerializedProperty m_depth;
         SerializedProperty m_antiAliasing;
+        SerializedProperty m_codec;
         SerializedProperty m_textureSize;
         SerializedProperty m_webCamDeviceIndex;
         SerializedProperty m_autoRequestUserAuthorization;
@@ -80,6 +81,7 @@ namespace Unity.RenderStreaming.Editor
             m_camera = serializedObject.FindProperty("m_camera");
             m_texture = serializedObject.FindProperty("m_texture");
             m_webCamDeviceIndex = serializedObject.FindProperty("m_webCamDeviceIndex");
+            m_codec = serializedObject.FindProperty("m_codec");
             m_textureSize = serializedObject.FindProperty("m_textureSize");
             m_frameRate = serializedObject.FindProperty("m_frameRate");
             m_bitrate = serializedObject.FindProperty("m_bitrate");
@@ -114,6 +116,9 @@ namespace Unity.RenderStreaming.Editor
             {
                 EditorGUILayout.PropertyField(m_source, s_Styles.dataSourceContent);
                 HandleDataSourceField();
+
+                EditorGUILayout.Space();
+                EditorGUILayout.PropertyField(m_codec);
             }
 
             EditorGUILayout.Space();
