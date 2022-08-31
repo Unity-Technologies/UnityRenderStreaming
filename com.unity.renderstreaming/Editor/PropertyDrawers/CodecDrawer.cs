@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming.Editor
             VideoCodecInfo codec_;
         }
 
-        SerializedProperty propertyCodecName;
+        SerializedProperty propertyMimeType;
         SerializedProperty propertySdpFmtpLine;
         IEnumerable<Codec> codecs;
         string[] codecNames = new string[] { "Default" };
@@ -104,11 +104,11 @@ namespace Unity.RenderStreaming.Editor
         {
             if (!cache)
             {
-                propertyCodecName = property.FindPropertyInChildren("m_CodecName");
+                propertyMimeType = property.FindPropertyInChildren("m_MimeType");
                 propertySdpFmtpLine = property.FindPropertyInChildren("m_SdpFmtpLine");
                 codecs = GetAvailableCodecs(property.serializedObject.targetObject);
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).Distinct().ToArray();
-                var selectedCodecs = codecs.Where(codec => codec.name == propertyCodecName.stringValue);
+                var selectedCodecs = codecs.Where(codec => codec.name == propertyMimeType.stringValue);
                 codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                 sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
                 hasCodecOptions = codecOptions.Length > 1;
@@ -118,9 +118,9 @@ namespace Unity.RenderStreaming.Editor
             var rect = position;
             rect.height = EditorGUIUtility.singleLineHeight;
 
-            EditorGUI.BeginProperty(rect, label, propertyCodecName);
+            EditorGUI.BeginProperty(rect, label, propertyMimeType);
 
-            string codecName = propertyCodecName.stringValue;
+            string codecName = propertyMimeType.stringValue;
             if (!string.IsNullOrEmpty(codecName))
             {
                 while (selectCodecIndex < codecNames.Length && codecName != codecNames[selectCodecIndex])
@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.Editor
                 if(0 < selectCodecIndex)
                 {
                     codecName = codecNames[selectCodecIndex];
-                    propertyCodecName.stringValue = codecNames[selectCodecIndex];
+                    propertyMimeType.stringValue = codecNames[selectCodecIndex];
                     var selectedCodecs = codecs.Where(codec => codec.name == codecName);
                     codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                     sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
@@ -151,7 +151,7 @@ namespace Unity.RenderStreaming.Editor
                 }
                 else
                 {
-                    propertyCodecName.stringValue = null;
+                    propertyMimeType.stringValue = null;
                     propertySdpFmtpLine.stringValue = null;
                     hasCodecOptions = false;
                 }
@@ -165,7 +165,7 @@ namespace Unity.RenderStreaming.Editor
                 {
                     // sdp fmtp line
                     rect.y += EditorGUIUtility.singleLineHeight;
-                    EditorGUI.BeginProperty(rect, label, propertyCodecName);
+                    EditorGUI.BeginProperty(rect, label, propertyMimeType);
 
                     EditorGUI.BeginChangeCheck();
                     selectSdpFmtpLineIndex = EditorGUI.Popup(rect, selectSdpFmtpLineIndex, codecOptions);

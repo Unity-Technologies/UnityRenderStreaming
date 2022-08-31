@@ -325,7 +325,8 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                RTCErrorType error = transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
+                var codecs = new VideoCodecInfo[] { m_codec };
+                RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
             }
@@ -714,6 +715,11 @@ namespace Unity.RenderStreaming
             {
                 Dispose();
             }
+        }
+
+        internal IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(IEnumerable<VideoCodecInfo> codecs)
+        {
+            return RTCRtpSender.GetCapabilities(TrackKind.Video).SelectCodecCapabilities(codecs);
         }
     }
 }

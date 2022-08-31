@@ -1,25 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    internal static class RTCRtpTransceiverExtension
-    {
-        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, VideoCodecInfo[] codecs)
-        {
-            var caps = codecs?.Select(codec => codec.capability).ToArray();
-            return transceiver.SetCodecPreferences(caps);
-        }
-        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, AudioCodecInfo[] codecs)
-        {
-            var caps = codecs.Select(codec => codec.capability).ToArray();
-            return transceiver.SetCodecPreferences(caps);
-        }
-    }
-
     /// <summary>
     ///
     /// </summary>
@@ -170,13 +156,15 @@ namespace Unity.RenderStreaming
         {
             RTCRtpTransceiverInit init = GetTransceiverInit(sender);
             var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
-            if (sender is VideoStreamSender)
+            if (sender is VideoStreamSender videoStreamSender)
             {
-                transceiver.SetCodec(GetVideoCodecInfo(sender));
+                var codecs = GetVideoCodecInfo(sender);
+                transceiver.SetCodecPreferences(videoStreamSender.SelectCodecCapabilities(codecs).ToArray());
             }
-            else if (sender is AudioStreamSender)
+            else if (sender is AudioStreamSender audioStreamSender)
             {
-                transceiver.SetCodec(GetAudioCodecInfo(sender));
+                var codecs = GetAudioCodecInfo(sender);
+                transceiver.SetCodecPreferences(audioStreamSender.SelectCodecCapabilities(codecs).ToArray());
             }
             sender.SetTransceiver(connectionId, transceiver);
         }
@@ -203,13 +191,15 @@ namespace Unity.RenderStreaming
         /// <param name="transceiver"></param>
         public virtual void SetReceiver(string connectionId, IStreamReceiver receiver, RTCRtpTransceiver transceiver)
         {
-            if (receiver is VideoStreamReceiver)
+            if (receiver is VideoStreamReceiver videoStreamReceiver)
             {
-                transceiver.SetCodec(GetVideoCodecInfo(receiver));
+                var codecs = GetVideoCodecInfo(receiver);
+                transceiver.SetCodecPreferences(videoStreamReceiver.SelectCodecCapabilities(codecs).ToArray());
             }
-            else if (receiver is AudioStreamReceiver)
+            else if (receiver is AudioStreamReceiver audioStreamReceiver)
             {
-                transceiver.SetCodec(GetAudioCodecInfo(receiver));
+                var codecs = GetAudioCodecInfo(receiver);
+                transceiver.SetCodecPreferences(audioStreamReceiver.SelectCodecCapabilities(codecs).ToArray());
             }
             receiver.SetTransceiver(connectionId, transceiver);
         }
