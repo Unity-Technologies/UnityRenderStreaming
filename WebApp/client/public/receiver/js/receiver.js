@@ -4,6 +4,10 @@ import { InputRemoting } from "../../js/inputremoting.js";
 import Peer from "../../js/peer.js";
 import * as Logger from "../../js/logger.js";
 
+/** @enum {number} */
+const ActionType = {
+  ChangeLabel: 0
+};
 
 function uuid4() {
   var temp_url = URL.createObjectURL(new Blob());
@@ -22,7 +26,6 @@ export class Receiver {
   constructor(videoElement) {
     const _this = this;
     this.pc = null;
-    this.channel = null;
     this.connectionId = null;
 
     this.sender = new Sender(videoElement);
@@ -134,6 +137,9 @@ export class Receiver {
     // kick send offer process
     this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
     this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
+    this.multiplayChannel = this.pc.createDataChannel(this.connectionId, "multiplay");
+    this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);
+    
     this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
   }
 
@@ -173,9 +179,20 @@ export class Receiver {
     return this._videoScale;
   }
 
+  async _onOpenMultiplayChannel() {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const num = Math.floor(Math.random() * 100000);
+    this._changeLabel(String(num));
+  }
+
   async _onOpenInputSenderChannel() {
     await new Promise(resolve => setTimeout(resolve, 100));
     this.inputRemoting.startSending();
+  }
+
+  _changeLabel(label) {
+    const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
+    this.multiplayChannel.send(json);
   }
 
   async stop() {
