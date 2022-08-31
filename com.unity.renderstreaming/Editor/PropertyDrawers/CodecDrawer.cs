@@ -13,24 +13,19 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty propertySdpFmtpLine;
         IEnumerable<VideoCodecInfo> codecs;
         string[] codecNames = new string[] { "Default" };
-        string[] codecDetails = new string[] {};
+        string[] codecOptions = new string[] {};
         string[] sdpFmtpLines = new string[] {};
 
         int selectCodecIndex = 0;
         int selectSdpFmtpLineIndex = 0;
-        bool hasProfile = false;
+        bool hasCodecOptions = false;
         bool cache = false;
         bool changed = false;
 
         static readonly GUIContent s_codecLabel =
             EditorGUIUtility.TrTextContent("Codec", "Video encoding codec.");
 
-        static bool HasProfile(string codecName)
-        {
-            return codecName == "H264" || codecName == "VP9";
-        }
-
-        static string GetCodecDetail(VideoCodecInfo codec)
+        static string GetCodecOption(VideoCodecInfo codec)
         {
             if(codec is H264CodecInfo h264Codec)
             {
@@ -65,9 +60,9 @@ namespace Unity.RenderStreaming.Editor
                 codecs = GetAvailableCodecs(property.serializedObject.targetObject);
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).Distinct().ToArray();
                 var selectedCodecs = codecs.Where(codec => codec.name == propertyCodecName.stringValue);
-                codecDetails = selectedCodecs.Select(codec => GetCodecDetail(codec)).ToArray();
+                codecOptions = selectedCodecs.Select(codec => GetCodecOption(codec)).ToArray();
                 sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
-                hasProfile = HasProfile(propertyCodecName.stringValue);
+                hasCodecOptions = codecOptions.Length > 1;
                 cache = true;
             }
 
@@ -100,16 +95,16 @@ namespace Unity.RenderStreaming.Editor
                     codecName = codecNames[selectCodecIndex];
                     propertyCodecName.stringValue = codecNames[selectCodecIndex];
                     var selectedCodecs = codecs.Where(codec => codec.name == codecName);
-                    codecDetails = selectedCodecs.Select(codec => GetCodecDetail(codec)).ToArray();
+                    codecOptions = selectedCodecs.Select(codec => GetCodecOption(codec)).ToArray();
                     sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
-                    hasProfile = HasProfile(codecName);
+                    hasCodecOptions = codecOptions.Length > 1;
                     propertySdpFmtpLine.stringValue = sdpFmtpLines[0];
                 }
                 else
                 {
                     propertyCodecName.stringValue = null;
                     propertySdpFmtpLine.stringValue = null;
-                    hasProfile = false;
+                    hasCodecOptions = false;
                 }
             }
             EditorGUI.EndProperty();
@@ -117,14 +112,14 @@ namespace Unity.RenderStreaming.Editor
             int codecIndex = selectCodecIndex - 1;
             if (0 < codecIndex)
             {
-                if (hasProfile && 0 < codecDetails.Length)
+                if (hasCodecOptions && 0 < codecOptions.Length)
                 {
                     // sdp fmtp line
                     rect.y += EditorGUIUtility.singleLineHeight;
                     EditorGUI.BeginProperty(rect, label, propertyCodecName);
 
                     EditorGUI.BeginChangeCheck();
-                    selectSdpFmtpLineIndex = EditorGUI.Popup(rect, selectSdpFmtpLineIndex, codecDetails);
+                    selectSdpFmtpLineIndex = EditorGUI.Popup(rect, selectSdpFmtpLineIndex, codecOptions);
 
                     if (EditorGUI.EndChangeCheck())
                     {
@@ -154,7 +149,7 @@ namespace Unity.RenderStreaming.Editor
             if (property == null)
                 throw new System.ArgumentNullException(nameof(property));
 
-            int lineCount = hasProfile ? 2 : 1;
+            int lineCount = hasCodecOptions ? 2 : 1;
             return EditorGUIUtility.singleLineHeight * lineCount;
         }
     }
