@@ -104,8 +104,8 @@ namespace Unity.RenderStreaming.Editor
         {
             if (!cache)
             {
-                propertyCodecName = property.FindPropertyInChildren("m_codecName");
-                propertySdpFmtpLine = property.FindPropertyInChildren("m_sdpFmtpLine");
+                propertyCodecName = property.FindPropertyInChildren("m_CodecName");
+                propertySdpFmtpLine = property.FindPropertyInChildren("m_SdpFmtpLine");
                 codecs = GetAvailableCodecs(property.serializedObject.targetObject);
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).Distinct().ToArray();
                 var selectedCodecs = codecs.Where(codec => codec.name == propertyCodecName.stringValue);

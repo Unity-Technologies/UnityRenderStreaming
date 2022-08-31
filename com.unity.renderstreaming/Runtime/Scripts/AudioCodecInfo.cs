@@ -12,14 +12,14 @@ namespace Unity.RenderStreaming
     public class AudioCodecInfo : IEquatable<AudioCodecInfo>
     {
         [SerializeField]
-        private string m_codecName;
+        private string m_CodecName;
         [SerializeField]
-        private string m_sdpFmtpLine;
+        private string m_SdpFmtpLine;
 
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return m_codecName; } }
+        public string name { get { return m_CodecName; } }
 
         /// <summary>
         /// 
@@ -39,7 +39,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string sdpFmtpLine { get { return m_sdpFmtpLine; } }
+        public string sdpFmtpLine { get { return m_SdpFmtpLine; } }
 
         internal RTCRtpCodecCapability capability;
 
@@ -59,8 +59,8 @@ namespace Unity.RenderStreaming
         internal AudioCodecInfo(RTCRtpCodecCapability caps)
         {
             capability = caps;
-            m_codecName = capability.GetCodecName();
-            m_sdpFmtpLine = capability.sdpFmtpLine;
+            m_CodecName = capability.GetCodecName();
+            m_SdpFmtpLine = capability.sdpFmtpLine;
         }
     }
 }
