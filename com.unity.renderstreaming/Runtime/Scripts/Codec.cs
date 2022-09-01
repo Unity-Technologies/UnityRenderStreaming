@@ -11,7 +11,15 @@ namespace Unity.RenderStreaming
             return cap?.mimeType.Split('/')[1];
         }
 
-        public static IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities<T>(this RTCRtpCapabilities capabilities, IEnumerable<T> codecs)
+        public static IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(this RTCRtpCapabilities capabilities, IEnumerable<VideoCodecInfo> codecs)
+        {
+            var caps = capabilities.codecs;
+            return codecs
+                .Where(codec => codec != null)
+                .Select(codec => caps.FirstOrDefault(cap => codec.Equals(cap)))
+                .Where(cap => cap != null);
+        }
+        public static IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(this RTCRtpCapabilities capabilities, IEnumerable<AudioCodecInfo> codecs)
         {
             var caps = capabilities.codecs;
             return codecs
