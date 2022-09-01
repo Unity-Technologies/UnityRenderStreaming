@@ -51,19 +51,19 @@ export default class Peer extends EventTarget {
       }
     };
 
-    this.pc.onsignalingstatechange = e => {
-      _this.log(`signalingState changed:${e}`);
+    this.pc.onsignalingstatechange = () => {
+      _this.log(`signalingState changed:${_this.pc.signalingState}`);
     };
 
-    this.pc.oniceconnectionstatechange = e => {
-      _this.log(`iceConnectionState changed:${e}`);
+    this.pc.oniceconnectionstatechange = () => {
+      _this.log(`iceConnectionState changed:${_this.pc.iceConnectionState}`);
       if (_this.pc.iceConnectionState === 'disconnected') {
         this.dispatchEvent(new Event('disconnect'));
       }
     };
 
-    this.pc.onicegatheringstatechange = e => {
-      _this.log(`iceGatheringState changed:${e}'`);
+    this.pc.onicegatheringstatechange = () => {
+      _this.log(`iceGatheringState changed:${_this.pc.iceGatheringState}'`);
     };
 
     this.loopResendOffer();

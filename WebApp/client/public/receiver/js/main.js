@@ -1,13 +1,23 @@
 import { Receiver } from "./receiver.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
+import { Observer, Sender } from "../../js/sender.js";
+import { InputRemoting } from "../../js/inputremoting.js";
 
-setup();
+/** @enum {number} */
+const ActionType = {
+  ChangeLabel: 0
+};
 
 let playButton;
 let receiver;
 let useWebSocket;
 let elementVideo;
+
+let sender;
+let inputRemoting;
+let inputSenderChannel;
+let multiplayChannel;
 
 const playerDiv = document.getElementById('player');
 const codecPreferences = document.getElementById('codecPreferences');
@@ -16,6 +26,8 @@ const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
 messageDiv.style.display = 'none';
+
+setup();
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
@@ -66,7 +78,11 @@ function onClickPlayButton() {
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
 
-  setupVideoPlayer(elementVideo).then(value => receiver = value);
+  setupVideoPlayer(elementVideo).then(value => {
+    receiver = value;
+    setupInput();
+    showStatsMessage();
+  });
 
   // add fullscreen button
   const elementFullscreenButton = document.createElement('img');
@@ -170,7 +186,6 @@ async function setupVideoPlayer(elements) {
 
   await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
-  showStatsMessage();
 
   return videoPlayer;
 }
@@ -196,6 +211,47 @@ function clearChildren(element) {
     element.removeChild(element.firstChild);
   }
 }
+
+function isTouchDevice() {
+  return (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
+}
+
+function setupInput() {
+  sender = new Sender(elementVideo);
+  sender.addMouse();
+  sender.addKeyboard();
+  if (isTouchDevice()) {
+    sender.addTouchscreen();
+  }
+  sender.addGamepad();
+  inputRemoting = new InputRemoting(sender);
+
+  inputSenderChannel = receiver.createDataChannel("input");
+  inputSenderChannel.onopen = _onOpenInputSenderChannel;
+  inputRemoting.subscribe(new Observer(inputSenderChannel));
+
+  multiplayChannel = receiver.createDataChannel("multiplay");
+  multiplayChannel.onopen = _onOpenMultiplayChannel;
+}
+
+async function _onOpenMultiplayChannel() {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const num = Math.floor(Math.random() * 100000);
+  _changeLabel(String(num));
+}
+
+async function _onOpenInputSenderChannel() {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  inputRemoting.startSending();
+}
+
+function _changeLabel(label) {
+  const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
+  multiplayChannel.send(json);
+}
+
 
 function showCodecSelect() {
   if (!supportsSetCodecPreferences) {

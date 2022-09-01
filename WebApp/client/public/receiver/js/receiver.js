@@ -16,26 +16,11 @@ function uuid4() {
   return uuid.split(/[:/]/g).pop().toLowerCase(); // remove prefixes
 }
 
-function isTouchDevice() {
-  return (('ontouchstart' in window) ||
-    (navigator.maxTouchPoints > 0) ||
-    (navigator.msMaxTouchPoints > 0));
-}
-
 export class Receiver {
   constructor(videoElement) {
     const _this = this;
     this.pc = null;
     this.connectionId = null;
-
-    this.sender = new Sender(videoElement);
-    this.sender.addMouse();
-    this.sender.addKeyboard();
-    if (isTouchDevice()) {
-      this.sender.addTouchscreen();
-    }
-    this.sender.addGamepad();
-    this.inputRemoting = new InputRemoting(this.sender);
 
     this.localStream = new MediaStream();
     this.video = videoElement;
@@ -133,18 +118,14 @@ export class Receiver {
     await this.signaling.start();
     // register using connectionId
     await this.signaling.createConnection(this.connectionId);
-
-    // kick send offer process
-    this.inputSenderChannel = this.pc.createDataChannel(this.connectionId, "input");
-    this.inputSenderChannel.onopen = this._onOpenInputSenderChannel.bind(this);
-    this.multiplayChannel = this.pc.createDataChannel(this.connectionId, "multiplay");
-    this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);
-    
-    this.inputRemoting.subscribe(new Observer(this.inputSenderChannel));
   }
 
   async getStats() {
     return await this.pc.getStats(this.connectionId);
+  }
+
+  createDataChannel(label) {
+    return this.pc.createDataChannel(this.connectionId, label);
   }
 
   resizeVideo() {
