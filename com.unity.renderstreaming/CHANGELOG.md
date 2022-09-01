@@ -6,10 +6,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] - yyyy-mm-dd
 
+### Added
+
+- Added APIs to select codec for audio/video streaming.
+- Added APIs to configure settings like bitrate for audio/video streaming.
+
 ### Changed
 
 - Upgraded the version of Input System package `1.4.1`.
-- Upgraded the version of WebRTC package `2.4.0-exp.8`.
+- Upgraded the version of WebRTC package `2.4.0-exp.10`.
+- Merge features of three classes to `VideoStreamSender`.
+  - `MicrophoneStreamSender`
+  - `AudioStreamReceiver`
+  - `ScreenStreamSender`
+- Improve user interface on the inspector window of components below.
+  - `VideoStreamSender`
+  - `VideoStreamReceiver`
+  - `AudioStreamSender`
+  - `AudioStreamReceiver`
+
+### Fixed
+
+- Reduce CPU loads of the rendering thread by updating WebRTC package.
+- Fixed the crash when video resolutions higher than 1080p with hardware encoding.
+
+### Removed
+
+- No longer support Unity 2019.4.
 
 ## [3.1.0-exp.3] - 2022-03-01
 
@@ -97,7 +120,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 
 - Supported iOS platform.
 - Added new samples.
-- Added a documentation for samples. 
+- Added a documentation for samples.
 - Added components (`InputSystemChannelSender`, `InputSystemChannelReceiver`, `WebBrowserInputChannelReceiver`, `SingleConnection` and `Broadcast`).
 
 ### Changed
@@ -144,7 +167,7 @@ Version 3.0.0 has a big change in the package design. This mainly addresses movi
 
 ## [2.1.0-preview] - 2020-08-28
 
-### Added 
+### Added
 
 - Add a sample used Built-in Render Pipeline as graphics render pipeline
 
