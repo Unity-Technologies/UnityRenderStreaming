@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
-    public class ShowStatsUI : MonoBehaviour
+    internal class ShowStatsUI : MonoBehaviour
     {
         [SerializeField] private Button showStatsButton;
         [SerializeField] private Button hideStatsButton;
