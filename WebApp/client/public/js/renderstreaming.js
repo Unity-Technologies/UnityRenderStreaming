@@ -35,7 +35,7 @@ export class RenderStreaming {
 
   async _onConnect(e) {
     const data = e.detail;
-    if (this._peer != null && this._connectionId == data.connectionId) {
+    if (this._connectionId == data.connectionId) {
       this._preparePeerConnection(this._connectionId, data.polite);
       this.onConnect(data.connectionId);
     }
@@ -55,7 +55,7 @@ export class RenderStreaming {
     }
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     try {
-      await this.peer.onGotDescription(offer.connectionId, desc);
+      await this._peer.onGotDescription(offer.connectionId, desc);
     } catch (error) {
       Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
       return;
@@ -105,23 +105,23 @@ export class RenderStreaming {
     this._peer = new Peer(connectionId, polite, this.codecs);
     this._peer.addEventListener('disconnect', () => {
       this.onDisconnect(`Receive disconnect message from peer. connectionId:${connectionId}`);
-    }).bind(this);
+    });
     this._peer.addEventListener('trackevent', (e) => {
       const data = e.detail;
       this.onTrackEvent(data);
-    }).bind(this);
+    });
     this._peer.addEventListener('sendoffer', (e) => {
       const offer = e.detail;
       this._signaling.sendOffer(offer.connectionId, offer.sdp);
-    }).bind(this);
+    });
     this._peer.addEventListener('sendanswer', (e) => {
       const answer = e.detail;
       this._signaling.sendAnswer(answer.connectionId, answer.sdp);
-    }).bind(this);
+    });
     this._peer.addEventListener('sendcandidate', (e) => {
       const candidate = e.detail;
       this._signaling.sendCandidate(candidate.connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
-    }).bind(this);
+    });
     return this._peer;
   }
 
