@@ -117,7 +117,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         public event Action<string, string> onGotAnswer;
         public event Action<string> onConnect;
         public event Action<string> onDisconnect;
-        public event Action<string, RTCRtpReceiver> onAddReceiver;
+        public event Action<string, RTCRtpTransceiver> onAddTransceiver;
         public event Action<string, RTCDataChannel> onAddChannel;
 
         public void RaiseOnStart()
@@ -149,9 +149,9 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             onDisconnect?.Invoke(connectionId);
         }
-        public void RaiseOnAddReceiver(string connectionId, RTCRtpReceiver receiver)
+        public void RaiseOnAddTransceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
-            onAddReceiver?.Invoke(connectionId, receiver);
+            onAddTransceiver?.Invoke(connectionId, transceiver);
         }
         public void RaiseOnAddChannel(string connectionId, RTCDataChannel channel)
         {
@@ -169,14 +169,12 @@ namespace Unity.RenderStreaming.RuntimeTest
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            WebRTC.WebRTC.Initialize();
             m_eventSystem = new GameObject("EventSystem").AddComponent<EventSystem>();
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            WebRTC.WebRTC.Dispose();
             UnityEngine.Object.DestroyImmediate(m_eventSystem);
         }
 
@@ -283,10 +281,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             // todo:: create a receiver instance
             var test = new MonoBehaviourTest<AddReceiverHandlerTest>();
             m_provider.Subscribe(test.component);
-            _mDelegate.RaiseOnAddReceiver(connectionId, null);
+            _mDelegate.RaiseOnAddTransceiver(connectionId, null);
             Assert.That(test.component.IsTestFinished, Is.True);
             Assert.That(test.component.Data.connectionId, Is.EqualTo(connectionId));
-            Assert.That(test.component.Data.receiver, Is.Null);
+            Assert.That(test.component.Data.transceiver, Is.Null);
             UnityEngine.Object.DestroyImmediate(test.gameObject);
         }
 

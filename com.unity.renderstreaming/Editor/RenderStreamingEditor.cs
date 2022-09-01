@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using Unity.RenderStreaming.Signaling;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -48,32 +49,16 @@ namespace Unity.RenderStreaming.Editor
             EditorGUI.indentLevel -= 1;
         }
 
-        static void ShowSignalingTypes(SerializedProperty signalingType){
+        static readonly IReadOnlyList<System.Type> relevantISygnalingTypes =
+            TypeCache.GetTypesDerivedFrom<ISignaling>().Where(t => t.IsVisible && t.IsClass).ToList();
+        static readonly string[] options = relevantISygnalingTypes.Select(t => t.Name).ToArray();
+        static readonly string[] types = relevantISygnalingTypes.Select(t => t.FullName).ToArray();
 
-            List<string> options = new List<string>();
-            List<string> types = new List<string>();
-
-            int selected = 0;
-            int i = 0;
-
-            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()){
-                try {
-                    foreach (System.Type type in assembly.GetTypes()) {
-                        if (type.IsVisible && type.IsClass && typeof(ISignaling).IsAssignableFrom(type)) {
-                            if(type.FullName == signalingType.stringValue){
-                                selected = i;
-                            }
-                            options.Add(type.Name);
-                            types.Add(type.FullName);
-                            i++;
-                        }
-                    }
-                } catch { }
-            }
-
-            selected = EditorGUILayout.Popup("Signaling Type", selected, options.ToArray());
+        static void ShowSignalingTypes(SerializedProperty signalingType)
+        {
+            int selected = Mathf.Max(0, System.Array.IndexOf(types, signalingType.stringValue));
+            selected = EditorGUILayout.Popup("Signaling Type", selected, options);
             signalingType.stringValue = types[selected];
-
         }
     }
 }

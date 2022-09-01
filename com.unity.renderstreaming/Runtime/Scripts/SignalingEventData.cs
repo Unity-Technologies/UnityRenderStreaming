@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public RTCRtpReceiver receiver { get; set; }
+        public RTCRtpTransceiver transceiver { get; set; }
 
         /// <summary>
         /// 

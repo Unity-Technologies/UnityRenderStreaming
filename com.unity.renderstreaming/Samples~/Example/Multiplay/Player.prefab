@@ -359,7 +359,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2202957404010849384}
   - component: {fileID: 8182600240721872744}
-  - component: {fileID: 4760118286472866577}
+  - component: {fileID: 6244060090121574000}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -424,7 +424,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &4760118286472866577
+--- !u!114 &6244060090121574000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -433,12 +433,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1361852189085019679}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64875cfea3598b9419edac2dbbce0413, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  streamingSize: {x: 1280, y: 720}
-  depth: 16
-  antiAliasing: 1
+  m_textureSize: {x: 1280, y: 720}
+  m_source: 0
+  m_camera: {fileID: 8182600240721872744}
+  m_texture: {fileID: 0}
+  m_webCamDeviceIndex: 0
+  m_depth: 16
+  m_antiAliasing: 1
+  m_frameRate: 30
+  m_bitrate:
+    min: 0
+    max: 1000
+  m_scaleFactor: 1
+  m_autoRequestUserAuthorization: 1
 --- !u!1 &1474066182485874884
 GameObject:
   m_ObjectHideFlags: 0

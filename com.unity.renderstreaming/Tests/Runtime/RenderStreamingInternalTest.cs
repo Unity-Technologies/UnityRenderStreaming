@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
@@ -12,6 +13,15 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         PrivateMode,
         PublicMode
+    }
+
+    static class RenderStreamingInternalExtension
+    {
+        public static RTCRtpTransceiver AddSenderTrack(this RenderStreamingInternal target, string connectionId, MediaStreamTrack track)
+        {
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendOnly };
+            return target.AddTransceiver(connectionId, track, init);
+        }
     }
 
     class RenderStreamingInternalTest
@@ -49,9 +59,10 @@ namespace Unity.RenderStreaming.RuntimeTest
                 signaling = new MockSignaling(),
                 config = new RTCConfiguration
                 {
-                    iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}},
+                    iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } },
                 },
                 startCoroutine = test.component.StartCoroutine,
+                stopCoroutine = test.component.StopCoroutine,
                 resentOfferInterval = ResendOfferInterval,
             };
         }
@@ -158,7 +169,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddTrack(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -177,13 +188,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             target.CreateConnection(connectionId);
             yield return new WaitUntil(() => isCreatedConnection);
             Assert.That(isCreatedConnection, Is.True);
+            Assert.That(target.GetTransceivers(connectionId).Count(), Is.EqualTo(0));
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
 
             var transceiver = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
+            Assert.That(target.GetTransceivers(connectionId).Count(), Is.EqualTo(1));
             target.RemoveSenderTrack(connectionId, track);
 
             bool isDeletedConnection = false;
@@ -236,7 +249,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator AddTrackMultiple(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);
@@ -260,13 +273,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver1 = target.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
             VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target.AddSenderTrack(connectionId, track2);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             target.DeleteConnection(connectionId);
             bool isDeletedConnection = false;
@@ -317,7 +330,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -354,7 +367,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             bool isGotAnswer2 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onAddTransceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotOffer += (_, sdp) => { target1.SendAnswer(connectionId); };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
@@ -365,7 +378,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // send offer automatically after adding a Track
             var transceiver = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver, Is.Not.Null);
-            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             yield return new WaitUntil(() => isAddReceiver1 && isGotAnswer2);
             Assert.That(isAddReceiver1, Is.True);
@@ -390,7 +403,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] {RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
@@ -420,7 +433,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             yield return new WaitUntil(() => isCreatedConnection1);
             Assert.That(isCreatedConnection1, Is.True);
 
-            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.RecvOnly
+            };
+            target1.AddTransceiver(connectionId, TrackKind.Video, init);
 
             // target2 is sender in private mode
             yield return new WaitUntil(() => isOnGotOffer2);
@@ -428,14 +445,14 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             bool isAddReceiver1 = false;
             bool isGotAnswer1 = false;
-            target1.onAddReceiver += (_, receiver) => { isAddReceiver1 = true; };
+            target1.onAddTransceiver += (_, receiver) => { isAddReceiver1 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
             VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
             var transceiver2 = target2.AddSenderTrack(connectionId, track);
-            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendRecv));
+            Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target2.SendAnswer(connectionId);
 
             yield return new WaitUntil(() => isAddReceiver1 & isGotAnswer1);
@@ -630,8 +647,16 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
 
-            target1.AddTransceiver(connectionId, TrackKind.Audio, RTCRtpTransceiverDirection.SendRecv);
-            target2.AddTransceiver(connectionId, TrackKind.Audio, RTCRtpTransceiverDirection.SendRecv);
+            RTCRtpTransceiverInit init1 = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendOnly
+            };
+            RTCRtpTransceiverInit init2 = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendOnly
+            };
+            target1.AddTransceiver(connectionId, TrackKind.Audio, init1);
+            target2.AddTransceiver(connectionId, TrackKind.Audio, init2);
 
             // check each target invoke onGotOffer
             yield return new WaitForSeconds(ResendOfferInterval * 5);
@@ -766,10 +791,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
             target2.onGotAnswer += (_, sdp) => { isGotAnswer2 = true; };
 
-            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.SendOnly);
-            target1.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
-            target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.SendOnly);
-            target2.AddTransceiver(connectionId, TrackKind.Video, RTCRtpTransceiverDirection.RecvOnly);
+            var init1 = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendOnly };
+            var init2 = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.RecvOnly };
+            var init3 = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendOnly };
+            var init4 = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.RecvOnly };
+            target1.AddTransceiver(connectionId, TrackKind.Video, init1);
+            target1.AddTransceiver(connectionId, TrackKind.Video, init2);
+            target2.AddTransceiver(connectionId, TrackKind.Video, init3);
+            target2.AddTransceiver(connectionId, TrackKind.Video, init4);
 
             yield return new WaitUntil(() => isGotOffer2);
             Assert.That(isGotOffer2, Is.True, $"{nameof(isGotOffer2)} is not True.");

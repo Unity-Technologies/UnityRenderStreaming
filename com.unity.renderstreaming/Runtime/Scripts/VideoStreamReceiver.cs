@@ -1,5 +1,8 @@
+using System;
 using Unity.WebRTC;
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Unity.RenderStreaming
 {
@@ -8,6 +11,9 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class VideoStreamReceiver : StreamReceiverBase
     {
+        [SerializeField]
+        private Texture m_targetTexture;
+
         /// <summary>
         ///
         /// </summary>
@@ -25,16 +31,67 @@ namespace Unity.RenderStreaming
         public override TrackKind Kind { get { return TrackKind.Video; } }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
-        [SerializeField] private Vector2Int streamingSize = new Vector2Int(1280, 720);
+        public uint width
+        {
+            get { return (uint)m_targetTexture.width; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint height
+        {
+            get { return (uint)m_targetTexture.height; }
+        }
+
+
+        private VideoCodecInfo m_codec;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public VideoCodecInfo codec
+        {
+            get { return m_codec; }
+        }
 
         /// <summary>
         ///
         /// </summary>
-        public Texture ReceiveTexture => m_receiveTexture;
+        public Texture targetTexture => m_targetTexture;
 
-        private Texture m_receiveTexture;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
+        {
+            string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03" };
+            var capabilities = RTCRtpReceiver.GetCapabilities(TrackKind.Video);
+            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => VideoCodecInfo.Create(codec));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mimeType"></param>
+        public void SetCodec(VideoCodecInfo codec)
+        {
+            m_codec = codec;
+
+            if (Transceiver == null)
+                return;
+            if (!string.IsNullOrEmpty(Transceiver.Mid))
+                throw new InvalidOperationException("Transceiver is streaming. This operation is invalid during the track is in use.");
+            if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                throw new InvalidOperationException("Track has already been ended.");
+
+            RTCErrorType error = Transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
+            if (error != RTCErrorType.None)
+                throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
+        }
 
         protected virtual void Start()
         {
@@ -48,16 +105,16 @@ namespace Unity.RenderStreaming
             {
                 videoTrack.OnVideoReceived += texture =>
                 {
-                    m_receiveTexture = texture;
-                    OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
+                    m_targetTexture = texture;
+                    OnUpdateReceiveTexture?.Invoke(m_targetTexture);
                 };
             }
         }
 
         private void StoppedStream(string connectionId)
         {
-            m_receiveTexture = null;
-            OnUpdateReceiveTexture?.Invoke(m_receiveTexture);
+            m_targetTexture = null;
+            OnUpdateReceiveTexture?.Invoke(m_targetTexture);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Unity.RenderStreaming
             deviceIndex = index;
         }
 
-        protected override MediaStreamTrack CreateTrack()
+        internal override MediaStreamTrack CreateTrack()
         {
             track = new AudioStreamTrack();
             return track;

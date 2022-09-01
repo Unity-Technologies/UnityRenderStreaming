@@ -1,0 +1,38 @@
+.unity-label {
+  margin: 2px 4px;
+  padding: 1px 2px 2px 2px;
+}
+
+.font-small {
+  font-size: env(--unity-font-size-small);
+}
+
+.font-big {
+  font-size: env(--unity-font-size);
+}
+
+:root #unity-content-container {
+  min-width: 400px;
+}
+
+#titleLabel {
+  font-size: 19px;
+  -unity-font-style: bold;
+  padding-top: 0;
+}
+
+#renderStreamingContainer {
+  padding-left: 5px;
+}
+
+Foldout {
+  background-color: var(--unity-colors-inspector_titlebar-background-hover);
+  border-width: 1px;
+  border-color: var(--unity-colors-app_toolbar-background);
+  margin: 2px 9px 2px 6px;
+  min-width: 330px;
+}
+
+Foldout Label {
+  margin: 2px 0 0 3px;
+}

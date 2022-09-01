@@ -228,7 +228,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 644105488}
+  m_bitrate:
+    min: 0
+    max: 200
 --- !u!82 &644105488
 AudioSource:
   m_ObjectHideFlags: 0
@@ -479,7 +481,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 683131290}
+  m_bitrate:
+    min: 0
+    max: 200
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,12 +853,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64875cfea3598b9419edac2dbbce0413, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  streamingSize: {x: 1280, y: 720}
-  depth: 16
-  antiAliasing: 1
+  m_textureSize: {x: 1280, y: 720}
+  m_source: 0
+  m_camera: {fileID: 725451154}
+  m_texture: {fileID: 0}
+  m_webCamDeviceIndex: 0
+  m_depth: 16
+  m_antiAliasing: 1
+  m_frameRate: 30
+  m_bitrate:
+    min: 0
+    max: 1000
+  m_scaleFactor: 1
+  m_autoRequestUserAuthorization: 1
 --- !u!1 &775980371
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,6 +976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
     type: 3}
   m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
@@ -986,6 +1001,7 @@ MonoBehaviour:
     type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!114 &783215603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1692,8 +1708,8 @@ GameObject:
   - component: {fileID: 1112556119}
   - component: {fileID: 1112556118}
   - component: {fileID: 1112556117}
-  - component: {fileID: 1112556114}
   - component: {fileID: 1112556113}
+  - component: {fileID: 1112556114}
   m_Layer: 0
   m_Name: Render Streaming Camera 2
   m_TagString: Untagged
@@ -1773,12 +1789,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1112556112}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64875cfea3598b9419edac2dbbce0413, type: 3}
+  m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  streamingSize: {x: 1280, y: 720}
-  depth: 16
-  antiAliasing: 1
+  m_textureSize: {x: 1280, y: 720}
+  m_source: 0
+  m_camera: {fileID: 1112556118}
+  m_texture: {fileID: 0}
+  m_webCamDeviceIndex: 0
+  m_depth: 16
+  m_antiAliasing: 1
+  m_frameRate: 30
+  m_bitrate:
+    min: 0
+    max: 1000
+  m_scaleFactor: 1
+  m_autoRequestUserAuthorization: 1
 --- !u!114 &1112556117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2993,7 +3019,6 @@ MonoBehaviour:
     - stun:stun.l.google.com:19302
     username: 
   interval: 5
-  hardwareEncoderSupport: 0
   handlers:
   - {fileID: 1623734774}
   runOnAwake: 0

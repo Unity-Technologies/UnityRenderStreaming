@@ -6,6 +6,10 @@ using UnityEngine;
 using Unity.WebRTC;
 using Unity.RenderStreaming.Signaling;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Unity.RenderStreaming
 {
     public sealed class RenderStreaming : MonoBehaviour
@@ -37,19 +41,58 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
-        static Type GetType(string typeName) {
+#if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        static void InitializeOnEditor()
+        {
+            /// todo(kazuki):: This is workaround.
+            /// When kicking the Unity Editor with batchmode flag on command line, The Unity Editor crashes 
+            /// caused by not unloading WebRTC native plugin. By this workaround, Some static methods of this
+            /// package don't work correctly when batchmode. These static methods depend on WebRTC API,
+            /// therefore the package initialization must be completed just after launching Editor.
+            /// In the future, we will remove this workaround after improving the initialization of the
+            /// WebRTC package.
+            if(!IsYamato)
+            {
+                if (Application.isBatchMode)
+                    return;
+            }
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+            EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
+        }
+
+        /// <summary>
+        /// Executed from the auto testing environment or not.
+        /// </summary>
+        static bool IsYamato => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("YAMATO_JOB_ID"));
+#else
+        [RuntimeInitializeOnLoadMethod]
+        static void InitializeOnRuntime()
+        {
+            RenderStreamingInternal.DomainUnload();
+            RenderStreamingInternal.DomainLoad();
+            Application.quitting += RenderStreamingInternal.DomainUnload;
+        }
+#endif
+
+        static Type GetType(string typeName)
+        {
             var type = Type.GetType(typeName);
             if (type != null) return type;
-            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies()) {
+            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
                 type = assembly.GetType(typeName);
                 if (type != null) return type;
             }
             return null;
         }
 
-		static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context) {
+        static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context)
+        {
             Type _type = GetType(type);
-            if (_type == null) {
+            if (_type == null)
+            {
                 throw new ArgumentException($"Signaling type is undefined. {type}");
             }
             object[] args = { url, interval, context };
@@ -61,7 +104,7 @@ namespace Unity.RenderStreaming
             if (!runOnAwake || m_running)
                 return;
 
-            RTCConfiguration conf = new RTCConfiguration {iceServers = iceServers};
+            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
             ISignaling signaling = CreateSignaling(
                 signalingType, urlSignaling, interval, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
@@ -119,6 +162,7 @@ namespace Unity.RenderStreaming
                 config = _conf,
                 signaling = _signaling,
                 startCoroutine = StartCoroutine,
+                stopCoroutine = StopCoroutine,
                 resentOfferInterval = interval,
             };
             var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
