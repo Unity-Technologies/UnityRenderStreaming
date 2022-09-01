@@ -1,13 +1,6 @@
 import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
-import { Observer, Sender } from "../../js/sender.js";
-import { InputRemoting } from "../../js/inputremoting.js";
 import Peer from "../../js/peer.js";
 import * as Logger from "../../js/logger.js";
-
-/** @enum {number} */
-const ActionType = {
-  ChangeLabel: 0
-};
 
 function uuid4() {
   var temp_url = URL.createObjectURL(new Blob());
@@ -158,22 +151,6 @@ export class Receiver {
 
   get videoScale() {
     return this._videoScale;
-  }
-
-  async _onOpenMultiplayChannel() {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const num = Math.floor(Math.random() * 100000);
-    this._changeLabel(String(num));
-  }
-
-  async _onOpenInputSenderChannel() {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    this.inputRemoting.startSending();
-  }
-
-  _changeLabel(label) {
-    const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
-    this.multiplayChannel.send(json);
   }
 
   async stop() {
