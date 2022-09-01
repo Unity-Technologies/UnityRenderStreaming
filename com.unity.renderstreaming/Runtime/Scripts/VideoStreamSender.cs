@@ -110,6 +110,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
+    [AddComponentMenu("Render Streaming/Video Stream Sender")]
     public class VideoStreamSender : StreamSenderBase
     {
         static readonly float s_defaultFrameRate = 30;

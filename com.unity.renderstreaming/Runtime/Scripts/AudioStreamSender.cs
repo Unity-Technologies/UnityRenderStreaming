@@ -10,6 +10,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// Attach AudioListerner or AudioSource
     /// </summary>
+    [AddComponentMenu("Render Streaming/Audio Stream Sender")]
     public class AudioStreamSender : StreamSenderBase
     {
         static readonly uint s_defaultMinBitrate = 0;
