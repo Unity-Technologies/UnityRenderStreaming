@@ -31,10 +31,20 @@ export class Signaling extends EventTarget {
   }
 
   async start() {
-    const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
-    const session = await createResponse.json();
-    this.sessionId = session.sessionId;
+    if(this.running) {
+      return;
+    }
+
     this.running = true;
+    while (!this.sessionId) {
+      const createResponse = await fetch(this.url(''), { method: 'PUT', headers: this.headers() });
+      const session = await createResponse.json();
+      this.sessionId = session.sessionId;
+
+      if (!this.sessionId) {
+        await this.sleep(this.interval);
+      }
+    }
 
     this.loopGetAll();
   }
