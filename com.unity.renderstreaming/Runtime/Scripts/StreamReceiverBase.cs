@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -26,19 +24,30 @@ namespace Unity.RenderStreaming
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
+        /// <summary>
+        ///
+        /// </summary>
+        public MediaStreamTrack Track => m_track;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool isPlaying
+        {
+            get
+            {
+                if (!Application.isPlaying)
+                    return false;
+                if (string.IsNullOrEmpty(Transceiver.Mid))
+                    return false;
+                if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                    return false;
+                return true;
+            }
+        }
 
         private RTCRtpTransceiver m_transceiver;
-
-
-        /// <summary>
-        ///
-        /// </summary>
-        public MediaStreamTrack Track { get; private set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public virtual TrackKind Kind { get; }
+        private MediaStreamTrack m_track;
 
         /// <summary>
         ///
@@ -51,7 +60,7 @@ namespace Unity.RenderStreaming
                 throw new ArgumentNullException("connectionId", "connectionId is null");
 
             m_transceiver = transceiver;
-            Track = m_transceiver?.Receiver.Track;
+            m_track = m_transceiver?.Receiver.Track;
 
             if (m_transceiver == null)
                 OnStoppedStream?.Invoke(connectionId);
@@ -61,8 +70,8 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnDestroy()
         {
-            Track?.Dispose();
-            Track = null;
+            m_track?.Dispose();
+            m_track = null;
         }
     }
 }

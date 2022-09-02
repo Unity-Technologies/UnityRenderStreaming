@@ -182,7 +182,6 @@ namespace Unity.RenderStreaming
                 RemoveTrack(connectionId, sender.Track);
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -329,11 +328,6 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         RTCRtpTransceiver Transceiver { get; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        TrackKind Kind { get; }
 
         /// <summary>
         ///
