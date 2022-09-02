@@ -102,7 +102,7 @@ export class RenderStreaming {
     }
 
     // Create peerConnection with proxy server and set up handlers
-    this._peer = new Peer(connectionId, polite, this.codecs);
+    this._peer = new Peer(connectionId, polite, this._preferedCodecs);
     this._peer.addEventListener('disconnect', () => {
       this.onDisconnect(`Receive disconnect message from peer. connectionId:${connectionId}`);
     });

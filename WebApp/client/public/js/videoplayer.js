@@ -117,10 +117,18 @@ export class VideoPlayer {
   }
 
   addTrack(track) {
+    if(!this.videoElement.srcObject) {
+      return;
+    }
+
     this.videoElement.srcObject.addTrack(track);
   }
 
   resizeVideo() {
+    if(!this.videoElement) {
+      return;
+    }
+
     const clientRect = this.videoElement.getBoundingClientRect();
     const videoRatio = this.videoWidth / this.videoHeight;
     const clientRatio = clientRect.width / clientRect.height;
