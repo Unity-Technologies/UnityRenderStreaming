@@ -51,8 +51,9 @@ export class RenderStreaming {
   async _onOffer(e) {
     const offer = e.detail;
     if (this._peer == null) {
-      this._prepareNewPeerConnection(offer.connectionId, offer.polite);
+      this._preparePeerConnection(offer.connectionId, offer.polite);
     }
+    this.onGotOffer(offer.connectionId);
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     try {
       await this._peer.onGotDescription(offer.connectionId, desc);
@@ -60,20 +61,19 @@ export class RenderStreaming {
       Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
       return;
     }
-    this.onGotOffer(offer.connectionId);
   }
 
   async _onAnswer(e) {
     const answer = e.detail;
     const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
     if (this._peer != null) {
+      this.onGotAnswer(answer.connectionId);
       try {
         await this._peer.onGotDescription(answer.connectionId, desc);
       } catch (error) {
         Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
         return;
       }
-      this.onGotAnswer(answer.connectionId);
     }
   }
 
@@ -142,14 +142,14 @@ export class RenderStreaming {
   }
 
   async stop() {
-    if (this._signaling) {
-      await this._signaling.stop();
-      this._signaling = null;
-    }
-
     if (this._peer) {
       this._peer.close();
       this._peer = null;
+    }
+
+    if (this._signaling) {
+      await this._signaling.stop();
+      this._signaling = null;
     }
   }
 }
