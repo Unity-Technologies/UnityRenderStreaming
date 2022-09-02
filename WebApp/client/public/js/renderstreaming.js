@@ -18,7 +18,7 @@ export class RenderStreaming {
     this.onDisconnect = function (connectionId) { Logger.log(`Disconnect peer on ${connectionId}.`); };
     this.onGotOffer = function (connectionId) { Logger.log(`On got Offer on ${connectionId}.`); };
     this.onGotAnswer = function (connectionId) { Logger.log(`On got Answer on ${connectionId}.`); };
-    this.onTrackEvent = function (data) { Logger.log(`OnTrack event peer with data:${data}`) };
+    this.onTrackEvent = function (data) { Logger.log(`OnTrack event peer with data:${data}`); };
 
     if (useWebSocket) {
       this._signaling = new WebSocketSignaling();

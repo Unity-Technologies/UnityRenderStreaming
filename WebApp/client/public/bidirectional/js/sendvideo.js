@@ -20,9 +20,9 @@ export class SendVideo {
         constraints.video.height = videoHeight;
       }
 
-      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.localVideo.srcObject = this.localStream;
-      await localVideo.play();
+      const localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.localVideo.srcObject = localStream;
+      await this.localVideo.play();
     } catch (err) {
       Logger.error(`mediaDevice.getUserMedia() error:${err}`);
     }
@@ -33,9 +33,9 @@ export class SendVideo {
   }
 
   addRemoteTrack(track) {
-    if (remoteVideo.srcObject == null) {
-      remoteVideo.srcObject = new MediaStream();
+    if (this.remoteVideo.srcObject == null) {
+      this.remoteVideo.srcObject = new MediaStream();
     }
-    remoteVideo.srcObject.addTrack(track);
+    this.remoteVideo.srcObject.addTrack(track);
   }
 }

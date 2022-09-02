@@ -1,38 +1,46 @@
-import {
-  VideoPlayer
-} from "./video-player.js";
+import { Receiver } from "../../js/receiver.js";
+import { RenderStreaming } from "../../js/renderstreaming.js";
+import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
+import { Observer, Sender } from "../../js/sender.js";
+import { InputRemoting } from "../../js/inputremoting.js";
 
-import {
-  getServerConfig
-} from "../../js/config.js";
-
-import {
-  createDisplayStringArray
-} from "../../js/stats.js"
-
-setup();
+/** @enum {number} */
+const ActionType = {
+  ChangeLabel: 0
+};
 
 let playButton;
-let videoPlayer;
+let receiver;
+let renderstreaming;
 let useWebSocket;
+let elementVideo;
+
+let sender;
+let inputRemoting;
+let inputSenderChannel;
+let multiplayChannel;
 
 const playerDiv = document.getElementById('player');
 const codecPreferences = document.getElementById('codecPreferences');
+const lockMouseCheck = document.getElementById('lockMouseCheck');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
 messageDiv.style.display = 'none';
+
+setup();
 
 window.document.oncontextmenu = function () {
   return false;     // cancel default menu
 };
 
 window.addEventListener('resize', function () {
-  videoPlayer.resizeVideo();
+  receiver.resizeVideo();
 }, true);
 
 window.addEventListener('beforeunload', async () => {
-  await videoPlayer.stop();
+  await renderstreaming.stop();
 }, true);
 
 async function setup() {
@@ -55,7 +63,7 @@ function showPlayButton() {
   if (!document.getElementById('playButton')) {
     let elementPlayButton = document.createElement('img');
     elementPlayButton.id = 'playButton';
-    elementPlayButton.src = 'images/Play.png';
+    elementPlayButton.src = '../images/Play.png';
     elementPlayButton.alt = 'Start Streaming';
     playButton = document.getElementById('player').appendChild(elementPlayButton);
     playButton.addEventListener('click', onClickPlayButton);
@@ -63,20 +71,22 @@ function showPlayButton() {
 }
 
 function onClickPlayButton() {
+
   playButton.style.display = 'none';
 
   // add video player
-  const elementVideo = document.createElement('video');
+  elementVideo = document.createElement('video');
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
+  receiver = new Receiver(elementVideo);
 
-  setupVideoPlayer([elementVideo]).then(value => videoPlayer = value);
+  setupRenderStreaming();
 
   // add fullscreen button
   const elementFullscreenButton = document.createElement('img');
   elementFullscreenButton.id = 'fullscreenButton';
-  elementFullscreenButton.src = 'images/FullScreen.png';
+  elementFullscreenButton.src = '../images/FullScreen.png';
   playerDiv.appendChild(elementFullscreenButton);
   elementFullscreenButton.addEventListener("click", function () {
     if (!document.fullscreenElement || !document.webkitFullscreenElement) {
@@ -94,24 +104,70 @@ function onClickPlayButton() {
       }
     }
   });
+
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  elementVideo.addEventListener("click", _mouseClick, false);
 
   function onFullscreenChange() {
     if (document.webkitFullscreenElement || document.fullscreenElement) {
       playerDiv.style.position = "absolute";
       elementFullscreenButton.style.display = 'none';
+
+      if (lockMouseCheck.checked) {
+        if (document.webkitFullscreenElement.requestPointerLock) {
+          document.webkitFullscreenElement.requestPointerLock();
+        } else if (document.fullscreenElement.requestPointerLock) {
+          document.fullscreenElement.requestPointerLock();
+        } else if (document.mozFullScreenElement.requestPointerLock) {
+          document.mozFullScreenElement.requestPointerLock();
+        }
+
+        // Subscribe to events
+        document.addEventListener('mousemove', _mouseMove, false);
+        document.addEventListener('click', _mouseClickFullScreen, false);
+      }
     }
     else {
       playerDiv.style.position = "relative";
       elementFullscreenButton.style.display = 'block';
+
+      document.removeEventListener('mousemove', _mouseMove, false);
+      document.removeEventListener('click', _mouseClickFullScreen, false);
+    }
+  }
+
+  function _mouseMove(event) {
+    // Forward mouseMove event of fullscreen player directly to sender
+    // This is required, as the regular mousemove event doesn't fire when in fullscreen mode
+    sender._onMouseEvent(event);
+  }
+
+  function _mouseClick() {
+    // Restores pointer lock when we unfocus the player and click on it again
+    if (lockMouseCheck.checked) {
+      if (elementVideo.requestPointerLock) {
+        elementVideo.requestPointerLock().catch(function () { });
+      }
+    }
+  }
+
+  function _mouseClickFullScreen() {
+    // Restores pointer lock when we unfocus the fullscreen player and click on it again
+    if (lockMouseCheck.checked) {
+      if (document.webkitFullscreenElement.requestPointerLock) {
+        document.webkitFullscreenElement.requestPointerLock();
+      } else if (document.fullscreenElement.requestPointerLock) {
+        document.fullscreenElement.requestPointerLock();
+      } else if (document.mozFullScreenElement.requestPointerLock) {
+        document.mozFullScreenElement.requestPointerLock();
+      }
     }
   }
 }
 
-async function setupVideoPlayer(elements) {
-  const videoPlayer = new VideoPlayer(elements);
-
+async function setupRenderStreaming() {
   let selectedCodecs = null;
   if (supportsSetCodecPreferences) {
     const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
@@ -125,23 +181,35 @@ async function setupVideoPlayer(elements) {
   }
   codecPreferences.disabled = true;
 
-  await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
-  videoPlayer.ondisconnect = onDisconnect;
-  showStatsMessage();
+  renderstreaming = new RenderStreaming(useWebSocket, selectedCodecs);
+  renderstreaming.onConnect = onConnect;
+  renderstreaming.onDisconnect = onDisconnect;
+  renderstreaming.onTrackEvent = (data) =>{
+    receiver.addTrack(data.track);
+  };
 
-  return videoPlayer;
+  await renderstreaming.start();
+  await renderstreaming.createConnection();
 }
 
-async function onDisconnect(message) {
+function onConnect() {
+  setupInput();
+  showStatsMessage();
+}
+
+async function onDisconnect(connectionId) {
   clearStatsMessage();
-  if (message) {
-    messageDiv.style.display = 'block';
-    messageDiv.innerText = message;
-  }
+  messageDiv.style.display = 'block';
+  messageDiv.innerText = `Disconnect peer on ${connectionId}.`;
 
   clearChildren(playerDiv);
-  await videoPlayer.stop();
-  videoPlayer = null;
+  await renderstreaming.stop();
+  renderstreaming = null;
+  sender = null;
+  inputRemoting = null;
+  inputSenderChannel = null;
+  multiplayChannel = null;
+  receiver = null;
   if (supportsSetCodecPreferences) {
     codecPreferences.disabled = false;
   }
@@ -153,6 +221,47 @@ function clearChildren(element) {
     element.removeChild(element.firstChild);
   }
 }
+
+function isTouchDevice() {
+  return (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
+}
+
+function setupInput() {
+  sender = new Sender(elementVideo);
+  sender.addMouse();
+  sender.addKeyboard();
+  if (isTouchDevice()) {
+    sender.addTouchscreen();
+  }
+  sender.addGamepad();
+  inputRemoting = new InputRemoting(sender);
+
+  inputSenderChannel = renderstreaming.createDataChannel("input");
+  inputSenderChannel.onopen = _onOpenInputSenderChannel;
+  inputRemoting.subscribe(new Observer(inputSenderChannel));
+
+  multiplayChannel = renderstreaming.createDataChannel("multiplay");
+  multiplayChannel.onopen = _onOpenMultiplayChannel;
+}
+
+async function _onOpenMultiplayChannel() {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const num = Math.floor(Math.random() * 100000);
+  _changeLabel(String(num));
+}
+
+async function _onOpenInputSenderChannel() {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  inputRemoting.startSending();
+}
+
+function _changeLabel(label) {
+  const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
+  multiplayChannel.send(json);
+}
+
 
 function showCodecSelect() {
   if (!supportsSetCodecPreferences) {
@@ -179,11 +288,11 @@ let intervalId;
 
 function showStatsMessage() {
   intervalId = setInterval(async () => {
-    if (videoPlayer == null) {
+    if (renderstreaming == null) {
       return;
     }
 
-    const stats = await videoPlayer.getStats();
+    const stats = await renderstreaming.getStats();
     if (stats == null) {
       return;
     }
