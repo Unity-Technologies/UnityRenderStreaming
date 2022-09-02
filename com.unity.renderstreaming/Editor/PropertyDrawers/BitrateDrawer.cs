@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming.Editor
 {
     [CustomPropertyDrawer(typeof(BitrateAttribute))]
 
-    public class BitrateDrawer : PropertyDrawer
+    class BitrateDrawer : PropertyDrawer
     {
         SerializedProperty propertyMinimum;
         SerializedProperty propertyMaximum;

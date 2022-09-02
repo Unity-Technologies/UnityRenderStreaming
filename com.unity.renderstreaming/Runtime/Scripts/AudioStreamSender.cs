@@ -63,7 +63,8 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="bitrate"></param>
+        /// <param name="minBitrate"></param>
+        /// <param name="maxBitrate"></param>
         public void SetBitrate(uint minBitrate, uint maxBitrate)
         {
             if (minBitrate > maxBitrate)
@@ -81,7 +82,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="mimeType"></param>
+        /// <param name="codec"></param>
         public void SetCodec(AudioCodecInfo codec)
         {
             m_codec = codec;
