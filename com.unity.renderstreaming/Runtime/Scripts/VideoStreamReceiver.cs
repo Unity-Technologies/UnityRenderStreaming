@@ -50,6 +50,9 @@ namespace Unity.RenderStreaming
 
         private VideoCodecInfo m_codec;
 
+        private Texture m_receiveTexture;
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -89,9 +92,15 @@ namespace Unity.RenderStreaming
             if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
                 throw new InvalidOperationException("Track has already been ended.");
 
-            RTCErrorType error = Transceiver.SetCodec(new VideoCodecInfo[] { m_codec });
+            var codecs = new VideoCodecInfo[] { m_codec };
+            RTCErrorType error = Transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
             if (error != RTCErrorType.None)
                 throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
+        }
+
+        internal IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(IEnumerable<VideoCodecInfo> codecs)
+        {
+            return RTCRtpReceiver.GetCapabilities(TrackKind.Video).SelectCodecCapabilities(codecs);
         }
 
         protected virtual void Start()

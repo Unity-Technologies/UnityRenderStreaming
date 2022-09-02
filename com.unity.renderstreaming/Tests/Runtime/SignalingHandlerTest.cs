@@ -285,7 +285,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.sdpFmtpLine));
 
             container2.test.component.DeleteConnection(connectionId);
 
@@ -684,7 +684,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.sdpFmtpLine));
 
             RTCCodecStats receiverCodecStats = null;
             while (receiverCodecStats == null)
@@ -707,7 +707,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == inboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(receiverCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
+            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.sdpFmtpLine));
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);
@@ -789,7 +789,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == outboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(senderCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
+            Assert.That(senderCodecStats.sdpFmtpLine, Is.EqualTo(codec.sdpFmtpLine));
 
             RTCCodecStats receiverCodecStats = null;
             while (receiverCodecStats == null)
@@ -812,7 +812,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     statsOp.Value.Stats.Values.FirstOrDefault(x => x.Id == inboundStats.codecId) as RTCCodecStats;
             }
             Assert.That(receiverCodecStats.mimeType, Is.EqualTo(codec.mimeType));
-            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.capability.sdpFmtpLine));
+            Assert.That(receiverCodecStats.sdpFmtpLine, Is.EqualTo(codec.sdpFmtpLine));
 
             container1.test.component.DeleteConnection(connectionId);
             container2.test.component.DeleteConnection(connectionId);

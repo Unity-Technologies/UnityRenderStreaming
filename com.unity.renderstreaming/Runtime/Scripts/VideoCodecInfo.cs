@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
@@ -7,19 +8,25 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    [Serializable]
     public class VideoCodecInfo : IEquatable<VideoCodecInfo>
     {
         static readonly string KeyCodecImplementation = "implementation_name";
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string name { get { return capability.GetCodecName(); } }
+        [SerializeField]
+        private string m_MimeType;
+        [SerializeField]
+        private string m_SdpFmtpLine;
 
         /// <summary>
         /// 
         /// </summary>
-        public string mimeType { get { return capability.mimeType; } }
+        public string name { get { return m_MimeType.Split('/')[1]; } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string mimeType { get { return m_MimeType; } }
 
         /// <summary>
         /// 
@@ -29,7 +36,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string sdpFmtpLine { get { return capability.sdpFmtpLine; } }
+        public string sdpFmtpLine { get { return m_SdpFmtpLine; } }
 
         /// <summary>
         /// 
@@ -40,18 +47,17 @@ namespace Unity.RenderStreaming
         {
             if (other == null)
                 return false;
-            return Equals(other.capability);
+            return this.mimeType == other.mimeType
+                && this.sdpFmtpLine == other.sdpFmtpLine;
         }
 
         internal bool Equals(RTCRtpCodecCapability other)
         {
             if (other == null)
                 return false;
-            return this.capability.mimeType == other.mimeType
-                && this.capability.sdpFmtpLine == other.sdpFmtpLine;
+            return this.mimeType == other.mimeType
+                && this.sdpFmtpLine == other.sdpFmtpLine;
         }
-
-        internal RTCRtpCodecCapability capability;
 
         protected readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -68,12 +74,25 @@ namespace Unity.RenderStreaming
                     return new VideoCodecInfo(caps);
             }
         }
+
+        protected VideoCodecInfo()
+        {
+            if (string.IsNullOrEmpty(m_SdpFmtpLine))
+                return;
+            string[] subs = m_SdpFmtpLine.Split(';');
+            foreach (string sub in subs)
+            {
+                string[] pair = sub.Split('=');
+                parameters.Add(pair[0], pair[1]);
+            }
+        }
+
         protected VideoCodecInfo(RTCRtpCodecCapability caps)
         {
-            capability = caps;
+            m_MimeType = caps.mimeType;
+            m_SdpFmtpLine = caps.sdpFmtpLine;
 
-            string[] subs = capability.sdpFmtpLine.Split(';');
-
+            string[] subs = m_SdpFmtpLine.Split(';');
             foreach(string sub in subs)
             {
                 string[] pair = sub.Split('=');

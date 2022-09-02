@@ -71,7 +71,8 @@ namespace Unity.RenderStreaming
             if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
                 throw new InvalidOperationException("Track has already been ended.");
 
-            RTCErrorType error = Transceiver.SetCodec(new AudioCodecInfo[] { m_codec });
+            var codecs = new AudioCodecInfo[] { m_codec };
+            RTCErrorType error = Transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
             if (error != RTCErrorType.None)
                 throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
         }
@@ -83,6 +84,11 @@ namespace Unity.RenderStreaming
         public void SetSource(AudioSource source)
         {
             m_source = source;
+        }
+
+        internal IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(IEnumerable<AudioCodecInfo> codecs)
+        {
+            return RTCRtpReceiver.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
         }
 
         protected virtual void Start()

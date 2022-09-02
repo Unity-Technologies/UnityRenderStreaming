@@ -95,10 +95,16 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                RTCErrorType error = transceiver.SetCodec(new AudioCodecInfo[] { m_codec });
+                var codecs = new AudioCodecInfo[] { m_codec };
+                RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
             }
+        }
+
+        internal IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(IEnumerable<AudioCodecInfo> codecs)
+        {
+            return RTCRtpSender.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
         }
 
         protected virtual void Awake()
