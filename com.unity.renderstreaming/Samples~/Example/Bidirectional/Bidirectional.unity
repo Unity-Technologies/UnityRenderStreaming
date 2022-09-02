@@ -4706,7 +4706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TextureSize: {x: 1280, y: 720}
-  m_Source: 0
+  m_Source: 2
   m_Camera: {fileID: 0}
   m_Texture: {fileID: 0}
   m_WebCamDeviceIndex: 0

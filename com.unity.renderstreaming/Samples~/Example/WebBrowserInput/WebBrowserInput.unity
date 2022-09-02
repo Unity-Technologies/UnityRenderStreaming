@@ -856,19 +856,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_textureSize: {x: 1280, y: 720}
-  m_source: 0
-  m_camera: {fileID: 725451154}
-  m_texture: {fileID: 0}
-  m_webCamDeviceIndex: 0
-  m_depth: 16
-  m_antiAliasing: 1
-  m_frameRate: 30
-  m_bitrate:
+  m_TextureSize: {x: 1280, y: 720}
+  m_Source: 0
+  m_Camera: {fileID: 725451154}
+  m_Texture: {fileID: 0}
+  m_WebCamDeviceIndex: 0
+  m_Depth: 16
+  m_AntiAliasing: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+  m_FrameRate: 30
+  m_Bitrate:
     min: 0
     max: 1000
-  m_scaleFactor: 1
-  m_autoRequestUserAuthorization: 1
+  m_ScaleFactor: 1
+  m_AutoRequestUserAuthorization: 1
 --- !u!1 &775980371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1792,19 +1795,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bcc82901c3f48a88d3408251afa3365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_textureSize: {x: 1280, y: 720}
-  m_source: 0
-  m_camera: {fileID: 1112556118}
-  m_texture: {fileID: 0}
-  m_webCamDeviceIndex: 0
-  m_depth: 16
-  m_antiAliasing: 1
-  m_frameRate: 30
-  m_bitrate:
+  m_TextureSize: {x: 1280, y: 720}
+  m_Source: 0
+  m_Camera: {fileID: 1112556118}
+  m_Texture: {fileID: 0}
+  m_WebCamDeviceIndex: 0
+  m_Depth: 16
+  m_AntiAliasing: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+  m_FrameRate: 30
+  m_Bitrate:
     min: 0
     max: 1000
-  m_scaleFactor: 1
-  m_autoRequestUserAuthorization: 1
+  m_ScaleFactor: 1
+  m_AutoRequestUserAuthorization: 1
 --- !u!114 &1112556117
 MonoBehaviour:
   m_ObjectHideFlags: 0
