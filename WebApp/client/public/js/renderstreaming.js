@@ -1,4 +1,3 @@
-import { Signaling, WebSocketSignaling } from "./signaling.js";
 import Peer from "./peer.js";
 import * as Logger from "./logger.js";
 
@@ -11,10 +10,10 @@ function uuid4() {
 
 export class RenderStreaming {
   /**
-   * @param {boolean} useWebSocket 
+   * @param signaling signaling class
    * @param {Iterable<RTCRtpCodecCapability>} codecs 
    */
-  constructor(useWebSocket, codecs) {
+  constructor(signaling, codecs) {
     this._peer = null;
     this._connectionId = null;
     this._preferedCodecs = codecs;
@@ -24,12 +23,7 @@ export class RenderStreaming {
     this.onGotAnswer = function (connectionId) { Logger.log(`On got Answer on ${connectionId}.`); };
     this.onTrackEvent = function (data) { Logger.log(`OnTrack event peer with data:${data}`); };
 
-    if (useWebSocket) {
-      this._signaling = new WebSocketSignaling();
-    } else {
-      this._signaling = new Signaling();
-    }
-
+    this._signaling = signaling;
     this._signaling.addEventListener('connect', this._onConnect.bind(this));
     this._signaling.addEventListener('disconnect', this._onDisconnect.bind(this));
     this._signaling.addEventListener('offer', this._onOffer.bind(this));

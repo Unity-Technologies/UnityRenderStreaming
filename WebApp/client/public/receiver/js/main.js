@@ -1,5 +1,6 @@
 import { VideoPlayer } from "../../js/videoplayer.js";
 import { RenderStreaming } from "../../js/renderstreaming.js";
+import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
 
@@ -84,7 +85,8 @@ async function setupRenderStreaming() {
   }
   codecPreferences.disabled = true;
 
-  renderstreaming = new RenderStreaming(useWebSocket, selectedCodecs);
+  const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
+  renderstreaming = new RenderStreaming(signaling, selectedCodecs);
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);
