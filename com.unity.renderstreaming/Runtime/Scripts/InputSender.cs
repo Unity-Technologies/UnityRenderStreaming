@@ -8,6 +8,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
+    [AddComponentMenu("Render Streaming/Input Sender")]
     public class InputSender : DataChannelBase
     {
         private Sender sender;

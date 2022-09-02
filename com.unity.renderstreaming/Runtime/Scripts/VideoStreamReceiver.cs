@@ -9,6 +9,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
+    [AddComponentMenu("Render Streaming/Video Stream Receiver")]
     public class VideoStreamReceiver : StreamReceiverBase
     {
         [SerializeField]

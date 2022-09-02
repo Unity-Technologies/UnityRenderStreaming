@@ -9,6 +9,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     ///
     /// </summary>
+    [AddComponentMenu("Render Streaming/Audio Stream Receiver")]
     public class AudioStreamReceiver : StreamReceiverBase
     {
         /// <summary>
