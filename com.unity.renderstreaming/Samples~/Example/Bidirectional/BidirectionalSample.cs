@@ -19,7 +19,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private AudioSource receiveAudioSource;
         [SerializeField] private VideoStreamSender webCamStreamer;
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
-        [SerializeField] private MicrophoneStreamSender microphoneStreamer;
+        [SerializeField] private AudioStreamSender microphoneStreamer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection singleConnection;
 #pragma warning restore 0649
@@ -55,9 +55,9 @@ namespace Unity.RenderStreaming.Samples
             webCamStreamer.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
-            microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.SetDeviceIndex(index));
+            microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.sourceDeviceIndex = index);
             microphoneSelectDropdown.options =
-                microphoneStreamer.MicrophoneNameList.Select(x => new Dropdown.OptionData(x)).ToList();
+                Microphone.devices.Select(x => new Dropdown.OptionData(x)).ToList();
             microphoneStreamer.OnStartedStream += id =>
             {
                 receiveAudioViewer.targetAudioSource = receiveAudioSource;
