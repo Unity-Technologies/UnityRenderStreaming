@@ -55,14 +55,11 @@ namespace Unity.RenderStreaming.Samples
             webCamStreamer.height = (uint)RenderStreamingSettings.StreamSize.y;
 
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+
             microphoneSelectDropdown.onValueChanged.AddListener(index => microphoneStreamer.sourceDeviceIndex = index);
             microphoneSelectDropdown.options =
                 Microphone.devices.Select(x => new Dropdown.OptionData(x)).ToList();
-            microphoneStreamer.OnStartedStream += id =>
-            {
-                receiveAudioViewer.targetAudioSource = receiveAudioSource;
-                receiveAudioViewer.enabled = true;
-            };
+            receiveAudioViewer.targetAudioSource = receiveAudioSource;
             receiveAudioViewer.OnUpdateReceiveAudioSource += source =>
             {
                 source.loop = true;
