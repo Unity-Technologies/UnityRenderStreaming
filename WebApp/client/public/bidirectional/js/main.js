@@ -1,4 +1,5 @@
 import { SendVideo } from "./sendvideo.js";
+import { RenderStreaming } from "../../js/renderstreaming.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
 
@@ -41,16 +42,8 @@ let useCustomResolution = false;
 setUpInputSelect();
 showCodecSelect();
 
-let sendVideo = new SendVideo();
-sendVideo.ondisconnect = async (message) => {
-  await hangUp();
-
-  if (message) {
-    messageDiv.style.display = 'block';
-    messageDiv.innerText = message;
-  }
-};
-
+let sendVideo = new SendVideo(localVideo, remoteVideo);
+let renderstreaming;
 let useWebSocket;
 let connectionId;
 
@@ -101,7 +94,7 @@ async function startVideo() {
     height = size.height;
   }
 
-  await sendVideo.startVideo(localVideo, videoSelect.value, audioSelect.value, width, height);
+  await sendVideo.startLocalVideo(videoSelect.value, audioSelect.value, width, height);
 }
 
 async function setUp() {
@@ -122,15 +115,38 @@ async function setUp() {
   }
   codecPreferences.disabled = true;
 
-  await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket, selectedCodecs);
-  showStatsMessage();
+  renderstreaming = new RenderStreaming(useWebSocket, selectedCodecs);
+  renderstreaming.onConnect = () => showStatsMessage();
+  renderstreaming.onDisconnect = () => hangUp();
+  renderstreaming.onTrackEvent = (data) => {
+    const direction = data.transceiver.direction;
+    if (direction == "sendrecv" || direction == "recvonly") {
+      sendVideo.addRemoteTrack(data.track);
+    }
+  };
+  renderstreaming.onGotOffer = () => {
+    const tracks = sendVideo.getLocalTracks();
+    for (const track of tracks) {
+      renderstreaming.addTrack(track);
+    }
+  };
+
+  await renderstreaming.start();
+  await renderstreaming.createConnection(connectionId);
 }
 
 async function hangUp() {
   clearStatsMessage();
+  messageDiv.style.display = 'block';
+  messageDiv.innerText = `Disconnect peer on ${connectionId}.`;
+
   hangUpButton.disabled = true;
   setupButton.disabled = false;
-  await sendVideo.hangUp(connectionId);
+  await renderstreaming.deleteConnection();
+  await renderstreaming.stop();
+  renderstreaming = null;
+  remoteVideo.srcObject = null;
+
   textForConnectionId.value = getRandom();
   connectionId = null;
   if (supportsSetCodecPreferences) {
@@ -217,11 +233,11 @@ function showStatsMessage() {
       remoteVideoStatsDiv.innerHTML = `<strong>Receiving resolution:</strong> ${remoteVideo.videoWidth} x ${remoteVideo.videoHeight} px`;
     }
 
-    if (sendVideo == null || connectionId == null) {
+    if (renderstreaming == null || connectionId == null) {
       return;
     }
 
-    const stats = await sendVideo.getStats(connectionId);
+    const stats = await renderstreaming.getStats();
     if (stats == null) {
       return;
     }
