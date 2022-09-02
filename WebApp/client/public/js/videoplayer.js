@@ -12,7 +12,6 @@ export class VideoPlayer {
     this.lockMouseCheck = lockMouseCheck;
     this.videoElement = null;
     this.fullScreenButtonElement = null;
-    this.receiver = null;
     this.inputRemoting = null;
     this.sender = null;
     this.inputSenderChannel = null;
@@ -66,7 +65,7 @@ export class VideoPlayer {
       this.playerElement.style.position = "absolute";
       this.fullScreenButtonElement.style.display = 'none';
 
-      if (lockMouseCheck.checked) {
+      if (this.lockMouseCheck.checked) {
         if (document.webkitFullscreenElement.requestPointerLock) {
           document.webkitFullscreenElement.requestPointerLock();
         } else if (document.fullscreenElement.requestPointerLock) {
@@ -154,12 +153,13 @@ export class VideoPlayer {
   }
 
   deletePlayer() {
-    this.inputRemoting.stopSending();
+    if(this.inputRemoting) {
+      this.inputRemoting.stopSending();
+    }
     this.inputRemoting = null;
     this.sender = null;
     this.inputSenderChannel = null;
     this.multiplayChannel = null;
-    this.receiver = null;
 
     while (this.playerElement.firstChild) {
       this.playerElement.removeChild(this.playerElement.firstChild);
