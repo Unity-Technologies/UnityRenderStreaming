@@ -41,18 +41,18 @@ namespace Unity.RenderStreaming.Editor
 
         void OnEnable()
         {
-            m_source = serializedObject.FindProperty("m_source");
-            m_camera = serializedObject.FindProperty("m_camera");
-            m_texture = serializedObject.FindProperty("m_texture");
-            m_webCamDeviceIndex = serializedObject.FindProperty("m_webCamDeviceIndex");
-            m_codec = serializedObject.FindProperty("m_codec");
-            m_textureSize = serializedObject.FindProperty("m_textureSize");
-            m_frameRate = serializedObject.FindProperty("m_frameRate");
-            m_bitrate = serializedObject.FindProperty("m_bitrate");
-            m_scaleFactor = serializedObject.FindProperty("m_scaleFactor");
-            m_depth = serializedObject.FindProperty("m_depth");
-            m_antiAliasing = serializedObject.FindProperty("m_antiAliasing");
-            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_autoRequestUserAuthorization");
+            m_source = serializedObject.FindProperty("m_Source");
+            m_camera = serializedObject.FindProperty("m_Camera");
+            m_texture = serializedObject.FindProperty("m_Texture");
+            m_webCamDeviceIndex = serializedObject.FindProperty("m_WebCamDeviceIndex");
+            m_codec = serializedObject.FindProperty("m_Codec");
+            m_textureSize = serializedObject.FindProperty("m_TextureSize");
+            m_frameRate = serializedObject.FindProperty("m_FrameRate");
+            m_bitrate = serializedObject.FindProperty("m_Bitrate");
+            m_scaleFactor = serializedObject.FindProperty("m_ScaleFactor");
+            m_depth = serializedObject.FindProperty("m_Depth");
+            m_antiAliasing = serializedObject.FindProperty("m_AntiAliasing");
+            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_AutoRequestUserAuthorization");
 
             if (m_sourceFade == null)
             {

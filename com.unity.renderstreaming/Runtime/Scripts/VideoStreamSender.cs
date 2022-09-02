@@ -122,40 +122,40 @@ namespace Unity.RenderStreaming
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]
-        private Vector2Int m_textureSize = new Vector2Int(1280, 720);
+        private Vector2Int m_TextureSize = new Vector2Int(1280, 720);
 
         [SerializeField]
-        private VideoStreamSource m_source;
+        private VideoStreamSource m_Source;
 
         [SerializeField]
-        private Camera m_camera;
+        private Camera m_Camera;
 
         [SerializeField]
-        private Texture m_texture;
+        private Texture m_Texture;
 
         [SerializeField, WebCamDevice]
-        private int m_webCamDeviceIndex;
+        private int m_WebCamDeviceIndex;
 
         [SerializeField, RenderTextureDepthBuffer]
-        private int m_depth = s_defaultDepth;
+        private int m_Depth = s_defaultDepth;
 
         [SerializeField, RenderTextureAntiAliasing]
-        private int m_antiAliasing = 1;
+        private int m_AntiAliasing = 1;
 
         [SerializeField, Codec]
-        private VideoCodecInfo m_codec;
+        private VideoCodecInfo m_Codec;
 
         [SerializeField, FrameRate]
-        private float m_frameRate = s_defaultFrameRate;
+        private float m_FrameRate = s_defaultFrameRate;
 
         [SerializeField, Bitrate(0, 10000)]
-        private Range m_bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
+        private Range m_Bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
         [SerializeField, ScaleResolution]
-        private float m_scaleFactor = 1f;
+        private float m_ScaleFactor = 1f;
 
         [SerializeField]
-        private bool m_autoRequestUserAuthorization = true;
+        private bool m_AutoRequestUserAuthorization = true;
 
         private VideoStreamSourceImpl m_sourceImpl = null;
 
@@ -164,16 +164,16 @@ namespace Unity.RenderStreaming
         /// </summary>
         public VideoStreamSource source
         {
-            get { return m_source; }
+            get { return m_Source; }
             set
             {
                 if (isPlaying)
                     throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
-                m_source = value;
-                if (m_texture != null)
+                m_Source = value;
+                if (m_Texture != null)
                 {
-                    m_textureSize.x = m_texture.width;
-                    m_textureSize.y = m_texture.height;
+                    m_TextureSize.x = m_Texture.width;
+                    m_TextureSize.y = m_Texture.height;
                 }
             }
         }
@@ -183,12 +183,12 @@ namespace Unity.RenderStreaming
         /// </summary>
         public Camera sourceCamera
         {
-            get { return m_camera; }
+            get { return m_Camera; }
             set
             {
                 if (isPlaying)
                     throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
-                m_camera = value;
+                m_Camera = value;
             }
         }
 
@@ -197,14 +197,14 @@ namespace Unity.RenderStreaming
         /// </summary>
         public Texture sourceTexture
         {
-            get { return m_texture; }
+            get { return m_Texture; }
             set
             {
                 if (isPlaying)
                     throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
-                m_texture = value;
-                m_textureSize.x = m_texture.width;
-                m_textureSize.y = m_texture.height;
+                m_Texture = value;
+                m_TextureSize.x = m_Texture.width;
+                m_TextureSize.y = m_Texture.height;
             }
         }
 
@@ -213,12 +213,12 @@ namespace Unity.RenderStreaming
         /// </summary>
         public int sourceDeviceIndex
         {
-            get { return m_webCamDeviceIndex; }
+            get { return m_WebCamDeviceIndex; }
             set
             {
                 if (isPlaying)
                     throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
-                m_webCamDeviceIndex = value;
+                m_WebCamDeviceIndex = value;
             }
         }
 
@@ -243,7 +243,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public float frameRate
         {
-            get { return m_frameRate; }
+            get { return m_FrameRate; }
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint minBitrate
         {
-            get { return m_bitrate.min; }
+            get { return m_Bitrate.min; }
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint maxBitrate
         {
-            get { return m_bitrate.max; }
+            get { return m_Bitrate.max; }
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public float scaleResolutionDown
         {
-            get { return m_scaleFactor; }
+            get { return m_ScaleFactor; }
         }
 
         /// <summary>
@@ -275,10 +275,10 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint width
         {
-            get { return (uint)m_textureSize.x; }
+            get { return (uint)m_TextureSize.x; }
             set
             {
-                SetTextureSize(new Vector2Int((int)value, m_textureSize.y));
+                SetTextureSize(new Vector2Int((int)value, m_TextureSize.y));
             }
         }
 
@@ -287,10 +287,10 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint height
         {
-            get { return (uint)m_textureSize.y; }
+            get { return (uint)m_TextureSize.y; }
             set
             {
-                SetTextureSize(new Vector2Int(m_textureSize.x, (int)value));
+                SetTextureSize(new Vector2Int(m_TextureSize.x, (int)value));
             }
         }
 
@@ -299,14 +299,14 @@ namespace Unity.RenderStreaming
         /// </summary>
         public VideoCodecInfo codec
         {
-            get { return m_codec; }
+            get { return m_Codec; }
         }
 
 
         public bool autoRequestUserAuthorization
         {
-            get => m_autoRequestUserAuthorization;
-            set { m_autoRequestUserAuthorization = value; }
+            get => m_AutoRequestUserAuthorization;
+            set { m_AutoRequestUserAuthorization = value; }
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Unity.RenderStreaming
             if (isPlaying)
                 throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
 
-            m_codec = codec;
+            m_Codec = codec;
             foreach (var transceiver in Transceivers.Values)
             {
                 if (!string.IsNullOrEmpty(transceiver.Mid))
@@ -326,7 +326,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                var codecs = new VideoCodecInfo[] { m_codec };
+                var codecs = new VideoCodecInfo[] { m_Codec };
                 RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
@@ -352,10 +352,10 @@ namespace Unity.RenderStreaming
         {
             if (frameRate < 0)
                 throw new ArgumentOutOfRangeException("frameRate", frameRate, "The parameter must be greater than zero.");
-            m_frameRate = frameRate;
+            m_FrameRate = frameRate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetFrameRate((uint)m_frameRate);
+                RTCError error = transceiver.Sender.SetFrameRate((uint)m_FrameRate);
                 if (error.errorType != RTCErrorType.None)
                     throw new InvalidOperationException($"Set framerate is failed. {error.message}");
             }
@@ -369,11 +369,11 @@ namespace Unity.RenderStreaming
         {
             if (minBitrate > maxBitrate)
                 throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
-            m_bitrate.min = minBitrate;
-            m_bitrate.max = maxBitrate;
+            m_Bitrate.min = minBitrate;
+            m_Bitrate.max = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_bitrate.min, m_bitrate.max);
+                RTCError error = transceiver.Sender.SetBitrate(m_Bitrate.min, m_Bitrate.max);
                 if (error.errorType != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. {error.message}");
             }
@@ -388,10 +388,10 @@ namespace Unity.RenderStreaming
             if (scaleFactor < 1.0f)
                 throw new ArgumentOutOfRangeException("scaleFactor", scaleFactor, "The parameter must be greater than 1.0f. Scaleup is not allowed.");
 
-            m_scaleFactor = scaleFactor;
+            m_ScaleFactor = scaleFactor;
             foreach (var transceiver in Transceivers.Values)
             {
-                double? value = Mathf.Approximately(m_scaleFactor, 1) ? (double?)null : m_scaleFactor;
+                double? value = Mathf.Approximately(m_ScaleFactor, 1) ? (double?)null : m_ScaleFactor;
                 RTCError error = transceiver.Sender.SetScaleResolutionDown(value);
                 if (error.errorType != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. {error.message}");
@@ -400,9 +400,9 @@ namespace Unity.RenderStreaming
 
         public void SetTextureSize(Vector2Int size)
         {
-            if (m_source == VideoStreamSource.Texture)
+            if (m_Source == VideoStreamSource.Texture)
                 throw new InvalidOperationException("Video source is set Texture.");
-            m_textureSize = size;
+            m_TextureSize = size;
 
             if (isPlaying)
                 ReplaceTrack(CreateTrack());
@@ -417,7 +417,7 @@ namespace Unity.RenderStreaming
 
         VideoStreamSourceImpl CreateVideoStreamSource()
         {
-            switch (m_source)
+            switch (m_Source)
             {
                 case VideoStreamSource.Camera:
                     return new VideoStreamSourceCamera(this);
@@ -437,8 +437,8 @@ namespace Unity.RenderStreaming
             {
                 width = (int)parent.width;
                 height = (int)parent.height;
-                depth = parent.m_depth;
-                antiAliasing = parent.m_antiAliasing;
+                depth = parent.m_Depth;
+                antiAliasing = parent.m_AntiAliasing;
             }
             public abstract VideoStreamTrack CreateTrack();
             public abstract void Dispose();
@@ -454,7 +454,7 @@ namespace Unity.RenderStreaming
             private RenderTexture m_renderTexture;
             public VideoStreamSourceCamera(VideoStreamSender parent) : base(parent)
             {
-                Camera camera = parent.m_camera;
+                Camera camera = parent.m_Camera;
                 if (camera == null)
                     throw new ArgumentNullException("camera", "The sourceCamera is not assigned.");
                 m_camera = camera;
@@ -521,7 +521,7 @@ namespace Unity.RenderStreaming
 
             public VideoStreamSourceTexture(VideoStreamSender parent) : base(parent)
             {
-                Texture texture = parent.m_texture;
+                Texture texture = parent.m_Texture;
                 if (texture == null)
                     throw new ArgumentNullException("texture", "The sourceTexture is not assigned.");
                 m_texture = texture;
@@ -673,12 +673,12 @@ namespace Unity.RenderStreaming
 
             public VideoStreamSourceWebCam(VideoStreamSender parent) : base(parent)
             {
-                int deviceIndex = parent.m_webCamDeviceIndex;
+                int deviceIndex = parent.m_WebCamDeviceIndex;
                 if (deviceIndex < 0 || WebCamTexture.devices.Length <= deviceIndex)
                     throw new ArgumentOutOfRangeException("deviceIndex", deviceIndex, "The deviceIndex is out of range");
                 m_deviceIndex = deviceIndex;
-                m_frameRate = parent.m_frameRate;
-                m_autoRequestUserAuthorization = parent.m_autoRequestUserAuthorization;
+                m_frameRate = parent.m_FrameRate;
+                m_autoRequestUserAuthorization = parent.m_AutoRequestUserAuthorization;
             }
 
             public override VideoStreamTrack CreateTrack()
