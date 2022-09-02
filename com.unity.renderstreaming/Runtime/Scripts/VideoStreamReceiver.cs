@@ -144,7 +144,11 @@ namespace Unity.RenderStreaming
         {
             m_texture = null;
             OnUpdateReceiveTexture?.Invoke(m_texture);
-            StopCoroutine(m_coroutine);
+            if(m_coroutine != null)
+            {
+                StopCoroutine(m_coroutine);
+                m_coroutine = null;
+            }
         }
 
         private IEnumerator Render()
