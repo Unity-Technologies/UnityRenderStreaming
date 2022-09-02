@@ -116,8 +116,16 @@ async function setUp() {
   codecPreferences.disabled = true;
 
   renderstreaming = new RenderStreaming(useWebSocket, selectedCodecs);
-  renderstreaming.onConnect = () => showStatsMessage();
-  renderstreaming.onDisconnect = () => hangUp();
+  renderstreaming.onConnect = () => {
+    const tracks = sendVideo.getLocalTracks();
+    for (const track of tracks) {
+      renderstreaming.addTrack(track);
+    }
+    showStatsMessage();
+  };
+  renderstreaming.onDisconnect = () => {
+    hangUp();
+  };
   renderstreaming.onTrackEvent = (data) => {
     const direction = data.transceiver.direction;
     if (direction == "sendrecv" || direction == "recvonly") {
