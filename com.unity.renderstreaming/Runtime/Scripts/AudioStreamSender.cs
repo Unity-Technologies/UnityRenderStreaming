@@ -8,6 +8,21 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
+    /// 
+    /// </summary>
+    public enum AudioStreamSource
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        AudioListener = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        AudioSource = 1
+    }
+
+    /// <summary>
     /// Attach AudioListerner or AudioSource
     /// </summary>
     [AddComponentMenu("Render Streaming/Audio Stream Sender")]
@@ -16,11 +31,20 @@ namespace Unity.RenderStreaming
         static readonly uint s_defaultMinBitrate = 0;
         static readonly uint s_defaultMaxBitrate = 200;
 
+        [SerializeField]
+        private AudioStreamSource m_Source;
+
+        [SerializeField]
+        private AudioListener m_AudioListener;
+
+        [SerializeField]
+        private AudioSource m_AudioSource;
+
+        [SerializeField, Codec]
+        private AudioCodecInfo m_Codec;
+
         [SerializeField, Bitrate(0, 1000)]
-        private Range m_bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
-
-
-        private AudioCodecInfo m_codec;
+        private Range m_Bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
         protected AudioStreamTrack track;
 
@@ -31,7 +55,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public AudioCodecInfo codec
         {
-            get { return m_codec; }
+            get { return m_Codec; }
         }
 
         /// <summary>
@@ -39,7 +63,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint minBitrate
         {
-            get { return m_bitrate.min; }
+            get { return m_Bitrate.min; }
         }
 
         /// <summary>
@@ -47,7 +71,7 @@ namespace Unity.RenderStreaming
         /// </summary>
         public uint maxBitrate
         {
-            get { return m_bitrate.max; }
+            get { return m_Bitrate.max; }
         }
 
         /// <summary>
@@ -70,11 +94,11 @@ namespace Unity.RenderStreaming
         {
             if (minBitrate > maxBitrate)
                 throw new ArgumentException("The maxBitrate must be greater than minBitrate.", "maxBitrate");
-            m_bitrate.min = minBitrate;
-            m_bitrate.max = maxBitrate;
+            m_Bitrate.min = minBitrate;
+            m_Bitrate.max = maxBitrate;
             foreach (var transceiver in Transceivers.Values)
             {
-                RTCError error = transceiver.Sender.SetBitrate(m_bitrate.min, m_bitrate.max);
+                RTCError error = transceiver.Sender.SetBitrate(m_Bitrate.min, m_Bitrate.max);
                 if (error.errorType != RTCErrorType.None)
                     Debug.LogError(error.message);
             }
@@ -86,8 +110,7 @@ namespace Unity.RenderStreaming
         /// <param name="codec"></param>
         public void SetCodec(AudioCodecInfo codec)
         {
-            m_codec = codec;
-
+            m_Codec = codec;
             foreach (var transceiver in Transceivers.Values)
             {
                 if (!string.IsNullOrEmpty(transceiver.Mid))
@@ -95,7 +118,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                var codecs = new AudioCodecInfo[] { m_codec };
+                var codecs = new AudioCodecInfo[] { m_Codec };
                 RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
@@ -129,8 +152,17 @@ namespace Unity.RenderStreaming
 
         internal override MediaStreamTrack CreateTrack()
         {
-            track = new AudioStreamTrack();
-            return track;
+            switch(m_Source)
+            {
+                case AudioStreamSource.AudioListener:
+                    // todo: Should add AudioStreamTrack supports AudioListener
+                    if (!GetComponent<AudioListener>())
+                        throw new InvalidOperationException("Audio Listener have to be set the same gameObject.");
+                    return new AudioStreamTrack();
+                case AudioStreamSource.AudioSource:
+                    return new AudioStreamTrack(m_AudioSource);
+            }
+            throw new InvalidOperationException("");
         }
 
         protected override void OnEnable()
@@ -159,6 +191,10 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
+            // todo: Should add AudioStreamTrack supports AudioListener
+            if (m_Source != AudioStreamSource.AudioListener)
+                return;
+
             NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
             try
             {

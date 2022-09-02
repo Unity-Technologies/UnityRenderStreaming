@@ -95,7 +95,7 @@ namespace Unity.RenderStreaming.Samples
             }
             connectionIdInput.interactable = false;
             receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
-            receiveAudioViewer.SetSource(remoteAudioSource);
+            receiveAudioViewer.targetAudioSource = remoteAudioSource;
 
             connection.CreateConnection(connectionId);
             startButton.gameObject.SetActive(false);

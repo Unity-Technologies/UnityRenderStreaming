@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 get
                 {
-                    return null;
+                    return $"{codec_.channelCount} channel";
                 }
             }
 
@@ -203,3 +204,4 @@ namespace Unity.RenderStreaming.Editor
         }
     }
 }
+#endif
