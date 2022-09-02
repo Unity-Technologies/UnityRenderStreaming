@@ -63,7 +63,7 @@ namespace Unity.RenderStreaming.Editor
             /// todo(kazuki): Make available to change video source parameters in runtime.
             using (new EditorGUI.DisabledScope(disableEditMediaSource))
             {
-                EditorGUILayout.PropertyField(m_source);
+                EditorGUILayout.PropertyField(m_source, s_Styles.sourceContent);
                 HandleSourceField();
 
                 EditorGUILayout.Space();
