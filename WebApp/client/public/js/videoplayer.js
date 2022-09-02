@@ -7,13 +7,9 @@ const ActionType = {
 };
 
 export class VideoPlayer {
-  /**
-   * @param {Element} playerElement parent element for create video player
-   * @param {HTMLInputElement} lockMouseCheck use checked propety for lock mouse 
-   */
-  constructor(playerElement, lockMouseCheck) {
-    this.playerElement = playerElement;
-    this.lockMouseCheck = lockMouseCheck;
+  constructor() {
+    this.playerElement = null;
+    this.lockMouseCheck = null;
     this.videoElement = null;
     this.fullScreenButtonElement = null;
     this.inputRemoting = null;
@@ -22,7 +18,14 @@ export class VideoPlayer {
     this.multiplayChannel = null;
   }
 
-  createPlayer() {
+  /**
+ * @param {Element} playerElement parent element for create video player
+ * @param {HTMLInputElement} lockMouseCheck use checked propety for lock mouse 
+ */
+  createPlayer(playerElement, lockMouseCheck) {
+    this.playerElement = playerElement;
+    this.lockMouseCheck = lockMouseCheck;
+
     this.videoElement = document.createElement('video');
     this.videoElement.id = 'Video';
     this.videoElement.style.touchAction = 'none';
@@ -35,24 +38,8 @@ export class VideoPlayer {
     this.fullScreenButtonElement = document.createElement('img');
     this.fullScreenButtonElement.id = 'fullscreenButton';
     this.fullScreenButtonElement.src = '../images/FullScreen.png';
+    this.fullScreenButtonElement.addEventListener("click", this._onClickFullscreenButton.bind(this));
     this.playerElement.appendChild(this.fullScreenButtonElement);
-
-    this.fullScreenButtonElement.addEventListener("click", function () {
-      if (!document.fullscreenElement || !document.webkitFullscreenElement) {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        }
-        else if (document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        } else {
-          if (this.playerElement.style.position == "absolute") {
-            this.playerElement.style.position = "relative";
-          } else {
-            this.playerElement.style.position = "absolute";
-          }
-        }
-      }
-    });
 
     document.addEventListener('webkitfullscreenchange', this._onFullscreenChange.bind(this));
     document.addEventListener('fullscreenchange', this._onFullscreenChange.bind(this));
@@ -62,6 +49,23 @@ export class VideoPlayer {
   _onLoadedVideo() {
     this.videoElement.play();
     this.resizeVideo();
+  }
+
+  _onClickFullscreenButton() {
+    if (!document.fullscreenElement || !document.webkitFullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      }
+      else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else {
+        if (this.playerElement.style.position == "absolute") {
+          this.playerElement.style.position = "relative";
+        } else {
+          this.playerElement.style.position = "absolute";
+        }
+      }
+    }
   }
 
   _onFullscreenChange() {
@@ -124,7 +128,7 @@ export class VideoPlayer {
    * @param {MediaStreamTrack} track 
    */
   addTrack(track) {
-    if(!this.videoElement.srcObject) {
+    if (!this.videoElement.srcObject) {
       return;
     }
 
@@ -132,7 +136,7 @@ export class VideoPlayer {
   }
 
   resizeVideo() {
-    if(!this.videoElement) {
+    if (!this.videoElement) {
       return;
     }
 
@@ -168,7 +172,7 @@ export class VideoPlayer {
   }
 
   deletePlayer() {
-    if(this.inputRemoting) {
+    if (this.inputRemoting) {
       this.inputRemoting.stopSending();
     }
     this.inputRemoting = null;
@@ -179,6 +183,9 @@ export class VideoPlayer {
     while (this.playerElement.firstChild) {
       this.playerElement.removeChild(this.playerElement.firstChild);
     }
+
+    this.playerElement = null;
+    this.lockMouseCheck = null;
   }
 
   _isTouchDevice() {

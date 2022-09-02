@@ -3,8 +3,11 @@ import { RenderStreaming } from "../../js/renderstreaming.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
 
+/** @type {Element} */
 let playButton;
+/** @type {RenderStreaming} */
 let renderstreaming;
+/** @type {boolean} */
 let useWebSocket;
 
 const codecPreferences = document.getElementById('codecPreferences');
@@ -15,7 +18,7 @@ messageDiv.style.display = 'none';
 
 const playerDiv = document.getElementById('player');
 const lockMouseCheck = document.getElementById('lockMouseCheck');
-const videoPlayer = new VideoPlayer(playerDiv, lockMouseCheck);
+const videoPlayer = new VideoPlayer();
 
 setup();
 
@@ -49,7 +52,7 @@ function showWarningIfNeeded(startupMode) {
 
 function showPlayButton() {
   if (!document.getElementById('playButton')) {
-    let elementPlayButton = document.createElement('img');
+    const elementPlayButton = document.createElement('img');
     elementPlayButton.id = 'playButton';
     elementPlayButton.src = '../../images/Play.png';
     elementPlayButton.alt = 'Start Streaming';
@@ -62,12 +65,13 @@ function onClickPlayButton() {
   playButton.style.display = 'none';
 
   // add video player
-  videoPlayer.createPlayer();
+  videoPlayer.createPlayer(playerDiv, lockMouseCheck);
   setupRenderStreaming();
 }
 
 async function setupRenderStreaming() {
-  let selectedCodecs = null;
+  /** @type {RTCRtpCodecCapability[] | null} */
+  let selectedCodecs;
   if (supportsSetCodecPreferences) {
     const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
     if (preferredCodec.value !== '') {
@@ -129,7 +133,9 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+/** @type {RTCStatsReport} */
 let lastStats;
+/** @type {number} */
 let intervalId;
 
 function showStatsMessage() {
