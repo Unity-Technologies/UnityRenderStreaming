@@ -7,6 +7,10 @@ const ActionType = {
 };
 
 export class VideoPlayer {
+  /**
+   * @param {Element} playerElement parent element for create video player
+   * @param {HTMLInputElement} lockMouseCheck use checked propety for lock mouse 
+   */
   constructor(playerElement, lockMouseCheck) {
     this.playerElement = playerElement;
     this.lockMouseCheck = lockMouseCheck;
@@ -116,6 +120,9 @@ export class VideoPlayer {
     }
   }
 
+  /**
+   * @param {MediaStreamTrack} track 
+   */
   addTrack(track) {
     if(!this.videoElement.srcObject) {
       return;
@@ -180,6 +187,10 @@ export class VideoPlayer {
       (navigator.msMaxTouchPoints > 0));
   }
 
+  /**
+   * setup datachannel for player input (muouse/keyboard/touch/gamepad)
+   * @param {RTCDataChannel} channel 
+   */
   setupInput(channel) {
     this.sender = new Sender(this.videoElement);
     this.sender.addMouse();
@@ -200,6 +211,10 @@ export class VideoPlayer {
     this.inputRemoting.startSending();
   }
 
+  /**
+   * setup datachannel for multiplay change label
+   * @param {RTCDataChannel} channel 
+   */
   setupMultiplayLabel(channel) {
     this.multiplayChannel = channel;
     this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);

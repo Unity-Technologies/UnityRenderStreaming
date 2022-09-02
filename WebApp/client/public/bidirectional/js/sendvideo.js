@@ -6,6 +6,12 @@ export class SendVideo {
     this.remoteVideo = remoteVideoElement;
   }
 
+  /**
+   * @param {MediaTrackConstraints} videoSource 
+   * @param {MediaTrackConstraints} audioSource 
+   * @param {number} videoWidth 
+   * @param {number} videoHeight 
+   */
   async startLocalVideo(videoSource, audioSource, videoWidth, videoHeight) {
     try {
       const constraints = {
@@ -28,10 +34,16 @@ export class SendVideo {
     }
   }
 
+  /**
+   * @returns {MediaStreamTrack[]}
+   */
   getLocalTracks() {
     return this.localVideo.srcObject.getTracks();
   }
 
+  /**
+   * @param {MediaStreamTrack} track 
+   */
   addRemoteTrack(track) {
     if (this.remoteVideo.srcObject == null) {
       this.remoteVideo.srcObject = new MediaStream();

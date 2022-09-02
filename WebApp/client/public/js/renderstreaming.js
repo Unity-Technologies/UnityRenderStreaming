@@ -10,6 +10,10 @@ function uuid4() {
 }
 
 export class RenderStreaming {
+  /**
+   * @param {boolean} useWebSocket 
+   * @param {Iterable<RTCRtpCodecCapability>} codecs 
+   */
   constructor(useWebSocket, codecs) {
     this._peer = null;
     this._connectionId = null;
@@ -85,6 +89,10 @@ export class RenderStreaming {
     }
   }
 
+  /**
+   * if not set argument, a generated uuid is used.
+   * @param {string | null} connectionId 
+   */
   async createConnection(connectionId) {
     this._connectionId = connectionId ? connectionId : uuid4();
     await this._signaling.createConnection(this._connectionId);
@@ -125,14 +133,25 @@ export class RenderStreaming {
     return this._peer;
   }
 
+  /**
+   * @returns {Promise<RTCStatsReport> | null}
+   */
   async getStats() {
     return await this._peer.getStats(this._connectionId);
   }
 
+  /**
+   * @param {string} label 
+   * @returns {RTCDataChannel | null}
+   */
   createDataChannel(label) {
     return this._peer.createDataChannel(this._connectionId, label);
   }
 
+  /**
+   * @param {MediaStreamTrack} track 
+   * @returns {RTCRtpSender | null}
+   */
   addTrack(track) {
     return this._peer.addTrack(this._connectionId, track);
   }
