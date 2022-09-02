@@ -1,4 +1,5 @@
 import { Receiver } from "./receiver.js";
+import { RenderStreaming } from "../../js/renderstreaming.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
 import { Observer, Sender } from "../../js/sender.js";
@@ -11,6 +12,7 @@ const ActionType = {
 
 let playButton;
 let receiver;
+let renderstreaming;
 let useWebSocket;
 let elementVideo;
 
@@ -38,7 +40,7 @@ window.addEventListener('resize', function () {
 }, true);
 
 window.addEventListener('beforeunload', async () => {
-  await receiver.stop();
+  await renderstreaming.stop();
 }, true);
 
 async function setup() {
@@ -77,12 +79,9 @@ function onClickPlayButton() {
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
+  receiver = new Receiver(elementVideo);
 
-  setupVideoPlayer(elementVideo).then(value => {
-    receiver = value;
-    setupInput();
-    showStatsMessage();
-  });
+  setupRenderStreaming();
 
   // add fullscreen button
   const elementFullscreenButton = document.createElement('img');
@@ -142,7 +141,7 @@ function onClickPlayButton() {
   function _mouseMove(event) {
     // Forward mouseMove event of fullscreen player directly to sender
     // This is required, as the regular mousemove event doesn't fire when in fullscreen mode
-    receiver.sender._onMouseEvent(event);
+    sender._onMouseEvent(event);
   }
 
   function _mouseClick() {
@@ -168,9 +167,7 @@ function onClickPlayButton() {
   }
 }
 
-async function setupVideoPlayer(elements) {
-  const videoPlayer = new Receiver(elements);
-
+async function setupRenderStreaming() {
   let selectedCodecs = null;
   if (supportsSetCodecPreferences) {
     const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
@@ -184,21 +181,34 @@ async function setupVideoPlayer(elements) {
   }
   codecPreferences.disabled = true;
 
-  await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
-  videoPlayer.ondisconnect = onDisconnect;
+  renderstreaming = new RenderStreaming(useWebSocket, selectedCodecs);
+  renderstreaming.onConnect = onConnect;
+  renderstreaming.onDisconnect = onDisconnect;
+  renderstreaming.onTrackEvent = (data) =>{
+    receiver.addTrack(data.track);
+  };
 
-  return videoPlayer;
+  await renderstreaming.start();
+  await renderstreaming.createConnection();
 }
 
-async function onDisconnect(message) {
+function onConnect() {
+  setupInput();
+  showStatsMessage();
+}
+
+async function onDisconnect(connectionId) {
   clearStatsMessage();
-  if (message) {
-    messageDiv.style.display = 'block';
-    messageDiv.innerText = message;
-  }
+  messageDiv.style.display = 'block';
+  messageDiv.innerText = `Disconnect peer on ${connectionId}.`;
 
   clearChildren(playerDiv);
-  await receiver.stop();
+  await renderstreaming.stop();
+  renderstreaming = null;
+  sender = null;
+  inputRemoting = null;
+  inputSenderChannel = null;
+  multiplayChannel = null;
   receiver = null;
   if (supportsSetCodecPreferences) {
     codecPreferences.disabled = false;
@@ -228,11 +238,11 @@ function setupInput() {
   sender.addGamepad();
   inputRemoting = new InputRemoting(sender);
 
-  inputSenderChannel = receiver.createDataChannel("input");
+  inputSenderChannel = renderstreaming.createDataChannel("input");
   inputSenderChannel.onopen = _onOpenInputSenderChannel;
   inputRemoting.subscribe(new Observer(inputSenderChannel));
 
-  multiplayChannel = receiver.createDataChannel("multiplay");
+  multiplayChannel = renderstreaming.createDataChannel("multiplay");
   multiplayChannel.onopen = _onOpenMultiplayChannel;
 }
 
@@ -278,11 +288,11 @@ let intervalId;
 
 function showStatsMessage() {
   intervalId = setInterval(async () => {
-    if (receiver == null) {
+    if (renderstreaming == null) {
       return;
     }
 
-    const stats = await receiver.getStats();
+    const stats = await renderstreaming.getStats();
     if (stats == null) {
       return;
     }

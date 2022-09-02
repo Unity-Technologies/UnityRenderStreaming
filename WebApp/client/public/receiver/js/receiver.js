@@ -1,20 +1,6 @@
-import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
-import Peer from "../../js/peer.js";
-import * as Logger from "../../js/logger.js";
-
-function uuid4() {
-  var temp_url = URL.createObjectURL(new Blob());
-  var uuid = temp_url.toString();
-  URL.revokeObjectURL(temp_url);
-  return uuid.split(/[:/]/g).pop().toLowerCase(); // remove prefixes
-}
-
 export class Receiver {
   constructor(videoElement) {
     const _this = this;
-    this.pc = null;
-    this.connectionId = null;
-
     this.localStream = new MediaStream();
     this.video = videoElement;
     this.video.playsInline = true;
@@ -23,102 +9,10 @@ export class Receiver {
       _this.resizeVideo();
     }, true);
     this.video.srcObject = this.localStream;
-
-    this.ondisconnect = function (message) { Logger.log(`Disconnect peer. message:${message}`); };
   }
 
-  async setupConnection(useWebSocket, codecs) {
-    const _this = this;
-    // close current RTCPeerConnection
-    if (this.pc) {
-      Logger.log('Close current PeerConnection');
-      this.pc.close();
-      this.pc = null;
-    }
-
-    if (useWebSocket) {
-      this.signaling = new WebSocketSignaling();
-    } else {
-      this.signaling = new Signaling();
-    }
-
-    this.connectionId = uuid4();
-
-    // Create peerConnection with proxy server and set up handlers
-    this.pc = new Peer(this.connectionId, true, codecs);
-    this.pc.addEventListener('disconnect', () => {
-      _this.ondisconnect(`Receive disconnect message from peer. connectionId:${this.connectionId}`);
-    });
-    this.pc.addEventListener('trackevent', (e) => {
-      const data = e.detail;
-      if (data.track.kind == 'video') {
-        _this.localStream.addTrack(data.track);
-      }
-      if (data.track.kind == 'audio') {
-        _this.localStream.addTrack(data.track);
-      }
-    });
-    this.pc.addEventListener('sendoffer', (e) => {
-      const offer = e.detail;
-      _this.signaling.sendOffer(offer.connectionId, offer.sdp);
-    });
-    this.pc.addEventListener('sendanswer', (e) => {
-      const answer = e.detail;
-      _this.signaling.sendAnswer(answer.connectionId, answer.sdp);
-    });
-    this.pc.addEventListener('sendcandidate', (e) => {
-      const candidate = e.detail;
-      _this.signaling.sendCandidate(candidate.connectionId, candidate.candidate, candidate.sdpMid, candidate.sdpMLineIndex);
-    });
-
-    this.signaling.addEventListener('disconnect', async (e) => {
-      const data = e.detail;
-      if (_this.pc != null && _this.pc.connectionId == data.connectionId) {
-        _this.ondisconnect(`Receive disconnect message from server. connectionId:${data.connectionId}`);
-      }
-    });
-    this.signaling.addEventListener('offer', async (e) => {
-      const offer = e.detail;
-      const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
-      if (_this.pc != null) {
-        try {
-          await _this.pc.onGotDescription(offer.connectionId, desc);
-        } catch (error) {
-          Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
-        }
-      }
-    });
-    this.signaling.addEventListener('answer', async (e) => {
-      const answer = e.detail;
-      const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-      if (_this.pc != null) {
-        try {
-          await _this.pc.onGotDescription(answer.connectionId, desc);
-        } catch (error) {
-          Logger.warn(`Error happen on GotDescription that description.\n Message: ${error}\n RTCSdpType:${desc.type}\n sdp:${desc.sdp}`);
-        }
-      }
-    });
-    this.signaling.addEventListener('candidate', async (e) => {
-      const candidate = e.detail;
-      const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-      if (_this.pc != null) {
-        await _this.pc.onGotCandidate(candidate.connectionId, iceCandidate);
-      }
-    });
-
-    // setup signaling
-    await this.signaling.start();
-    // register using connectionId
-    await this.signaling.createConnection(this.connectionId);
-  }
-
-  async getStats() {
-    return await this.pc.getStats(this.connectionId);
-  }
-
-  createDataChannel(label) {
-    return this.pc.createDataChannel(this.connectionId, label);
+  addTrack(track) {
+    this.video.srcObject.addTrack(track);
   }
 
   resizeVideo() {
@@ -151,17 +45,5 @@ export class Receiver {
 
   get videoScale() {
     return this._videoScale;
-  }
-
-  async stop() {
-    if (this.signaling) {
-      await this.signaling.stop();
-      this.signaling = null;
-    }
-
-    if (this.pc) {
-      this.pc.close();
-      this.pc = null;
-    }
   }
 }
