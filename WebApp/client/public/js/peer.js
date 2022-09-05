@@ -24,6 +24,10 @@ export default class Peer extends EventTarget {
       _this.log(`ontrack:${e}`);
       _this.dispatchEvent(new CustomEvent('trackevent', { detail: e }));
     };
+    this.pc.ondatachannel = e => {
+      _this.log(`ondatachannel:${e}`);
+      _this.dispatchEvent(new CustomEvent('adddatachannel', { detail: e }));
+    };
     this.pc.onicecandidate = ({ candidate }) => {
       _this.log(`send candidate:${candidate}`);
       if (candidate == null) {

@@ -22,6 +22,7 @@ export class RenderStreaming {
     this.onGotOffer = function (connectionId) { Logger.log(`On got Offer on ${connectionId}.`); };
     this.onGotAnswer = function (connectionId) { Logger.log(`On got Answer on ${connectionId}.`); };
     this.onTrackEvent = function (data) { Logger.log(`OnTrack event peer with data:${data}`); };
+    this.onAddChannel = function (data) { Logger.log(`onAddChannel event peer with data:${data}`); };
 
     this._signaling = signaling;
     this._signaling.addEventListener('connect', this._onConnect.bind(this));
@@ -113,6 +114,10 @@ export class RenderStreaming {
     this._peer.addEventListener('trackevent', (e) => {
       const data = e.detail;
       this.onTrackEvent(data);
+    });
+    this._peer.addEventListener('adddatachannel', (e) => {
+      const data = e.detail;
+      this.onAddChannel(data);
     });
     this._peer.addEventListener('sendoffer', (e) => {
       const offer = e.detail;

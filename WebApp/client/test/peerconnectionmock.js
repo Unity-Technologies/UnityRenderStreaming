@@ -6,6 +6,7 @@ export class PeerConnectionMock extends EventTarget {
     this.delay = async () => await sleep(10);
     this.config = config;
     this.ontrack = undefined;
+    this.ondatachannel = undefined;
     this.onicecandidate = undefined;
     this.onnegotiationneeded = undefined;
     this.onsignalingstatechange = undefined;
@@ -44,6 +45,7 @@ export class PeerConnectionMock extends EventTarget {
 
   close() {
     this.ontrack = undefined;
+    this.ondatachannel = undefined;
     this.onicecandidate = undefined;
     this.onnegotiationneeded = undefined;
     this.onsignalingstatechange = undefined;
@@ -119,27 +121,30 @@ export class PeerConnectionMock extends EventTarget {
 
   async setLocalDescription(description = null) {
     if (description == null) {
-      description = this.createSessionDescription();
+      description = this._createSessionDescription();
     }
     await this.delay();
-    this.setSessionDescription(description, false);
+    this._setSessionDescription(description, false);
   }
 
   async setRemoteDescription(description) {
     await this.delay();
     if (description.type == "offer" && this.signalingState == "have-local-offer") {
-      this.setSessionDescription({ type: "rollback", sdp: "" }, true);
+      this._setSessionDescription({ type: "rollback", sdp: "" }, true);
     }
-    this.setSessionDescription(description, true);
+    this._setSessionDescription(description, true);
   }
 
-  createSessionDescription() {
+  _createSessionDescription() {
     let dummySdp = "testsdp";
     if (this.videoTracks.size > 0) {
       dummySdp += "videotrack";
     }
     if (this.audioTracks.size > 0) {
       dummySdp += "audiotrack";
+    }
+    if (this.channels.size > 0) {
+      dummySdp += "datachannel";
     }
 
     if (this.signalingState == "stable" || this.signalingState == "have-local-offer" || this.signalingState == "have-remote-pranswer") {
@@ -148,7 +153,7 @@ export class PeerConnectionMock extends EventTarget {
     return { type: "answer", sdp: dummySdp };
   }
 
-  setSessionDescription(description, remote) {
+  _setSessionDescription(description, remote) {
     if (description.type == "rollback"
       && (this.signalingState == "stable" || this.signalingState == "have-local-pranswer" || this.signalingState == "have-remote-pranswer")) {
       throw "InvalidStateError";
@@ -164,12 +169,11 @@ export class PeerConnectionMock extends EventTarget {
           if (description.sdp.includes("track")) {
             const isVideo = description.sdp.includes("video");
             const kind = isVideo ? "video" : "audio";
-            const track = { id: getUniqueId(), kind: kind };
-            if (isVideo) {
-              this.videoTracks.set(track.id, track);
-            } else {
-              this.audioTracks.set(track.id, track);
-            }
+            this._createTrackAndTransceiver(kind);
+          }
+          if (description.sdp.includes("datachannel")) {
+            const channel = { id: getUniqueId(), label: "dummychannel" };
+            this.channels.set(channel.id, channel);
           }
         }
         if (description.type == "answer") {
@@ -202,12 +206,11 @@ export class PeerConnectionMock extends EventTarget {
           if (description.sdp.includes("track")) {
             const isVideo = description.sdp.includes("video");
             const kind = isVideo ? "video" : "audio";
-            const track = { id: getUniqueId(), kind: kind };
-            if (isVideo) {
-              this.videoTracks.set(track.id, track);
-            } else {
-              this.audioTracks.set(track.id, track);
-            }
+            this._createTrackAndTransceiver(kind);
+          }
+          if (description.sdp.includes("datachannel")) {
+            const channel = { id: getUniqueId(), label: "dummychannel" };
+            this.channels.set(channel.id, channel);
           }
         }
         if (description.type == "pranswer") {
@@ -224,7 +227,7 @@ export class PeerConnectionMock extends EventTarget {
     }
 
     if (this.videoTracks.size != 0 || this.audioTracks.size != 0) {
-      this.mockGatheringIceCandidate(this.videoTracks.size + this.audioTracks.size);
+      this._mockGatheringIceCandidate(this.videoTracks.size + this.audioTracks.size);
     }
 
     //fire ontrack with new tracks, after using tracks clear.
@@ -239,9 +242,16 @@ export class PeerConnectionMock extends EventTarget {
       }
       this.audioTracks.clear();
     }
+
+    if (this.ondatachannel) {
+      for (const channel of this.channels.values()) {
+        this.ondatachannel({ channel: channel });
+      }
+      this.channels.clear();
+    }
   }
 
-  async mockGatheringIceCandidate(count) {
+  async _mockGatheringIceCandidate(count) {
     this.iceGatheringState = "gathering";
     if (this.onicegatheringstatechange) {
       this.onicegatheringstatechange(this.iceGatheringState);
@@ -268,6 +278,17 @@ export class PeerConnectionMock extends EventTarget {
       throw "InvalidStateError";
     }
     this.candidates.push(candidate);
+  }
+
+  _createTrackAndTransceiver(kind) {
+    const track = { id: getUniqueId(), kind: kind };
+    if (kind == "video") {
+      this.videoTracks.set(track.id, track);
+    } else {
+      this.audioTracks.set(track.id, track);
+    }
+    const transceiver = { direction: "sendrecv", sender: { track: track }, receiver: null, setCodecPreferences: (codecs) => { console.log(codecs); } };
+    this.transceivers.set(this.transceiverCount++, transceiver);
   }
 }
 
