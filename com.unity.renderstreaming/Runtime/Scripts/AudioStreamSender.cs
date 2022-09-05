@@ -46,9 +46,14 @@ namespace Unity.RenderStreaming
         [SerializeField, Bitrate(0, 1000)]
         private Range m_Bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
-        protected AudioStreamTrack track;
-
         private int m_sampleRate = 0;
+
+        private AudioStreamSourceImpl m_sourceImpl = null;
+
+        /// workaround.
+        private Action<float[], int, int> m_onAudioFilterRead = null;
+
+        private int m_frequency = 48000;
 
         /// <summary>
         /// 
@@ -147,7 +152,6 @@ namespace Unity.RenderStreaming
 
         void _OnStoppedStream(string connectionId)
         {
-            track = null;
         }
 
         internal override MediaStreamTrack CreateTrack()
@@ -155,10 +159,10 @@ namespace Unity.RenderStreaming
             switch(m_Source)
             {
                 case AudioStreamSource.AudioListener:
-                    // todo: Should add AudioStreamTrack supports AudioListener
-                    if (!GetComponent<AudioListener>())
-                        throw new InvalidOperationException("Audio Listener have to be set the same gameObject.");
-                    return new AudioStreamTrack();
+                    var source = new AudioStreamSourceAudioListener(this);
+                    // todo:: workaround.
+                    m_onAudioFilterRead = source.OnAudioFilterRead;
+                    return source;
                 case AudioStreamSource.AudioSource:
                     return new AudioStreamTrack(m_AudioSource);
             }
@@ -169,46 +173,175 @@ namespace Unity.RenderStreaming
         {
             OnAudioConfigurationChanged(false);
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
-
-            if (track != null)
-                track.Enabled = true;
+            base.OnEnable();
         }
 
         protected override void OnDisable()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
-
-            try
-            {
-                if (track != null)
-                    track.Enabled = false;
-            }
-            catch (InvalidOperationException)
-            {
-                track = null;
-            }
+            base.OnDisable();
         }
 
+        /// workaround.
+        /// todo: Should add AudioStreamTrack supports AudioListener
         protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
             // todo: Should add AudioStreamTrack supports AudioListener
-            if (m_Source != AudioStreamSource.AudioListener)
-                return;
+            if (m_Source == AudioStreamSource.AudioListener && m_onAudioFilterRead != null)
+                m_onAudioFilterRead(data, channels, m_sampleRate);
+        }
 
-            NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
-            try
+        abstract class AudioStreamSourceImpl : IDisposable
+        {
+            public AudioStreamSourceImpl(AudioStreamSender parent)
             {
-                track?.SetData(ref nativeArray, channels, m_sampleRate);
             }
-            // todo(kazuki):: Should catch only ObjectDisposedException but
-            // AudioStreamTrack also throws NullReferenceException.
-            catch (Exception)
+
+            public abstract AudioStreamTrack CreateTrack();
+            public abstract void Dispose();
+        }
+
+        class AudioStreamSourceAudioListener : AudioStreamSourceImpl
+        {
+            AudioStreamTrack m_audioTrack;
+
+            public AudioStreamSourceAudioListener(AudioStreamSender parent) : base(parent)
             {
-                track = null;
+                // todo: Should add AudioStreamTrack supports AudioListener
+                if (!parent.GetComponent<AudioListener>())
+                    throw new InvalidOperationException("Audio Listener have to be set the same gameObject.");
             }
-            finally
+
+            public override AudioStreamTrack CreateTrack()
             {
-                nativeArray.Dispose();
+                m_audioTrack = new AudioStreamTrack();
+                return m_audioTrack;
+            }
+
+            public override void Dispose()
+            {
+                m_audioTrack = null;
+                GC.SuppressFinalize(this);
+            }
+
+            ~AudioStreamSourceAudioListener()
+            {
+                Dispose();
+            }
+
+            public void OnAudioFilterRead(float[] data, int channels, int sampleRate)
+            {
+                NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
+                try
+                {
+                    m_audioTrack?.SetData(ref nativeArray, channels, sampleRate);
+                }
+                // todo(kazuki):: Should catch only ObjectDisposedException but
+                // AudioStreamTrack also throws NullReferenceException.
+                catch (Exception)
+                {
+                }
+                finally
+                {
+                    nativeArray.Dispose();
+                }
+            }
+        }
+
+        class AudioStreamSourceAudioSource : AudioStreamSourceImpl
+        {
+            AudioSource m_audioSource;
+            public AudioStreamSourceAudioSource(AudioStreamSender parent) : base(parent)
+            {
+                m_audioSource = parent.m_AudioSource;
+                if (m_audioSource == null)
+                    throw new ArgumentException("parent", "The m_AudioSource is not assigned.");
+
+            }
+
+            public override AudioStreamTrack CreateTrack()
+            {
+                return new AudioStreamTrack(m_audioSource);
+            }
+
+            public override void Dispose()
+            {
+                GC.SuppressFinalize(this);
+            }
+
+            ~AudioStreamSourceAudioSource()
+            {
+                Dispose();
+            }
+        }
+        class AudioStreamSourceMicrophone : AudioStreamSourceImpl
+        {
+            int m_deviceIndex;
+            bool m_autoRequestUserAuthorization;
+            int m_frequency;
+            GameObject m_parentObj;
+            AudioSource m_audioSource;
+
+            public AudioStreamSourceMicrophone(AudioStreamSender parent) : base(parent)
+            {
+                int deviceIndex = parent.m_MicrophoneDeviceIndex;
+                if (deviceIndex < 0 || Microphone.devices.Length <= deviceIndex)
+                    throw new ArgumentOutOfRangeException("deviceIndex", deviceIndex, "The deviceIndex is out of range");
+                m_parentObj = parent.gameObject;
+                m_deviceIndex = deviceIndex;
+                m_frequency = parent.m_frequency;
+                m_autoRequestUserAuthorization = parent.m_AutoRequestUserAuthorization;
+            }
+
+            public override AudioStreamTrack CreateTrack()
+            {
+                if (m_autoRequestUserAuthorization)
+                {
+                    AsyncOperation op = Application.RequestUserAuthorization(UserAuthorization.Microphone);
+                    while (!op.isDone)
+                    {
+                        System.Threading.Thread.Sleep(1);
+                    }
+                }
+                if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
+                    throw new InvalidOperationException("Call Application.RequestUserAuthorization before creating track with Microphone.");
+
+                var deviceName = Microphone.devices[m_deviceIndex];
+                Microphone.GetDeviceCaps(deviceName, out int minFreq, out int maxFreq);
+                var micClip = Microphone.Start(deviceName, true, 1, m_frequency);
+
+                // set the latency to g0h samples before the audio starts to play.
+                while (!(Microphone.GetPosition(deviceName) > 0)) { }
+
+                m_audioSource = m_parentObj.AddComponent<AudioSource>();
+                m_audioSource.clip = micClip;
+                m_audioSource.loop = true;
+                m_audioSource.Play();
+
+                return new AudioStreamTrack(m_audioSource);
+            }
+
+            public override void Dispose()
+            {
+                if (m_audioSource != null)
+                {
+                    m_audioSource.Stop();
+                    var clip = m_audioSource.clip;
+                    if(clip != null)
+                    {
+                        Destroy(clip);
+                    }
+                    m_audioSource.clip = null;
+
+                    Destroy(m_audioSource);
+                    m_audioSource = null;
+                }
+                GC.SuppressFinalize(this);
+            }
+
+            ~AudioStreamSourceMicrophone()
+            {
+                Dispose();
             }
         }
     }
