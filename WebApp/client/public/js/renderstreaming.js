@@ -43,6 +43,8 @@ export class RenderStreaming {
     const data = e.detail;
     if (this._peer != null && this._connectionId == data.connectionId) {
       this.onDisconnect(data.connectionId);
+      this._peer.close();
+      this._peer = null;
     }
   }
 
@@ -148,6 +150,13 @@ export class RenderStreaming {
    */
   addTrack(track) {
     return this._peer.addTrack(this._connectionId, track);
+  }
+
+  /**
+   * @returns {RTCRtpTransceiver[] | null}
+   */
+  getTransceivers() {
+    return this._peer.getTransceivers(this._connectionId);
   }
 
   async start() {

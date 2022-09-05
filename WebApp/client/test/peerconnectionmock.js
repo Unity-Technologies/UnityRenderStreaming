@@ -1,6 +1,6 @@
 import { sleep, getUniqueId } from './testutils';
 
-export default class PeerConnectionMock extends EventTarget {
+export class PeerConnectionMock extends EventTarget {
   constructor(config) {
     super();
     this.delay = async () => await sleep(10);
@@ -134,10 +134,18 @@ export default class PeerConnectionMock extends EventTarget {
   }
 
   createSessionDescription() {
-    if (this.signalingState == "stable" || this.signalingState == "have-local-offer" || this.signalingState == "have-remote-pranswer") {
-      return { type: "offer", sdp: "lastcreatedoffer" };
+    let dummySdp = "testsdp";
+    if (this.videoTracks.size > 0) {
+      dummySdp += "videotrack";
     }
-    return { type: "answer", sdp: "lastcreatedanswer" };
+    if (this.audioTracks.size > 0) {
+      dummySdp += "audiotrack";
+    }
+
+    if (this.signalingState == "stable" || this.signalingState == "have-local-offer" || this.signalingState == "have-remote-pranswer") {
+      return { type: "offer", sdp: dummySdp };
+    }
+    return { type: "answer", sdp: dummySdp };
   }
 
   setSessionDescription(description, remote) {
@@ -154,8 +162,14 @@ export default class PeerConnectionMock extends EventTarget {
           this.onsignalingstatechange(this.signalingState);
           // if sdp contains track string, create dummy track
           if (description.sdp.includes("track")) {
-            const track = { id: getUniqueId(), kind: "video" };
-            this.videoTracks.set(track.id, track);
+            const isVideo = description.sdp.includes("video");
+            const kind = isVideo ? "video" : "audio";
+            const track = { id: getUniqueId(), kind: kind };
+            if (isVideo) {
+              this.videoTracks.set(track.id, track);
+            } else {
+              this.audioTracks.set(track.id, track);
+            }
           }
         }
         if (description.type == "answer") {
@@ -186,8 +200,14 @@ export default class PeerConnectionMock extends EventTarget {
           this.onsignalingstatechange(this.signalingState);
           // if sdp contains track string, create dummy track
           if (description.sdp.includes("track")) {
-            const track = { id: getUniqueId(), kind: "audio" };
-            this.audioTracks.set(track.id, track);
+            const isVideo = description.sdp.includes("video");
+            const kind = isVideo ? "video" : "audio";
+            const track = { id: getUniqueId(), kind: kind };
+            if (isVideo) {
+              this.videoTracks.set(track.id, track);
+            } else {
+              this.audioTracks.set(track.id, track);
+            }
           }
         }
         if (description.type == "pranswer") {
@@ -223,17 +243,23 @@ export default class PeerConnectionMock extends EventTarget {
 
   async mockGatheringIceCandidate(count) {
     this.iceGatheringState = "gathering";
-    this.onicegatheringstatechange(this.iceGatheringState);
-    if (this.onicecandidate) {
-      for (let index = 0; index < count; index++) {
-        await this.delay();
-        const newCandidate = { candidate: getUniqueId(), sdpMLineIndex: index, sdpMid: index };
+    if (this.onicegatheringstatechange) {
+      this.onicegatheringstatechange(this.iceGatheringState);
+    }
+    for (let index = 0; index < count; index++) {
+      await this.delay();
+      const newCandidate = { candidate: getUniqueId(), sdpMLineIndex: index, sdpMid: index };
+      if (this.onicecandidate) {
         this.onicecandidate(newCandidate);
       }
     }
     this.iceGatheringState = "complete";
-    this.onicegatheringstatechange(this.iceGatheringState);
-    this.onicecandidate({ candidate: null, sdpMLineIndex: null, sdpMid: null });
+    if (this.onicegatheringstatechange) {
+      this.onicegatheringstatechange(this.iceGatheringState);
+    }
+    if (this.onicecandidate) {
+      this.onicecandidate({ candidate: null, sdpMLineIndex: null, sdpMid: null });
+    }
   }
 
   async addIceCandidate(candidate) {
@@ -243,4 +269,27 @@ export default class PeerConnectionMock extends EventTarget {
     }
     this.candidates.push(candidate);
   }
+}
+
+export class SessionDescriptionMock {
+
+  constructor(object) {
+    this.sdp = object.sdp;
+    this.type = object.type;
+  }
+
+  sdp;
+  type;
+}
+
+export class IceCandidateMock {
+  constructor(object) {
+    this.candidate = object.candidate;
+    this.sdpMLineIndex = object.sdpMLineIndex;
+    this.sdpMid = object.sdpMid;
+  }
+
+  candidate;
+  sdpMLineIndex;
+  sdpMid;
 }

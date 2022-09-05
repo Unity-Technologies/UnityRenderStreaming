@@ -174,7 +174,7 @@ export default class Peer extends EventTarget {
     try {
       await this.pc.addIceCandidate(candidate);
     } catch (e) {
-      if (!this.ignoreOffer) 
+      if (this.pc && !this.ignoreOffer) 
         this.warn(`${this.pc} this candidate can't accept current signaling state ${this.pc.signalingState}.`);
     }
   }
