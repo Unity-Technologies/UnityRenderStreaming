@@ -160,7 +160,7 @@ namespace Unity.RenderStreaming
                     m_texture == null ||
                     m_TargetTexture == null)
                     continue;
-                Graphics.ConvertTexture(m_texture, m_TargetTexture);
+                Graphics.Blit(m_texture, m_TargetTexture);
             }
         }
     }
