@@ -34,11 +34,6 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public override TrackKind Kind { get { return TrackKind.Audio; } }
-
-        /// <summary>
-        ///
-        /// </summary>
         public AudioSource Source => m_source;
 
         private AudioSource m_source;

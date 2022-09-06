@@ -93,7 +93,7 @@ namespace Unity.RenderStreaming
                 return;
 
             var track = data.transceiver.Receiver.Track;
-            var receiver = streams.OfType<IStreamReceiver>().FirstOrDefault((r => r.Kind == track.Kind));
+            IStreamReceiver receiver = GetReceiver(track.Kind);
             SetReceiver(data.connectionId, receiver, data.transceiver);
         }
 
@@ -103,6 +103,15 @@ namespace Unity.RenderStreaming
                 return;
             var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
             channel?.SetChannel(connectionId, data.channel);
+        }
+
+        IStreamReceiver GetReceiver(WebRTC.TrackKind kind)
+        {
+            if (kind == WebRTC.TrackKind.Audio)
+                return streams.OfType<AudioStreamReceiver>().First();
+            if (kind == WebRTC.TrackKind.Video)
+                return streams.OfType<VideoStreamReceiver>().First();
+            throw new System.ArgumentException();
         }
     }
 }

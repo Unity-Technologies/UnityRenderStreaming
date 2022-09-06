@@ -1,20 +1,33 @@
 using System;
-using Unity.WebRTC;
-using UnityEngine;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
+using Unity.WebRTC;
 
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    ///
+    /// 
+    /// </summary>
+    public enum VideoRenderMode
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        RenderTexture,
+        /// <summary>
+        /// 
+        /// </summary>
+        APIOnly,
+    }
+
+    /// <summary>
+    /// 
     /// </summary>
     [AddComponentMenu("Render Streaming/Video Stream Receiver")]
     public class VideoStreamReceiver : StreamReceiverBase
     {
-        [SerializeField]
-        private Texture m_targetTexture;
-
         /// <summary>
         ///
         /// </summary>
@@ -26,45 +39,51 @@ namespace Unity.RenderStreaming
         /// </summary>
         public OnUpdateReceiveTextureHandler OnUpdateReceiveTexture;
 
-        /// <summary>
-        ///
-        /// </summary>
-        public override TrackKind Kind { get { return TrackKind.Video; } }
+        [SerializeField, Codec]
+        private VideoCodecInfo m_Codec;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public uint width
-        {
-            get { return (uint)m_targetTexture.width; }
-        }
+        [SerializeField]
+        private VideoRenderMode m_RenderMode;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public uint height
-        {
-            get { return (uint)m_targetTexture.height; }
-        }
-
-
-        private VideoCodecInfo m_codec;
-
-        private Texture m_receiveTexture;
-
+        [SerializeField]
+        private RenderTexture m_TargetTexture;
 
         /// <summary>
         /// 
         /// </summary>
         public VideoCodecInfo codec
         {
-            get { return m_codec; }
+            get { return m_Codec; }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int width => m_texture.width;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int height => m_texture.height;
 
         /// <summary>
         ///
         /// </summary>
-        public Texture targetTexture => m_targetTexture;
+        public Texture texture => m_texture;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public RenderTexture targetTexture
+        {
+            get { return m_TargetTexture; }
+            set { m_TargetTexture = value; }
+        }
+
+        private Texture m_texture;
+
+        private Coroutine m_coroutine;
+
 
         /// <summary>
         /// 
@@ -83,8 +102,7 @@ namespace Unity.RenderStreaming
         /// <param name="mimeType"></param>
         public void SetCodec(VideoCodecInfo codec)
         {
-            m_codec = codec;
-
+            m_Codec = codec;
             if (Transceiver == null)
                 return;
             if (!string.IsNullOrEmpty(Transceiver.Mid))
@@ -92,7 +110,7 @@ namespace Unity.RenderStreaming
             if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
                 throw new InvalidOperationException("Track has already been ended.");
 
-            var codecs = new VideoCodecInfo[] { m_codec };
+            var codecs = new VideoCodecInfo[] { m_Codec };
             RTCErrorType error = Transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
             if (error != RTCErrorType.None)
                 throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
@@ -115,16 +133,35 @@ namespace Unity.RenderStreaming
             {
                 videoTrack.OnVideoReceived += texture =>
                 {
-                    m_targetTexture = texture;
-                    OnUpdateReceiveTexture?.Invoke(m_targetTexture);
+                    m_texture = texture;
+                    OnUpdateReceiveTexture?.Invoke(m_texture);
                 };
             }
+            m_coroutine = StartCoroutine(Render());
         }
 
         private void StoppedStream(string connectionId)
         {
-            m_targetTexture = null;
-            OnUpdateReceiveTexture?.Invoke(m_targetTexture);
+            m_texture = null;
+            OnUpdateReceiveTexture?.Invoke(m_texture);
+            if(m_coroutine != null)
+            {
+                StopCoroutine(m_coroutine);
+                m_coroutine = null;
+            }
+        }
+
+        private IEnumerator Render()
+        {
+            while (true)
+            {
+                yield return new WaitForEndOfFrame();
+                if (m_RenderMode != VideoRenderMode.RenderTexture ||
+                    m_texture == null ||
+                    m_TargetTexture == null)
+                    continue;
+                Graphics.Blit(m_texture, m_TargetTexture);
+            }
         }
     }
 }

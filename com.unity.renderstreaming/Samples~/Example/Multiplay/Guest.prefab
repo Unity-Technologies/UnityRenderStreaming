@@ -76,7 +76,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4872c2e12a0e07b498876d68f1e51143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  streamingSize: {x: 1280, y: 720}
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+  m_RenderMode: 1
+  m_TargetTexture: {fileID: 0}
 --- !u!114 &1206473709398235252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,6 +95,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   local: 1
   label: 
-  onChangeLabel:
+  OnChangeLabel:
     m_PersistentCalls:
       m_Calls: []

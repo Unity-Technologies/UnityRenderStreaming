@@ -244,6 +244,24 @@ namespace Unity.RenderStreaming.RuntimeTest
                 }
             }
         }
+
+        [Test]
+        public void SetCodec()
+        {
+            var go = new GameObject();
+            var receiver = go.AddComponent<VideoStreamReceiver>();
+            Assert.That(receiver.codec, Is.Null);
+
+            var codecs = VideoStreamReceiver.GetAvailableCodecs();
+            Assert.That(codecs, Is.Not.Empty);
+
+            var codec = codecs.First();
+            receiver.SetCodec(codec);
+            Assert.That(receiver.codec, Is.EqualTo(codec));
+
+            receiver.SetCodec(null);
+            Assert.That(receiver.codec, Is.Null);
+        }
     }
 
     class AudioStreamSenderTest

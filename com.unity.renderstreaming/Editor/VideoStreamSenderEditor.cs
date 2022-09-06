@@ -1,54 +1,18 @@
 #if UNITY_EDITOR
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 
 namespace Unity.RenderStreaming.Editor
 {
-    static class DictionaryExtension
-    {
-        public static void SetTarget(this Dictionary<VideoStreamSource, AnimBool> dict, VideoStreamSource selected)
-        {
-            foreach (var pair in dict)
-            {
-                pair.Value.target = pair.Key == selected;
-            }
-        }
-        public static void AddListener(this Dictionary<VideoStreamSource, AnimBool> dict, UnityAction action)
-        {
-            foreach (var pair in dict)
-            {
-                pair.Value.valueChanged.AddListener(action);
-            }
-        }
-        public static void RemoveListener(this Dictionary<VideoStreamSource, AnimBool> dict, UnityAction action)
-        {
-            foreach (var pair in dict)
-            {
-                pair.Value.valueChanged.RemoveListener(action);
-            }
-        }
-
-        public static Dictionary<VideoStreamSource, AnimBool> Create(VideoStreamSource initialValue)
-        {
-            return Enum.GetValues(typeof(VideoStreamSource))
-                .Cast<VideoStreamSource>()
-                .ToDictionary(source => source, source => new AnimBool(source == initialValue));
-        }
-    }
-
-
     [CustomEditor(typeof(VideoStreamSender))]
     [CanEditMultipleObjects]
     internal class VideoStreamSenderEditor : UnityEditor.Editor
     {
         class Styles
         {
-            public readonly GUIContent dataSourceContent =
+            public readonly GUIContent sourceContent =
                 EditorGUIUtility.TrTextContent("Video Source Type", "Type of source the video will be streamed.");
             public readonly GUIContent frameRateContent =
                 EditorGUIUtility.TrTextContent("Frame rate", "A value affects loads on the encoding thread.");
@@ -73,31 +37,35 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty m_webCamDeviceIndex;
         SerializedProperty m_autoRequestUserAuthorization;
 
-        static Dictionary<VideoStreamSource, AnimBool> m_videoSource;
+        static AnimBool[] m_sourceFade;
 
         void OnEnable()
         {
-            m_source = serializedObject.FindProperty("m_source");
-            m_camera = serializedObject.FindProperty("m_camera");
-            m_texture = serializedObject.FindProperty("m_texture");
-            m_webCamDeviceIndex = serializedObject.FindProperty("m_webCamDeviceIndex");
-            m_codec = serializedObject.FindProperty("m_codec");
-            m_textureSize = serializedObject.FindProperty("m_textureSize");
-            m_frameRate = serializedObject.FindProperty("m_frameRate");
-            m_bitrate = serializedObject.FindProperty("m_bitrate");
-            m_scaleFactor = serializedObject.FindProperty("m_scaleFactor");
-            m_depth = serializedObject.FindProperty("m_depth");
-            m_antiAliasing = serializedObject.FindProperty("m_antiAliasing");
-            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_autoRequestUserAuthorization");
+            m_source = serializedObject.FindProperty("m_Source");
+            m_camera = serializedObject.FindProperty("m_Camera");
+            m_texture = serializedObject.FindProperty("m_Texture");
+            m_webCamDeviceIndex = serializedObject.FindProperty("m_WebCamDeviceIndex");
+            m_codec = serializedObject.FindProperty("m_Codec");
+            m_textureSize = serializedObject.FindProperty("m_TextureSize");
+            m_frameRate = serializedObject.FindProperty("m_FrameRate");
+            m_bitrate = serializedObject.FindProperty("m_Bitrate");
+            m_scaleFactor = serializedObject.FindProperty("m_ScaleFactor");
+            m_depth = serializedObject.FindProperty("m_Depth");
+            m_antiAliasing = serializedObject.FindProperty("m_AntiAliasing");
+            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_AutoRequestUserAuthorization");
 
-            if (m_videoSource == null)
-                m_videoSource = DictionaryExtension.Create((VideoStreamSource)m_source.intValue);
-            m_videoSource.AddListener(Repaint);
+            if (m_sourceFade == null)
+            {
+                m_sourceFade = new AnimBool[Enum.GetValues(typeof(VideoStreamSource)).Length];
+                for (int i = 0; i < m_sourceFade.Length; i++)
+                    m_sourceFade[i] = new AnimBool(i == m_source.intValue);
+            }
+            Array.ForEach(m_sourceFade, anim => anim.valueChanged.AddListener(Repaint));
         }
 
         void OnDisable()
         {
-            m_videoSource.RemoveListener(Repaint);
+            Array.ForEach(m_sourceFade, anim => anim.valueChanged.RemoveListener(Repaint));
         }
 
 
@@ -114,7 +82,7 @@ namespace Unity.RenderStreaming.Editor
             /// todo(kazuki): Make available to change video source parameters in runtime.
             using (new EditorGUI.DisabledScope(disableEditMediaSource))
             {
-                EditorGUILayout.PropertyField(m_source, s_Styles.dataSourceContent);
+                EditorGUILayout.PropertyField(m_source, s_Styles.sourceContent);
                 HandleDataSourceField();
 
                 EditorGUILayout.Space();
@@ -123,8 +91,7 @@ namespace Unity.RenderStreaming.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(m_frameRate, s_Styles.frameRateContent);
-            EditorGUILayout.PropertyField(m_bitrate, s_Styles.frameRateContent);
-
+            EditorGUILayout.PropertyField(m_bitrate, s_Styles.bitrateContent);
             EditorGUILayout.PropertyField(m_scaleFactor, s_Styles.scaleFactorContent);
 
             serializedObject.ApplyModifiedProperties();
@@ -132,9 +99,10 @@ namespace Unity.RenderStreaming.Editor
 
         private void HandleDataSourceField()
         {
-            m_videoSource.SetTarget((VideoStreamSource)m_source.intValue);
+            for (var i = 0; i < m_sourceFade.Length; i++)
+                m_sourceFade[i].target = m_source.intValue == i;
 
-            if (EditorGUILayout.BeginFadeGroup(m_videoSource[VideoStreamSource.Camera].faded))
+            if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.Camera].faded))
             {
                 EditorGUILayout.PropertyField(m_camera);
                 EditorGUILayout.PropertyField(m_depth);
@@ -143,7 +111,7 @@ namespace Unity.RenderStreaming.Editor
             }
             EditorGUILayout.EndFadeGroup();
 
-            if (EditorGUILayout.BeginFadeGroup(m_videoSource[VideoStreamSource.Screen].faded))
+            if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.Screen].faded))
             {
                 EditorGUILayout.PropertyField(m_depth);
                 EditorGUILayout.PropertyField(m_antiAliasing);
@@ -151,11 +119,11 @@ namespace Unity.RenderStreaming.Editor
             }
             EditorGUILayout.EndFadeGroup();
 
-            if (EditorGUILayout.BeginFadeGroup(m_videoSource[VideoStreamSource.Texture].faded))
+            if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.Texture].faded))
                 EditorGUILayout.PropertyField(m_texture);
             EditorGUILayout.EndFadeGroup();
 
-            if (EditorGUILayout.BeginFadeGroup(m_videoSource[VideoStreamSource.WebCamera].faded))
+            if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.WebCamera].faded))
             {
                 EditorGUILayout.PropertyField(m_webCamDeviceIndex);
                 EditorGUILayout.PropertyField(m_autoRequestUserAuthorization);
