@@ -811,7 +811,7 @@ PrefabInstance:
         type: 3}
       propertyPath: senderBaseList.Array.data[1]
       value: 
-      objectReference: {fileID: 1363584104}
+      objectReference: {fileID: 0}
     - target: {fileID: 4184539458356606944, guid: 562feaa3a43a01841a00c6ac89b133fb,
         type: 3}
       propertyPath: receiverBaseList.Array.data[0]
@@ -2973,7 +2973,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -3574,16 +3574,24 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1363584099}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd052cb8051a41309639216a466bf35a, type: 3}
+  m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bitrate:
-    min: 0
-    max: 200
-  deviceIndex: 0
-  mute: 1
+  m_Source: 2
+  m_AudioListener: {fileID: 0}
+  m_AudioSource: {fileID: 0}
+  m_MicrophoneDeviceIndex: 0
+  m_AutoRequestUserAuthorization: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+    m_ChannelCount: 0
+    m_SampleRate: 0
+  m_Bitrate:
+    min: 8
+    max: 208
 --- !u!1 &1423621363
 GameObject:
   m_ObjectHideFlags: 0
@@ -4767,6 +4775,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6bfd564296404f5897c569b1a6b352b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_TargetAudioSource: {fileID: 0}
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+    m_ChannelCount: 0
+    m_SampleRate: 0
 --- !u!1 &2063941924
 GameObject:
   m_ObjectHideFlags: 0
