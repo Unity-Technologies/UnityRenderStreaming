@@ -126,13 +126,6 @@ async function setUp() {
       sendVideo.addRemoteTrack(data.track);
     }
   };
-  renderstreaming.onGotOffer = () => {
-    const tracks = sendVideo.getLocalTracks();
-    for (const track of tracks) {
-      renderstreaming.addTrack(track);
-    }
-    setCodecPreferences();
-  };
 
   await renderstreaming.start();
   await renderstreaming.createConnection(connectionId);

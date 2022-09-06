@@ -1,4 +1,4 @@
-import * as Logger from "../../js/logger.js";
+import * as Logger from "../../module/logger.js";
 
 export class SendVideo {
   constructor(localVideoElement, remoteVideoElement) {
