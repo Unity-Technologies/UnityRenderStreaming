@@ -90,6 +90,7 @@ async function setupRenderStreaming() {
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);
+  renderstreaming.onGotOffer = setCodecPreferences;
 
   await renderstreaming.start();
   await renderstreaming.createConnection();
@@ -115,6 +116,29 @@ async function onDisconnect(connectionId) {
     codecPreferences.disabled = false;
   }
   showPlayButton();
+}
+
+function setCodecPreferences() {
+  /** @type {RTCRtpCodecCapability[] | null} */
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+    }
+  }
+
+  if (selectedCodecs == null) {
+    return;
+  }
+  const transceivers = renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
+  if (transceivers && transceivers.length > 0) {
+    transceivers.forEach(t => t.setCodecPreferences(selectedCodecs));
+  }
 }
 
 function showCodecSelect() {

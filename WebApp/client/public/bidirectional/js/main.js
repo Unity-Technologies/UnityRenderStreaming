@@ -113,7 +113,7 @@ async function setUp() {
     for (const track of tracks) {
       renderstreaming.addTrack(track);
     }
-    _setCodecPreferences();
+    setCodecPreferences();
     showStatsMessage();
   };
   renderstreaming.onDisconnect = () => {
@@ -130,14 +130,14 @@ async function setUp() {
     for (const track of tracks) {
       renderstreaming.addTrack(track);
     }
-    _setCodecPreferences();
+    setCodecPreferences();
   };
 
   await renderstreaming.start();
   await renderstreaming.createConnection(connectionId);
 }
 
-function _setCodecPreferences() {
+function setCodecPreferences() {
   /** @type {RTCRtpCodecCapability[] | null} */
   let selectedCodecs = null;
   if (supportsSetCodecPreferences) {
@@ -154,8 +154,10 @@ function _setCodecPreferences() {
   if (selectedCodecs == null) {
     return;
   }
-  const transceivers = this.renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
-  transceivers.forEach(t => t.setCodecPreferences(codecs));
+  const transceivers = renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
+  if (transceivers && transceivers.length > 0) {
+    transceivers.forEach(t => t.setCodecPreferences(selectedCodecs));
+  }
 }
 
 async function hangUp() {

@@ -78,7 +78,7 @@ async function setupRenderStreaming() {
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);
-  renderstreaming.onGotOffer = () => _setCodecPreferences();
+  renderstreaming.onGotOffer = setCodecPreferences;
 
   await renderstreaming.start();
   await renderstreaming.createConnection();
@@ -104,7 +104,7 @@ async function onDisconnect(connectionId) {
   showPlayButton();
 }
 
-function _setCodecPreferences() {
+function setCodecPreferences() {
   /** @type {RTCRtpCodecCapability[] | null} */
   let selectedCodecs = null;
   if (supportsSetCodecPreferences) {
@@ -121,8 +121,10 @@ function _setCodecPreferences() {
   if (selectedCodecs == null) {
     return;
   }
-  const transceivers = this.renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
-  transceivers.forEach(t => t.setCodecPreferences(codecs));
+  const transceivers = renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
+  if (transceivers && transceivers.length > 0) {
+    transceivers.forEach(t => t.setCodecPreferences(selectedCodecs));
+  }
 }
 
 function showCodecSelect() {
