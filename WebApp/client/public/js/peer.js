@@ -2,12 +2,11 @@ import * as Config from "./config.js";
 import * as Logger from "./logger.js";
 
 export default class Peer extends EventTarget {
-  constructor(connectionId, polite, codecs = null, resendIntervalMsec = 5000) {
+  constructor(connectionId, polite, resendIntervalMsec = 5000) {
     super();
     const _this = this;
     this.connectionId = connectionId;
     this.polite = polite;
-    this.codecs = codecs;
     this.config = Config.getRTCConfiguration();
     this.pc = new RTCPeerConnection(this.config);
     this.makingOffer = false;
@@ -36,24 +35,7 @@ export default class Peer extends EventTarget {
       _this.dispatchEvent(new CustomEvent('sendcandidate', { detail: { connectionId: _this.connectionId, candidate: candidate.candidate, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid } }));
     };
 
-    this.pc.onnegotiationneeded = async () => {
-      try {
-        _this.log(`SLD due to negotiationneeded`);
-        _this.assert_equals(_this.pc.signalingState, 'stable', 'negotiationneeded always fires in stable state');
-        _this.assert_equals(_this.makingOffer, false, 'negotiationneeded not already in progress');
-        _this.makingOffer = true;
-        _this._setCodecPreferences(_this.codecs);
-        await _this.pc.setLocalDescription();
-        _this.assert_equals(_this.pc.signalingState, 'have-local-offer', 'negotiationneeded not racing with onmessage');
-        _this.assert_equals(_this.pc.localDescription.type, 'offer', 'negotiationneeded SLD worked');
-        _this.waitingAnswer = true;
-        _this.dispatchEvent(new CustomEvent('sendoffer', { detail: { connectionId: _this.connectionId, sdp: _this.pc.localDescription.sdp } }));
-      } catch (e) {
-        _this.log(e);
-      } finally {
-        _this.makingOffer = false;
-      }
-    };
+    this.pc.onnegotiationneeded = this._onNegotiation.bind(this);
 
     this.pc.onsignalingstatechange = () => {
       _this.log(`signalingState changed:${_this.pc.signalingState}`);
@@ -71,6 +53,24 @@ export default class Peer extends EventTarget {
     };
 
     this.loopResendOffer();
+  }
+
+  async _onNegotiation() {
+    try {
+      this.log(`SLD due to negotiationneeded`);
+      this.assert_equals(this.pc.signalingState, 'stable', 'negotiationneeded always fires in stable state');
+      this.assert_equals(this.makingOffer, false, 'negotiationneeded not already in progress');
+      this.makingOffer = true;
+      await this.pc.setLocalDescription();
+      this.assert_equals(this.pc.signalingState, 'have-local-offer', 'negotiationneeded not racing with onmessage');
+      this.assert_equals(this.pc.localDescription.type, 'offer', 'negotiationneeded SLD worked');
+      this.waitingAnswer = true;
+      this.dispatchEvent(new CustomEvent('sendoffer', { detail: { connectionId: this.connectionId, sdp: this.pc.localDescription.sdp } }));
+    } catch (e) {
+      this.log(e);
+    } finally {
+      this.makingOffer = false;
+    }
   }
 
   async loopResendOffer() {
@@ -154,16 +154,19 @@ export default class Peer extends EventTarget {
     this.srdAnswerPending = false;
 
     if (description.type == 'offer') {
+      _this.dispatchEvent(new CustomEvent('ongotoffer', { detail: { connectionId: _this.connectionId } }));
+
       _this.assert_equals(this.pc.signalingState, 'have-remote-offer', 'Remote offer');
       _this.assert_equals(this.pc.remoteDescription.type, 'offer', 'SRD worked');
       _this.log('SLD to get back to stable');
-      _this._setCodecPreferences(_this.codecs);
       await this.pc.setLocalDescription();
       _this.assert_equals(this.pc.signalingState, 'stable', 'onmessage not racing with negotiationneeded');
       _this.assert_equals(this.pc.localDescription.type, 'answer', 'onmessage SLD worked');
       _this.dispatchEvent(new CustomEvent('sendanswer', { detail: { connectionId: _this.connectionId, sdp: _this.pc.localDescription.sdp } }));
 
     } else {
+      _this.dispatchEvent(new CustomEvent('ongotanswer', { detail: { connectionId: _this.connectionId } }));
+
       _this.assert_equals(this.pc.remoteDescription.type, 'answer', 'Answer was set');
       _this.assert_equals(this.pc.signalingState, 'stable', 'answered');
       this.pc.dispatchEvent(new Event('negotiated'));
@@ -181,13 +184,5 @@ export default class Peer extends EventTarget {
       if (this.pc && !this.ignoreOffer) 
         this.warn(`${this.pc} this candidate can't accept current signaling state ${this.pc.signalingState}.`);
     }
-  }
-
-  _setCodecPreferences(codecs) {
-    if (codecs == null) {
-      return;
-    }
-    const transceivers = this.pc.getTransceivers().filter(t => t.receiver.track.kind == "video");
-    transceivers.forEach(t => t.setCodecPreferences(codecs));
   }
 }

@@ -71,25 +71,14 @@ function onClickPlayButton() {
 }
 
 async function setupRenderStreaming() {
-  /** @type {RTCRtpCodecCapability[] | null} */
-  let selectedCodecs;
-  if (supportsSetCodecPreferences) {
-    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
-    if (preferredCodec.value !== '') {
-      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
-      const { codecs } = RTCRtpSender.getCapabilities('video');
-      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
-      const selectCodec = codecs[selectedCodecIndex];
-      selectedCodecs = [selectCodec];
-    }
-  }
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
-  renderstreaming = new RenderStreaming(signaling, selectedCodecs);
+  renderstreaming = new RenderStreaming(signaling);
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);
+  renderstreaming.onGotOffer = () => _setCodecPreferences();
 
   await renderstreaming.start();
   await renderstreaming.createConnection();
@@ -113,6 +102,27 @@ async function onDisconnect(connectionId) {
     codecPreferences.disabled = false;
   }
   showPlayButton();
+}
+
+function _setCodecPreferences() {
+  /** @type {RTCRtpCodecCapability[] | null} */
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+    }
+  }
+
+  if (selectedCodecs == null) {
+    return;
+  }
+  const transceivers = this.renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
+  transceivers.forEach(t => t.setCodecPreferences(codecs));
 }
 
 function showCodecSelect() {

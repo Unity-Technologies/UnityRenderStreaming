@@ -43,7 +43,9 @@ let useCustomResolution = false;
 setUpInputSelect();
 showCodecSelect();
 
+/** @type {SendVideo} */
 let sendVideo = new SendVideo(localVideo, remoteVideo);
+/** @type {RenderStreaming} */
 let renderstreaming;
 let useWebSocket;
 let connectionId;
@@ -102,27 +104,16 @@ async function setUp() {
   setupButton.disabled = true;
   hangUpButton.disabled = false;
   connectionId = textForConnectionId.value;
-
-  let selectedCodecs = null;
-  if (supportsSetCodecPreferences) {
-    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
-    if (preferredCodec.value !== '') {
-      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
-      const { codecs } = RTCRtpSender.getCapabilities('video');
-      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
-      const selectCodec = codecs[selectedCodecIndex];
-      selectedCodecs = [selectCodec];
-    }
-  }
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
-  renderstreaming = new RenderStreaming(signaling, selectedCodecs);
+  renderstreaming = new RenderStreaming(signaling);
   renderstreaming.onConnect = () => {
     const tracks = sendVideo.getLocalTracks();
     for (const track of tracks) {
       renderstreaming.addTrack(track);
     }
+    _setCodecPreferences();
     showStatsMessage();
   };
   renderstreaming.onDisconnect = () => {
@@ -139,10 +130,32 @@ async function setUp() {
     for (const track of tracks) {
       renderstreaming.addTrack(track);
     }
+    _setCodecPreferences();
   };
 
   await renderstreaming.start();
   await renderstreaming.createConnection(connectionId);
+}
+
+function _setCodecPreferences() {
+  /** @type {RTCRtpCodecCapability[] | null} */
+  let selectedCodecs = null;
+  if (supportsSetCodecPreferences) {
+    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
+    if (preferredCodec.value !== '') {
+      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
+      const { codecs } = RTCRtpSender.getCapabilities('video');
+      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
+      const selectCodec = codecs[selectedCodecIndex];
+      selectedCodecs = [selectCodec];
+    }
+  }
+
+  if (selectedCodecs == null) {
+    return;
+  }
+  const transceivers = this.renderstreaming.getTransceivers().filter(t => t.receiver.track.kind == "video");
+  transceivers.forEach(t => t.setCodecPreferences(codecs));
 }
 
 async function hangUp() {

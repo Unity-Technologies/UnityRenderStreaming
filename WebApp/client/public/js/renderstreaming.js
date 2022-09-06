@@ -11,12 +11,10 @@ function uuid4() {
 export class RenderStreaming {
   /**
    * @param signaling signaling class
-   * @param {Iterable<RTCRtpCodecCapability>} codecs 
    */
-  constructor(signaling, codecs) {
+  constructor(signaling) {
     this._peer = null;
     this._connectionId = null;
-    this._preferedCodecs = codecs;
     this.onConnect = function (connectionId) { Logger.log(`Connect peer on ${connectionId}.`); };
     this.onDisconnect = function (connectionId) { Logger.log(`Disconnect peer on ${connectionId}.`); };
     this.onGotOffer = function (connectionId) { Logger.log(`On got Offer on ${connectionId}.`); };
@@ -54,7 +52,6 @@ export class RenderStreaming {
     if (this._peer == null) {
       this._preparePeerConnection(offer.connectionId, offer.polite);
     }
-    this.onGotOffer(offer.connectionId);
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
     try {
       await this._peer.onGotDescription(offer.connectionId, desc);
@@ -68,7 +65,6 @@ export class RenderStreaming {
     const answer = e.detail;
     const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
     if (this._peer != null) {
-      this.onGotAnswer(answer.connectionId);
       try {
         await this._peer.onGotDescription(answer.connectionId, desc);
       } catch (error) {
@@ -107,7 +103,7 @@ export class RenderStreaming {
     }
 
     // Create peerConnection with proxy server and set up handlers
-    this._peer = new Peer(connectionId, polite, this._preferedCodecs);
+    this._peer = new Peer(connectionId, polite);
     this._peer.addEventListener('disconnect', () => {
       this.onDisconnect(`Receive disconnect message from peer. connectionId:${connectionId}`);
     });
@@ -118,6 +114,14 @@ export class RenderStreaming {
     this._peer.addEventListener('adddatachannel', (e) => {
       const data = e.detail;
       this.onAddChannel(data);
+    });
+    this._peer.addEventListener('ongotoffer', (e) => {
+      const id = e.detail.connectionId;
+      this.onGotOffer(id);
+    });
+    this._peer.addEventListener('ongotanswer', (e) => {
+      const id = e.detail.connectionId;
+      this.onGotAnswer(id);
     });
     this._peer.addEventListener('sendoffer', (e) => {
       const offer = e.detail;
