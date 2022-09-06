@@ -78,18 +78,6 @@ function onClickPlayButton() {
 }
 
 async function setupRenderStreaming() {
-  /** @type {RTCRtpCodecCapability[] | null} */
-  let selectedCodecs;
-  if (supportsSetCodecPreferences) {
-    const preferredCodec = codecPreferences.options[codecPreferences.selectedIndex];
-    if (preferredCodec.value !== '') {
-      const [mimeType, sdpFmtpLine] = preferredCodec.value.split(' ');
-      const { codecs } = RTCRtpSender.getCapabilities('video');
-      const selectedCodecIndex = codecs.findIndex(c => c.mimeType === mimeType && c.sdpFmtpLine === sdpFmtpLine);
-      const selectCodec = codecs[selectedCodecIndex];
-      selectedCodecs = [selectCodec];
-    }
-  }
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
