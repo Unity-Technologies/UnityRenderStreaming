@@ -1,5 +1,5 @@
 import { VideoPlayer } from "./video-player.js";
-import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "../../js/register-events.js";
+import { registerGamepadEvents, registerKeyboardEvents, registerMouseEvents, sendClickEvent } from "./register-events.js";
 import { getServerConfig } from "../../js/config.js";
 
 setup();

@@ -1,5 +1,5 @@
-import { Observer, Sender } from "./sender.js";
-import { InputRemoting } from "./inputremoting.js";
+import { Observer, Sender } from "../module/sender.js";
+import { InputRemoting } from "../module/inputremoting.js";
 
 export class VideoPlayer {
   constructor() {
