@@ -15,15 +15,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public AudioCodecInfo codec
-        {
-            get { return m_codec; }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="clip"></param>
+        /// <param name="source"></param>
         public delegate void OnUpdateReceiveAudioSourceHandler(AudioSource source);
 
         /// <summary>
@@ -31,14 +23,28 @@ namespace Unity.RenderStreaming
         /// </summary>
         public OnUpdateReceiveAudioSourceHandler OnUpdateReceiveAudioSource;
 
+        [SerializeField]
+        private AudioSource m_TargetAudioSource;
+
+        [SerializeField, Codec]
+        private AudioCodecInfo m_Codec;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AudioCodecInfo codec
+        {
+            get { return m_Codec; }
+        }
+
         /// <summary>
         ///
         /// </summary>
-        public AudioSource Source => m_source;
-
-        private AudioSource m_source;
-
-        private AudioCodecInfo m_codec;
+        public AudioSource targetAudioSource
+        {
+            get { return m_TargetAudioSource; }
+            set { m_TargetAudioSource = value; }
+        }
 
         /// <summary>
         /// 
@@ -57,7 +63,7 @@ namespace Unity.RenderStreaming
         /// <param name="mimeType"></param>
         public void SetCodec(AudioCodecInfo codec)
         {
-            m_codec = codec;
+            m_Codec = codec;
 
             if (Transceiver == null)
                 return;
@@ -66,19 +72,10 @@ namespace Unity.RenderStreaming
             if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
                 throw new InvalidOperationException("Track has already been ended.");
 
-            var codecs = new AudioCodecInfo[] { m_codec };
+            var codecs = new AudioCodecInfo[] { m_Codec };
             RTCErrorType error = Transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
             if (error != RTCErrorType.None)
                 throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="source"></param>
-        public void SetSource(AudioSource source)
-        {
-            m_source = source;
         }
 
         internal IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(IEnumerable<AudioCodecInfo> codecs)
@@ -96,14 +93,13 @@ namespace Unity.RenderStreaming
         {
             if (Track is AudioStreamTrack audioTrack)
             {
-                m_source?.SetTrack(audioTrack);
-                OnUpdateReceiveAudioSource?.Invoke(m_source);
+                m_TargetAudioSource?.SetTrack(audioTrack);
+                OnUpdateReceiveAudioSource?.Invoke(m_TargetAudioSource);
             }
         }
 
         private void StoppedStream(string connectionId)
         {
-            m_source = null;
         }
     }
 }

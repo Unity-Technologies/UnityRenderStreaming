@@ -1883,7 +1883,6 @@ GameObject:
   - component: {fileID: 725451150}
   - component: {fileID: 725451154}
   - component: {fileID: 725451153}
-  - component: {fileID: 725451152}
   - component: {fileID: 725451151}
   - component: {fileID: 725451155}
   - component: {fileID: 725451157}
@@ -1917,39 +1916,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725451149}
   m_Enabled: 1
---- !u!114 &725451152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 725451149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 0
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_Version: 2
 --- !u!114 &725451153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2048,7 +2014,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bitrate:
+  m_Source: 0
+  m_AudioListener: {fileID: 725451151}
+  m_AudioSource: {fileID: 0}
+  m_MicrophoneDeviceIndex: 0
+  m_AutoRequestUserAuthorization: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+    m_ChannelCount: 0
+    m_SampleRate: 0
+  m_Bitrate:
     min: 0
     max: 200
 --- !u!114 &725451156

@@ -695,7 +695,7 @@ namespace Unity.RenderStreaming
                     throw new InvalidOperationException("Call Application.RequestUserAuthorization before creating track with WebCam.");
 
                 WebCamDevice userCameraDevice = WebCamTexture.devices[m_deviceIndex];
-                m_webcamTexture = new WebCamTexture(userCameraDevice.name, (int)width, (int)height, (int)m_frameRate);
+                m_webcamTexture = new WebCamTexture(userCameraDevice.name, width, height, (int)m_frameRate);
                 m_webcamTexture.Play();
 
                 return new VideoStreamTrack(m_webcamTexture);

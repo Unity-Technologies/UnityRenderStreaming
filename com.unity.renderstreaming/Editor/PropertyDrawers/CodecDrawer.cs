@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 get
                 {
-                    return null;
+                    return $"{codec_.channelCount} channel";
                 }
             }
 
@@ -69,6 +70,7 @@ namespace Unity.RenderStreaming.Editor
         string[] codecNames = new string[] { "Default" };
         string[] codecOptions = new string[] {};
         string[] sdpFmtpLines = new string[] {};
+        GUIContent codecLabel;
 
         int selectCodecIndex = 0;
         int selectSdpFmtpLineIndex = 0;
@@ -76,8 +78,10 @@ namespace Unity.RenderStreaming.Editor
         bool cache = false;
         bool changed = false;
 
-        static readonly GUIContent s_codecLabel =
-            EditorGUIUtility.TrTextContent("Codec", "Video encoding codec.");
+        static readonly GUIContent s_audioCodecLabel =
+            EditorGUIUtility.TrTextContent("Audio Codec", "Audio encoding codec.");
+        static readonly GUIContent s_videoCodecLabel =
+            EditorGUIUtility.TrTextContent("Video Codec", "Video encoding codec.");
 
         static IEnumerable<Codec> GetAvailableCodecs(UnityEngine.Object target)
         {
@@ -100,6 +104,19 @@ namespace Unity.RenderStreaming.Editor
             throw new ArgumentException();
         }
 
+        static GUIContent GetCodecLabel(UnityEngine.Object target)
+        {
+            if (target is VideoStreamSender || target is VideoStreamReceiver)
+            {
+                return s_videoCodecLabel;
+            }
+            else if (target is AudioStreamSender || target is AudioStreamReceiver)
+            {
+                return s_audioCodecLabel;
+            }
+            throw new ArgumentException();
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!cache)
@@ -111,6 +128,7 @@ namespace Unity.RenderStreaming.Editor
                 var selectedCodecs = codecs.Where(codec => codec.name == propertyMimeType.stringValue);
                 codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                 sdpFmtpLines = selectedCodecs.Select(codec => codec.sdpFmtpLine).ToArray();
+                codecLabel = GetCodecLabel(property.serializedObject.targetObject);
                 hasCodecOptions = codecOptions.Length > 1;
                 cache = true;
             }
@@ -133,7 +151,7 @@ namespace Unity.RenderStreaming.Editor
                 selectCodecIndex = 0;
             }
 
-            rect = EditorGUI.PrefixLabel(rect, s_codecLabel);
+            rect = EditorGUI.PrefixLabel(rect, codecLabel);
             EditorGUI.BeginChangeCheck();
             selectCodecIndex = EditorGUI.Popup(rect, selectCodecIndex, codecNames);
 
@@ -203,3 +221,4 @@ namespace Unity.RenderStreaming.Editor
         }
     }
 }
+#endif
