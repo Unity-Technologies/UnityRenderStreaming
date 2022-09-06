@@ -228,7 +228,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bitrate:
+  m_Source: 0
+  m_AudioListener: {fileID: 725451151}
+  m_AudioSource: {fileID: 0}
+  m_MicrophoneDeviceIndex: 0
+  m_AutoRequestUserAuthorization: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+    m_ChannelCount: 0
+    m_SampleRate: 0
+  m_Bitrate:
     min: 0
     max: 200
 --- !u!82 &644105488
@@ -481,7 +491,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e4557ba7cb056499034647b21b6361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bitrate:
+  m_Source: 0
+  m_AudioListener: {fileID: 725451151}
+  m_AudioSource: {fileID: 0}
+  m_MicrophoneDeviceIndex: 0
+  m_AutoRequestUserAuthorization: 1
+  m_Codec:
+    m_MimeType: 
+    m_SdpFmtpLine: 
+    m_ChannelCount: 0
+    m_SampleRate: 0
+  m_Bitrate:
     min: 0
     max: 200
 --- !u!1 &705507993
