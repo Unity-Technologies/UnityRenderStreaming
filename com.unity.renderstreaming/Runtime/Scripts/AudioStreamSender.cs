@@ -19,7 +19,11 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        AudioSource = 1
+        AudioSource = 1,
+        /// <summary>
+        /// 
+        /// </summary>
+        Microphone = 2
     }
 
     /// <summary>
@@ -39,6 +43,12 @@ namespace Unity.RenderStreaming
 
         [SerializeField]
         private AudioSource m_AudioSource;
+
+        [SerializeField]
+        private int m_MicrophoneDeviceIndex;
+
+        [SerializeField]
+        private bool m_AutoRequestUserAuthorization = true;
 
         [SerializeField, Codec]
         private AudioCodecInfo m_Codec;
@@ -77,6 +87,48 @@ namespace Unity.RenderStreaming
         public uint maxBitrate
         {
             get { return m_Bitrate.max; }
+        }
+
+        /// <summary>
+        /// The index of WebCamTexture.devices.
+        /// </summary>
+        public int sourceDeviceIndex
+        {
+            get { return m_MicrophoneDeviceIndex; }
+            set
+            {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_MicrophoneDeviceIndex = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AudioSource audioSource
+        {
+            get { return m_AudioSource; }
+            set
+            {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_AudioSource = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AudioListener audioListener
+        {
+            get { return m_AudioListener; }
+            set
+            {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_AudioListener = value;
+            }
         }
 
         /// <summary>
@@ -156,7 +208,15 @@ namespace Unity.RenderStreaming
 
         internal override MediaStreamTrack CreateTrack()
         {
-            switch(m_Source)
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = CreateAudioStreamSource();
+            return m_sourceImpl.CreateTrack();
+        }
+
+
+        AudioStreamSourceImpl CreateAudioStreamSource()
+        {
+            switch (m_Source)
             {
                 case AudioStreamSource.AudioListener:
                     var source = new AudioStreamSourceAudioListener(this);
@@ -164,10 +224,13 @@ namespace Unity.RenderStreaming
                     m_onAudioFilterRead = source.OnAudioFilterRead;
                     return source;
                 case AudioStreamSource.AudioSource:
-                    return new AudioStreamTrack(m_AudioSource);
+                    return new AudioStreamSourceAudioSource(this);
+                case AudioStreamSource.Microphone:
+                    return new AudioStreamSourceMicrophone(this);
             }
             throw new InvalidOperationException("");
         }
+
 
         protected override void OnEnable()
         {
@@ -310,7 +373,7 @@ namespace Unity.RenderStreaming
                 Microphone.GetDeviceCaps(deviceName, out int minFreq, out int maxFreq);
                 var micClip = Microphone.Start(deviceName, true, 1, m_frequency);
 
-                // set the latency to g0h samples before the audio starts to play.
+                // set the latency to â€œ0â€ samples before the audio starts to play.
                 while (!(Microphone.GetPosition(deviceName) > 0)) { }
 
                 m_audioSource = m_parentObj.AddComponent<AudioSource>();
@@ -327,7 +390,7 @@ namespace Unity.RenderStreaming
                 {
                     m_audioSource.Stop();
                     var clip = m_audioSource.clip;
-                    if(clip != null)
+                    if (clip != null)
                     {
                         Destroy(clip);
                     }
