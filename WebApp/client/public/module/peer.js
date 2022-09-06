@@ -1,13 +1,12 @@
-import * as Config from "./config.js";
 import * as Logger from "./logger.js";
 
 export default class Peer extends EventTarget {
-  constructor(connectionId, polite, resendIntervalMsec = 5000) {
+  constructor(connectionId, polite, config, resendIntervalMsec = 5000) {
     super();
     const _this = this;
     this.connectionId = connectionId;
     this.polite = polite;
-    this.config = Config.getRTCConfiguration();
+    this.config = config;
     this.pc = new RTCPeerConnection(this.config);
     this.makingOffer = false;
     this.waitingAnswer = false;
