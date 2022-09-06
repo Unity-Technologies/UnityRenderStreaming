@@ -1,11 +1,12 @@
 import { sleep, getUniqueId } from './testutils';
 
-export default class PeerConnectionMock extends EventTarget {
+export class PeerConnectionMock extends EventTarget {
   constructor(config) {
     super();
     this.delay = async () => await sleep(10);
     this.config = config;
     this.ontrack = undefined;
+    this.ondatachannel = undefined;
     this.onicecandidate = undefined;
     this.onnegotiationneeded = undefined;
     this.onsignalingstatechange = undefined;
@@ -44,6 +45,7 @@ export default class PeerConnectionMock extends EventTarget {
 
   close() {
     this.ontrack = undefined;
+    this.ondatachannel = undefined;
     this.onicecandidate = undefined;
     this.onnegotiationneeded = undefined;
     this.onsignalingstatechange = undefined;
@@ -119,28 +121,39 @@ export default class PeerConnectionMock extends EventTarget {
 
   async setLocalDescription(description = null) {
     if (description == null) {
-      description = this.createSessionDescription();
+      description = this._createSessionDescription();
     }
     await this.delay();
-    this.setSessionDescription(description, false);
+    this._setSessionDescription(description, false);
   }
 
   async setRemoteDescription(description) {
     await this.delay();
     if (description.type == "offer" && this.signalingState == "have-local-offer") {
-      this.setSessionDescription({ type: "rollback", sdp: "" }, true);
+      this._setSessionDescription({ type: "rollback", sdp: "" }, true);
     }
-    this.setSessionDescription(description, true);
+    this._setSessionDescription(description, true);
   }
 
-  createSessionDescription() {
+  _createSessionDescription() {
+    let dummySdp = "testsdp";
+    if (this.videoTracks.size > 0) {
+      dummySdp += "videotrack";
+    }
+    if (this.audioTracks.size > 0) {
+      dummySdp += "audiotrack";
+    }
+    if (this.channels.size > 0) {
+      dummySdp += "datachannel";
+    }
+
     if (this.signalingState == "stable" || this.signalingState == "have-local-offer" || this.signalingState == "have-remote-pranswer") {
-      return { type: "offer", sdp: "lastcreatedoffer" };
+      return { type: "offer", sdp: dummySdp };
     }
-    return { type: "answer", sdp: "lastcreatedanswer" };
+    return { type: "answer", sdp: dummySdp };
   }
 
-  setSessionDescription(description, remote) {
+  _setSessionDescription(description, remote) {
     if (description.type == "rollback"
       && (this.signalingState == "stable" || this.signalingState == "have-local-pranswer" || this.signalingState == "have-remote-pranswer")) {
       throw "InvalidStateError";
@@ -154,8 +167,13 @@ export default class PeerConnectionMock extends EventTarget {
           this.onsignalingstatechange(this.signalingState);
           // if sdp contains track string, create dummy track
           if (description.sdp.includes("track")) {
-            const track = { id: getUniqueId(), kind: "video" };
-            this.videoTracks.set(track.id, track);
+            const isVideo = description.sdp.includes("video");
+            const kind = isVideo ? "video" : "audio";
+            this._createTrackAndTransceiver(kind);
+          }
+          if (description.sdp.includes("datachannel")) {
+            const channel = { id: getUniqueId(), label: "dummychannel" };
+            this.channels.set(channel.id, channel);
           }
         }
         if (description.type == "answer") {
@@ -186,8 +204,13 @@ export default class PeerConnectionMock extends EventTarget {
           this.onsignalingstatechange(this.signalingState);
           // if sdp contains track string, create dummy track
           if (description.sdp.includes("track")) {
-            const track = { id: getUniqueId(), kind: "audio" };
-            this.audioTracks.set(track.id, track);
+            const isVideo = description.sdp.includes("video");
+            const kind = isVideo ? "video" : "audio";
+            this._createTrackAndTransceiver(kind);
+          }
+          if (description.sdp.includes("datachannel")) {
+            const channel = { id: getUniqueId(), label: "dummychannel" };
+            this.channels.set(channel.id, channel);
           }
         }
         if (description.type == "pranswer") {
@@ -204,7 +227,7 @@ export default class PeerConnectionMock extends EventTarget {
     }
 
     if (this.videoTracks.size != 0 || this.audioTracks.size != 0) {
-      this.mockGatheringIceCandidate(this.videoTracks.size + this.audioTracks.size);
+      this._mockGatheringIceCandidate(this.videoTracks.size + this.audioTracks.size);
     }
 
     //fire ontrack with new tracks, after using tracks clear.
@@ -219,21 +242,34 @@ export default class PeerConnectionMock extends EventTarget {
       }
       this.audioTracks.clear();
     }
+
+    if (this.ondatachannel) {
+      for (const channel of this.channels.values()) {
+        this.ondatachannel({ channel: channel });
+      }
+      this.channels.clear();
+    }
   }
 
-  async mockGatheringIceCandidate(count) {
+  async _mockGatheringIceCandidate(count) {
     this.iceGatheringState = "gathering";
-    this.onicegatheringstatechange(this.iceGatheringState);
-    if (this.onicecandidate) {
-      for (let index = 0; index < count; index++) {
-        await this.delay();
-        const newCandidate = { candidate: getUniqueId(), sdpMLineIndex: index, sdpMid: index };
+    if (this.onicegatheringstatechange) {
+      this.onicegatheringstatechange(this.iceGatheringState);
+    }
+    for (let index = 0; index < count; index++) {
+      await this.delay();
+      const newCandidate = { candidate: getUniqueId(), sdpMLineIndex: index, sdpMid: index };
+      if (this.onicecandidate) {
         this.onicecandidate(newCandidate);
       }
     }
     this.iceGatheringState = "complete";
-    this.onicegatheringstatechange(this.iceGatheringState);
-    this.onicecandidate({ candidate: null, sdpMLineIndex: null, sdpMid: null });
+    if (this.onicegatheringstatechange) {
+      this.onicegatheringstatechange(this.iceGatheringState);
+    }
+    if (this.onicecandidate) {
+      this.onicecandidate({ candidate: null, sdpMLineIndex: null, sdpMid: null });
+    }
   }
 
   async addIceCandidate(candidate) {
@@ -243,4 +279,38 @@ export default class PeerConnectionMock extends EventTarget {
     }
     this.candidates.push(candidate);
   }
+
+  _createTrackAndTransceiver(kind) {
+    const track = { id: getUniqueId(), kind: kind };
+    if (kind == "video") {
+      this.videoTracks.set(track.id, track);
+    } else {
+      this.audioTracks.set(track.id, track);
+    }
+    const transceiver = { direction: "sendrecv", sender: { track: track }, receiver: null, setCodecPreferences: (codecs) => { console.log(codecs); } };
+    this.transceivers.set(this.transceiverCount++, transceiver);
+  }
+}
+
+export class SessionDescriptionMock {
+
+  constructor(object) {
+    this.sdp = object.sdp;
+    this.type = object.type;
+  }
+
+  sdp;
+  type;
+}
+
+export class IceCandidateMock {
+  constructor(object) {
+    this.candidate = object.candidate;
+    this.sdpMLineIndex = object.sdpMLineIndex;
+    this.sdpMid = object.sdpMid;
+  }
+
+  candidate;
+  sdpMLineIndex;
+  sdpMid;
 }

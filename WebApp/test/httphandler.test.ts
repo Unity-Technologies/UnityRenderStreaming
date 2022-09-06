@@ -22,124 +22,124 @@ describe('http signaling test in public mode', () => {
 
   test('throw check has session', async () => {
     httpHandler.checkSessionId(req, res, next);
-    expect(res.sendStatus).toBeCalledWith(404);
-    expect(next).not.toBeCalled();
+    expect(res.sendStatus).toHaveBeenCalledWith(404);
+    expect(next).not.toHaveBeenCalled();
   });
 
   test('create session', async () => {
     await httpHandler.createSession(sessionId, res);
-    expect(res.json).toBeCalledWith({ sessionId: sessionId });
+    expect(res.json).toHaveBeenCalledWith({ sessionId: sessionId });
   });
 
   test('create session2', async () => {
     await httpHandler.createSession(sessionId2, res);
-    expect(res.json).toBeCalledWith({ sessionId: sessionId2 });
+    expect(res.json).toHaveBeenCalledWith({ sessionId: sessionId2 });
   });
 
   test('create connection from session1', async () => {
     const body = { connectionId: connectionId };
     req.body = body;
     await httpHandler.createConnection(req, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId, polite: true, datetime: expect.anything(), type: "connect" });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId, polite: true, datetime: expect.anything(), type: "connect" });
   });
 
   test('create connection from session2', async () => {
     const body = { connectionId: connectionId2 };
     req2.body = body;
     await httpHandler.createConnection(req2, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId2, polite: true, datetime: expect.anything(), type: "connect" });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId2, polite: true, datetime: expect.anything(), type: "connect" });
   });
 
   test('get connection from session1', async () => {
     await httpHandler.getConnection(req, res);
-    expect(res.json).toBeCalledWith({ connections: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
+    expect(res.json).toHaveBeenCalledWith({ connections: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
   });
 
   test('get all from session1', async () => {
     await httpHandler.getAll(req, res);
-    expect(res.json).toBeCalledWith({ messages: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
+    expect(res.json).toHaveBeenCalledWith({ messages: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
   });
 
   test('post offer from session1', async () => {
     const body = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer" };
     req.body = body;
     await httpHandler.postOffer(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get offer from session1', async () => {
     await httpHandler.getOffer(req, res);
-    expect(res.json).toBeCalledWith({ offers: [] });
+    expect(res.json).toHaveBeenCalledWith({ offers: [] });
   });
 
   test('get offer from session2', async () => {
     await httpHandler.getOffer(req2, res);
-    expect(res.json).toBeCalledWith({ offers: [{ connectionId: connectionId, sdp: testsdp, polite: false, datetime: expect.anything(), type: "offer" }] });
+    expect(res.json).toHaveBeenCalledWith({ offers: [{ connectionId: connectionId, sdp: testsdp, polite: false, datetime: expect.anything(), type: "offer" }] });
   });
 
   test('post answer from session2', async () => {
     const body = { connectionId: connectionId, sdp: testsdp };
     req2.body = body;
     await httpHandler.postAnswer(req2, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get answer from session1', async () => {
     await httpHandler.getAnswer(req, res);
-    expect(res.json).toBeCalledWith({ answers: [{ connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "answer" }] });
+    expect(res.json).toHaveBeenCalledWith({ answers: [{ connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "answer" }] });
   });
 
   test('get answer from session2', async () => {
     await httpHandler.getAnswer(req2, res);
-    expect(res.json).toBeCalledWith({ answers: [] });
+    expect(res.json).toHaveBeenCalledWith({ answers: [] });
   });
 
   test('post candidate from sesson1', async () => {
     const body = { connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0 };
     req.body = body;
     await httpHandler.postCandidate(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get candidate from session1', async () => {
     await httpHandler.getCandidate(req, res);
-    expect(res.json).toBeCalledWith({ candidates: [] });
+    expect(res.json).toHaveBeenCalledWith({ candidates: [] });
   });
 
   test('get candidate from session2', async () => {
     await httpHandler.getCandidate(req2, res);
-    expect(res.json).toBeCalledWith({ candidates: [{ connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0, type: "candidate", datetime: expect.anything() }] });
+    expect(res.json).toHaveBeenCalledWith({ candidates: [{ connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0, type: "candidate", datetime: expect.anything() }] });
   });
 
   test('delete connection from session2', async () => {
     const body = { connectionId: connectionId };
     req2.body = body;
     await httpHandler.deleteConnection(req2, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId });
   });
 
   test('no connection get from session1', async () => {
     await httpHandler.getConnection(req, res);
-    expect(res.json).toBeCalledWith({ connections: [] });
+    expect(res.json).toHaveBeenCalledWith({ connections: [] });
   });
 
   test('delete connection from session1', async () => {
     const body = { connectionId: connectionId };
     req.body = body;
     await httpHandler.deleteConnection(req, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId });
   });
 
   test('delete session1', async () => {
     const req = getMockReq({ header: (): string => sessionId });
     await httpHandler.deleteSession(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('delete session2', async () => {
     const req2 = getMockReq({ header: (): string => sessionId2 });
     await httpHandler.deleteSession(req2, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 });
 
@@ -163,39 +163,39 @@ describe('http signaling test in private mode', () => {
 
   test('throw check has session', async () => {
     httpHandler.checkSessionId(req, res, next);
-    expect(res.sendStatus).toBeCalledWith(404);
-    expect(next).not.toBeCalled();
+    expect(res.sendStatus).toHaveBeenCalledWith(404);
+    expect(next).not.toHaveBeenCalled();
   });
 
   test('create session', async () => {
     await httpHandler.createSession(sessionId, res);
-    expect(res.json).toBeCalledWith({ sessionId: sessionId });
+    expect(res.json).toHaveBeenCalledWith({ sessionId: sessionId });
   });
 
   test('create session2', async () => {
     await httpHandler.createSession(sessionId2, res);
-    expect(res.json).toBeCalledWith({ sessionId: sessionId2 });
+    expect(res.json).toHaveBeenCalledWith({ sessionId: sessionId2 });
   });
 
   test('create connection from session1', async () => {
     const body = { connectionId: connectionId };
     req.body = body;
     await httpHandler.createConnection(req, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId, polite: false, datetime: expect.anything(), type: "connect" });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId, polite: false, datetime: expect.anything(), type: "connect" });
   });
 
   test('create connection from session2', async () => {
     const body = { connectionId: connectionId };
     req2.body = body;
     await httpHandler.createConnection(req2, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId, polite: true, datetime: expect.anything(), type: "connect" });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId, polite: true, datetime: expect.anything(), type: "connect" });
   });
 
   test('response status 400 if connecctionId does not set', async () => {
     const req3 = getMockReq({ header: (): string => sessionId });
     await httpHandler.createConnection(req3, res);
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({ error: new Error(`connectionId is required`) });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ error: new Error(`connectionId is required`) });
   });
 
   test('response status 400 if aleady used connection', async () => {
@@ -205,94 +205,94 @@ describe('http signaling test in private mode', () => {
     const req3 = getMockReq({ header: (): string => sessionId3 });
     req3.body = body;
     await httpHandler.createConnection(req3, res);
-    expect(res.status).toBeCalledWith(400);
-    expect(res.send).toBeCalledWith({ error: new Error(`${connectionId}: This connection id is already used.`) });
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({ error: new Error(`${connectionId}: This connection id is already used.`) });
   });
 
   test('not connection get from session1', async () => {
     await httpHandler.getConnection(req, res);
-    expect(res.json).toBeCalledWith({ connections: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
+    expect(res.json).toHaveBeenCalledWith({ connections: [{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }] });
   });
 
   test('post offer from session1', async () => {
     const body = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer" };
     req.body = body;
     await httpHandler.postOffer(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get offer from session1', async () => {
     await httpHandler.getOffer(req, res);
-    expect(res.json).toBeCalledWith({ offers: [] });
+    expect(res.json).toHaveBeenCalledWith({ offers: [] });
   });
 
   test('get offer from session2', async () => {
     await httpHandler.getOffer(req2, res);
-    expect(res.json).toBeCalledWith({ offers: [{ connectionId: connectionId, sdp: testsdp, polite: true, datetime: expect.anything(), type: "offer" }] });
+    expect(res.json).toHaveBeenCalledWith({ offers: [{ connectionId: connectionId, sdp: testsdp, polite: true, datetime: expect.anything(), type: "offer" }] });
   });
 
   test('post answer from session2', async () => {
     const body = { connectionId: connectionId, sdp: testsdp };
     req2.body = body;
     await httpHandler.postAnswer(req2, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get answer from session1', async () => {
     await httpHandler.getAnswer(req, res);
-    expect(res.json).toBeCalledWith({ answers: [{ connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "answer" }] });
+    expect(res.json).toHaveBeenCalledWith({ answers: [{ connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "answer" }] });
   });
 
   test('get answer from session2', async () => {
     await httpHandler.getAnswer(req2, res);
-    expect(res.json).toBeCalledWith({ answers: [] });
+    expect(res.json).toHaveBeenCalledWith({ answers: [] });
   });
 
   test('post candidate from sesson1', async () => {
     const body = { connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0 };
     req.body = body;
     await httpHandler.postCandidate(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('get candidate from session1', async () => {
     await httpHandler.getCandidate(req, res);
-    expect(res.json).toBeCalledWith({ candidates: [] });
+    expect(res.json).toHaveBeenCalledWith({ candidates: [] });
   });
 
   test('get candidate from session2', async () => {
     await httpHandler.getCandidate(req2, res);
-    expect(res.json).toBeCalledWith({ candidates: [{ connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0, type: "candidate", datetime: expect.anything() }] });
+    expect(res.json).toHaveBeenCalledWith({ candidates: [{ connectionId: connectionId, candidate: "testcandidate", sdpMLineIndex: 0, sdpMid: 0, type: "candidate", datetime: expect.anything() }] });
   });
 
   test('delete connection from session2', async () => {
     const body = { connectionId: connectionId };
     req2.body = body;
     await httpHandler.deleteConnection(req2, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId });
   });
 
   test('get connection from session1', async () => {
     await httpHandler.getConnection(req, res);
-    expect(res.json).toBeCalledWith({ connections: [] });
+    expect(res.json).toHaveBeenCalledWith({ connections: [] });
   });
 
   test('delete connection from session1', async () => {
     const body = { connectionId: connectionId };
     req.body = body;
     await httpHandler.deleteConnection(req, res);
-    expect(res.json).toBeCalledWith({ connectionId: connectionId });
+    expect(res.json).toHaveBeenCalledWith({ connectionId: connectionId });
   });
 
   test('delete session1', async () => {
     const req = getMockReq({ header: (): string => sessionId });
     await httpHandler.deleteSession(req, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 
   test('delete session2', async () => {
     const req2 = getMockReq({ header: (): string => sessionId2 });
     await httpHandler.deleteSession(req2, res);
-    expect(res.sendStatus).toBeCalledWith(200);
+    expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
 });

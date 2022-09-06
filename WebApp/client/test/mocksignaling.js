@@ -1,5 +1,6 @@
 import { sleep } from "./testutils";
 
+/** @type {MockPrivateSignalingManager | MockPublicSignalingManager} */
 let manager;
 
 export function reset(isPrivate) {

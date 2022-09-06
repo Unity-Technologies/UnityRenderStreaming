@@ -21,7 +21,7 @@ let isPrivate: boolean;
 const clients: Map<string, Set<string>> = new Map<string, Set<string>>();
 
 // [{sessonId:Date}]
-const lastRequestedTime: Map<string, Number> = new Map<string, Number>();
+const lastRequestedTime: Map<string, number> = new Map<string, number>();
 
 // [{connectionId:[sessionId1, sessionId2]}]
 const connectionPair: Map<string, [string, string]> = new Map<string, [string, string]>(); // key = connectionId
