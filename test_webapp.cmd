@@ -1,5 +1,5 @@
 cd WebApp
-call npm install
+call npm install --legacy-peer-deps
 call npm run lint
 call npm run test
 start npm run dev -- -p 8080

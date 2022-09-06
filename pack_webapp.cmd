@@ -1,5 +1,5 @@
 cd WebApp
-call npm install
+call npm install --legacy-peer-deps
 call npm run build
 call npm run pack
 cd ..\
