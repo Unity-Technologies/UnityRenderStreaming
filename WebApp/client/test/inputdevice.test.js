@@ -11,7 +11,7 @@ import {
     StateEvent,
     InputEvent,
     TextEvent
-  } from "../public/js/inputdevice.js";
+  } from "../public/module/inputdevice.js";
 
 describe(`FourCC`, () => {
   test('toInt32', () => {

@@ -4,7 +4,7 @@ import {
   KeyboardState,
   TouchscreenState,
   GamepadState
-} from "../public/js/inputdevice.js";
+} from "../public/module/inputdevice.js";
 
 import { 
   MessageType,
@@ -12,15 +12,12 @@ import {
   NewEventsMsg,
   RemoveDeviceMsg,
   InputRemoting,
-} from "../public/js/inputremoting.js";
+} from "../public/module/inputremoting.js";
 
 import {
-  Sender
-} from "../public/js/sender.js";
-
-import {
+  Sender,
   Observer
-} from "../public/js/sender";
+} from "../public/module/sender.js";
 
 import {DOMRect} from "./domrect.js";
 

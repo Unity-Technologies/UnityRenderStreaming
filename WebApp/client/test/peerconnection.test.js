@@ -1,5 +1,5 @@
-import Peer from "../public/js/peer";
-import { waitFor, sleep, getUniqueId } from "./testutils";
+import Peer from "../public/module/peer.js";
+import { waitFor, sleep, getUniqueId } from "./testutils.js";
 
 
 describe(`peer connection test`, () => {

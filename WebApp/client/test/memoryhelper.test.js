@@ -1,6 +1,6 @@
 import { 
   MemoryHelper
-} from "../public/js/memoryhelper.js";
+} from "../public/module/memoryhelper.js";
 
 describe(`MemoryHelper.writeSingleBit`, () => {
   test('turn on with offset 0', () => {
