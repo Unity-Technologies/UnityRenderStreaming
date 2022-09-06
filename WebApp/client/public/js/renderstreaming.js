@@ -40,16 +40,18 @@ export class RenderStreaming {
 
   async _onDisconnect(e) {
     const data = e.detail;
-    if (this._peer != null && this._connectionId == data.connectionId) {
+    if (this._connectionId == data.connectionId) {
       this.onDisconnect(data.connectionId);
-      this._peer.close();
-      this._peer = null;
+      if (this._peer) {
+        this._peer.close();
+        this._peer = null;
+      }
     }
   }
 
   async _onOffer(e) {
     const offer = e.detail;
-    if (this._peer == null) {
+    if (!this._peer) {
       this._preparePeerConnection(offer.connectionId, offer.polite);
     }
     const desc = new RTCSessionDescription({ sdp: offer.sdp, type: "offer" });
@@ -64,7 +66,7 @@ export class RenderStreaming {
   async _onAnswer(e) {
     const answer = e.detail;
     const desc = new RTCSessionDescription({ sdp: answer.sdp, type: "answer" });
-    if (this._peer != null) {
+    if (this._peer) {
       try {
         await this._peer.onGotDescription(answer.connectionId, desc);
       } catch (error) {
@@ -77,7 +79,7 @@ export class RenderStreaming {
   async _onIceCandidate(e) {
     const candidate = e.detail;
     const iceCandidate = new RTCIceCandidate({ candidate: candidate.candidate, sdpMid: candidate.sdpMid, sdpMLineIndex: candidate.sdpMLineIndex });
-    if (this._peer != null) {
+    if (this._peer) {
       await this._peer.onGotCandidate(candidate.connectionId, iceCandidate);
     }
   }
