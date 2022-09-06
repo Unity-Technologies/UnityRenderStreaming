@@ -1,4 +1,4 @@
-import * as Logger from "./logger.js";
+import * as Logger from "../../module/logger.js";
 
 const _e = 0.09;
 const _gameloopInterval = 16.67; //in milliseconds, 60 times a second
