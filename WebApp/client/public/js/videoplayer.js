@@ -1,11 +1,6 @@
 import { Observer, Sender } from "./sender.js";
 import { InputRemoting } from "./inputremoting.js";
 
-/** @enum {number} */
-const ActionType = {
-  ChangeLabel: 0
-};
-
 export class VideoPlayer {
   constructor() {
     this.playerElement = null;
@@ -15,7 +10,6 @@ export class VideoPlayer {
     this.inputRemoting = null;
     this.sender = null;
     this.inputSenderChannel = null;
-    this.multiplayChannel = null;
   }
 
   /**
@@ -178,7 +172,6 @@ export class VideoPlayer {
     this.inputRemoting = null;
     this.sender = null;
     this.inputSenderChannel = null;
-    this.multiplayChannel = null;
 
     while (this.playerElement.firstChild) {
       this.playerElement.removeChild(this.playerElement.firstChild);
@@ -216,25 +209,5 @@ export class VideoPlayer {
   async _onOpenInputSenderChannel() {
     await new Promise(resolve => setTimeout(resolve, 100));
     this.inputRemoting.startSending();
-  }
-
-  /**
-   * setup datachannel for multiplay change label
-   * @param {RTCDataChannel} channel 
-   */
-  setupMultiplayLabel(channel) {
-    this.multiplayChannel = channel;
-    this.multiplayChannel.onopen = this._onOpenMultiplayChannel.bind(this);
-  }
-
-  async _onOpenMultiplayChannel() {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const num = Math.floor(Math.random() * 100000);
-    this._changeLabel(String(num));
-  }
-
-  _changeLabel(label) {
-    const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: label });
-    this.multiplayChannel.send(json);
   }
 }

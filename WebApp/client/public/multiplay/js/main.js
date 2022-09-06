@@ -4,12 +4,19 @@ import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
 import { getServerConfig } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
 
+/** @enum {number} */
+const ActionType = {
+  ChangeLabel: 0
+};
+
 /** @type {Element} */
 let playButton;
 /** @type {RenderStreaming} */
 let renderstreaming;
 /** @type {boolean} */
 let useWebSocket;
+/** @type {RTCDataChannel} */
+let multiplayChannel;
 
 const codecPreferences = document.getElementById('codecPreferences');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
@@ -86,7 +93,7 @@ async function setupRenderStreaming() {
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
-  renderstreaming = new RenderStreaming(signaling, selectedCodecs);
+  renderstreaming = new RenderStreaming(signaling);
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);
@@ -99,9 +106,16 @@ async function setupRenderStreaming() {
 function onConnect() {
   const channel = renderstreaming.createDataChannel("input");
   videoPlayer.setupInput(channel);
-  const multiplayChannel = renderstreaming.createDataChannel("multiplay");
-  videoPlayer.setupMultiplayLabel(multiplayChannel);
+  multiplayChannel = renderstreaming.createDataChannel("multiplay");
+  multiplayChannel.onopen = onOpenMultiplayChannel;
   showStatsMessage();
+}
+
+async function onOpenMultiplayChannel() {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const num = Math.floor(Math.random() * 100000);
+  const json = JSON.stringify({ type: ActionType.ChangeLabel, argument: String(num) });
+  multiplayChannel.send(json);
 }
 
 async function onDisconnect(connectionId) {
@@ -111,6 +125,7 @@ async function onDisconnect(connectionId) {
 
   await renderstreaming.stop();
   renderstreaming = null;
+  multiplayChannel = null;
   videoPlayer.deletePlayer();
   if (supportsSetCodecPreferences) {
     codecPreferences.disabled = false;
