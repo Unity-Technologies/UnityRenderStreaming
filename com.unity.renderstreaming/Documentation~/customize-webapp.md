@@ -19,10 +19,11 @@ WebApp
 │  │  ├─images
 │  │  ├─js
 │  │  ├─multiplay       // multiplay page
-│  │  ├─stylesheets
+│  │  ├─receiver        // receiver page
 │  │  ├─videoplayer     // videoplayer page
 │  │  └─index.html
-│  └─test
+│  ├─src                // common component for web client
+│  └─test               // test for common component
 ├─src                   // web server
 │  └─class
 └─test

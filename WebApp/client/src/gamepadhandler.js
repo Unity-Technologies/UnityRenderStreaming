@@ -1,4 +1,3 @@
-
 export class GamepadHandler extends EventTarget {
   constructor() {
     super();

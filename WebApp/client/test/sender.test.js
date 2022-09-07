@@ -1,11 +1,11 @@
 import { 
   InputRemoting,
-} from "../public/js/inputremoting.js";
+} from "../src/inputremoting.js";
 
 import {
   Sender,
   Observer
-} from "../public/js/sender.js";
+} from "../src/sender.js";
 
 import {jest} from '@jest/globals';
 import {DOMRect} from "./domrect.js";
@@ -67,7 +67,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.click(
         new MouseEvent('click', { buttons:1, clientX:0, clientY:0} ));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });
     test('mousemove', () => {
       jest.spyOn(dc, 'send');
@@ -76,7 +76,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.mousemove(
         new MouseEvent('mousemove', { buttons:1, deltaX:0, deltaY:0 }));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });    
     test('wheel', () => {
       jest.spyOn(dc, 'send');
@@ -85,7 +85,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.wheel(
         new WheelEvent('wheel', { wheelDelta:0, deltaX:0, deltaY:0 }));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });
   });
   describe('keyboard', () => {
@@ -96,7 +96,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.keydown(
         new KeyboardEvent('keydown', { code: 'KeyA' }));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });
     test('keydown repeat', () => {
       jest.spyOn(dc, 'send');
@@ -105,7 +105,7 @@ describe(`Sender`, () => {
       inputRemoting.startSending();
       events.keydown(
         new KeyboardEvent('keydown', { code: 'KeyA', repeat: true }));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });    
   });
   describe('touchscreen', () => {
@@ -134,7 +134,7 @@ describe(`Sender`, () => {
             touchType: "direct"
           }]
         }));
-      expect(dc.send).toBeCalledWith(expect.any(ArrayBuffer));
+      expect(dc.send).toHaveBeenCalledWith(expect.any(ArrayBuffer));
     });
   });
   describe('gamepad', () => {

@@ -11,8 +11,9 @@ function uuid4() {
 export class RenderStreaming {
   /**
    * @param signaling signaling class
+   * @param {RTCConfiguration} config
    */
-  constructor(signaling) {
+  constructor(signaling, config) {
     this._peer = null;
     this._connectionId = null;
     this.onConnect = function (connectionId) { Logger.log(`Connect peer on ${connectionId}.`); };
@@ -22,6 +23,7 @@ export class RenderStreaming {
     this.onTrackEvent = function (data) { Logger.log(`OnTrack event peer with data:${data}`); };
     this.onAddChannel = function (data) { Logger.log(`onAddChannel event peer with data:${data}`); };
 
+    this._config = config;
     this._signaling = signaling;
     this._signaling.addEventListener('connect', this._onConnect.bind(this));
     this._signaling.addEventListener('disconnect', this._onDisconnect.bind(this));
@@ -105,7 +107,7 @@ export class RenderStreaming {
     }
 
     // Create peerConnection with proxy server and set up handlers
-    this._peer = new Peer(connectionId, polite);
+    this._peer = new Peer(connectionId, polite, this._config);
     this._peer.addEventListener('disconnect', () => {
       this.onDisconnect(`Receive disconnect message from peer. connectionId:${connectionId}`);
     });

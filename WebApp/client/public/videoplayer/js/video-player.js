@@ -1,6 +1,6 @@
-import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
-import Peer from "../../js/peer.js";
-import * as Logger from "../../js/logger.js";
+import { Signaling, WebSocketSignaling } from "../../module/signaling.js";
+import Peer from "../../module/peer.js";
+import * as Logger from "../../module/logger.js";
 
 
 // enum type of event sending from Unity

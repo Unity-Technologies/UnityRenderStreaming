@@ -20,6 +20,7 @@ export const createServer = (config: Options): express.Application => {
   app.get('/config', (req, res) => res.json({ useWebSocket: config.websocket, startupMode: config.mode, logging: config.logging }));
   app.use('/signaling', signaling);
   app.use(express.static(path.join(__dirname, '../client/public')));
+  app.use('/module', express.static(path.join(__dirname, '../client/src')));
   app.get('/', (req, res) => {
     const indexPagePath: string = path.join(__dirname, '../client/public/index.html');
     fs.access(indexPagePath, (err) => {

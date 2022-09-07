@@ -1,8 +1,8 @@
 import { SendVideo } from "./sendvideo.js";
-import { RenderStreaming } from "../../js/renderstreaming.js";
-import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
-import { getServerConfig } from "../../js/config.js";
+import { getServerConfig, getRTCConfiguration } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
+import { RenderStreaming } from "../../module/renderstreaming.js";
+import { Signaling, WebSocketSignaling } from "../../module/signaling.js";
 
 const defaultStreamWidth = 1280;
 const defaultStreamHeight = 720;
@@ -107,7 +107,8 @@ async function setUp() {
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
-  renderstreaming = new RenderStreaming(signaling);
+  const config = getRTCConfiguration();
+  renderstreaming = new RenderStreaming(signaling, config);
   renderstreaming.onConnect = () => {
     const tracks = sendVideo.getLocalTracks();
     for (const track of tracks) {
@@ -124,13 +125,6 @@ async function setUp() {
     if (direction == "sendrecv" || direction == "recvonly") {
       sendVideo.addRemoteTrack(data.track);
     }
-  };
-  renderstreaming.onGotOffer = () => {
-    const tracks = sendVideo.getLocalTracks();
-    for (const track of tracks) {
-      renderstreaming.addTrack(track);
-    }
-    setCodecPreferences();
   };
 
   await renderstreaming.start();

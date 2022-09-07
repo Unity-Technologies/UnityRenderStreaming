@@ -1,7 +1,7 @@
 import { 
   LetterBoxType,
   PointerCorrector
-} from "../public/js/pointercorrect.js";
+} from "../src/pointercorrect.js";
 
 import {DOMRect} from "./domrect.js";
 

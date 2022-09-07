@@ -1,8 +1,8 @@
-import { VideoPlayer } from "../../js/videoplayer.js";
-import { RenderStreaming } from "../../js/renderstreaming.js";
-import { Signaling, WebSocketSignaling } from "../../js/signaling.js";
-import { getServerConfig } from "../../js/config.js";
+import { getServerConfig, getRTCConfiguration } from "../../js/config.js";
 import { createDisplayStringArray } from "../../js/stats.js";
+import { VideoPlayer } from "../../js/videoplayer.js";
+import { RenderStreaming } from "../../module/renderstreaming.js";
+import { Signaling, WebSocketSignaling } from "../../module/signaling.js";
 
 /** @enum {number} */
 const ActionType = {
@@ -81,7 +81,8 @@ async function setupRenderStreaming() {
   codecPreferences.disabled = true;
 
   const signaling = useWebSocket ? new WebSocketSignaling() : new Signaling();
-  renderstreaming = new RenderStreaming(signaling);
+  const config = getRTCConfiguration();
+  renderstreaming = new RenderStreaming(signaling, config);
   renderstreaming.onConnect = onConnect;
   renderstreaming.onDisconnect = onDisconnect;
   renderstreaming.onTrackEvent = (data) => videoPlayer.addTrack(data.track);

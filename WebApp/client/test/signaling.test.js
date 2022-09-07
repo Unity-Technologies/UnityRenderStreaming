@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import * as Path from 'path';
 import { setup, teardown } from 'jest-dev-server';
-import { Signaling, WebSocketSignaling } from "../public/js/signaling";
-import { MockSignaling, reset } from "./mocksignaling";
-import { waitFor, sleep, serverExeName } from "./testutils";
+import { Signaling, WebSocketSignaling } from "../src/signaling.js";
+import { MockSignaling, reset } from "./mocksignaling.js";
+import { waitFor, sleep, serverExeName } from "./testutils.js";
 
 const portNumber = 8081;
 jest.setTimeout(10000);

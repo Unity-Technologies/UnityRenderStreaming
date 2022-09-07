@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint public/**/*.js test/**/*.js"
+    "lint": "eslint public/**/*.js src/**/*.js test/**/*.js"
   },
   "devDependencies": {
     "eslint": "^8.23.0",

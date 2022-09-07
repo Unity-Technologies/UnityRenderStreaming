@@ -30,3 +30,10 @@ export function serverExeName() {
 export function getUniqueId() {
   return new Date().getTime().toString(16) + Math.floor(1000 * Math.random()).toString(16);
 }
+
+export function getRTCConfiguration() {
+  let config = {};
+  config.sdpSemantics = 'unified-plan';
+  config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
+  return config;
+}

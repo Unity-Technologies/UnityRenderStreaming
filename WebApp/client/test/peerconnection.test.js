@@ -1,5 +1,5 @@
-import Peer from "../public/js/peer";
-import { waitFor, sleep, getUniqueId } from "./testutils";
+import Peer from "../src/peer.js";
+import { waitFor, sleep, getUniqueId, getRTCConfiguration } from "./testutils.js";
 
 
 describe(`peer connection test`, () => {
@@ -20,7 +20,8 @@ describe(`peer connection test`, () => {
   });
 
   test(`close peer`, async () => {
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
 
     peer.close();
@@ -29,7 +30,8 @@ describe(`peer connection test`, () => {
   });
 
   test(`transceiver direction is sendrecv if using addtrack`, () => {
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
 
     const track = { id: getUniqueId(), kind: "audio" };
@@ -40,7 +42,8 @@ describe(`peer connection test`, () => {
 
   test(`fire trackevent when addtrack`, async () => {
     let trackEvent;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('trackevent', (e) => trackEvent = e.detail);
 
@@ -52,7 +55,8 @@ describe(`peer connection test`, () => {
 
   test(`fire trackevent when on got offer description include track`, async () => {
     let trackEvent;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('trackevent', (e) => trackEvent = e.detail);
 
@@ -64,7 +68,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendoffer when addtrack`, async () => {
     let offer;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
 
@@ -76,7 +81,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendoffer when addTransceiver`, async () => {
     let offer;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
 
@@ -87,7 +93,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendoffer when createDataChannel`, async () => {
     let offer;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
 
@@ -99,7 +106,8 @@ describe(`peer connection test`, () => {
   test(`re-fire sendoffer if get answer not yet`, async () => {
     let sendOfferCount = 0;
     let offer;
-    const peer = new Peer(connectionId, true, null, 100);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config, 100);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => {
       offer = e.detail;
@@ -115,7 +123,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendanswer when on got offer description in polite`, async () => {
     let answer;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendanswer', (e) => answer = e.detail);
 
@@ -128,7 +137,8 @@ describe(`peer connection test`, () => {
   test(`fire sendanswer when on got offer description in polite that have offer`, async () => {
     let offer;
     let answer;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
     peer.addEventListener('sendanswer', (e) => answer = e.detail);
@@ -146,7 +156,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendanswer when on got offer description in impolite that don't have offer`, async () => {
     let answer;
-    const peer = new Peer(connectionId, false);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, false, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendanswer', (e) => answer = e.detail);
 
@@ -159,7 +170,8 @@ describe(`peer connection test`, () => {
   test(`don't fire sendanswer when on got offer description in impolite that have offer`, async () => {
     let offer;
     let answer;
-    const peer = new Peer(connectionId, false);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, false, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
     peer.addEventListener('sendanswer', (e) => answer = e.detail);
@@ -178,7 +190,8 @@ describe(`peer connection test`, () => {
   test(`fire nagotiated when on got answer description that have offer`, async () => {
     let offer;
     let negotiated = false;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendoffer', (e) => offer = e.detail);
     peer.pc.addEventListener('negotiated', () => negotiated = true);
@@ -196,7 +209,8 @@ describe(`peer connection test`, () => {
 
   test(`fire sendcandidate when on addTransceiver`, async () => {
     let candidate;
-    const peer = new Peer(connectionId, true);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, true, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendcandidate', (e) => candidate = e.detail);
 
@@ -207,7 +221,8 @@ describe(`peer connection test`, () => {
 
   test(`accept candidate when on got candidate that have remote description`, async () => {
     let answer;
-    const peer = new Peer(connectionId, false);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, false, config);
     expect(peer).not.toBeNull();
     peer.addEventListener('sendanswer', (e) => answer = e.detail);
 
@@ -223,7 +238,8 @@ describe(`peer connection test`, () => {
   });
 
   test(`don't accept candidate when on got candidate that don't have remote description`, async () => {
-    const peer = new Peer(connectionId, false);
+    const config = getRTCConfiguration();
+    const peer = new Peer(connectionId, false, config);
     expect(peer).not.toBeNull();
 
     const testCandidate = { candidate: getUniqueId(), sdpMLineIndex: 0, sdpMid: 0 };

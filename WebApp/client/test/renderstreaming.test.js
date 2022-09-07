@@ -1,6 +1,6 @@
-import { MockSignaling, reset } from "./mocksignaling";
-import { waitFor, getUniqueId } from "./testutils";
-import { RenderStreaming } from '../public/js/renderstreaming';
+import { MockSignaling, reset } from "./mocksignaling.js";
+import { waitFor, getUniqueId, getRTCConfiguration } from "./testutils.js";
+import { RenderStreaming } from "../src/renderstreaming.js";
 
 describe.each([
   { mode: "private" },
@@ -10,7 +10,8 @@ describe.each([
 
   test(`createConnection in ${mode} mode`, async () => {
     reset(mode == "private");
-    const renderstreaming = new RenderStreaming(new MockSignaling(), null);
+    const config = getRTCConfiguration();
+    const renderstreaming = new RenderStreaming(new MockSignaling(), config);
     await renderstreaming.start();
 
     let isConnect = false;
@@ -24,7 +25,8 @@ describe.each([
 
   test(`addTrack in ${mode} mode`, async () => {
     reset(mode == "private");
-    const renderstreaming = new RenderStreaming(new MockSignaling(), null);
+    const config = getRTCConfiguration();
+    const renderstreaming = new RenderStreaming(new MockSignaling(), config);
     await renderstreaming.start();
 
     let isConnect = false;
@@ -49,7 +51,8 @@ describe.each([
 
   test(`createChannel in ${mode} mode`, async () => {
     reset(mode == "private");
-    const renderstreaming = new RenderStreaming(new MockSignaling(), null);
+    const config = getRTCConfiguration();
+    const renderstreaming = new RenderStreaming(new MockSignaling(), config);
     await renderstreaming.start();
 
     let isConnect = false;
@@ -75,8 +78,9 @@ describe.each([
   test(`onTrackEvent in ${mode} mode`, async () => {
     reset(mode == "private");
 
-    const renderstreaming1 = new RenderStreaming(new MockSignaling(), null);
-    const renderstreaming2 = new RenderStreaming(new MockSignaling(), null);
+    const config = getRTCConfiguration();
+    const renderstreaming1 = new RenderStreaming(new MockSignaling(), config);
+    const renderstreaming2 = new RenderStreaming(new MockSignaling(), config);
     await renderstreaming1.start();
     await renderstreaming2.start();
 
@@ -131,8 +135,9 @@ describe.each([
   test(`onAddDataChannel in ${mode} mode`, async () => {
     reset(mode == "private");
 
-    const renderstreaming1 = new RenderStreaming(new MockSignaling(), null);
-    const renderstreaming2 = new RenderStreaming(new MockSignaling(), null);
+    const config = getRTCConfiguration();
+    const renderstreaming1 = new RenderStreaming(new MockSignaling(), config);
+    const renderstreaming2 = new RenderStreaming(new MockSignaling(), config);
     await renderstreaming1.start();
     await renderstreaming2.start();
 
