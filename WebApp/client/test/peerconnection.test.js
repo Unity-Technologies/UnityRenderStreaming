@@ -1,4 +1,4 @@
-import Peer from "../public/module/peer.js";
+import Peer from "../src/peer.js";
 import { waitFor, sleep, getUniqueId } from "./testutils.js";
 
 

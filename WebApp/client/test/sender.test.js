@@ -1,11 +1,11 @@
 import { 
   InputRemoting,
-} from "../public/module/inputremoting.js";
+} from "../src/inputremoting.js";
 
 import {
   Sender,
   Observer
-} from "../public/module/sender.js";
+} from "../src/sender.js";
 
 import {jest} from '@jest/globals';
 import {DOMRect} from "./domrect.js";

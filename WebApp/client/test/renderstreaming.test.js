@@ -1,6 +1,6 @@
 import { MockSignaling, reset } from "./mocksignaling.js";
 import { waitFor, getUniqueId } from "./testutils.js";
-import { RenderStreaming } from "../public/module/renderstreaming.js";
+import { RenderStreaming } from "../src/renderstreaming.js";
 
 describe.each([
   { mode: "private" },

@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import * as Path from 'path';
 import { setup, teardown } from 'jest-dev-server';
-import { Signaling, WebSocketSignaling } from "../public/module/signaling.js";
+import { Signaling, WebSocketSignaling } from "../src/signaling.js";
 import { MockSignaling, reset } from "./mocksignaling.js";
 import { waitFor, sleep, serverExeName } from "./testutils.js";
 
