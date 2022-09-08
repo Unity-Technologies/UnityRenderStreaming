@@ -302,7 +302,9 @@ namespace Unity.RenderStreaming
             get { return m_Codec; }
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public bool autoRequestUserAuthorization
         {
             get => m_AutoRequestUserAuthorization;
@@ -398,6 +400,10 @@ namespace Unity.RenderStreaming
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size"></param>
         public void SetTextureSize(Vector2Int size)
         {
             if (m_Source == VideoStreamSource.Texture)

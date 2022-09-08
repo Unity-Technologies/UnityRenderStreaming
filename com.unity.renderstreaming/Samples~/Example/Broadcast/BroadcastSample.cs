@@ -79,9 +79,11 @@ namespace Unity.RenderStreaming.Samples
             );
 #endif
 
-            videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
-            videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
-
+            if (videoStreamSender.source != VideoStreamSource.Texture)
+            {
+                videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
+                videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
+            }
             videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
             bandwidthSelector.options = bandwidthOptions
@@ -129,7 +131,8 @@ namespace Unity.RenderStreaming.Samples
         {
             var resolution = resolutionOptions.Values.ElementAt(index);
 
-            videoStreamSender.SetTextureSize(resolution);
+            if(videoStreamSender.source != VideoStreamSource.Texture)
+                videoStreamSender.SetTextureSize(resolution);
         }
 
         private void Start()
