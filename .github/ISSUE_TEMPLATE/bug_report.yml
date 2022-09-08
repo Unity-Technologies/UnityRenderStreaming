@@ -1,9 +1,9 @@
 name: Bug report
 description: Create a report to help us improve.
 title: "[BUG]: "
-labels: 
+labels:
   - bug
-assignees: 
+assignees:
   - karasusan
 body:
   - type: markdown
@@ -13,7 +13,7 @@ body:
         * For questions, ask in [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413).
         * Before you file an issue read the [Contributing guide](https://github.com/Unity-Technologies/com.unity.webrtc/blob/develop/CONTRIBUTING.md).
         * Check to make sure someone hasn't already opened a similar [issue](https://github.com/Unity-Technologies/com.unity.webrtc/issues).
-         
+
         Please note the following points.
         * We try to reply as soon as possible but we will get in touch with you within **5 working days**.
         * If you solved the issue yourself, please **post the comment and close your issue**.
@@ -43,7 +43,7 @@ body:
         Please describe your environment when the issue occurred.
         Example:
           - **OS**: Windows10
-          - **Unity version**: Unity 2021.2
+          - **Unity version**: Unity 2021.3
           - **Graphics API**: DirectX11
           - **Browser**: Google Chrome Version 97
       value: |
@@ -75,7 +75,7 @@ body:
       description: A concise description of what you're experiencing.
     validations:
       required: false
-      
+
   - type: textarea
     id: expected-behavior
     attributes:

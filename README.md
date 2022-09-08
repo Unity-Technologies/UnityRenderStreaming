@@ -1,9 +1,11 @@
 # Unity Render Streaming
 
-<img src="https://img.shields.io/badge/unity-2019.4-green.svg?style=flat-square" alt="unity 2019.4"> <img src="https://img.shields.io/badge/unity-2020.3-green.svg?style=flat-square" alt="unity 2020.3">
+<img src="https://img.shields.io/badge/unity-2020.3-green.svg?style=flat-square" alt="unity 2020.3">
+<img src="https://img.shields.io/badge/unity-2021.3-green.svg?style=flat-square" alt="unity 2021.3">
+<img src="https://img.shields.io/badge/unity-2022.1-green.svg?style=flat-square" alt="unity 2022.1">
 
-**Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.  
-This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) to create their own unique solutions. 
+**Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.
+This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) to create their own unique solutions.
 
 <img src="com.unity.renderstreaming/Documentation~/images/browser_hdrpscene.png" width=500 align=center>
 
@@ -31,7 +33,7 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to
 ```
 <root>
 ├── BuildScripts~                          // Build scripts for CI system
-├── com.unity.renderstreaming              // Unity Render Streaming Package 
+├── com.unity.renderstreaming              // Unity Render Streaming Package
 ├── com.unity.template.renderstreaming-hd  // HDRP template
 ├── com.unity.template.renderstreaming-rtx // HDRP Raytracing template
 ├── RenderStreaming~                       // Sample project for package
@@ -52,11 +54,12 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to
 | `3.1.0-exp.1` | - Android platform support | Jun 2021 |
 | `3.1.0-exp.2` | - Audio Renderer support <br/> - Multiplay sample <br/> - M1 Mac support | Dec 2021 |
 | `3.1.0-exp.3` | - Fix bugs | Feb 2022 |
-| `3.1.0-exp.4` |  |  |
+| `3.1.0-exp.4` | - Streaming settings API | Sep 2022 |
+| `3.1.0-exp.5` |  | Nov 2022 |
 
 ## FAQ
 
-Read [this page](com.unity.renderstreaming/Documentation~/faq.md) and [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413/)
+Please read [this page](com.unity.renderstreaming/Documentation~/faq.md) and [Unity Forum](https://forum.unity.com/forums/unity-render-streaming.413/).
 
 ## Contributors
 

@@ -11,10 +11,6 @@ This sample can use in combination with the [Broadcast](sample-broadcast.md) sam
 
 ## Usage
 
-### Hardware acceleration 
-
-Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
-
 ### Procedure
 
 This procedure is for using it with the [Broadcast](sample-broadcast.md) sample.
