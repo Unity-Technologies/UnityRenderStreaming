@@ -3,10 +3,10 @@ upm:
   package_version: stable
 intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
 editors:
-  - version: 2019.4
   - version: 2020.3
   - version: 2021.3
   - version: 2022.1
+  - version: trunk
 platforms:
   - name: win
     type: Unity::VM::GPU
@@ -17,7 +17,7 @@ platforms:
     packed_webapp_platform: win
     test_params:
 # todo(kazuki) : this comment is workaround for avoiding template test error on Yamato.
-# "PackageTestSuite.PackageValidationTests.PackageHasTests" unittest is failed 
+# "PackageTestSuite.PackageValidationTests.PackageHasTests" unittest is failed
 # Error message : A package must have either playmode or editor tests in it. If you are using a different package for your tests, make sure to use the 'relatedPackages' field in your main package's manifest like explained here: https://confluence.hq.unity3d.com/display/PAK/How+to+add+a+test+project+for+your+package
       - backend: mono
         platform: editmode
