@@ -55,9 +55,11 @@ promote_dry_run:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
+{% if editor.version != "trunk" -%} # exclude trunk to test
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
+{% endif %}
 {% endfor %}
 
 promote:
@@ -82,9 +84,11 @@ promote:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
+{% if editor.version != "trunk" -%} # exclude trunk to test
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
+{% endif %}
 {% endfor %}
 
 {% endfor %}
