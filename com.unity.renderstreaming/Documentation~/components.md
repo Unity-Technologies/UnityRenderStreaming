@@ -2,7 +2,7 @@
 
 This package provides some useful components to make the streaming feature to the application made with Unity.
 
-- [Streaming Management](streaming-management.md)
-- [Video Streaming](video-streaming.md)
-- [Audio Streaming](audio-streaming.md)
-- [Data Streaming](data-streaming.md)
+- [Streaming Management Component](streaming-management.md)
+- [Video Streaming Component](video-streaming.md)
+- [Audio Streaming Component](audio-streaming.md)
+- [Data Streaming Component](data-streaming.md)
