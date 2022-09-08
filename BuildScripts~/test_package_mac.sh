@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #
-# BOKKEN_DEVICE_IP: 
-# TEMPLATE_FILE: 
+# BOKKEN_DEVICE_IP:
+# TEMPLATE_FILE:
 # TEST_TARGET:
 # TEST_PLATFORM:
 # SCRIPTING_BACKEND:
@@ -12,7 +12,7 @@
 # TEST_RESULT_DIR:
 # EDITOR_VERSION:
 #
-# 
+#
 # brew install gettext
 #
 
@@ -33,7 +33,8 @@ envsubst ' \
   $TEST_TARGET \
   $TEST_PLATFORM \
   $TEST_ARCHITECTURE \
-  $EDITOR_VERSION' \
+  $EDITOR_VERSION \
+  $YAMATO_JOB_ID' \
   < ${TEMPLATE_FILE} \
   > ~/remote.sh
 chmod +x ~/remote.sh
@@ -49,7 +50,7 @@ then
 fi
 
 # copy package to remote machine
-scp -i ${IDENTITY} -r ${YAMATO_SOURCE_DIR} bokken@${BOKKEN_DEVICE_IP}:~/${PACKAGE_DIR}  
+scp -i ${IDENTITY} -r ${YAMATO_SOURCE_DIR} bokken@${BOKKEN_DEVICE_IP}:~/${PACKAGE_DIR}
 
 set +e
 
@@ -63,7 +64,7 @@ set -e
 mkdir -p ${TEST_RESULT_DIR}
 scp -i ${IDENTITY} -r bokken@${BOKKEN_DEVICE_IP}:~/test-results ${TEST_RESULT_DIR}
 
-# return ssh commend results 
+# return ssh commend results
 if [ $result -ne 0 ]; then
   exit $result
 fi

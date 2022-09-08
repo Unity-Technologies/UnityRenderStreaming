@@ -1,14 +1,17 @@
 import { Receiver } from "./receiver.js";
 import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
 
 setup();
 
 let playButton;
 let receiver;
 let useWebSocket;
+let elementVideo;
 
 const playerDiv = document.getElementById('player');
 const codecPreferences = document.getElementById('codecPreferences');
+const lockMouseCheck = document.getElementById('lockMouseCheck');
 const supportsSetCodecPreferences = window.RTCRtpTransceiver &&
   'setCodecPreferences' in window.RTCRtpTransceiver.prototype;
 const messageDiv = document.getElementById('message');
@@ -32,7 +35,6 @@ async function setup() {
   showWarningIfNeeded(res.startupMode);
   showCodecSelect();
   showPlayButton();
-  showStatsMessage();
 }
 
 function showWarningIfNeeded(startupMode) {
@@ -59,7 +61,7 @@ function onClickPlayButton() {
   playButton.style.display = 'none';
 
   // add video player
-  const elementVideo = document.createElement('video');
+  elementVideo = document.createElement('video');
   elementVideo.id = 'Video';
   elementVideo.style.touchAction = 'none';
   playerDiv.appendChild(elementVideo);
@@ -87,17 +89,65 @@ function onClickPlayButton() {
       }
     }
   });
+
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  elementVideo.addEventListener("click", _mouseClick, false);
 
   function onFullscreenChange() {
     if (document.webkitFullscreenElement || document.fullscreenElement) {
       playerDiv.style.position = "absolute";
       elementFullscreenButton.style.display = 'none';
+
+      if (lockMouseCheck.checked) {
+        if (document.webkitFullscreenElement.requestPointerLock) {
+          document.webkitFullscreenElement.requestPointerLock();
+        } else if (document.fullscreenElement.requestPointerLock) {
+          document.fullscreenElement.requestPointerLock()
+        } else if (document.mozFullScreenElement.requestPointerLock) {
+          document.mozFullScreenElement.requestPointerLock()
+        }
+
+        // Subscribe to events
+        document.addEventListener('mousemove', _mouseMove, false);
+        document.addEventListener('click', _mouseClickFullScreen, false);
+      }
     }
     else {
       playerDiv.style.position = "relative";
       elementFullscreenButton.style.display = 'block';
+
+      document.removeEventListener('mousemove', _mouseMove, false);
+      document.removeEventListener('click', _mouseClickFullScreen, false);
+    }
+  }
+
+  function _mouseMove(event) {
+    // Forward mouseMove event of fullscreen player directly to sender
+    // This is required, as the regular mousemove event doesn't fire when in fullscreen mode
+    receiver.sender._onMouseEvent(event);
+  }
+
+  function _mouseClick(event) {
+    // Restores pointer lock when we unfocus the player and click on it again
+    if (lockMouseCheck.checked) {
+      if (elementVideo.requestPointerLock) {
+        elementVideo.requestPointerLock().catch(function (error) { });
+      }
+    }
+  }
+
+  function _mouseClickFullScreen(event) {
+    // Restores pointer lock when we unfocus the fullscreen player and click on it again
+    if (lockMouseCheck.checked) {
+      if (document.webkitFullscreenElement.requestPointerLock) {
+        document.webkitFullscreenElement.requestPointerLock();
+      } else if (document.fullscreenElement.requestPointerLock) {
+        document.fullscreenElement.requestPointerLock();
+      } else if (document.mozFullScreenElement.requestPointerLock) {
+        document.mozFullScreenElement.requestPointerLock();
+      }
     }
   }
 }
@@ -120,11 +170,13 @@ async function setupVideoPlayer(elements) {
 
   await videoPlayer.setupConnection(useWebSocket, selectedCodecs);
   videoPlayer.ondisconnect = onDisconnect;
+  showStatsMessage();
 
   return videoPlayer;
 }
 
 async function onDisconnect(message) {
+  clearStatsMessage();
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;
@@ -165,8 +217,11 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+let lastStats;
+let intervalId;
+
 function showStatsMessage() {
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     if (receiver == null) {
       return;
     }
@@ -175,13 +230,22 @@ function showStatsMessage() {
     if (stats == null) {
       return;
     }
-    stats.forEach(stat => {
-      if (!(stat.type === 'inbound-rtp' && stat.kind === 'video') || stat.codecId === undefined) {
-        return;
-      }
-      const codec = stats.get(stat.codecId);
+
+    const array = createDisplayStringArray(stats, lastStats);
+    if (array.length) {
       messageDiv.style.display = 'block';
-      messageDiv.innerText = `Using ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation}`;
-    });
+      messageDiv.innerHTML = array.join('<br>');
+    }
+    lastStats = stats;
   }, 1000);
+}
+
+function clearStatsMessage() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  lastStats = null;
+  intervalId = null;
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
 }

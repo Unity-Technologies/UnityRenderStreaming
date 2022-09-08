@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.WebRTC;
@@ -5,12 +6,31 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
+    internal static class RTCRtpTransceiverExtension
+    {
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, VideoCodecInfo[] codecs)
+        {
+            var caps = codecs?.Select(codec => codec.capability).ToArray();
+            return transceiver.SetCodecPreferences(caps);
+        }
+        public static RTCErrorType SetCodec(this RTCRtpTransceiver transceiver, AudioCodecInfo[] codecs)
+        {
+            var caps = codecs.Select(codec => codec.capability).ToArray();
+            return transceiver.SetCodecPreferences(caps);
+        }
+    }
+
     /// <summary>
     ///
     /// </summary>
     public abstract class SignalingHandlerBase : MonoBehaviour
     {
         private IRenderStreamingHandler m_handler;
+
+        /// <summary>
+        ///
+        /// </summary>
+        public virtual IEnumerable<Component> Streams => null;
 
         /// <summary>
         ///
@@ -60,6 +80,86 @@ namespace Unity.RenderStreaming
             return m_handler.IsStable(connectionId);
         }
 
+        static RTCRtpTransceiverInit GetTransceiverInit(IStreamSender sender)
+        {
+            RTCRtpTransceiverInit init = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendOnly,
+            };
+            if (sender is VideoStreamSender videoStreamSender)
+            {
+                init.sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters()
+                    {
+                        active = true,
+                        minBitrate = (ulong?)videoStreamSender.minBitrate * 1000,
+                        maxBitrate = (ulong?)videoStreamSender.maxBitrate * 1000,
+                        maxFramerate = (uint?)videoStreamSender.frameRate,
+                        scaleResolutionDownBy = videoStreamSender.scaleResolutionDown
+                    }
+                };
+            }
+            if (sender is AudioStreamSender audioStreamSender)
+            {
+                init.sendEncodings = new RTCRtpEncodingParameters[]
+                {
+                    new RTCRtpEncodingParameters()
+                    {
+                        active = true,
+                        minBitrate = (ulong?)audioStreamSender.minBitrate * 1000,
+                        maxBitrate = (ulong?)audioStreamSender.maxBitrate * 1000,
+                    }
+                };
+            }
+            return init;
+        }
+
+        internal static VideoCodecInfo[] GetVideoCodecInfo(IStreamSender sender)
+        {
+            if (sender is VideoStreamSender videoStreamSender)
+            {
+                if (videoStreamSender.codec == null)
+                    return new VideoCodecInfo[] { };
+                return new VideoCodecInfo[] { videoStreamSender.codec };
+            }
+            throw new ArgumentException("sender is not for video streaming.", "sender");
+        }
+
+        internal static AudioCodecInfo[] GetAudioCodecInfo(IStreamSender sender)
+        {
+            if (sender is AudioStreamSender audioStreamSender)
+            {
+                if (audioStreamSender.codec == null)
+                    return new AudioCodecInfo[] { };
+                return new AudioCodecInfo[] { audioStreamSender.codec };
+            }
+            throw new ArgumentException("sender is not for audio streaming.", "sender");
+        }
+
+        internal static VideoCodecInfo[] GetVideoCodecInfo(IStreamReceiver receiver)
+        {
+            if (receiver is VideoStreamReceiver videoStreamReceiver)
+            {
+                if (videoStreamReceiver.codec == null)
+                    return new VideoCodecInfo[] { };
+                return new VideoCodecInfo[] { videoStreamReceiver.codec };
+            }
+            throw new ArgumentException("receiver is not for video streaming.", "receiver");
+        }
+
+        internal static AudioCodecInfo[] GetAudioCodecInfo(IStreamReceiver receiver)
+        {
+            if (receiver is AudioStreamReceiver audioStreamReceiver)
+            {
+                if (audioStreamReceiver.codec == null)
+                    return new AudioCodecInfo[] { };
+                return new AudioCodecInfo[] { audioStreamReceiver.codec };
+            }
+            throw new ArgumentException("receiver is not for audio streaming.", "receiver");
+        }
+
+
         /// <summary>
         ///
         /// </summary>
@@ -68,8 +168,17 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)
         {
-            var transceiver = m_handler.AddSenderTrack(connectionId, sender.Track);
-            sender.SetSender(connectionId, transceiver.Sender);
+            RTCRtpTransceiverInit init = GetTransceiverInit(sender);
+            var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
+            if (sender is VideoStreamSender)
+            {
+                transceiver.SetCodec(GetVideoCodecInfo(sender));
+            }
+            else if (sender is AudioStreamSender)
+            {
+                transceiver.SetCodec(GetAudioCodecInfo(sender));
+            }
+            sender.SetTransceiver(connectionId, transceiver);
         }
 
         /// <summary>
@@ -80,34 +189,29 @@ namespace Unity.RenderStreaming
         public virtual void RemoveSender(string connectionId, IStreamSender sender)
         {
             sender.Track.Stop();
-            sender.SetSender(connectionId, null);
+            sender.SetTransceiver(connectionId, null);
             if (ExistConnection(connectionId))
                 RemoveTrack(connectionId, sender.Track);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="sender"></param>
-        public void SetSenderCodecs(string connectionId, IStreamSender sender)
-        {
-            var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => sender.Senders.Values.Contains(t.Sender));
-            sender.SetSenderCodec(connectionId, transceivers);
-        }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
-        public virtual void AddReceiver(string connectionId, IStreamReceiver receiver)
+        /// <param name="transceiver"></param>
+        public virtual void SetReceiver(string connectionId, IStreamReceiver receiver, RTCRtpTransceiver transceiver)
         {
-            var transceiver =
-                m_handler.AddTransceiver(connectionId, receiver.Kind, RTCRtpTransceiverDirection.RecvOnly);
-            if (transceiver.Receiver != null)
-                receiver.SetReceiver(connectionId, transceiver.Receiver);
+            if (receiver is VideoStreamReceiver)
+            {
+                transceiver.SetCodec(GetVideoCodecInfo(receiver));
+            }
+            else if (receiver is AudioStreamReceiver)
+            {
+                transceiver.SetCodec(GetAudioCodecInfo(receiver));
+            }
+            receiver.SetTransceiver(connectionId, transceiver);
         }
 
         /// <summary>
@@ -117,20 +221,7 @@ namespace Unity.RenderStreaming
         /// <param name="receiver"></param>
         public virtual void RemoveReceiver(string connectionId, IStreamReceiver receiver)
         {
-            //receiver.
-            receiver.SetReceiver(connectionId, null);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="receiver"></param>
-        public void SetReceiverCodecs(string connectionId, IStreamReceiver receiver)
-        {
-            var transceivers = m_handler.GetTransceivers(connectionId)
-                .Where(t => t.Receiver == receiver.Receiver);
-            receiver.SetReceiverCodec(connectionId, transceivers);
+            receiver.SetTransceiver(connectionId, null);
         }
 
         /// <summary>
@@ -224,21 +315,14 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        IReadOnlyDictionary<string, RTCRtpSender> Senders { get; }
+        IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers { get; }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="sender"></param>
-        void SetSender(string connectionId, RTCRtpSender sender);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="transceivers"></param>
-        void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
+        /// <param name="transceiver"></param>
+        void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver);
     }
 
     /// <summary>
@@ -254,7 +338,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        RTCRtpReceiver Receiver { get; }
+        RTCRtpTransceiver Transceiver { get; }
 
         /// <summary>
         ///
@@ -265,17 +349,13 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="connectionId"></param>
-        /// <param name="receiver"></param>
-        void SetReceiver(string connectionId, RTCRtpReceiver receiver);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="transceivers"></param>
-        void SetReceiverCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers);
+        /// <param name="transceiver"></param>
+        void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IDataChannel
     {
         /// <summary>

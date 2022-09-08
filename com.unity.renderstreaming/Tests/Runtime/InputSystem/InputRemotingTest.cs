@@ -63,6 +63,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                     iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } },
                 },
                 startCoroutine = _test.component.StartCoroutine,
+                stopCoroutine = _test.component.StopCoroutine,
                 resentOfferInterval = ResendOfferInterval,
             };
         }
@@ -176,7 +177,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
-        /// todo(kazuki): This test is failed for timeout on macOS 
+        /// todo(kazuki): This test is failed for timeout on macOS
         [UnityTest, Timeout(3000)]
         [UnityPlatform(exclude = new[] { RuntimePlatform.OSXPlayer })]
         public IEnumerator AddDevice()

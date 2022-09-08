@@ -332,10 +332,10 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-# Jet Stream Rider 
+# Jet Stream Rider
 .idea/
 
-# Unity Folder 
+# Unity Folder
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -346,12 +346,16 @@ MigrationBackup/
 !BuildScripts~
 !Samples~
 
-# Exclude webrtc source 
+# Exclude webrtc source
 Plugin/webrtc
 
 # Exclude imported samples
 Assets/Samples.meta
 Assets/Samples/
+
+# Exclude upm-ci
+.bin/
+.Editor/
 
 # Exclude Webapp coverage result
 WebApp/**/coverage/*

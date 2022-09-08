@@ -12,6 +12,8 @@ namespace Unity.RenderStreaming
 
         private string connectionId;
 
+        public override IEnumerable<Component> Streams => streams;
+
         public void AddComponent(Component component)
         {
             streams.Add(component);
@@ -44,15 +46,8 @@ namespace Unity.RenderStreaming
 
             foreach (var sender in streams.OfType<IStreamSender>())
             {
-                AddSender(connectionId, sender);
-                SetSenderCodecs(connectionId, sender);
+                AddSender(data.connectionId, sender);
             }
-
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                SetReceiverCodecs(connectionId, receiver);
-            }
-
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
                 AddChannel(connectionId, channel);
@@ -89,18 +84,6 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
-
-
-            foreach (var sender in streams.OfType<IStreamSender>())
-            {
-                SetSenderCodecs(connectionId, sender);
-            }
-
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                SetReceiverCodecs(connectionId, receiver);
-            }
-
             SendAnswer(data.connectionId);
         }
 
@@ -109,10 +92,9 @@ namespace Unity.RenderStreaming
             if (data.connectionId != connectionId)
                 return;
 
-            var receiver = streams.OfType<IStreamReceiver>()
-                .FirstOrDefault((r =>
-                    r.Track == null && r.Kind == data.receiver.Track.Kind && data.receiver.Track.Enabled));
-            receiver?.SetReceiver(connectionId, data.receiver);
+            var track = data.transceiver.Receiver.Track;
+            var receiver = streams.OfType<IStreamReceiver>().FirstOrDefault((r => r.Kind == track.Kind));
+            SetReceiver(data.connectionId, receiver, data.transceiver);
         }
 
         public void OnAddChannel(SignalingEventData data)

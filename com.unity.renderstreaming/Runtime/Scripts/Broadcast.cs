@@ -8,10 +8,11 @@ namespace Unity.RenderStreaming
         IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler,
         IAddReceiverHandler
     {
-        [SerializeField]
-        private List<Component> streams = new List<Component>();
+        [SerializeField] private List<Component> streams = new List<Component>();
 
         private List<string> connectionIds = new List<string>();
+
+        public override IEnumerable<Component> Streams => streams;
 
         public void AddComponent(Component component)
         {
@@ -55,9 +56,9 @@ namespace Unity.RenderStreaming
 
         public void OnAddReceiver(SignalingEventData data)
         {
-            var receiver = streams.OfType<IStreamReceiver>().
-                FirstOrDefault(r => r.Track == null);
-            receiver?.SetReceiver(data.connectionId, data.receiver);
+            var track = data.transceiver.Receiver.Track;
+            var receiver = streams.OfType<IStreamReceiver>().FirstOrDefault((r => r.Kind == track.Kind));
+            SetReceiver(data.connectionId, receiver, data.transceiver);
         }
 
         public void OnOffer(SignalingEventData data)
@@ -72,11 +73,6 @@ namespace Unity.RenderStreaming
             foreach (var source in streams.OfType<IStreamSender>())
             {
                 AddSender(data.connectionId, source);
-                SetSenderCodecs(data.connectionId, source);
-            }
-            foreach (var receiver in streams.OfType<IStreamReceiver>())
-            {
-                SetReceiverCodecs(data.connectionId, receiver);
             }
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {

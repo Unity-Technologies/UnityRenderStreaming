@@ -1,5 +1,6 @@
 import { SendVideo } from "./sendvideo.js";
 import { getServerConfig } from "../../js/config.js";
+import { createDisplayStringArray } from "../../js/stats.js";
 
 const defaultStreamWidth = 1280;
 const defaultStreamHeight = 720;
@@ -39,16 +40,15 @@ let useCustomResolution = false;
 
 setUpInputSelect();
 showCodecSelect();
-showStatsMessage();
 
 let sendVideo = new SendVideo();
 sendVideo.ondisconnect = async (message) => {
+  await hangUp();
+
   if (message) {
     messageDiv.style.display = 'block';
     messageDiv.innerText = message;
   }
-
-  await hangUp();
 };
 
 let useWebSocket;
@@ -123,9 +123,11 @@ async function setUp() {
   codecPreferences.disabled = true;
 
   await sendVideo.setupConnection(remoteVideo, connectionId, useWebSocket, selectedCodecs);
+  showStatsMessage();
 }
 
 async function hangUp() {
+  clearStatsMessage();
   hangUpButton.disabled = true;
   setupButton.disabled = false;
   await sendVideo.hangUp(connectionId);
@@ -203,8 +205,11 @@ function showCodecSelect() {
   codecPreferences.disabled = false;
 }
 
+let lastStats;
+let intervalId;
+
 function showStatsMessage() {
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     if (localVideo.videoWidth) {
       localVideoStatsDiv.innerHTML = `<strong>Sending resolution:</strong> ${localVideo.videoWidth} x ${localVideo.videoHeight} px`;
     }
@@ -221,21 +226,23 @@ function showStatsMessage() {
       return;
     }
 
-    let message = "";
-    stats.forEach(stat => {
-      if (stat.type === 'inbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
-        const codec = stats.get(stat.codecId);
-        message += `Using for receive video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Decoder: ${stat.decoderImplementation} \n`;
-      }
-      if (stat.type === 'outbound-rtp' && stat.kind === 'video' && stat.codecId !== undefined) {
-        const codec = stats.get(stat.codecId);
-        message += `Using for send video ${codec.mimeType} ${codec.sdpFmtpLine}, payloadType=${codec.payloadType}. Encoder: ${stat.encoderImplementation} \n`;
-      }
-    });
-
-    if (message != "") {
+    const array = createDisplayStringArray(stats, lastStats);
+    if (array.length) {
       messageDiv.style.display = 'block';
-      messageDiv.innerText = message;
+      messageDiv.innerHTML = array.join('<br>');
     }
+    lastStats = stats;
   }, 1000);
+}
+
+function clearStatsMessage() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  lastStats = null;
+  intervalId = null;
+  localVideoStatsDiv.innerHTML = '';
+  remoteVideoStatsDiv.innerHTML = '';
+  messageDiv.style.display = 'none';
+  messageDiv.innerHTML = '';
 }

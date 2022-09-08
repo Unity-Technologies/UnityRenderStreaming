@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Upgraded the version of WebRTC package `2.4.0-exp.7`.
+- Upgraded the version of Input System package `1.4.1`.
+- Upgraded the version of WebRTC package `2.4.0-exp.8`.
 
 ## [3.1.0-exp.3] - 2022-03-01
 
@@ -69,6 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Upgraded WebRTC package to `2.4.0-exp.3`.
 - Added drop-down list UI for selecting the video capture device in the `Bidirectional` scene
 - Changed the signaling process for exchanging SDPs
 

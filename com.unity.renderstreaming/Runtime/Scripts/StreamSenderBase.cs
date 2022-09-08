@@ -14,28 +14,43 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        public IReadOnlyDictionary<string, RTCRtpTransceiver> Transceivers => m_transceivers;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public OnStartedStreamHandler OnStartedStream { get; set; }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        public IReadOnlyDictionary<string, RTCRtpSender> Senders => m_senders;
+        internal virtual MediaStreamTrack CreateTrack() { return null; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        protected virtual MediaStreamTrack CreateTrack() { return null; }
+        internal virtual void ReplaceTrack(MediaStreamTrack track)
+        {
+            if (track == null)
+                throw new ArgumentNullException("track", "This argument must be not null.");
+
+            if(m_track == track)
+                throw new ArgumentException("track", "The value of this argument has already been set.");
+
+            /// todo:: If not disposing the old track here, the app will crash.
+            /// This problem is caused by the MediaStreamTrack when it is destroyed on the thread other than the main thread.
+            m_track?.Dispose();
+
+            m_track = track;
+            foreach (var transceiver in Transceivers.Values)
+            {
+                transceiver.Sender.ReplaceTrack(m_track);
+            }
+        }
 
         private MediaStreamTrack m_track;
 
-        private Dictionary<string, RTCRtpSender> m_senders =
-            new Dictionary<string, RTCRtpSender>();
+        private Dictionary<string, RTCRtpTransceiver> m_transceivers =
+            new Dictionary<string, RTCRtpTransceiver>();
 
         /// <summary>
         ///
@@ -51,97 +66,67 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool isPlaying
+        {
+            get
+            {
+                if (!Application.isPlaying)
+                    return false;
+                foreach (var transceiver in Transceivers.Values)
+                {
+                    if (string.IsNullOrEmpty(transceiver.Mid))
+                        continue;
+                    if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
+                        continue;
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            m_track?.Dispose();
+            m_track = null;
+        }
+
+        protected virtual void OnEnable()
+        {
+            if (m_track?.ReadyState == TrackState.Live)
+            {
+                m_track.Enabled = true;
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            if(m_track?.ReadyState == TrackState.Live)
+            {
+                m_track.Enabled = false;
+            }
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="sender"></param>
-        public virtual void SetSender(string connectionId, RTCRtpSender sender)
+        public virtual void SetTransceiver(string connectionId, RTCRtpTransceiver transceiver)
         {
             if (connectionId == null)
                 throw new ArgumentNullException("connectionId is null");
-            if (sender == null)
+            if (transceiver == null)
             {
-                m_senders.Remove(connectionId);
+                m_transceivers.Remove(connectionId);
                 OnStoppedStream?.Invoke(connectionId);
             }
             else
             {
-                m_senders.Add(connectionId, sender);
+                m_transceivers.Add(connectionId, transceiver);
                 OnStartedStream?.Invoke(connectionId);
             }
-        }
-
-        private List<RTCRtpCodecCapability> m_senderAudioCodecs = new List<RTCRtpCodecCapability>();
-        private List<RTCRtpCodecCapability> m_senderVideoCodecs = new List<RTCRtpCodecCapability>();
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="connectionId"></param>
-        /// <param name="transceivers"></param>
-        public void SetSenderCodec(string connectionId, IEnumerable<RTCRtpTransceiver> transceivers)
-        {
-            if (m_senderAudioCodecs.Count != 0)
-            {
-                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Audio))
-                {
-                    transceiver.SetCodecPreferences(m_senderAudioCodecs.ToArray());
-                }
-            }
-
-            if (m_senderVideoCodecs.Count != 0)
-            {
-                foreach (var transceiver in transceivers.Where(t => t.Receiver.Track.Kind == TrackKind.Video))
-                {
-                    transceiver.SetCodecPreferences(m_senderVideoCodecs.ToArray());
-                }
-            }
-        }
-
-        /// <summary>
-        /// argument index must use dictionary key from GetAvailableAudioCodecsName
-        /// </summary>
-        /// <seealso cref="AvailableCodecsUtils.GetAvailableAudioCodecsName"/>
-        /// <param name="index"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void FilterAudioCodecs(int index)
-        {
-            if (index < 0)
-            {
-                m_senderAudioCodecs.Clear();
-                return;
-            }
-
-            if (!AvailableCodecsUtils.TryGetAvailableAudioCodec(index, out var codec))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
-            }
-
-            m_senderAudioCodecs.Clear();
-            m_senderAudioCodecs.Add(codec);
-        }
-
-        /// <summary>
-        /// argument index must use dictionary key from GetAvailableVideoCodecsName
-        /// </summary>
-        /// <seealso cref="AvailableCodecsUtils.GetAvailableVideoCodecsName"/>
-        /// <param name="index"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void FilterVideoCodecs(int index)
-        {
-            if (index < 0)
-            {
-                m_senderVideoCodecs.Clear();
-                return;
-            }
-
-            if (!AvailableCodecsUtils.TryGetAvailableVideoCodec(index, out var codec))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, "Index was out of range.");
-            }
-
-            m_senderVideoCodecs.Clear();
-            m_senderVideoCodecs.Add(codec);
         }
     }
 }

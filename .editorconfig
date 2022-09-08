@@ -10,14 +10,14 @@ root = true
 # All files
 [*]
 indent_style = space
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
 
 # Code files
 [*.{cs,csx,cpp,h,ts}]
-end_of_line = lf
 indent_size = 4
-insert_final_newline = true
-charset = utf-8
-trim_trailing_whitespace = true
 
 ###############################
 # .NET Coding Conventions     #
@@ -146,3 +146,12 @@ csharp_space_between_method_call_empty_parameter_list_parentheses = false
 # Wrapping preferences
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
+
+## unity special
+[*.{uxml,xml,html}]
+max_line_length = 120
+indent_size = 4
+
+[*.{uss,css}]
+max_line_length = 120
+indent_size = 2
