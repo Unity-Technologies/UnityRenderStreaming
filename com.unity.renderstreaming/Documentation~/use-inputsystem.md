@@ -8,7 +8,7 @@ The user input on the browser is converted to the message format of Input System
 
 You need to configure settings described below to use Input System. Note that different versions of Unity Editor support different methods.
 
-### For Unity 2021.2
+### For Unity 2021.3
 
 1. Open **Package Manager** window and check Input System version **1.3** installed.
 
@@ -31,7 +31,7 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 
-3. Open scene and move **Hirarchy** window, and select `EventSystem` object, 
+3. Open scene and move **Hirarchy** window, and select `EventSystem` object,
 
 ![Select EventSystem object](images/select_eventsystem_object.png)
 

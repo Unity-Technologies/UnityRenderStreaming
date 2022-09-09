@@ -14,10 +14,10 @@ To use this sample, You need to install following additional packages.
 
 > [!NOTE]
 > `AR Foundation 4.1.9` is compatible with the following versions of the Unity Editor:
-> - 2019.4.15f1 or later
 > - 2020.3
 > - 2021.1
 > - 2021.2
+
 
 In addition, depending on the platform, each `XR plugin` package must be installed.
 ​
