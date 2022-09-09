@@ -379,9 +379,11 @@ publish_dry_run_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
+{% if editor.version != "trunk" -%} # exclude trunk to test
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_{{ editor.version }}
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_{{ editor.version }}
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_{{ editor.version }}
+{% endif %}
 {% endfor %}
 
 publish_{{ package.name }}:
