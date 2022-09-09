@@ -52,16 +52,14 @@ describe('http signaling test in public mode', () => {
 
   test('get connection from session1', async () => {
     await httpHandler.getConnection(req, res);
-    const arrayContain = expect.arrayContaining([{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }])
-    const objContain = expect.objectContaining({ connections: arrayContain });
-    expect(res.json).toHaveBeenCalledWith(objContain);
+    const connect = { connectionId: connectionId, datetime: expect.anything(), type: "connect" };
+    expect(res.json).toHaveBeenCalledWith({ connections: expect.arrayContaining([connect]) });
   });
 
   test('get all from session1', async () => {
     await httpHandler.getAll(req, res);
-    const arrayContain = expect.arrayContaining([{ connectionId: connectionId, datetime: expect.anything(), type: "connect" }])
-    const objContain = expect.objectContaining({ messages: arrayContain });
-    expect(res.json).toHaveBeenCalledWith(objContain);
+    const connect = { connectionId: connectionId, datetime: expect.anything(), type: "connect" };
+    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([connect]) });
   });
 
   test('post offer from session1', async () => {
@@ -124,9 +122,8 @@ describe('http signaling test in public mode', () => {
 
   test('disconnection get from session1', async () => {
     await httpHandler.getAll(req, res);
-    const arrayContain = expect.arrayContaining([{ connectionId: connectionId, datetime: expect.anything(), type: "disconnect" }])
-    const objContain = expect.objectContaining({ messages: arrayContain });
-    expect(res.json).toHaveBeenCalledWith(objContain);
+    const disconnect = { connectionId: connectionId, datetime: expect.anything(), type: "disconnect" };
+    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([disconnect]) });
   });
 
   test('delete connection from session1', async () => {
