@@ -2,7 +2,7 @@
   "name": "com.unity.renderstreaming",
   "displayName": "Unity Render Streaming",
   "version": "3.1.0-exp.4",
-  "unity": "2019.4",
+  "unity": "2020.3",
   "description": "This is a package for using Unity Render Streaming technology. It contains two samples to use the technology.",
   "dependencies": {
     "com.unity.webrtc": "2.4.0-exp.10",
