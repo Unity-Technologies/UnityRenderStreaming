@@ -342,7 +342,6 @@ function postOffer(req: Request, res: Response): void {
 
   connectionPair.set(connectionId, [sessionId, null]);
   keySessionId = sessionId;
-  console.log(keySessionId);
   const map = offers.get(keySessionId);
   map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
 
