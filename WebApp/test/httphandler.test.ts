@@ -147,6 +147,46 @@ describe('http signaling test in public mode', () => {
     await httpHandler.deleteSession(req2, res);
     expect(res.sendStatus).toHaveBeenCalledWith(200);
   });
+
+  test('disconnection get when session2 disconnects before session1 answer', async () => {
+    httpHandler.reset("public");
+
+    await httpHandler.createSession(sessionId, res);
+    await httpHandler.createSession(sessionId2, res);
+
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+
+    const connectBody = { connectionId: connectionId };
+    req.body = connectBody;
+    await httpHandler.createConnection(req, res);
+
+    const offerBody = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer" };
+    req.body = offerBody;
+    await httpHandler.postOffer(req, res);
+
+    const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: false };
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    await httpHandler.getAll(req2, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+
+    const deleteBody = { connectionId: connectionId };
+    req2.body = deleteBody;
+    await httpHandler.deleteConnection(req, res);
+    await httpHandler.deleteSession(req, res);
+    expect(res.sendStatus).toHaveBeenLastCalledWith(200);
+
+    const answerBody = { connectionId: connectionId, sdp: testsdp };
+    req2.body = answerBody;
+    await httpHandler.postAnswer(req2, res);
+
+    const disconnect = { connectionId: connectionId, type: "disconnect", datetime: expect.anything() };
+    await httpHandler.getAll(req2, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]) });
+
+    await httpHandler.deleteSession(req2, res);
+  });
 });
 
 describe('http signaling test in private mode', () => {
@@ -300,5 +340,47 @@ describe('http signaling test in private mode', () => {
     const req2 = getMockReq({ header: jest.fn(() => sessionId2) });
     await httpHandler.deleteSession(req2, res);
     expect(res.sendStatus).toHaveBeenCalledWith(200);
+  });
+
+  test('disconnection get when session2 disconnects before session1 answer', async () => {
+    httpHandler.reset("private");
+
+    await httpHandler.createSession(sessionId, res);
+    await httpHandler.createSession(sessionId2, res);
+
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+
+    const connectBody = { connectionId: connectionId };
+    req.body = connectBody;
+    await httpHandler.createConnection(req, res);
+    req2.body = connectBody;
+    await httpHandler.createConnection(req2, res);
+
+    const offerBody = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer" };
+    req.body = offerBody;
+    await httpHandler.postOffer(req, res);
+
+    const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: true };
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    await httpHandler.getAll(req2, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+
+    const deleteBody = { connectionId: connectionId };
+    req2.body = deleteBody;
+    await httpHandler.deleteConnection(req, res);
+    await httpHandler.deleteSession(req, res);
+    expect(res.sendStatus).toHaveBeenLastCalledWith(200);
+
+    const answerBody = { connectionId: connectionId, sdp: testsdp };
+    req2.body = answerBody;
+    await httpHandler.postAnswer(req2, res);
+
+    const disconnect = { connectionId: connectionId, type: "disconnect", datetime: expect.anything() };
+    await httpHandler.getAll(req2, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]) });
+
+    await httpHandler.deleteSession(req2, res);
   });
 });
