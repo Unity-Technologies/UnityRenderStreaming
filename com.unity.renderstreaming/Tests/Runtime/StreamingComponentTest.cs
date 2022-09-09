@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.WebRTC;
-using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {

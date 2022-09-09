@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return m_MimeType.Split('/')[1]; } }
+        public string name { get { return m_MimeType.GetCodecName(); } }
 
         /// <summary>
         /// 
@@ -45,22 +45,48 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public bool Equals(VideoCodecInfo other)
         {
-            if (other == null)
-                return false;
             return this.mimeType == other.mimeType
                 && this.sdpFmtpLine == other.sdpFmtpLine;
         }
 
-        internal bool Equals(RTCRtpCodecCapability other)
+        public override bool Equals(object obj)
         {
-            if (other == null)
-                return false;
-            return this.mimeType == other.mimeType
-                && this.sdpFmtpLine == other.sdpFmtpLine;
+            return obj is VideoCodecInfo ? Equals((VideoCodecInfo)obj) : base.Equals(obj);
         }
 
-        protected readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(mimeType, sdpFmtpLine);
+        }
 
+        public static bool operator ==(VideoCodecInfo left, VideoCodecInfo right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(VideoCodecInfo left, VideoCodecInfo right)
+        {
+            return !(left == right);
+        }
+
+        protected Dictionary<string, string> parameters
+        {
+            get
+            {
+                if (m_parameters != null)
+                    return m_parameters;
+
+                if (string.IsNullOrEmpty(m_SdpFmtpLine))
+                    return null;
+                string[] subs = m_SdpFmtpLine.Split(';');
+                foreach (string sub in subs)
+                {
+                    string[] pair = sub.Split('=');
+                    m_parameters.Add(pair[0], pair[1]);
+                }
+                return m_parameters;
+            }
+        }
+        readonly Dictionary<string, string> m_parameters = new Dictionary<string, string>();
 
         static public VideoCodecInfo Create(RTCRtpCodecCapability caps)
         {
@@ -72,18 +98,6 @@ namespace Unity.RenderStreaming
                     return new VP9CodecInfo(caps);
                 default:
                     return new VideoCodecInfo(caps);
-            }
-        }
-
-        protected VideoCodecInfo()
-        {
-            if (string.IsNullOrEmpty(m_SdpFmtpLine))
-                return;
-            string[] subs = m_SdpFmtpLine.Split(';');
-            foreach (string sub in subs)
-            {
-                string[] pair = sub.Split('=');
-                parameters.Add(pair[0], pair[1]);
             }
         }
 

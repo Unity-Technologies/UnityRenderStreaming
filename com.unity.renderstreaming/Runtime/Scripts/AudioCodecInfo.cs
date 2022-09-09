@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 
@@ -22,7 +23,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        public string name { get { return m_MimeType.Split('/')[1]; } }
+        public string name { get { return m_MimeType.GetCodecName(); } }
 
         /// <summary>
         /// 
@@ -51,22 +52,30 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public bool Equals(AudioCodecInfo other)
         {
-            if (other == null)
-                return false;
             return this.mimeType == other.mimeType
                 && this.sdpFmtpLine == other.sdpFmtpLine
                 && this.channelCount == other.channelCount
                 && this.sampleRate == other.sampleRate;
         }
 
-        internal bool Equals(RTCRtpCodecCapability other)
+        public override bool Equals(object obj)
         {
-            if (other == null)
-                return false;
-            return this.mimeType == other.mimeType
-                && this.sdpFmtpLine == other.sdpFmtpLine
-                && this.channelCount == other.channels
-                && this.sampleRate == other.clockRate;
+            return obj is AudioCodecInfo ? Equals((AudioCodecInfo)obj) : base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(mimeType, sdpFmtpLine, channelCount, sampleRate);
+        }
+
+        public static bool operator ==(AudioCodecInfo left, AudioCodecInfo right)
+        {
+            return left.Equals(right);
+        }
+        
+        public static bool operator !=(AudioCodecInfo left, AudioCodecInfo right)
+        {
+            return !(left == right);
         }
 
         internal AudioCodecInfo(RTCRtpCodecCapability cap)
