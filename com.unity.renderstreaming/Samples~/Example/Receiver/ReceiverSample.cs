@@ -56,6 +56,9 @@ namespace Unity.RenderStreaming.Samples
                 source.loop = true;
                 source.Play();
             };
+
+            inputSender = GetComponent<InputSender>();
+            inputSender.OnStartedChannel += OnStartedChannel;
         }
 
         void Start()
@@ -63,8 +66,6 @@ namespace Unity.RenderStreaming.Samples
             if (renderStreaming.runOnAwake)
                 return;
             renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
-            inputSender = GetComponent<InputSender>();
-            inputSender.OnStartedChannel += OnStartedChannel;
         }
 
         void OnUpdateReceiveTexture(Texture texture)
@@ -80,7 +81,7 @@ namespace Unity.RenderStreaming.Samples
 
         void SetInputChange()
         {
-            if (!inputSender.IsConnected || remoteVideoImage.texture == null)
+            if (inputSender == null || !inputSender.IsConnected || remoteVideoImage.texture == null)
                 return;
             inputSender.SetInputRange(remoteVideoImage);
             inputSender.EnableInputPositionCorrection(true);
