@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.WebRTC;
-using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
@@ -40,6 +39,14 @@ namespace Unity.RenderStreaming.RuntimeTest
                         break;
                 }
             }
+        }
+
+        [Test]
+        public void SelectCodecCapabilities()
+        {
+            var codecs = VideoStreamSender.GetAvailableCodecs();
+            var caps = RTCRtpSender.GetCapabilities(TrackKind.Video).SelectCodecCapabilities(codecs);
+            Assert.That(codecs.Count(), Is.EqualTo(caps.Count()));
         }
 
         [Test]
@@ -246,6 +253,14 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void SelectCodecCapabilities()
+        {
+            var codecs = VideoStreamReceiver.GetAvailableCodecs();
+            var caps = RTCRtpReceiver.GetCapabilities(TrackKind.Video).SelectCodecCapabilities(codecs);
+            Assert.That(codecs.Count(), Is.EqualTo(caps.Count()));
+        }
+
+        [Test]
         public void SetCodec()
         {
             var go = new GameObject();
@@ -279,6 +294,15 @@ namespace Unity.RenderStreaming.RuntimeTest
                 Assert.That(codec.sampleRate, Is.GreaterThan(0));
             }
         }
+
+        [Test]
+        public void SelectCodecCapabilities()
+        {
+            var codecs = AudioStreamSender.GetAvailableCodecs();
+            var caps = RTCRtpSender.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
+            Assert.That(codecs.Count(), Is.EqualTo(caps.Count()));
+        }
+
 
         [Test]
         public void SetEnabled()
@@ -354,6 +378,14 @@ namespace Unity.RenderStreaming.RuntimeTest
                 Assert.That(codec.channelCount, Is.GreaterThan(0));
                 Assert.That(codec.sampleRate, Is.GreaterThan(0));
             }
+        }
+
+        [Test]
+        public void SelectCodecCapabilities()
+        {
+            var codecs = AudioStreamReceiver.GetAvailableCodecs();
+            var caps = RTCRtpReceiver.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
+            Assert.That(codecs.Count(), Is.EqualTo(caps.Count()));
         }
 
         [Test]

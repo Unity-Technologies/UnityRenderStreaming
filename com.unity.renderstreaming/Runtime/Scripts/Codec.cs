@@ -6,9 +6,14 @@ namespace Unity.RenderStreaming
 {
     internal static class RTCRtpCodecCapabilityExtension
     {
-        public static string GetCodecName(this RTCRtpCodecCapability cap)
+        public static string GetCodecName(this string mimeType)
         {
-            return cap?.mimeType.Split('/')[1];
+            if (mimeType == null)
+                return null;
+            string[] substrings = mimeType.Split('/');
+            if (substrings.Length > 1)
+                return substrings[1];
+            return null;
         }
 
         public static IEnumerable<RTCRtpCodecCapability> SelectCodecCapabilities(this RTCRtpCapabilities capabilities, IEnumerable<VideoCodecInfo> codecs)
