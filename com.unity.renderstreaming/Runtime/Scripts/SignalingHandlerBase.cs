@@ -176,10 +176,9 @@ namespace Unity.RenderStreaming
         /// <param name="sender"></param>
         public virtual void RemoveSender(string connectionId, IStreamSender sender)
         {
-            sender.Track.Stop();
-            sender.SetTransceiver(connectionId, null);
             if (ExistConnection(connectionId))
                 RemoveTrack(connectionId, sender.Track);
+            sender.SetTransceiver(connectionId, null);
         }
 
         /// <summary>

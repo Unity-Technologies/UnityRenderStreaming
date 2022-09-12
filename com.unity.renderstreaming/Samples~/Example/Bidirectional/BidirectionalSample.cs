@@ -94,6 +94,7 @@ namespace Unity.RenderStreaming.Samples
             hangUpButton.interactable = false;
             connectionIdInput.interactable = true;
             connectionIdInput.text = $"{Random.Range(0, 99999):D5}";
+            localVideoImage.texture = null;
         }
     }
 }

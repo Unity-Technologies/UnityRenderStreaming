@@ -121,6 +121,11 @@ namespace Unity.RenderStreaming
             {
                 m_transceivers.Remove(connectionId);
                 OnStoppedStream?.Invoke(connectionId);
+                if (!m_transceivers.Any())
+                {
+                    m_track.Dispose();
+                    m_track = null;
+                }
             }
             else
             {

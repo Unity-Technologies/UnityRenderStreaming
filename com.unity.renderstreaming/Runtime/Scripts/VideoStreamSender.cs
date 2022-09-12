@@ -414,6 +414,25 @@ namespace Unity.RenderStreaming
                 ReplaceTrack(CreateTrack());
         }
 
+        protected virtual void Awake()
+        {
+            OnStoppedStream += _OnStoppedStream;
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
+        }
+
+        void _OnStoppedStream(string connectionId)
+        {
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
+        }
+
         internal override MediaStreamTrack CreateTrack()
         {
             m_sourceImpl?.Dispose();
@@ -703,6 +722,16 @@ namespace Unity.RenderStreaming
                 WebCamDevice userCameraDevice = WebCamTexture.devices[m_deviceIndex];
                 m_webcamTexture = new WebCamTexture(userCameraDevice.name, width, height, (int)m_frameRate);
                 m_webcamTexture.Play();
+                while (!m_webcamTexture.didUpdateThisFrame)
+                {
+                    System.Threading.Thread.Sleep(1);
+                }
+                if (m_webcamTexture.width != width || m_webcamTexture.height != height)
+                {
+                    Destroy(m_webcamTexture);
+                    m_webcamTexture = null;
+                    throw new InvalidOperationException($"The device doesn't support the resolution. {width} x {height}");
+                }
 
                 return new VideoStreamTrack(m_webcamTexture);
             }

@@ -193,6 +193,14 @@ namespace Unity.RenderStreaming
             OnStoppedStream += _OnStoppedStream;
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
+        }
+
         void OnAudioConfigurationChanged(bool deviceWasChanged)
         {
             m_sampleRate = AudioSettings.outputSampleRate;
@@ -204,6 +212,8 @@ namespace Unity.RenderStreaming
 
         void _OnStoppedStream(string connectionId)
         {
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
         }
 
         internal override MediaStreamTrack CreateTrack()
@@ -342,6 +352,7 @@ namespace Unity.RenderStreaming
             int m_deviceIndex;
             bool m_autoRequestUserAuthorization;
             int m_frequency;
+            string m_deviceName;
             GameObject m_parentObj;
             AudioSource m_audioSource;
 
@@ -369,12 +380,12 @@ namespace Unity.RenderStreaming
                 if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
                     throw new InvalidOperationException("Call Application.RequestUserAuthorization before creating track with Microphone.");
 
-                var deviceName = Microphone.devices[m_deviceIndex];
-                Microphone.GetDeviceCaps(deviceName, out int minFreq, out int maxFreq);
-                var micClip = Microphone.Start(deviceName, true, 1, m_frequency);
+                m_deviceName = Microphone.devices[m_deviceIndex];
+                Microphone.GetDeviceCaps(m_deviceName, out int minFreq, out int maxFreq);
+                var micClip = Microphone.Start(m_deviceName, true, 1, m_frequency);
 
                 // set the latency to “0” samples before the audio starts to play.
-                while (!(Microphone.GetPosition(deviceName) > 0)) { }
+                while (!(Microphone.GetPosition(m_deviceName) > 0)) { }
 
                 m_audioSource = m_parentObj.AddComponent<AudioSource>();
                 m_audioSource.clip = micClip;
@@ -399,6 +410,8 @@ namespace Unity.RenderStreaming
                     Destroy(m_audioSource);
                     m_audioSource = null;
                 }
+                if (Microphone.IsRecording(m_deviceName))
+                    Microphone.End(m_deviceName);
                 GC.SuppressFinalize(this);
             }
 
