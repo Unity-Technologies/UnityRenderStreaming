@@ -79,7 +79,8 @@ namespace Unity.RenderStreaming.Samples
                     .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
             );
 #endif
-            if(settings != null)
+            settings = SampleManager.Instance.Settings;
+            if (settings != null)
             {
                 if (videoStreamSender.source != VideoStreamSource.Texture)
                 {
@@ -110,8 +111,6 @@ namespace Unity.RenderStreaming.Samples
                 .ToList();
             resolutionSelector.SetValueWithoutNotify(1); // todo: detect default select index
             resolutionSelector.onValueChanged.AddListener(ChangeResolution);
-
-            settings = SampleManager.Instance.Settings;
         }
 
         private void ChangeBandwidth(int index)
