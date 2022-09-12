@@ -18,6 +18,8 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private string m_SdpFmtpLine;
 
+        readonly Dictionary<string, string> m_parameters = new Dictionary<string, string>();
+
         /// <summary>
         /// 
         /// </summary>
@@ -51,16 +53,31 @@ namespace Unity.RenderStreaming
                 && this.sdpFmtpLine == other.sdpFmtpLine;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             return obj is VideoCodecInfo ? Equals((VideoCodecInfo)obj) : base.Equals(obj);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return new { mimeType, sdpFmtpLine }.GetHashCode();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(VideoCodecInfo left, VideoCodecInfo right)
         {
             if (ReferenceEquals(left, null))
@@ -73,6 +90,12 @@ namespace Unity.RenderStreaming
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(VideoCodecInfo left, VideoCodecInfo right)
         {
             return !(left == right);
@@ -96,9 +119,8 @@ namespace Unity.RenderStreaming
                 return m_parameters;
             }
         }
-        readonly Dictionary<string, string> m_parameters = new Dictionary<string, string>();
 
-        static public VideoCodecInfo Create(RTCRtpCodecCapability caps)
+        static internal VideoCodecInfo Create(RTCRtpCodecCapability caps)
         {
             switch(caps.mimeType)
             {
@@ -109,6 +131,14 @@ namespace Unity.RenderStreaming
                 default:
                     return new VideoCodecInfo(caps);
             }
+        }
+
+        internal bool Equals(RTCRtpCodecCapability other)
+        {
+            if (other == null)
+                return false;
+            return this.mimeType == other.mimeType
+                && this.sdpFmtpLine == other.sdpFmtpLine;
         }
 
         protected VideoCodecInfo(RTCRtpCodecCapability caps)

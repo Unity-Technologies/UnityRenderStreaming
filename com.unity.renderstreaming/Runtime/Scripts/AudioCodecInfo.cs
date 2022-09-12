@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.WebRTC;
 
@@ -60,16 +59,31 @@ namespace Unity.RenderStreaming
                 && this.sampleRate == other.sampleRate;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             return obj is AudioCodecInfo ? Equals((AudioCodecInfo)obj) : base.Equals(obj);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return new { mimeType, sdpFmtpLine, channelCount, sampleRate }.GetHashCode();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(AudioCodecInfo left, AudioCodecInfo right)
         {
             if (ReferenceEquals(left, null))
@@ -81,7 +95,13 @@ namespace Unity.RenderStreaming
                 return left.Equals(right);
             }
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(AudioCodecInfo left, AudioCodecInfo right)
         {
             return !(left == right);
@@ -93,6 +113,16 @@ namespace Unity.RenderStreaming
             m_SdpFmtpLine = cap.sdpFmtpLine;
             m_ChannelCount = cap.channels.GetValueOrDefault();
             m_SampleRate = cap.clockRate.GetValueOrDefault();
+        }
+
+        internal bool Equals(RTCRtpCodecCapability other)
+        {
+            if (other == null)
+                return false;
+            return this.mimeType == other.mimeType
+                && this.sdpFmtpLine == other.sdpFmtpLine
+                && this.channelCount == other.channels
+                && this.sampleRate == other.clockRate;
         }
     }
 }
