@@ -18,9 +18,9 @@ Also, **iOS Safari** does not support WebSocket signaling if the server uses a s
 Confirm you're using a `Graphics API` and compare [requirements](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) of `com.unity.webrtc`.
 If you use the hardware encoder, Make sure you're using a graphics card that supports **Nvcodec**. Also confirm that the latest graphics driver version is installed. See also: `com.unity.webrtc` documentation.
 
-### Web server fails to run 
+### Web server fails to run
 
-Make sure the port isn't being used by another service. 
+Make sure the port isn't being used by another service.
 
 ### Unity UI can't be operated through a browser.
 
@@ -31,11 +31,11 @@ On [This page](browser-input.md#using-unity-ui), you can see more info.
 
 ### Which versions of Unity can be used?
 
-It is available on **Unity 2019.4**, **Unity 2020.3**. The latest Unity version **Unity 2021** might not worked accidentally.
+**Unity 2020.3** or higher.
 
 ### Which OS can be used?
 
-**Windows10 x64**, **Linux x64**, **macOS** and **iOS** **Android**. 
+**Windows10 x64**, **Linux x64**, **macOS** and **iOS** **Android**.
 
 **UWP** and **WebGL** are not supported.
 
