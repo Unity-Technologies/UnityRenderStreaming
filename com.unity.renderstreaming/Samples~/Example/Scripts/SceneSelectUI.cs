@@ -28,61 +28,61 @@ namespace Unity.RenderStreaming.Samples
         public const int DefaultStreamWidth = 1280;
         public const int DefaultStreamHeight = 720;
 
-        private SignalingType s_signalingType = SignalingType.WebSocket;
-        private string s_signalingAddress = "localhost";
-        private float s_signalingInterval = 5;
-        private bool s_signalingSecured = false;
-        private Vector2Int s_streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
-        private VideoCodecInfo s_receiverVideoCodec = null;
-        private VideoCodecInfo s_senderVideoCodec = null;
+        private SignalingType signalingType = SignalingType.WebSocket;
+        private string signalingAddress = "localhost";
+        private float signalingInterval = 5;
+        private bool signalingSecured = false;
+        private Vector2Int streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
+        private VideoCodecInfo receiverVideoCodec = null;
+        private VideoCodecInfo senderVideoCodec = null;
 
         public SignalingType SignalingType
         {
-            get { return s_signalingType; }
-            set { s_signalingType = value; }
+            get { return signalingType; }
+            set { signalingType = value; }
         }
 
         public string SignalingAddress
         {
-            get { return s_signalingAddress; }
-            set { s_signalingAddress = value; }
+            get { return signalingAddress; }
+            set { signalingAddress = value; }
         }
 
         public bool SignalingSecured
         {
-            get { return s_signalingSecured; }
-            set { s_signalingSecured = value; }
+            get { return signalingSecured; }
+            set { signalingSecured = value; }
         }
 
         public float SignalingInterval
         {
-            get { return s_signalingInterval; }
-            set { s_signalingInterval = value; }
+            get { return signalingInterval; }
+            set { signalingInterval = value; }
         }
 
         public ISignaling Signaling
         {
             get
             {
-                switch (s_signalingType)
+                switch (signalingType)
                 {
                     case SignalingType.Furioos:
                         {
-                            var schema = s_signalingSecured ? "https" : "http";
+                            var schema = signalingSecured ? "https" : "http";
                             return new FurioosSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                     case SignalingType.WebSocket:
                         {
-                            var schema = s_signalingSecured ? "wss" : "ws";
+                            var schema = signalingSecured ? "wss" : "ws";
                             return new WebSocketSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                     case SignalingType.Http:
                         {
-                            var schema = s_signalingSecured ? "https" : "http";
+                            var schema = signalingSecured ? "https" : "http";
                             return new HttpSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                 }
 
@@ -92,20 +92,20 @@ namespace Unity.RenderStreaming.Samples
 
         public Vector2Int StreamSize
         {
-            get { return s_streamSize; }
-            set { s_streamSize = value; }
+            get { return streamSize; }
+            set { streamSize = value; }
         }
 
         public VideoCodecInfo ReceiverVideoCodec
         {
-            get { return s_receiverVideoCodec; }
-            set { s_receiverVideoCodec = value; }
+            get { return receiverVideoCodec; }
+            set { receiverVideoCodec = value; }
         }
 
         public VideoCodecInfo SenderVideoCodec
         {
-            get { return s_senderVideoCodec; }
-            set { s_senderVideoCodec = value; }
+            get { return senderVideoCodec; }
+            set { senderVideoCodec = value; }
         }
     }
 

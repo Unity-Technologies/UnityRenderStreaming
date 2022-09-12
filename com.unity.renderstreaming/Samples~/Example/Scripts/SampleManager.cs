@@ -27,7 +27,8 @@ namespace Unity.RenderStreaming.Samples
 
         public void Initialize()
         {
-            m_settings = new RenderStreamingSettings();
+            if(m_settings == null)
+                m_settings = new RenderStreamingSettings();
         }
     }
 }
