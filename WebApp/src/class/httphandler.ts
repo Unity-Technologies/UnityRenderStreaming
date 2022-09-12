@@ -75,17 +75,26 @@ function checkSessionId(req: Request, res: Response, next): void {
 function _deleteConnection(sessionId:string, connectionId:string) {
   clients.get(sessionId).delete(connectionId);
 
-  if (connectionPair.has(connectionId)) {
-    const pair = connectionPair.get(connectionId);
-    const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
-    if (otherSessionId) {
-      if (clients.has(otherSessionId)) {
-        clients.get(otherSessionId).delete(connectionId);
-        const array1 = disconnections.get(otherSessionId);
-        array1.push(new Disconnection(connectionId, Date.now()));
+  if(isPrivate) {
+    if (connectionPair.has(connectionId)) {
+      const pair = connectionPair.get(connectionId);
+      const otherSessionId = pair[0] == sessionId ? pair[1] : pair[0];
+      if (otherSessionId) {
+        if (clients.has(otherSessionId)) {
+          clients.get(otherSessionId).delete(connectionId);
+          const array1 = disconnections.get(otherSessionId);
+          array1.push(new Disconnection(connectionId, Date.now()));
+        }
       }
     }
+  } else {
+    disconnections.forEach((array, id) => {
+      if (id == sessionId)
+        return;
+      array.push(new Disconnection(connectionId, Date.now()));
+    });
   }
+
   connectionPair.delete(connectionId);
   offers.get(sessionId).delete(connectionId);
   answers.get(sessionId).delete(connectionId);
