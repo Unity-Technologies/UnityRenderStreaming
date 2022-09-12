@@ -52,6 +52,8 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public bool Equals(AudioCodecInfo other)
         {
+            if (other == null)
+                return false;
             return this.mimeType == other.mimeType
                 && this.sdpFmtpLine == other.sdpFmtpLine
                 && this.channelCount == other.channelCount
@@ -70,7 +72,14 @@ namespace Unity.RenderStreaming
 
         public static bool operator ==(AudioCodecInfo left, AudioCodecInfo right)
         {
-            return left.Equals(right);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(left, null);
+            }
+            else
+            {
+                return left.Equals(right);
+            }
         }
         
         public static bool operator !=(AudioCodecInfo left, AudioCodecInfo right)

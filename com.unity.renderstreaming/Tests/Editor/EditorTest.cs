@@ -6,6 +6,53 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming.EditorTest
 {
+
+    class VideoCodecInfoTest
+    {
+        [Test]
+        public void EqualityOperator()
+        {
+            VideoCodecInfo info = null;
+            Assert.That(info == null, Is.True);
+            Assert.That(info != null, Is.False);
+
+            VideoCodecInfo otherInfo = info;
+            Assert.That(info == otherInfo, Is.True);
+            Assert.That(info != otherInfo, Is.False);
+
+            info = VideoStreamSender.GetAvailableCodecs().First();
+            Assert.That(info == otherInfo, Is.False);
+            Assert.That(info == (object)otherInfo, Is.False);
+
+            otherInfo = info;
+            Assert.That(info == otherInfo, Is.True);
+            Assert.That(info == (object)otherInfo, Is.True);
+        }
+    }
+
+    class AudioCodecInfoTest
+    {
+        [Test]
+        public void EqualityOperator()
+        {
+            AudioCodecInfo info = null;
+            Assert.That(info == null, Is.True);
+            Assert.That(info != null, Is.False);
+
+            AudioCodecInfo otherInfo = info;
+            Assert.That(info == otherInfo, Is.True);
+            Assert.That(info != otherInfo, Is.False);
+
+            info = AudioStreamSender.GetAvailableCodecs().First();
+            Assert.That(info == otherInfo, Is.False);
+            Assert.That(info == (object)otherInfo, Is.False);
+
+            otherInfo = info;
+            Assert.That(info == otherInfo, Is.True);
+            Assert.That(info == (object)otherInfo, Is.True);
+        }
+    }
+
     class VideoStreamSenderTest
     {
         [Test]

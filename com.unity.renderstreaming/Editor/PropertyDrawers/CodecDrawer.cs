@@ -139,6 +139,8 @@ namespace Unity.RenderStreaming.Editor
                     selectCodecIndex = Array.FindIndex(codecNames, codec => codec == codecName);
                 codecLabel = GetCodecLabel(property.serializedObject.targetObject);
                 hasCodecOptions = codecOptions.Length > 1;
+                if (hasCodecOptions)
+                    selectSdpFmtpLineIndex = Array.FindIndex(sdpFmtpLines, sdp => sdp == propertySdpFmtpLine.stringValue);
                 cache = true;
             }
 
@@ -194,15 +196,17 @@ namespace Unity.RenderStreaming.Editor
 
             if (changed)
             {
-                if (Application.isPlaying)
-                {
-                    var objectReferenceValue = property.serializedObject.targetObject;
-                    var type = objectReferenceValue.GetType();
-                    var attribute = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-                    var methodName = "SetCodec";
-                    var method = type.GetMethod(methodName, attribute);
-//                    method.Invoke(objectReferenceValue, new object[] { newValue });
-                }
+                // todo: not supported changing codecs in play mode.
+
+                //if (Application.isPlaying)
+                //{
+                //    var objectReferenceValue = property.serializedObject.targetObject;
+                //    var type = objectReferenceValue.GetType();
+                //    var attribute = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+                //    var methodName = "SetCodec";
+                //    var method = type.GetMethod(methodName, attribute);
+                //    method.Invoke(objectReferenceValue, new object[] { newValue });
+                //}
                 changed = false;
             }
         }
