@@ -58,7 +58,7 @@ namespace Unity.RenderStreaming
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(mimeType, sdpFmtpLine);
+            return new { mimeType, sdpFmtpLine }.GetHashCode();
         }
 
         public static bool operator ==(VideoCodecInfo left, VideoCodecInfo right)

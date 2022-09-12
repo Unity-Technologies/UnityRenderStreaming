@@ -67,7 +67,7 @@ namespace Unity.RenderStreaming
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(mimeType, sdpFmtpLine, channelCount, sampleRate);
+            return new { mimeType, sdpFmtpLine, channelCount, sampleRate }.GetHashCode();
         }
 
         public static bool operator ==(AudioCodecInfo left, AudioCodecInfo right)

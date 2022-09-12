@@ -28,6 +28,17 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(info == otherInfo, Is.True);
             Assert.That(info == (object)otherInfo, Is.True);
         }
+
+        [Test]
+        public void HashCode()
+        {
+            VideoCodecInfo info = VideoStreamSender.GetAvailableCodecs().First();
+            VideoCodecInfo otherInfo = info;
+            Assert.That(info.GetHashCode() == otherInfo.GetHashCode(), Is.True);
+
+            otherInfo = VideoStreamSender.GetAvailableCodecs().Last();
+            Assert.That(info.GetHashCode() == otherInfo.GetHashCode(), Is.False);
+        }
     }
 
     class AudioCodecInfoTest
@@ -51,6 +62,18 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(info == otherInfo, Is.True);
             Assert.That(info == (object)otherInfo, Is.True);
         }
+
+        [Test]
+        public void HashCode()
+        {
+            AudioCodecInfo info = AudioStreamSender.GetAvailableCodecs().First();
+            AudioCodecInfo otherInfo = info;
+            Assert.That(info.GetHashCode() == otherInfo.GetHashCode(), Is.True);
+
+            otherInfo = AudioStreamSender.GetAvailableCodecs().Last();
+            Assert.That(info.GetHashCode() == otherInfo.GetHashCode(), Is.False);
+        }
+
     }
 
     class VideoStreamSenderTest
