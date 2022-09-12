@@ -13,6 +13,13 @@ namespace Unity.RenderStreaming.Samples
         private List<Component> streams = new List<Component>();
         private Dictionary<string, GameObject> dictObj = new Dictionary<string, GameObject>();
 
+        private RenderStreamingSettings settings;
+
+        void Awake()
+        {
+            settings = SampleManager.Instance.Settings;
+        }
+
         public override IEnumerable<Component> Streams => streams;
 
         public void OnDeletedConnection(SignalingEventData eventData)
@@ -66,11 +73,11 @@ namespace Unity.RenderStreaming.Samples
 
             var sender = newObj.GetComponentInChildren<StreamSenderBase>();
 
-            if (sender is VideoStreamSender videoStreamSender)
+            if (sender is VideoStreamSender videoStreamSender && settings != null)
             {
-                videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
-                videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
-                videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
+                videoStreamSender.width = (uint)settings.StreamSize.x;
+                videoStreamSender.height = (uint)settings.StreamSize.y;
+                videoStreamSender.SetCodec(settings.SenderVideoCodec);
             }
 
             var inputChannel = newObj.GetComponentInChildren<InputReceiver>();

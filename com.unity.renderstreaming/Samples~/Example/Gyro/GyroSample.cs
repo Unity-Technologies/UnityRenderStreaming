@@ -21,6 +21,7 @@ namespace Unity.RenderStreaming.Samples
             [SerializeField] private Text textVelocityZ;
             [SerializeField] private InputAction vector3Action;
 #pragma warning restore 0649
+        private RenderStreamingSettings settings;
 
         void Awake()
         {
@@ -30,6 +31,8 @@ namespace Unity.RenderStreaming.Samples
                 Debug.LogError("Gyroscope is not supported on this device.");
             sendOfferButton.onClick.AddListener(SendOffer);
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
+
+            settings = SampleManager.Instance.Settings;
         }
 
         void OnDestroy()
@@ -43,7 +46,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: settings?.Signaling);
         }
 
         void OnEnable()
@@ -75,7 +78,8 @@ namespace Unity.RenderStreaming.Samples
 
         void SendOffer()
         {
-            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
+            if(settings != null)
+                receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
 
             var connectionId = System.Guid.NewGuid().ToString("N");
             connection.CreateConnection(connectionId);

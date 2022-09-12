@@ -69,6 +69,7 @@ namespace Unity.RenderStreaming.Samples
                 { "2560x1440", new Vector2Int(2560, 1440) },
             };
 
+        private RenderStreamingSettings settings;
 
         private void Awake()
         {
@@ -78,13 +79,15 @@ namespace Unity.RenderStreaming.Samples
                     .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
             );
 #endif
-
-            if (videoStreamSender.source != VideoStreamSource.Texture)
+            if(settings != null)
             {
-                videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
-                videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
+                if (videoStreamSender.source != VideoStreamSource.Texture)
+                {
+                    videoStreamSender.width = (uint)settings.StreamSize.x;
+                    videoStreamSender.height = (uint)settings.StreamSize.y;
+                }
+                videoStreamSender.SetCodec(settings.SenderVideoCodec);
             }
-            videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
 
             bandwidthSelector.options = bandwidthOptions
                 .Select(pair => new Dropdown.OptionData { text = pair.Key })
@@ -107,6 +110,8 @@ namespace Unity.RenderStreaming.Samples
                 .ToList();
             resolutionSelector.SetValueWithoutNotify(1); // todo: detect default select index
             resolutionSelector.onValueChanged.AddListener(ChangeResolution);
+
+            settings = SampleManager.Instance.Settings;
         }
 
         private void ChangeBandwidth(int index)
@@ -139,7 +144,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: settings?.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
         }

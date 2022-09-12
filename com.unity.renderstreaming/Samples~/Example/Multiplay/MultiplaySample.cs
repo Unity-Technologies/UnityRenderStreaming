@@ -26,6 +26,14 @@ namespace Unity.RenderStreaming.Samples
             Guest = 1
         }
 
+        private RenderStreamingSettings settings;
+
+
+        private void Awake()
+        {
+            settings = SampleManager.Instance.Settings;
+        }
+
         void Start()
         {
             buttonStart.onClick.AddListener(OnClickButtonStart);
@@ -79,7 +87,7 @@ namespace Unity.RenderStreaming.Samples
             playerController.CheckPairedDevices();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
+            renderStreaming.Run(signaling: settings?.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
         }
@@ -90,7 +98,7 @@ namespace Unity.RenderStreaming.Samples
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling,
+            renderStreaming.Run(signaling: settings?.Signaling,
                 handlers: new SignalingHandlerBase[] {handler}
             );
 
@@ -101,7 +109,8 @@ namespace Unity.RenderStreaming.Samples
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
-            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
+            if(settings != null)
+                receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
 
             // todo(kazuki):
             yield return new WaitForSeconds(1f);
