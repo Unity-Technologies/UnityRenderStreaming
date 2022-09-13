@@ -147,7 +147,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
             var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
 
-            Assert.That(streamer.Track, Is.Not.Null);
+            Assert.That(streamer.Track, Is.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
 
             container.test.component.AddComponent(streamer);
