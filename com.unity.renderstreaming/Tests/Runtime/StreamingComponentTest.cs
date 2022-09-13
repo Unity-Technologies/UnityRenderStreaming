@@ -338,7 +338,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             track.Dispose();
             track = null;
 
-            // With WebCam
+            // With Microphone
 #if !(UNITY_IPHONE || UNITY_ANDROID)
             sender.source = AudioStreamSource.Microphone;
             op = sender.CreateTrack();
