@@ -411,7 +411,10 @@ namespace Unity.RenderStreaming
             m_TextureSize = size;
 
             if (isPlaying)
-                ReplaceTrack(CreateTrack());
+            {
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+            }
         }
 
         protected virtual void Awake()
@@ -433,12 +436,28 @@ namespace Unity.RenderStreaming
             m_sourceImpl = null;
         }
 
-        internal override MediaStreamTrack CreateTrack()
+        internal override WaitForCreateTrack CreateTrack()
         {
             m_sourceImpl?.Dispose();
             m_sourceImpl = CreateVideoStreamSource();
             return m_sourceImpl.CreateTrack();
         }
+
+        void StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
+        {
+            if (coroutine == null)
+                throw new ArgumentNullException("coroutine");
+            if (callback == null)
+                throw new ArgumentNullException("callback");
+            _Coroutine(coroutine, callback);
+        }
+
+        IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
+        {
+            yield return StartCoroutine(coroutine);
+            callback(coroutine);
+        }
+
 
         VideoStreamSourceImpl CreateVideoStreamSource()
         {
@@ -465,7 +484,7 @@ namespace Unity.RenderStreaming
                 depth = parent.m_Depth;
                 antiAliasing = parent.m_AntiAliasing;
             }
-            public abstract VideoStreamTrack CreateTrack();
+            public abstract WaitForCreateTrack CreateTrack();
             public abstract void Dispose();
             public int width { get; private set; }
             public int height { get; private set; }
@@ -485,7 +504,7 @@ namespace Unity.RenderStreaming
                 m_camera = camera;
             }
 
-            public override VideoStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
             {
                 if (m_camera.targetTexture != null)
                 {
@@ -516,7 +535,9 @@ namespace Unity.RenderStreaming
                     m_renderTexture.Create();
                     m_camera.targetTexture = m_renderTexture;
                 }
-                return new VideoStreamTrack(m_renderTexture);
+                var instruction = new WaitForCreateTrack();
+                instruction.Done(new VideoStreamTrack(m_renderTexture));
+                return instruction;
             }
 
             public override void Dispose()
@@ -553,16 +574,22 @@ namespace Unity.RenderStreaming
                 m_behaviour = parent;
             }
 
-            public override VideoStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
             {
+                var instruction = new WaitForCreateTrack();
+
                 GraphicsFormat format =
                     WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
                 if (m_texture.graphicsFormat == format)
-                    return new VideoStreamTrack(m_texture);
+                {
+                    instruction.Done(new VideoStreamTrack(m_texture));
+                    return instruction;
+                }
 
                 m_copyTexture = new Texture2D(width, height, format, TextureCreationFlags.None);
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
-                return new VideoStreamTrack(m_copyTexture);
+                instruction.Done(new VideoStreamTrack(m_copyTexture));
+                return instruction;
             }
 
             public override void Dispose()
@@ -633,7 +660,7 @@ namespace Unity.RenderStreaming
                 return new Vector2Int(screenWidth, screenHeight);
             }
 
-            public override VideoStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
             {
                 Vector2Int screenSize = GetScreenSize();
                 m_screenTexture =
@@ -650,7 +677,9 @@ namespace Unity.RenderStreaming
                                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
 
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
-                return new VideoStreamTrack(m_screenCopyTexture, isOpenGl);
+                var instruction = new WaitForCreateTrack();
+                instruction.Done(new VideoStreamTrack(m_screenCopyTexture, isOpenGl));
+                return instruction;
             }
 
             IEnumerator RecordScreenFrame()
@@ -693,6 +722,7 @@ namespace Unity.RenderStreaming
             bool m_autoRequestUserAuthorization;
             float m_frameRate;
             WebCamTexture m_webcamTexture;
+            VideoStreamSender m_parent;
 
             public WebCamTexture webCamTexture => m_webcamTexture;
 
@@ -701,20 +731,25 @@ namespace Unity.RenderStreaming
                 int deviceIndex = parent.m_WebCamDeviceIndex;
                 if (deviceIndex < 0 || WebCamTexture.devices.Length <= deviceIndex)
                     throw new ArgumentOutOfRangeException("deviceIndex", deviceIndex, "The deviceIndex is out of range");
+                m_parent = parent;
                 m_deviceIndex = deviceIndex;
                 m_frameRate = parent.m_FrameRate;
                 m_autoRequestUserAuthorization = parent.m_AutoRequestUserAuthorization;
             }
 
-            public override VideoStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
+            {
+                var instruction = new WaitForCreateTrack();
+                m_parent.StartCoroutine(CreateTrackCoroutine(instruction));
+                return instruction;
+            }
+
+            IEnumerator CreateTrackCoroutine(WaitForCreateTrack instruction)
             {
                 if (m_autoRequestUserAuthorization)
                 {
                     AsyncOperation op = Application.RequestUserAuthorization(UserAuthorization.WebCam);
-                    while (!op.isDone)
-                    {
-                        System.Threading.Thread.Sleep(1);
-                    }
+                    yield return op;
                 }
                 if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
                     throw new InvalidOperationException("Call Application.RequestUserAuthorization before creating track with WebCam.");
@@ -722,18 +757,14 @@ namespace Unity.RenderStreaming
                 WebCamDevice userCameraDevice = WebCamTexture.devices[m_deviceIndex];
                 m_webcamTexture = new WebCamTexture(userCameraDevice.name, width, height, (int)m_frameRate);
                 m_webcamTexture.Play();
-                while (!m_webcamTexture.didUpdateThisFrame)
-                {
-                    System.Threading.Thread.Sleep(1);
-                }
+                yield return new WaitUntil(() => m_webcamTexture.didUpdateThisFrame);
                 if (m_webcamTexture.width != width || m_webcamTexture.height != height)
                 {
                     Destroy(m_webcamTexture);
                     m_webcamTexture = null;
                     throw new InvalidOperationException($"The device doesn't support the resolution. {width} x {height}");
                 }
-
-                return new VideoStreamTrack(m_webcamTexture);
+                instruction.Done(new VideoStreamTrack(m_webcamTexture));
             }
 
             public override void Dispose()
