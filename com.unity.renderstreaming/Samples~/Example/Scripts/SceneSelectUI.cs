@@ -23,66 +23,66 @@ namespace Unity.RenderStreaming.Samples
         Furioos
     }
 
-    internal static class RenderStreamingSettings
+    internal class RenderStreamingSettings
     {
         public const int DefaultStreamWidth = 1280;
         public const int DefaultStreamHeight = 720;
 
-        private static SignalingType s_signalingType = SignalingType.WebSocket;
-        private static string s_signalingAddress = "localhost";
-        private static float s_signalingInterval = 5;
-        private static bool s_signalingSecured = false;
-        private static Vector2Int s_streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
-        private static VideoCodecInfo s_receiverVideoCodec = null;
-        private static VideoCodecInfo s_senderVideoCodec = null;
+        private SignalingType signalingType = SignalingType.WebSocket;
+        private string signalingAddress = "localhost";
+        private float signalingInterval = 5;
+        private bool signalingSecured = false;
+        private Vector2Int streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
+        private VideoCodecInfo receiverVideoCodec = null;
+        private VideoCodecInfo senderVideoCodec = null;
 
-        public static SignalingType SignalingType
+        public SignalingType SignalingType
         {
-            get { return s_signalingType; }
-            set { s_signalingType = value; }
+            get { return signalingType; }
+            set { signalingType = value; }
         }
 
-        public static string SignalingAddress
+        public string SignalingAddress
         {
-            get { return s_signalingAddress; }
-            set { s_signalingAddress = value; }
+            get { return signalingAddress; }
+            set { signalingAddress = value; }
         }
 
-        public static bool SignalingSecured
+        public bool SignalingSecured
         {
-            get { return s_signalingSecured; }
-            set { s_signalingSecured = value; }
+            get { return signalingSecured; }
+            set { signalingSecured = value; }
         }
 
-        public static float SignalingInterval
+        public float SignalingInterval
         {
-            get { return s_signalingInterval; }
-            set { s_signalingInterval = value; }
+            get { return signalingInterval; }
+            set { signalingInterval = value; }
         }
 
-        public static ISignaling Signaling
+        public ISignaling Signaling
         {
             get
             {
-                switch (s_signalingType)
+                switch (signalingType)
                 {
                     case SignalingType.Furioos:
                         {
-                            var schema = s_signalingSecured ? "https" : "http";
+                            var schema = signalingSecured ? "https" : "http";
                             return new FurioosSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                     case SignalingType.WebSocket:
                         {
-                            var schema = s_signalingSecured ? "wss" : "ws";
+                            var schema = signalingSecured ? "wss" : "ws";
                             return new WebSocketSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                     case SignalingType.Http:
                         {
-                            var schema = s_signalingSecured ? "https" : "http";
+                            var schema = signalingSecured ? "https" : "http";
                             return new HttpSignaling(
-                                $"{schema}://{s_signalingAddress}", s_signalingInterval, SynchronizationContext.Current);
+                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
                         }
                 }
 
@@ -90,22 +90,22 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-        public static Vector2Int StreamSize
+        public Vector2Int StreamSize
         {
-            get { return s_streamSize; }
-            set { s_streamSize = value; }
+            get { return streamSize; }
+            set { streamSize = value; }
         }
 
-        public static VideoCodecInfo ReceiverVideoCodec
+        public VideoCodecInfo ReceiverVideoCodec
         {
-            get { return s_receiverVideoCodec; }
-            set { s_receiverVideoCodec = value; }
+            get { return receiverVideoCodec; }
+            set { receiverVideoCodec = value; }
         }
 
-        public static VideoCodecInfo SenderVideoCodec
+        public VideoCodecInfo SenderVideoCodec
         {
-            get { return s_senderVideoCodec; }
-            set { s_senderVideoCodec = value; }
+            get { return senderVideoCodec; }
+            set { senderVideoCodec = value; }
         }
     }
 
@@ -145,6 +145,8 @@ namespace Unity.RenderStreaming.Samples
             new Vector2Int(2160, 3840),
         };
 
+        private RenderStreamingSettings settings;
+
         static string CodecTitle(VideoCodecInfo codec)
         {
             switch (codec)
@@ -161,11 +163,14 @@ namespace Unity.RenderStreaming.Samples
 
         void Start()
         {
-            dropdownSignalingType.value = (int)RenderStreamingSettings.SignalingType;
-            inputFieldSignalingAddress.text = RenderStreamingSettings.SignalingAddress;
-            toggleSignalingSecured.isOn = RenderStreamingSettings.SignalingSecured;
+            SampleManager.Instance.Initialize();
+            settings  = SampleManager.Instance.Settings;
+
+            dropdownSignalingType.value = (int)settings.SignalingType;
+            inputFieldSignalingAddress.text = settings.SignalingAddress;
+            toggleSignalingSecured.isOn = settings.SignalingSecured;
             inputFieldSignalingInterval.text =
-                RenderStreamingSettings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
+                settings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
 
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
@@ -176,16 +181,16 @@ namespace Unity.RenderStreaming.Samples
             optionList.Add(new Dropdown.OptionData(" Custom "));
             streamSizeSelector.options = optionList;
 
-            var existInList = streamSizeList.Contains(RenderStreamingSettings.StreamSize);
+            var existInList = streamSizeList.Contains(settings.StreamSize);
             if (existInList)
             {
-                streamSizeSelector.value = streamSizeList.IndexOf(RenderStreamingSettings.StreamSize);
+                streamSizeSelector.value = streamSizeList.IndexOf(settings.StreamSize);
             }
             else
             {
                 streamSizeSelector.value = optionList.Count - 1;
-                textureWidthInput.text = RenderStreamingSettings.StreamSize.x.ToString();
-                textureHeightInput.text = RenderStreamingSettings.StreamSize.y.ToString();
+                textureWidthInput.text = settings.StreamSize.x.ToString();
+                textureHeightInput.text = settings.StreamSize.y.ToString();
                 textureWidthInput.interactable = true;
                 textureHeightInput.interactable = true;
             }
@@ -202,8 +207,8 @@ namespace Unity.RenderStreaming.Samples
                 .Select(codec => new Dropdown.OptionData(CodecTitle(codec))).ToList();
             senderVideoCodecSelector.options.AddRange(senderVideoCodecList);
 
-            receiverVideoCodecSelector.value = Array.FindIndex(VideoStreamReceiver.GetAvailableCodecs().ToArray(), codec => codec.Equals(RenderStreamingSettings.ReceiverVideoCodec)) + 1;
-            senderVideoCodecSelector.value = Array.FindIndex(VideoStreamSender.GetAvailableCodecs().ToArray(), codec => codec.Equals(RenderStreamingSettings.SenderVideoCodec)) + 1;
+            receiverVideoCodecSelector.value = Array.FindIndex(VideoStreamReceiver.GetAvailableCodecs().ToArray(), codec => codec.Equals(settings.ReceiverVideoCodec)) + 1;
+            senderVideoCodecSelector.value = Array.FindIndex(VideoStreamSender.GetAvailableCodecs().ToArray(), codec => codec.Equals(settings.SenderVideoCodec)) + 1;
 
             receiverVideoCodecSelector.onValueChanged.AddListener(OnChangeReceiverVideoCodecSelect);
             senderVideoCodecSelector.onValueChanged.AddListener(OnChangeSenderVideoCodecSelect);
@@ -254,29 +259,29 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnChangeSignalingType(int value)
         {
-            RenderStreamingSettings.SignalingType =
+            settings.SignalingType =
                 (SignalingType)Enum.GetValues(typeof(SignalingType)).GetValue(value);
         }
 
         private void OnChangeSignalingAddress(string value)
         {
-            RenderStreamingSettings.SignalingAddress = value;
+            settings.SignalingAddress = value;
         }
 
         private void OnChangeSignalingSecured(bool value)
         {
-            RenderStreamingSettings.SignalingSecured = value;
+            settings.SignalingSecured = value;
         }
 
         private void OnChangeSignalingInterval(string value)
         {
             if (float.TryParse(value, out float _value))
             {
-                RenderStreamingSettings.SignalingInterval = _value;
+                settings.SignalingInterval = _value;
             }
             else
             {
-                RenderStreamingSettings.SignalingInterval = 5;
+                settings.SignalingInterval = 5;
             }
         }
 
@@ -291,55 +296,55 @@ namespace Unity.RenderStreaming.Samples
                 return;
             }
 
-            RenderStreamingSettings.StreamSize = streamSizeList[index];
+            settings.StreamSize = streamSizeList[index];
         }
 
         private void OnChangeTextureWidthInput(string input)
         {
-            var height = RenderStreamingSettings.StreamSize.y;
+            var height = settings.StreamSize.y;
 
             if (string.IsNullOrEmpty(input))
             {
-                RenderStreamingSettings.StreamSize = new Vector2Int(RenderStreamingSettings.DefaultStreamWidth, height);
+                settings.StreamSize = new Vector2Int(RenderStreamingSettings.DefaultStreamWidth, height);
                 return;
             }
 
             if (int.TryParse(input, out var width))
             {
-                RenderStreamingSettings.StreamSize = new Vector2Int(width, height);
+                settings.StreamSize = new Vector2Int(width, height);
             }
         }
 
         private void OnChangeTextureHeightInput(string input)
         {
-            var width = RenderStreamingSettings.StreamSize.x;
+            var width = settings.StreamSize.x;
 
             if (string.IsNullOrEmpty(input))
             {
-                RenderStreamingSettings.StreamSize = new Vector2Int(width, RenderStreamingSettings.DefaultStreamHeight);
+                settings.StreamSize = new Vector2Int(width, RenderStreamingSettings.DefaultStreamHeight);
                 return;
             }
 
             if (int.TryParse(input, out var height))
             {
-                RenderStreamingSettings.StreamSize = new Vector2Int(width, height);
+                settings.StreamSize = new Vector2Int(width, height);
             }
         }
 
         private void OnChangeSenderVideoCodecSelect(int index)
         {
             if (index == 0)
-                RenderStreamingSettings.SenderVideoCodec = null;
+                settings.SenderVideoCodec = null;
             else
-                RenderStreamingSettings.SenderVideoCodec = VideoStreamSender.GetAvailableCodecs().ElementAt(index - 1);
+                settings.SenderVideoCodec = VideoStreamSender.GetAvailableCodecs().ElementAt(index - 1);
         }
 
         private void OnChangeReceiverVideoCodecSelect(int index)
         {
             if (index == 0)
-                RenderStreamingSettings.ReceiverVideoCodec = null;
+                settings.ReceiverVideoCodec = null;
             else
-                RenderStreamingSettings.ReceiverVideoCodec = VideoStreamReceiver.GetAvailableCodecs().ElementAt(index - 1);
+                settings.ReceiverVideoCodec = VideoStreamReceiver.GetAvailableCodecs().ElementAt(index - 1);
         }
 
         private void OnPressedBidirectional()

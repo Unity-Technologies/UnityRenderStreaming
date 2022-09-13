@@ -42,6 +42,7 @@ namespace Unity.RenderStreaming.Samples
 
         private string connectionId;
         private InputSender inputSender;
+        private RenderStreamingSettings settings;
 
         void Awake()
         {
@@ -59,13 +60,15 @@ namespace Unity.RenderStreaming.Samples
 
             inputSender = GetComponent<InputSender>();
             inputSender.OnStartedChannel += OnStartedChannel;
+
+            settings = SampleManager.Instance.Settings;
         }
 
         void Start()
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: settings?.Signaling);
         }
 
         void OnUpdateReceiveTexture(Texture texture)
@@ -95,7 +98,8 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.text = connectionId;
             }
             connectionIdInput.interactable = false;
-            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
+            if(settings != null)
+                receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
             receiveAudioViewer.targetAudioSource = remoteAudioSource;
 
             connection.CreateConnection(connectionId);

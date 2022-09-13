@@ -25,6 +25,7 @@ namespace Unity.RenderStreaming.Samples
 #pragma warning restore 0649
 
         private string connectionId;
+        private RenderStreamingSettings settings;
 
         void Awake()
         {
@@ -51,8 +52,12 @@ namespace Unity.RenderStreaming.Samples
             webCamStreamer.OnStartedStream += id => receiveVideoViewer.enabled = true;
             webCamStreamer.OnStartedStream += _ => localVideoImage.texture = webCamStreamer.sourceWebCamTexture;
 
-            webCamStreamer.width = (uint)RenderStreamingSettings.StreamSize.x;
-            webCamStreamer.height = (uint)RenderStreamingSettings.StreamSize.y;
+            settings = SampleManager.Instance.Settings;
+            if (settings != null)
+            {
+                webCamStreamer.width = (uint)settings.StreamSize.x;
+                webCamStreamer.height = (uint)settings.StreamSize.y;
+            }
 
             receiveVideoViewer.OnUpdateReceiveTexture += texture => remoteVideoImage.texture = texture;
 
@@ -71,7 +76,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+            renderStreaming.Run(signaling: settings?.Signaling);
         }
 
         private void SetUp()
@@ -79,8 +84,11 @@ namespace Unity.RenderStreaming.Samples
             setUpButton.interactable = false;
             hangUpButton.interactable = true;
             connectionIdInput.interactable = false;
-            receiveVideoViewer.SetCodec(RenderStreamingSettings.ReceiverVideoCodec);
-            webCamStreamer.SetCodec(RenderStreamingSettings.SenderVideoCodec);
+            if(settings != null)
+            {
+                receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
+                webCamStreamer.SetCodec(settings.SenderVideoCodec);
+            }
 
             singleConnection.CreateConnection(connectionId);
         }

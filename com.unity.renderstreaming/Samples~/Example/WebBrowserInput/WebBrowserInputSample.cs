@@ -10,6 +10,13 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] Transform[] cameras;
         [SerializeField] CopyTransform copyTransform;
 
+        RenderStreamingSettings settings;
+
+        private void Awake()
+        {
+            settings = SampleManager.Instance.Settings;
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -17,7 +24,7 @@ namespace Unity.RenderStreaming.Samples
 
             if (!renderStreaming.runOnAwake)
             {
-                renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+                renderStreaming.Run(signaling: settings?.Signaling);
             }
         }
 

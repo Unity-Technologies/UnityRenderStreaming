@@ -56,11 +56,18 @@ namespace Unity.RenderStreaming.Samples
                 { "2560x1440", new Vector2Int(2560, 1440) },
             };
 
+        private RenderStreamingSettings settings;
+
         private void Awake()
         {
-            videoStreamSender.width = (uint)RenderStreamingSettings.StreamSize.x;
-            videoStreamSender.height = (uint)RenderStreamingSettings.StreamSize.y;
-            videoStreamSender.SetCodec(RenderStreamingSettings.SenderVideoCodec);
+            settings = SampleManager.Instance.Settings;
+
+            if(settings != null)
+            {
+                videoStreamSender.width = (uint)settings.StreamSize.x;
+                videoStreamSender.height = (uint)settings.StreamSize.y;
+                videoStreamSender.SetCodec(settings.SenderVideoCodec);
+            }
 
             bandwidthSelector.options = bandwidthOptions
                 .Select(pair => new Dropdown.OptionData { text = pair.Key })
@@ -114,7 +121,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (!renderStreaming.runOnAwake)
             {
-                renderStreaming.Run(signaling: RenderStreamingSettings.Signaling);
+                renderStreaming.Run(signaling: settings?.Signaling);
             }
         }
     }
