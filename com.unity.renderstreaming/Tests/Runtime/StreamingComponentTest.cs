@@ -340,13 +340,16 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // With Microphone
 #if !(UNITY_IPHONE || UNITY_ANDROID)
-            sender.source = AudioStreamSource.Microphone;
-            op = sender.CreateTrack();
-            yield return op;
-            track = op.Track;
-            Assert.That(track, Is.Not.Null);
-            track.Dispose();
-            track = null;
+            if (Microphone.devices.Length > 0 && Application.HasUserAuthorization(UserAuthorization.Microphone))
+            {
+                sender.source = AudioStreamSource.Microphone;
+                op = sender.CreateTrack();
+                yield return op;
+                track = op.Track;
+                Assert.That(track, Is.Not.Null);
+                track.Dispose();
+                track = null;
+            }
 #endif
             UnityEngine.Object.DestroyImmediate(go);
             UnityEngine.Object.DestroyImmediate(go2);
