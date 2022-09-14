@@ -722,7 +722,9 @@ namespace Unity.RenderStreaming
             bool m_autoRequestUserAuthorization;
             float m_frameRate;
             WebCamTexture m_webcamTexture;
+            Texture m_webcamCopyTexture;
             VideoStreamSender m_parent;
+            Coroutine m_coroutineConvertFrame;
 
             public WebCamTexture webCamTexture => m_webcamTexture;
 
@@ -764,11 +766,40 @@ namespace Unity.RenderStreaming
                     m_webcamTexture = null;
                     throw new InvalidOperationException($"The device doesn't support the resolution. {width} x {height}");
                 }
-                instruction.Done(new VideoStreamTrack(m_webcamTexture));
+
+                /// Convert texture if the graphicsFormat is not supported.
+                /// Since Unity 2022.1, WebCamTexture.graphicsFormat returns 
+                var supportedFormat = WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
+                if (m_webcamTexture.graphicsFormat != supportedFormat)
+                {
+                    m_webcamCopyTexture = new Texture2D(width, height, supportedFormat, TextureCreationFlags.None);
+                    instruction.Done(new VideoStreamTrack(m_webcamCopyTexture));
+                    m_coroutineConvertFrame = m_parent.StartCoroutine(ConvertFrame());
+                }
+                else
+                {
+                    instruction.Done(new VideoStreamTrack(m_webcamTexture));
+                }
+            }
+
+            IEnumerator ConvertFrame()
+            {
+                while (true)
+                {
+                    yield return new WaitForEndOfFrame();
+                    Graphics.ConvertTexture(m_webcamTexture, m_webcamCopyTexture);
+                }
             }
 
             public override void Dispose()
             {
+                if(m_coroutineConvertFrame != null)
+                {
+                    m_parent.StopCoroutine(m_coroutineConvertFrame);
+                    m_parent = null;
+                    Destroy(m_webcamCopyTexture);
+                    m_webcamCopyTexture = null;
+                }
                 if (m_webcamTexture == null)
                     return;
                 m_webcamTexture.Stop();
