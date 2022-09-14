@@ -30,10 +30,12 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         private Camera m_camera;
 
-        internal override MediaStreamTrack CreateTrack()
+        internal override WaitForCreateTrack CreateTrack()
         {
             m_camera = gameObject.AddComponent<Camera>();
-            return m_camera.CaptureStreamTrack(256, 256, 0);
+            var instruction = new WaitForCreateTrack();
+            instruction.Done(m_camera.CaptureStreamTrack(256, 256, 0));
+            return instruction;
         }
     }
 
@@ -45,11 +47,13 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         private AudioSource m_audioSource;
 
-        internal override MediaStreamTrack CreateTrack()
+        internal override WaitForCreateTrack CreateTrack()
         {
             m_audioSource = gameObject.AddComponent<AudioSource>();
             m_audioSource.clip = AudioClip.Create("test", 48000, 2, 48000, false);
-            return new AudioStreamTrack(m_audioSource);
+            var instruction = new WaitForCreateTrack();
+            instruction.Done(new AudioStreamTrack(m_audioSource));
+            return instruction;
         }
     }
 
@@ -143,7 +147,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
             var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
 
-            Assert.That(streamer.Track, Is.Not.Null);
+            Assert.That(streamer.Track, Is.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
 
             container.test.component.AddComponent(streamer);
@@ -318,7 +322,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
 
-            Assert.That(streamer.Track, Is.Not.Null);
+            Assert.That(streamer.Track, Is.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
 
             container.test.component.AddComponent(streamer);

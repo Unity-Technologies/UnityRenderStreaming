@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.WebRTC;
@@ -64,6 +65,20 @@ namespace Unity.RenderStreaming
         private Action<float[], int, int> m_onAudioFilterRead = null;
 
         private int m_frequency = 48000;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AudioStreamSource source
+        {
+            get { return m_Source; }
+            set
+            {
+                if (isPlaying)
+                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                m_Source = value;
+            }
+        }
 
         /// <summary>
         /// 
@@ -193,6 +208,14 @@ namespace Unity.RenderStreaming
             OnStoppedStream += _OnStoppedStream;
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
+        }
+
         void OnAudioConfigurationChanged(bool deviceWasChanged)
         {
             m_sampleRate = AudioSettings.outputSampleRate;
@@ -204,9 +227,11 @@ namespace Unity.RenderStreaming
 
         void _OnStoppedStream(string connectionId)
         {
+            m_sourceImpl?.Dispose();
+            m_sourceImpl = null;
         }
 
-        internal override MediaStreamTrack CreateTrack()
+        internal override WaitForCreateTrack CreateTrack()
         {
             m_sourceImpl?.Dispose();
             m_sourceImpl = CreateAudioStreamSource();
@@ -260,7 +285,7 @@ namespace Unity.RenderStreaming
             {
             }
 
-            public abstract AudioStreamTrack CreateTrack();
+            public abstract WaitForCreateTrack CreateTrack();
             public abstract void Dispose();
         }
 
@@ -275,10 +300,12 @@ namespace Unity.RenderStreaming
                     throw new InvalidOperationException("Audio Listener have to be set the same gameObject.");
             }
 
-            public override AudioStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
             {
+                var instruction = new WaitForCreateTrack();
                 m_audioTrack = new AudioStreamTrack();
-                return m_audioTrack;
+                instruction.Done(m_audioTrack);
+                return instruction;
             }
 
             public override void Dispose()
@@ -318,13 +345,15 @@ namespace Unity.RenderStreaming
             {
                 m_audioSource = parent.m_AudioSource;
                 if (m_audioSource == null)
-                    throw new ArgumentException("parent", "The m_AudioSource is not assigned.");
+                    throw new InvalidOperationException("The audioSource is not assigned.");
 
             }
 
-            public override AudioStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
             {
-                return new AudioStreamTrack(m_audioSource);
+                var instruction = new WaitForCreateTrack();
+                instruction.Done(new AudioStreamTrack(m_audioSource));
+                return instruction;
             }
 
             public override void Dispose()
@@ -342,46 +371,56 @@ namespace Unity.RenderStreaming
             int m_deviceIndex;
             bool m_autoRequestUserAuthorization;
             int m_frequency;
-            GameObject m_parentObj;
+            string m_deviceName;
             AudioSource m_audioSource;
+            AudioStreamSender m_parent;
 
             public AudioStreamSourceMicrophone(AudioStreamSender parent) : base(parent)
             {
                 int deviceIndex = parent.m_MicrophoneDeviceIndex;
                 if (deviceIndex < 0 || Microphone.devices.Length <= deviceIndex)
                     throw new ArgumentOutOfRangeException("deviceIndex", deviceIndex, "The deviceIndex is out of range");
-                m_parentObj = parent.gameObject;
+                m_parent = parent;
                 m_deviceIndex = deviceIndex;
                 m_frequency = parent.m_frequency;
                 m_autoRequestUserAuthorization = parent.m_AutoRequestUserAuthorization;
             }
 
-            public override AudioStreamTrack CreateTrack()
+            public override WaitForCreateTrack CreateTrack()
+            {
+                var instruction = new WaitForCreateTrack();
+                m_parent.StartCoroutine(CreateTrackCoroutine(instruction));
+                return instruction;
+            }
+
+            IEnumerator CreateTrackCoroutine(WaitForCreateTrack instruction)
             {
                 if (m_autoRequestUserAuthorization)
                 {
                     AsyncOperation op = Application.RequestUserAuthorization(UserAuthorization.Microphone);
-                    while (!op.isDone)
-                    {
-                        System.Threading.Thread.Sleep(1);
-                    }
+                    yield return op;
                 }
                 if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
                     throw new InvalidOperationException("Call Application.RequestUserAuthorization before creating track with Microphone.");
 
-                var deviceName = Microphone.devices[m_deviceIndex];
-                Microphone.GetDeviceCaps(deviceName, out int minFreq, out int maxFreq);
-                var micClip = Microphone.Start(deviceName, true, 1, m_frequency);
+                m_deviceName = Microphone.devices[m_deviceIndex];
+                Microphone.GetDeviceCaps(m_deviceName, out int minFreq, out int maxFreq);
+                var micClip = Microphone.Start(m_deviceName, true, 1, m_frequency);
 
                 // set the latency to “0” samples before the audio starts to play.
-                while (!(Microphone.GetPosition(deviceName) > 0)) { }
+                yield return new WaitUntil(() => Microphone.GetPosition(m_deviceName) > 0);
 
-                m_audioSource = m_parentObj.AddComponent<AudioSource>();
+                /// todo: Throw exception if gameObject already has the AudioSource.
+                /// To fix this, fix the issue of AudioStreamTrack first.
+                m_audioSource = m_parent.gameObject.GetComponent<AudioSource>();
+                if(m_audioSource == null)
+                    m_audioSource = m_parent.gameObject.AddComponent<AudioSource>();
+
                 m_audioSource.clip = micClip;
                 m_audioSource.loop = true;
                 m_audioSource.Play();
 
-                return new AudioStreamTrack(m_audioSource);
+                instruction.Done(new AudioStreamTrack(m_audioSource));
             }
 
             public override void Dispose()
@@ -396,9 +435,16 @@ namespace Unity.RenderStreaming
                     }
                     m_audioSource.clip = null;
 
-                    Destroy(m_audioSource);
+                    /// todo: AudioCustomFilter should be removed before destroying m_audioSource because
+                    /// AudioSource is the RequiredComponent by AudioCustomFilter. But AudioStreamTrack removes
+                    /// the AudioCustomFilter asyncnouslly. So we got the error log below.
+                    /// "Can't remove AudioSource because AudioCustomFilter (Script) depends on it"
+
+                    // Destroy(m_audioSource);
                     m_audioSource = null;
                 }
+                if (Microphone.IsRecording(m_deviceName))
+                    Microphone.End(m_deviceName);
                 GC.SuppressFinalize(this);
             }
 

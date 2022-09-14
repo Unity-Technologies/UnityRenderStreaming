@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
@@ -154,6 +155,21 @@ namespace Unity.RenderStreaming
         /// <returns></returns>
         public virtual void AddSender(string connectionId, IStreamSender sender)
         {
+            StartCoroutine(AddSenderCoroutine(connectionId, sender));
+        }
+
+        private IEnumerator AddSenderCoroutine(string connectionId, IStreamSender sender)
+        {
+            if(sender.Track == null && sender is StreamSenderBase senderBase)
+            {
+                var op = senderBase.CreateTrack();
+                if(op.Track == null)
+                    yield return op;
+                senderBase.SetTrack(op.Track);
+            }
+            if (sender.Track == null)
+                throw new InvalidOperationException("sender.Track is null");
+
             RTCRtpTransceiverInit init = GetTransceiverInit(sender);
             var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
             if (sender is VideoStreamSender videoStreamSender)
@@ -176,10 +192,9 @@ namespace Unity.RenderStreaming
         /// <param name="sender"></param>
         public virtual void RemoveSender(string connectionId, IStreamSender sender)
         {
-            sender.Track.Stop();
-            sender.SetTransceiver(connectionId, null);
             if (ExistConnection(connectionId))
                 RemoveTrack(connectionId, sender.Track);
+            sender.SetTransceiver(connectionId, null);
         }
 
         /// <summary>

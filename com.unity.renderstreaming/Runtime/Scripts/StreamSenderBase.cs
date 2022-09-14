@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.WebRTC;
@@ -11,6 +12,25 @@ namespace Unity.RenderStreaming
     /// </summary>
     public abstract class StreamSenderBase : MonoBehaviour, IStreamSender
     {
+        internal class WaitForCreateTrack : CustomYieldInstruction
+        {
+            public MediaStreamTrack Track { get { return m_track; } }
+
+            MediaStreamTrack m_track;
+
+            bool m_keepWaiting = true;
+
+            public override bool keepWaiting { get { return m_keepWaiting; } }
+
+            public WaitForCreateTrack() { }
+
+            public void Done(MediaStreamTrack track)
+            {
+                m_track = track;
+                m_keepWaiting = false;
+            }
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -26,25 +46,40 @@ namespace Unity.RenderStreaming
         /// </summary>
         public OnStoppedStreamHandler OnStoppedStream { get; set; }
 
-        internal virtual MediaStreamTrack CreateTrack() { return null; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal abstract WaitForCreateTrack CreateTrack();
+
 
         internal virtual void ReplaceTrack(MediaStreamTrack track)
         {
             if (track == null)
                 throw new ArgumentNullException("track", "This argument must be not null.");
 
-            if(m_track == track)
+            if (m_track == Track)
                 throw new ArgumentException("track", "The value of this argument has already been set.");
 
             /// todo:: If not disposing the old track here, the app will crash.
             /// This problem is caused by the MediaStreamTrack when it is destroyed on the thread other than the main thread.
             m_track?.Dispose();
 
-            m_track = track;
+            m_track = Track;
             foreach (var transceiver in Transceivers.Values)
             {
                 transceiver.Sender.ReplaceTrack(m_track);
             }
+        }
+
+        internal void SetTrack(MediaStreamTrack track)
+        {
+            if (track == null)
+                throw new ArgumentNullException("track", "This argument must be not null.");
+
+            if (m_track != null)
+                throw new InvalidOperationException("Track is not null.");
+            m_track = track;
         }
 
         private MediaStreamTrack m_track;
@@ -55,15 +90,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public MediaStreamTrack Track
-        {
-            get
-            {
-                if (m_track == null)
-                    m_track = CreateTrack();
-                return m_track;
-            }
-        }
+        public MediaStreamTrack Track => m_track;
 
         /// <summary>
         /// 
@@ -102,7 +129,7 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnDisable()
         {
-            if(m_track?.ReadyState == TrackState.Live)
+            if (m_track?.ReadyState == TrackState.Live)
             {
                 m_track.Enabled = false;
             }
@@ -121,6 +148,11 @@ namespace Unity.RenderStreaming
             {
                 m_transceivers.Remove(connectionId);
                 OnStoppedStream?.Invoke(connectionId);
+                if (!m_transceivers.Any())
+                {
+                    m_track.Dispose();
+                    m_track = null;
+                }
             }
             else
             {

@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.WebRTC;
+using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
@@ -61,8 +63,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
         }
 
-        [Test]
-        public void CreateTrack()
+        [UnityTest]
+        public IEnumerator CreateTrack()
         {
             var go = new GameObject();
             var sender = go.AddComponent<VideoStreamSender>();
@@ -70,13 +72,15 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // With camera
             sender.source = VideoStreamSource.Camera;
-            Assert.Throws<ArgumentNullException>(() => track = sender.CreateTrack());
+            Assert.Throws<ArgumentNullException>(() => sender.CreateTrack());
 
             var camera = go.AddComponent<Camera>();
             sender.sourceCamera = camera;
             sender.width = 640;
             sender.height = 480;
-            track = sender.CreateTrack();
+            var op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
             Assert.That(track, Is.Not.Null);
             var videoTrack = track as VideoStreamTrack;
             Assert.That(videoTrack.Texture.width, Is.EqualTo(sender.width));
@@ -86,7 +90,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // With screen
             sender.source = VideoStreamSource.Screen;
-            track = sender.CreateTrack();
+            op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
             Assert.That(track, Is.Not.Null);
             track.Dispose();
             track = null;
@@ -94,7 +100,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // With Texture
             sender.source = VideoStreamSource.Texture;
             Assert.That(sender.sourceTexture, Is.Null);
-            Assert.Throws<ArgumentNullException>(() => track = sender.CreateTrack());
+            Assert.Throws<ArgumentNullException>(() => sender.CreateTrack());
 
             var width = 256;
             var height = 256;
@@ -106,7 +112,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.height, Is.EqualTo(height));
             Assert.Throws<InvalidOperationException>(() => sender.width = 1280);
             Assert.Throws<InvalidOperationException>(() => sender.height = 720);
-            track = sender.CreateTrack();
+            op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
             Assert.That(track, Is.Not.Null);
             track.Dispose();
 
@@ -117,9 +125,11 @@ namespace Unity.RenderStreaming.RuntimeTest
                 sender.source = VideoStreamSource.WebCamera;
                 Assert.That(sender.sourceDeviceIndex, Is.EqualTo(0));
                 sender.sourceDeviceIndex = -1;
-                Assert.Throws<ArgumentOutOfRangeException>(() => track = sender.CreateTrack());
+                Assert.Throws<ArgumentOutOfRangeException>(() => sender.CreateTrack());
                 sender.sourceDeviceIndex = 0;
-                track = sender.CreateTrack();
+                op = sender.CreateTrack();
+                yield return op;
+                track = op.Track;
                 Assert.That(track, Is.Not.Null);
                 Assert.That(sender.sourceWebCamTexture, Is.Not.Null);
                 track.Dispose();
@@ -293,6 +303,56 @@ namespace Unity.RenderStreaming.RuntimeTest
                 Assert.That(codec.channelCount, Is.GreaterThan(0));
                 Assert.That(codec.sampleRate, Is.GreaterThan(0));
             }
+        }
+
+        [UnityTest]
+        public IEnumerator CreateTrack()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<AudioStreamSender>();
+            MediaStreamTrack track = null;
+
+            // With AudioListener
+            sender.source = AudioStreamSource.AudioListener;
+            Assert.Throws<InvalidOperationException>(() => sender.CreateTrack());
+
+            var audioListener = go.AddComponent<AudioListener>();
+            var op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
+            Assert.That(track, Is.Not.Null);
+            track.Dispose();
+            track = null;
+
+            // With AudioSource
+            var go2 = new GameObject();
+            sender = go2.AddComponent<AudioStreamSender>();
+            sender.source = AudioStreamSource.AudioSource;
+            Assert.Throws<InvalidOperationException>(() => sender.CreateTrack());
+            var audioSource = go2.AddComponent<AudioSource>();
+            sender.audioSource = audioSource;
+            op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
+            Assert.That(track, Is.Not.Null);
+            track.Dispose();
+            track = null;
+
+            // With Microphone
+#if !(UNITY_IPHONE || UNITY_ANDROID)
+            if (Microphone.devices.Length > 0 && Application.HasUserAuthorization(UserAuthorization.Microphone))
+            {
+                sender.source = AudioStreamSource.Microphone;
+                op = sender.CreateTrack();
+                yield return op;
+                track = op.Track;
+                Assert.That(track, Is.Not.Null);
+                track.Dispose();
+                track = null;
+            }
+#endif
+            UnityEngine.Object.DestroyImmediate(go);
+            UnityEngine.Object.DestroyImmediate(go2);
         }
 
         [Test]
