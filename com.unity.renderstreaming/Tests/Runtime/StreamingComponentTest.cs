@@ -356,15 +356,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void Hoge()
-        {
-            var go = new GameObject();
-            var audioSource = go.AddComponent<AudioSource>();
-            audioSource.Play();
-            UnityEngine.Object.DestroyImmediate(audioSource);
-        }
-
-        [Test]
         public void SelectCodecCapabilities()
         {
             var codecs = AudioStreamSender.GetAvailableCodecs();
