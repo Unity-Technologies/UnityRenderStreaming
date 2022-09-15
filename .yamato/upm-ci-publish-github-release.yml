@@ -13,12 +13,13 @@ publish_github_release_webapp:
   name: Publish Webapp to Github Release
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:v1.21.0-1103459
+    image: package-ci/ubuntu:v2.0.0-947481
     flavor: b1.large
   variables:
-    GIT_TAG: Foo
+    GIT_TAG: You need to change this parameter on Yamato UI
   commands:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+  # see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh
@@ -36,12 +37,13 @@ publish_github_release_template_{{ project.name }}_{{ editor.version }}:
   name: Publish Template to Github Release {{ project.name }} {{ editor.version }}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:v1.21.0-1103459
+    image: package-ci/ubuntu:v2.0.0-947481
     flavor: b1.large
   variables:
-    GIT_TAG: Foo
+    GIT_TAG: You need to change this parameter on Yamato UI
   commands:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+  # see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh

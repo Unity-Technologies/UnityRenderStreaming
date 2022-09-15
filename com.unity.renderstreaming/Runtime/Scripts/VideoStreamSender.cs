@@ -768,7 +768,8 @@ namespace Unity.RenderStreaming
                 }
 
                 /// Convert texture if the graphicsFormat is not supported.
-                /// Since Unity 2022.1, WebCamTexture.graphicsFormat returns 
+                /// Since Unity 2022.1, WebCamTexture.graphicsFormat returns R8G8B8A8_SRGB on Android Vulkan.
+                /// WebRTC doesn't support the graphics format when using Vulkan, and throw exception.
                 var supportedFormat = WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
                 if (m_webcamTexture.graphicsFormat != supportedFormat)
                 {
