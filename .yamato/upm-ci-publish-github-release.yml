@@ -18,7 +18,8 @@ publish_github_release_webapp:
   variables:
     GIT_TAG: You need to change this parameter on Yamato UI
   commands:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+  # see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh
@@ -41,7 +42,8 @@ publish_github_release_template_{{ project.name }}_{{ editor.version }}:
   variables:
     GIT_TAG: You need to change this parameter on Yamato UI
   commands:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C99B11DEB97541F0
+  # see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059
     - sudo apt-add-repository https://cli.github.com/packages
     - sudo apt update
     - sudo apt install gh
