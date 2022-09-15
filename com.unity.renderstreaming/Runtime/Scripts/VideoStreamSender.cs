@@ -449,7 +449,7 @@ namespace Unity.RenderStreaming
                 throw new ArgumentNullException("coroutine");
             if (callback == null)
                 throw new ArgumentNullException("callback");
-            _Coroutine(coroutine, callback);
+            StartCoroutine(_Coroutine(coroutine, callback));
         }
 
         IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator

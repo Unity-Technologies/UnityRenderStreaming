@@ -58,14 +58,13 @@ namespace Unity.RenderStreaming
             if (track == null)
                 throw new ArgumentNullException("track", "This argument must be not null.");
 
-            if (m_track == Track)
+            if (m_track == track)
                 throw new ArgumentException("track", "The value of this argument has already been set.");
 
             /// todo:: If not disposing the old track here, the app will crash.
             /// This problem is caused by the MediaStreamTrack when it is destroyed on the thread other than the main thread.
             m_track?.Dispose();
-
-            m_track = Track;
+            m_track = track;
             foreach (var transceiver in Transceivers.Values)
             {
                 transceiver.Sender.ReplaceTrack(m_track);
