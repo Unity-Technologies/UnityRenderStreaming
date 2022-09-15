@@ -28,10 +28,10 @@ prepack_{{ project.name }}_{{ editor.version }}:
 
 pack_{{ project.name }}_{{ editor.version }}:
   name: Pack {{ project.packagename }} {{ editor.version }}
-  agent:  
+  agent:
     type: Unity::VM
-    image: package-ci/ubuntu:v1.21.0-1103459
-    flavor: b1.large  
+    image: package-ci/ubuntu-20:v1.4.0-1081009
+    flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
