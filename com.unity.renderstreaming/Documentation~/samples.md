@@ -1,6 +1,6 @@
 # Samples
 
-The package contains the following samples. 
+The package contains the following samples.
 
 | Scene | Details |
 | ----- | ------- |
@@ -35,11 +35,21 @@ Open **Menu** scene and press `Play` button, as you can see the menu for sample 
 
 ![Sample menu](images/sample_menu_scene.png)
 
-Users can change signaling settings below during runtime.
+You can change signaling settings below during runtime.
 
-- [**Signaling Type**](signaling-type.md)
-- **Enable/Disable SSL**
-- **Host Address**
-- **Interval (only Http signaling)**
+| Parameter | Description |
+| ----------- | --------------------------- |
+| [**Signaling Type**](signaling-type.md) | *Http*, *WebSocket* or *Furioos* |
+| **Enable/Disable SSL** | Use *https* if set enable. |
+| **Host Address** | Set IP address or URL of your signaling server. |
+| **Interval** | Polling interval for communication of signaling. <br/> This parameter effects Http signaling. |
 
 ![Sample menu](images/sample_menu_setting_panel.png)
+
+Moreover, you can choice the options about the video streaming settings.
+
+| Parameter | Description |
+|-----------|---------------------------|
+| **Video Codec (Receiver)** | Choice preferred video codec for receiver. <br/> Often the performance of [Hardware codec](https://docs.unity3d.com/Packages/com.unity.webrtc@2.4/manual/videostreaming.html#hardware-acceleration-codecs) is greater than software codec. |
+| **Video Codec (Sender)** | Choice preferred video codec for sender. |
+| **Stream Size** | Set the resolution of video streaming for sender. |

@@ -41,7 +41,7 @@ This version of Render Streaming is compatible with the following versions of th
 - **iOS**
 - **Android** (**ARMv7** is not supported)
 
-### Web Browsers support
+### Browser support
 
 Unity Render Streaming supports almost all browsers that can use WebRTC.
 
