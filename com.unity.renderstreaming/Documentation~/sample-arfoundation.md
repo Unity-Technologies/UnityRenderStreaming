@@ -9,22 +9,18 @@ This sample demonstrates operating the position and direction of a camera on ano
 
 To use this sample, You need to install following additional packages.
 
-- `ARFoundation 4.1.9`
-- `XR Plugin Management 4.2`
+- [AR Foundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@latest)
+- [XR Plugin Management](https://docs.unity3d.com/Packages/com.unity.xr.management@latest)
 
 > [!NOTE]
-> `AR Foundation 4.1.9` is compatible with the following versions of the Unity Editor:
-> - 2020.3
-> - 2021.1
-> - 2021.2
+> Please check the item *Requirements* in the manual to know the package version which is compatible with your Unity Editor.
 
-
-In addition, depending on the platform, each `XR plugin` package must be installed.
+Moreover, you need to install each *XR plugin* package depending on the platform.
 ​
 | Platform | packages |
 | -------- | -------- |
-| iOS      | `ARKit XR Plugin 4.1.9` |
-| Android  | `ARCore XR Plugin 4.1.9` |
+| iOS      | [ARKit XR Plugin](https://docs.unity3d.com/Packages/com.unity.xr.arcore@latest) |
+| Android  | [ARCore XR Plugin](https://docs.unity3d.com/Packages/com.unity.xr.arkit@latest) |
 
 ## Build settings
 
