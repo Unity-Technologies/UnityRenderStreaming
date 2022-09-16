@@ -46,15 +46,15 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to
 | ------- | ----- | ----- |
 | `1.0.0-preview` | - First release | Aug 2019 |
 | `1.1.0-preview` | - Upgrade HDRP version 5.16 | Sep 2019 |
-| `1.2.0-preview` | - Unity 2019.3 support | Feb 2020 |
+| `1.2.0-preview` | - *Unity 2019.3* support | Feb 2020 |
 | `2.0.0-preview` | - Multi camera <br/>- DirectX12 (DXR) Support | Apr 2020 |
-| `2.1.0-preview` | - Unity 2019.4 support <br/>- Add bitrate control sample | Aug 2020 |
+| `2.1.0-preview` | - *Unity 2019.4* support <br/>- Add bitrate control sample | Aug 2020 |
 | `2.2.0-preview` | - Add video receiver <br/>- HDRP/URP on Linux support | Nov 2020 |
 | `3.0.0-preview` | - iOS platform support <br/>- AR Foundation sample | Mar 2021 |
 | `3.1.0-exp.1` | - Android platform support | Jun 2021 |
 | `3.1.0-exp.2` | - Audio Renderer support <br/> - Multiplay sample <br/> - M1 Mac support | Dec 2021 |
 | `3.1.0-exp.3` | - Fix bugs | Feb 2022 |
-| `3.1.0-exp.4` | - Streaming settings API | Sep 2022 |
+| `3.1.0-exp.4` | - Streaming settings API <br/> - *Unity 2022.1* support <br/> - Remove *Unity 2019.4* from support list | Sep 2022 |
 | `3.1.0-exp.5` |  | Nov 2022 |
 
 ## FAQ
