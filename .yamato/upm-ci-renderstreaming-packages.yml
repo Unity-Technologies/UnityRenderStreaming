@@ -210,7 +210,7 @@ build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.na
     - unity-downloader-cli -c Editor -c {{ param.additional_component_arg }} -u {{ editor.version }} --fast -w
     - curl -s https://artifactory.prd.it.unity3d.com/artifactory/unity-tools/utr-standalone/utr --output utr
     - chmod +x ./utr
-    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --testproject=TestProjects/Empty --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only --timeout=3000 --testfilter=!HttpSignaling
+    - ./utr --suite=playmode --platform=StandaloneOSX --editor-location=.Editor --extra-editor-arg="-nographics" --testproject=TestProjects/Empty --player-save-path=build/players --architecture=x64 --artifacts_path=build/logs --scripting-backend={{ param.backend }} --build-only --timeout=3000 --testfilter=!HttpSignaling
   artifacts:
     players:
       paths:
@@ -320,7 +320,7 @@ trigger_test_{{ package.name }}_{{ editor.version }}:
   name : Trigger test {{ package.packagename }} {{ editor.version }} all platforms
   dependencies:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}
-{% if editor.version == "2020.3" -%}
+{% if editor.version == editor_version_for_trigger %}
   triggers:
     expression: pull_request.target eq "develop"
 {% endif -%}

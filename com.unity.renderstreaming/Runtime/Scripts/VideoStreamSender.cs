@@ -29,8 +29,6 @@ namespace Unity.RenderStreaming
 
     internal sealed class RenderTextureDepthBufferAttribute : PropertyAttribute { }
 
-    internal sealed class WebCamDeviceAttribute : PropertyAttribute { }
-
     internal sealed class ScaleResolutionAttribute : PropertyAttribute { }
 
     [Serializable]
@@ -86,24 +84,24 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum VideoStreamSource
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Camera = 0,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Screen = 1,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         WebCamera = 2,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Texture = 3
     }
@@ -133,7 +131,7 @@ namespace Unity.RenderStreaming
         [SerializeField]
         private Texture m_Texture;
 
-        [SerializeField, WebCamDevice]
+        [SerializeField]
         private int m_WebCamDeviceIndex;
 
         [SerializeField, RenderTextureDepthBuffer]
@@ -160,7 +158,7 @@ namespace Unity.RenderStreaming
         private VideoStreamSourceImpl m_sourceImpl = null;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoStreamSource source
         {
@@ -179,7 +177,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public Camera sourceCamera
         {
@@ -223,7 +221,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public WebCamTexture sourceWebCamTexture
         {
@@ -263,7 +261,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float scaleResolutionDown
         {
@@ -271,7 +269,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint width
         {
@@ -283,7 +281,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint height
         {
@@ -295,7 +293,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoCodecInfo codec
         {
@@ -303,7 +301,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool autoRequestUserAuthorization
         {
@@ -312,7 +310,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="codec"></param>
         public void SetCodec(VideoCodecInfo codec)
@@ -336,7 +334,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
@@ -401,7 +399,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="size"></param>
         public void SetTextureSize(Vector2Int size)
