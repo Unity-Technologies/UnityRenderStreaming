@@ -103,16 +103,31 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
-                foreach (var sender in activeSenderList.Values.SelectMany(x => x))
+                var senderStatsPairs = activeSenderList.Values.SelectMany(x => x).ToDictionary(x => x, x => x.GetStats());
+                var receiverStatsPairs = activeReceiverList.Values.SelectMany(x => x).ToDictionary(x => x, x => x.GetStats());
+
+                foreach (var op in senderStatsPairs.Select(x => x.Value).Concat(receiverStatsPairs.Select(x => x.Value)))
                 {
-                    var op = sender.GetStats();
                     yield return op;
+                }
+
+                foreach (var pair in senderStatsPairs)
+                {
+                    var sender = pair.Key;
+                    var op = pair.Value;
+
                     if (op.IsError)
                     {
                         continue;
                     }
 
                     var report = op.Value;
+                    if(report == null)
+                    {
+                        Debug.Log("report is null.");
+                        continue;
+                    }
+
                     if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
                     {
                         statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
@@ -127,10 +142,15 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
-                foreach (var receiver in activeReceiverList.Values.SelectMany(x => x))
+                foreach (var pair in receiverStatsPairs)
                 {
-                    var op = receiver.GetStats();
-                    yield return op;
+                    var receiver = pair.Key;
+                    var op = pair.Value;
+
+                    if (op.IsError)
+                    {
+                        continue;
+                    }
 
                     if (op.IsError)
                     {
