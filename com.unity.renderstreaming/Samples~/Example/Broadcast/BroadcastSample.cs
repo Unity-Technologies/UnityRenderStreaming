@@ -159,7 +159,8 @@ namespace Unity.RenderStreaming.Samples
             inputReceiver.SetEnableInputPositionCorrection(true);
         }
 
-        // In this sample, sending parameters are changed at Runtime only from Inspector in Editor
+        // Parameters can be changed from the Unity Editor inspector when in Play Mode,
+        // So this method monitors the parameters every frame and updates scene UI.
 #if UNITY_EDITOR
         private void Update()
         {
