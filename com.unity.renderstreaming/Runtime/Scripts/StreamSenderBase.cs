@@ -53,33 +53,32 @@ namespace Unity.RenderStreaming
         internal abstract WaitForCreateTrack CreateTrack();
 
 
-        internal virtual void ReplaceTrack(MediaStreamTrack track)
+        internal virtual void ReplaceTrack(MediaStreamTrack newTrack)
         {
-            if (track == null)
+            if (newTrack == null)
                 throw new ArgumentNullException("track", "This argument must be not null.");
 
-            if (m_track == Track)
+            if (m_track == newTrack)
                 throw new ArgumentException("track", "The value of this argument has already been set.");
 
             /// todo:: If not disposing the old track here, the app will crash.
             /// This problem is caused by the MediaStreamTrack when it is destroyed on the thread other than the main thread.
             m_track?.Dispose();
-
-            m_track = Track;
+            m_track = newTrack;
             foreach (var transceiver in Transceivers.Values)
             {
                 transceiver.Sender.ReplaceTrack(m_track);
             }
         }
 
-        internal void SetTrack(MediaStreamTrack track)
+        internal void SetTrack(MediaStreamTrack newTrack)
         {
-            if (track == null)
+            if (newTrack == null)
                 throw new ArgumentNullException("track", "This argument must be not null.");
 
             if (m_track != null)
-                throw new InvalidOperationException("Track is not null.");
-            m_track = track;
+                throw new InvalidOperationException("Track is not null. Use ReplaceTrack method.");
+            m_track = newTrack;
         }
 
         private MediaStreamTrack m_track;
