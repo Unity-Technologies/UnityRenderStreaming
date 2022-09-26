@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -91,25 +92,27 @@ namespace Unity.RenderStreaming.Samples
             }
 
             bandwidthSelector.options = bandwidthOptions
-                .Select(pair => new Dropdown.OptionData { text = pair.Key })
+                .Select(pair => new Dropdown.OptionData {text = pair.Key})
                 .ToList();
-            framerateSelector.SetValueWithoutNotify(2); // todo: detect default select index
+            bandwidthSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
             bandwidthSelector.onValueChanged.AddListener(ChangeBandwidth);
+
             scaleResolutionDownSelector.options = scaleResolutionDownOptions
-                .Select(pair => new Dropdown.OptionData { text = pair.Key })
+                .Select(pair => new Dropdown.OptionData {text = pair.Key})
                 .ToList();
+            scaleResolutionDownSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
             scaleResolutionDownSelector.onValueChanged.AddListener(ChangeScaleResolutionDown);
 
             framerateSelector.options = framerateOptions
-                .Select(pair => new Dropdown.OptionData { text = pair.Key })
+                .Select(pair => new Dropdown.OptionData {text = pair.Key})
                 .ToList();
-            framerateSelector.SetValueWithoutNotify(2); // todo: detect default select index
+            framerateSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
             framerateSelector.onValueChanged.AddListener(ChangeFramerate);
 
             resolutionSelector.options = resolutionOptions
-                .Select(pair => new Dropdown.OptionData { text = pair.Key })
+                .Select(pair => new Dropdown.OptionData {text = pair.Key})
                 .ToList();
-            resolutionSelector.SetValueWithoutNotify(1); // todo: detect default select index
+            resolutionSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
             resolutionSelector.onValueChanged.AddListener(ChangeResolution);
         }
 
@@ -135,12 +138,14 @@ namespace Unity.RenderStreaming.Samples
         {
             var resolution = resolutionOptions.Values.ElementAt(index);
 
-            if(videoStreamSender.source != VideoStreamSource.Texture)
+            if (videoStreamSender.source != VideoStreamSource.Texture)
                 videoStreamSender.SetTextureSize(resolution);
         }
 
         private void Start()
         {
+            SyncDisplayVideoSenderParameters();
+
             if (renderStreaming.runOnAwake)
                 return;
             renderStreaming.Run(signaling: settings?.Signaling);
@@ -152,6 +157,65 @@ namespace Unity.RenderStreaming.Samples
         {
             inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
             inputReceiver.SetEnableInputPositionCorrection(true);
+        }
+
+        // Parameters can be changed from the Unity Editor inspector when in Play Mode,
+        // So this method monitors the parameters every frame and updates scene UI.
+#if UNITY_EDITOR
+        private void Update()
+        {
+            SyncDisplayVideoSenderParameters();
+        }
+#endif
+
+        private void SyncDisplayVideoSenderParameters()
+        {
+            if (videoStreamSender == null)
+            {
+                return;
+            }
+
+
+            var bandwidthIndex = Array.IndexOf(bandwidthOptions.Values.ToArray(), videoStreamSender.maxBitrate);
+            if (bandwidthIndex < 0)
+            {
+                bandwidthSelector.SetValueWithoutNotify(bandwidthSelector.options.Count - 1);
+            }
+            else
+            {
+                bandwidthSelector.SetValueWithoutNotify(bandwidthIndex);
+            }
+
+            var scaleDownIndex = Array.IndexOf(scaleResolutionDownOptions.Values.ToArray(), videoStreamSender.scaleResolutionDown);
+            if (scaleDownIndex < 0)
+            {
+                scaleResolutionDownSelector.SetValueWithoutNotify(bandwidthSelector.options.Count - 1);
+            }
+            else
+            {
+                scaleResolutionDownSelector.SetValueWithoutNotify(scaleDownIndex);
+            }
+
+            var framerateIndex = Array.IndexOf(framerateOptions.Values.ToArray(), videoStreamSender.frameRate);
+            if (framerateIndex < 0)
+            {
+                framerateSelector.SetValueWithoutNotify(framerateSelector.options.Count - 1);
+            }
+            else
+            {
+                framerateSelector.SetValueWithoutNotify(framerateIndex);
+            }
+
+            var target = new Vector2Int((int) videoStreamSender.width, (int) videoStreamSender.height);
+            var resolutionIndex = Array.IndexOf(resolutionOptions.Values.ToArray(), target);
+            if (resolutionIndex < 0)
+            {
+                resolutionSelector.SetValueWithoutNotify(resolutionSelector.options.Count - 1);
+            }
+            else
+            {
+                resolutionSelector.SetValueWithoutNotify(resolutionIndex);
+            }
         }
     }
 }
