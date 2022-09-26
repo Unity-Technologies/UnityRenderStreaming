@@ -154,7 +154,7 @@ namespace Unity.RenderStreaming
         {
             var excludeCodecMimeType = new[] { "audio/CN", "audio/telephone-event" };
             var capabilities = RTCRtpSender.GetCapabilities(TrackKind.Audio);
-            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => new AudioCodecInfo(codec));
+            return capabilities.codecs.Where(codec => !excludeCodecMimeType.Contains(codec.mimeType)).Select(codec => AudioCodecInfo.Create(codec));
         }
 
         /// <summary>

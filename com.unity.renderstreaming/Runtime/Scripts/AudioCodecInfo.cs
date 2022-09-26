@@ -44,6 +44,11 @@ namespace Unity.RenderStreaming
         /// </summary>
         public string sdpFmtpLine { get { return m_SdpFmtpLine; } }
 
+        static internal AudioCodecInfo Create(RTCRtpCodecCapability caps)
+        {
+            return new AudioCodecInfo(caps);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -107,7 +112,7 @@ namespace Unity.RenderStreaming
             return !(left == right);
         }
 
-        internal AudioCodecInfo(RTCRtpCodecCapability cap)
+        protected AudioCodecInfo(RTCRtpCodecCapability cap)
         {
             m_MimeType = cap.mimeType;
             m_SdpFmtpLine = cap.sdpFmtpLine;
