@@ -211,23 +211,23 @@ namespace Unity.RenderStreaming
     public enum H264Profile
     {
         /// <summary>
-        /// 
+        /// Constrained Baseline Profile.
         /// </summary>
         ConstrainedBaseline = 0x42e0,
         /// <summary>
-        /// 
+        /// Baseline Profile.
         /// </summary>
         Baseline = 0x4200,
         /// <summary>
-        /// 
+        /// Main Profile.
         /// </summary>
-        ProfileMain = 0x4d00,
+        Main = 0x4d00,
         /// <summary>
-        /// 
+        /// Constrained High Profile.
         /// </summary>
         ConstrainedHigh = 0x640c,
         /// <summary>
-        /// 
+        /// High Profile.
         /// </summary>
         High = 0x6400,
     }
