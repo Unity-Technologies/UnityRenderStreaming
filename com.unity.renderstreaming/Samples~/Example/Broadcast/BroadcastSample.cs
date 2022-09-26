@@ -144,6 +144,8 @@ namespace Unity.RenderStreaming.Samples
 
         private void Start()
         {
+            SyncDisplayVideoSenderParameters();
+
             if (renderStreaming.runOnAwake)
                 return;
             renderStreaming.Run(signaling: settings?.Signaling);
@@ -157,7 +159,15 @@ namespace Unity.RenderStreaming.Samples
             inputReceiver.SetEnableInputPositionCorrection(true);
         }
 
+        // In this sample, sending parameters are changed at Runtime only from Inspector in Editor
+#if UNITY_EDITOR
         private void Update()
+        {
+            SyncDisplayVideoSenderParameters();
+        }
+#endif
+
+        private void SyncDisplayVideoSenderParameters()
         {
             if (videoStreamSender == null)
             {
@@ -195,7 +205,7 @@ namespace Unity.RenderStreaming.Samples
                 framerateSelector.SetValueWithoutNotify(framerateIndex);
             }
 
-            var target = new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height);
+            var target = new Vector2Int((int) videoStreamSender.width, (int) videoStreamSender.height);
             var resolutionIndex = Array.IndexOf(resolutionOptions.Values.ToArray(), target);
             if (resolutionIndex < 0)
             {
