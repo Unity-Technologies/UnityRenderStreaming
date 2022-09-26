@@ -410,7 +410,6 @@ publish_{{ package.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
 {% endif %}
 {% endfor %}
-{% endfor %}
 
 {% for platform in platforms %}
 {% if platform.name != "macos" and platform.name != "macos-m1" %}
@@ -443,4 +442,6 @@ codecoverage_{{ package.packagename }}_{{ platform.name }}_{{ editor.version }}:
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 {% endfor %}
 {% endif %}
+{% endfor %}
+
 {% endfor %}
