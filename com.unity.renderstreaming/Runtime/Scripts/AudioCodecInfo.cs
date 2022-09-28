@@ -112,7 +112,7 @@ namespace Unity.RenderStreaming
             return !(left == right);
         }
 
-        protected AudioCodecInfo(RTCRtpCodecCapability cap)
+        internal AudioCodecInfo(RTCRtpCodecCapability cap)
         {
             m_MimeType = cap.mimeType;
             m_SdpFmtpLine = cap.sdpFmtpLine;
