@@ -43,3 +43,28 @@ You can set a specific object for the video source to play on, including:
 | **Render Mode** | Size of the frame buffer used for streaming. <br/> - *Render Texture* <br/> - *API Only* | *Render Texture* |
 | *Target Texture* | Use this field to define the Render Texture assigned to the Video Stream Sender component.  |  |
 | **Video Codec** | Options displays difference on each environments because some environments can use hardware codecs. Software codecs implementations works on all environments. *Default* option means trying to use all available codecs for negotiating other peers. | Default |
+
+## Details
+
+The network status affects the quality of video streaming. You can keep the streaming by changing several properties of components even if the network status makes worse. Note that you can't change *texture size*, *texture format*, and *video codec* after starting video streaming.
+
+### Video Codec
+
+The choice of video codec affects streaming performance. You can choose video codecs which implemented with hardware and software, and especially when the texture size is large, hardware implementation is faster. However, available hardware implementation codecs vary by platform, you may not be available in certain environments.
+
+You need to choose codecs available for both sender and receiver. If you choose *Default* as a video codec, this package uses all available codecs implemented on the platform, therefore, making problems due to codec mismatches less.
+
+> [!NOTE]
+> Some codecs may have limitations on the size of the resolution. For example, if an odd number is used for the size value, the incoming video may be automatically resized.
+
+### Frame rate
+
+Sets the frame rate of the streaming video. You should set the *frame rate* below the game's *frame rate*.
+
+### Down-scaling resolution
+
+The larger the *texture resolution*, the higher the bit rate required for streaming. By reducing *texture resolution*, you can stabilize with less bandwidth.
+
+### Bit rate
+
+Controls the bandwidth used by specifying a *bit rate* limit for streaming.
