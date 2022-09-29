@@ -50,12 +50,19 @@ The network status affects the quality of video streaming. You can keep the stre
 
 ### Video Codec
 
-The choice of video codec affects streaming performance. You can choose video codecs which implemented with hardware and software, and especially when the texture size is large, hardware implementation is faster. However, available hardware implementation codecs vary by platform, you may not be available in certain environments.
+The choice of video codec affects streaming performance. You can choose video codecs which implemented with hardware and software, when the texture size is large in particular, hardware implementation is faster. However, available hardware implementation codecs vary by platform, you may not be available in certain environments.
 
-You need to choose codecs available for both sender and receiver. If you choose *Default* as a video codec, this package uses all available codecs implemented on the platform, therefore, making problems due to codec mismatches less.
+You need to choose codecs available for both sender and receiver. If you choose *Default* as a video codec, this package uses all available codecs implemented on the platform, so making problems due to codec mismatches less.
 
 > [!NOTE]
-> Some codecs may have limitations on the size of the resolution. For example, if an odd number is used for the size value, the incoming video may be automatically resized.
+> Some codecs may have limitations on the size of the resolution. For example, if you use an odd number for the size value, the incoming video may be automatically resized.
+
+
+> [!NOTE]
+> We've confirmed that *Firefox 104.0.2* doesn't complete the negotiation when trying to receive video when set *Default* for the video codec option to the sender. You need to set following codecs explicitly to the video sender.
+> - *VP8*
+> - *VP9 (Profile0, Profile2)*
+> - *H264 Constrained Baseline 5.1*
 
 ### Frame rate
 
