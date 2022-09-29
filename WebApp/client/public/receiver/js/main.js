@@ -32,6 +32,8 @@ window.addEventListener('resize', function () {
 }, true);
 
 window.addEventListener('beforeunload', async () => {
+  if(!renderstreaming)
+    return;
   await renderstreaming.stop();
 }, true);
 
