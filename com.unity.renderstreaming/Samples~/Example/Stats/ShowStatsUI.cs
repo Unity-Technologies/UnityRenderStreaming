@@ -143,8 +143,10 @@ namespace Unity.RenderStreaming.Samples
 
             if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
             {
-                statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
+                var lastReport = statsDisplay.lastReport;
+                statsDisplay.display.text = CreateDisplayString(report, lastReport);
                 statsDisplay.lastReport = report;
+                lastReport.Dispose();
             }
             else
             {
@@ -174,8 +176,10 @@ namespace Unity.RenderStreaming.Samples
 
             if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
             {
-                statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
+                var lastReport = statsDisplay.lastReport;
+                statsDisplay.display.text = CreateDisplayString(report, lastReport);
                 statsDisplay.lastReport = report;
+                lastReport.Dispose();
             }
             else
             {
