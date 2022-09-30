@@ -18,6 +18,9 @@ This component streams the audio rendering results from [`AudioListener`](https:
 | *Microphone Device Index* | The index of the video input device to be used. See [Microphone.devices](https://docs.unity3d.com/ScriptReference/Microphone-devices.html). | 0 |
 | *Auto Request User Authorization* | Whether request permission to use microphone. You don't need to enable it if you call [Application.RequestUserAuthorization](https://docs.unity3d.com/ScriptReference/Application.RequestUserAuthorization.html) yourself. | Enabled |
 | **Audio Codec** | *Default* option means trying to use all available codecs for negotiating other peers. | Default |
+| **Bitrate (kbits/sec)** | The bitrate of the audio streaming. | |
+| *Min* | The minimum value of the bitrate. | 0 |
+| *Max* | The maximum value of the bitrate. | 1000 |
 
 ## [`AudioStreamReceiver`](../api/Unity.RenderStreaming.AudioStreamReceiver.html) component reference
 
