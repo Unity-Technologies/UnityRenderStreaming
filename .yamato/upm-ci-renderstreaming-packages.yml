@@ -410,4 +410,38 @@ publish_{{ package.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
 {% endif %}
 {% endfor %}
+
+{% for platform in platforms %}
+{% if platform.name != "macos" and platform.name != "macos-m1" %}
+{% for editor in editors %}
+codecoverage_{{ package.packagename }}_{{ platform.name }}_{{ editor.version }}:
+  name: Code coverage {{ package.packagename }} {{ platform.name }} {{ editor.version }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  commands:
+    - pip config set global.index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
+{% if platform.name == "win" %}
+    - |
+      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
+{% else %}
+    - |
+      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
+      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
+{% endif %}
+  artifacts:
+    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_coverage_results:
+      paths:
+        - "upm-ci~/test-results/**"
+  dependencies:
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
 {% endfor %}

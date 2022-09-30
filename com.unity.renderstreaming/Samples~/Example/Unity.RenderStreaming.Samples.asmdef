@@ -5,7 +5,7 @@
         "Unity.InputSystem",
         "Unity.XR.ARFoundation",
         "Unity.XR.ARSubsystems",
-        "Unity.RenderStreaming.Runtime",
+        "Unity.RenderStreaming",
         "Unity.RenderStreaming.Sample.Stats"
     ],
     "includePlatforms": [],

@@ -1,5 +1,5 @@
 {
-    "name": "Unity.RenderStreaming.Runtime",
+    "name": "Unity.RenderStreaming",
     "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
