@@ -83,7 +83,7 @@ namespace Unity.RenderStreaming
             return RTCRtpReceiver.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
         }
 
-        protected virtual void Start()
+        private protected virtual void Start()
         {
             OnStartedStream += StartedStream;
             OnStoppedStream += StoppedStream;

@@ -9,10 +9,6 @@ It works with Unity-Unity or Unity-Browser combination.
 
 ## Usage
 
-### Hardware acceleration 
-
-Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
-
 ### Procedure (Unity-Unity)
 
 1) Launch the signaling server using **private mode**. Please refer to [this link](webapp.md) for launching.
@@ -50,7 +46,7 @@ Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspecto
 
 ### Procedure (Unity-Browser)
 
-1.~3. steps same as Unity-Unity Procedure. 
+1.~3. steps same as Unity-Unity Procedure.
 
 4) Open your web browser and access `http://localhost`. You can see the top page. Click a `Bidirectional Sample` link.
 

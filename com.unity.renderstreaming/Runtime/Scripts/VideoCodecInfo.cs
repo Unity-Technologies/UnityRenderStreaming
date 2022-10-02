@@ -141,7 +141,7 @@ namespace Unity.RenderStreaming
                 && this.sdpFmtpLine == other.sdpFmtpLine;
         }
 
-        protected VideoCodecInfo(RTCRtpCodecCapability caps)
+        internal VideoCodecInfo(RTCRtpCodecCapability caps)
         {
             m_MimeType = caps.mimeType;
             m_SdpFmtpLine = caps.sdpFmtpLine;

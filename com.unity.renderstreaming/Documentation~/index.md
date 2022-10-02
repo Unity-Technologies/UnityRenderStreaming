@@ -14,7 +14,7 @@ This package provides the main features below.
 
 ### Video streaming
 
-We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported. 
+We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported.
 
 ![feature-multicamera](images/feature_multicamera.png)
 
@@ -29,9 +29,9 @@ It is possible to send input messages to Unity from the browser, and sending inp
 
 This version of Render Streaming is compatible with the following versions of the Unity Editor
 
-- **Unity 2019.4**
 - **Unity 2020.3**
-- **Unity 2021.2**
+- **Unity 2021.3**
+- **Unity 2022.1**
 
 ### Platform
 
@@ -41,7 +41,7 @@ This version of Render Streaming is compatible with the following versions of th
 - **iOS**
 - **Android** (**ARMv7** is not supported)
 
-### Web Browsers support
+### Browser support
 
 Unity Render Streaming supports almost all browsers that can use WebRTC.
 

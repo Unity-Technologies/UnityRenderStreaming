@@ -4,10 +4,6 @@ This sample shows ways to operate the direction of a camera on the remote PC fro
 
 ## Usage
 
-### Hardware acceleration 
-
-Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
-
 ### Procedure
 
 1) Launch the signaling server using public mode. Please refer to [this link](webapp.md) for launching.

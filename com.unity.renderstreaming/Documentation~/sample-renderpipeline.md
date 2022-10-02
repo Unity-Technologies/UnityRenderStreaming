@@ -12,25 +12,16 @@ This sample can use in combination with other samples below.
 
 To use this sample, You need to install additional packages shown following table.
 
-### High-Definition Render pipeline
 
-| Unity version | packages |
-| ------------- | -------- |
-| Unity2019.4   | `High Definition RP 7.x` |
-| Unity2020.2   | `High Definition RP 10.x` |
+### [High-Definition Render pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@15.0/manual/index.html)
 
-### Universal Render Pipeline
+Please see [Unity Editor compatibility](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@15.0/manual/System-Requirements.html#unity-editor-compatibility) in the HDRP manual.
 
-| Unity version | packages |
-| ------------- | -------- |
-| Unity2019.4   | `Universal RP 7.5.x` |
-| Unity2020.2   | `Universal RP 10.3.x` |
+### [Universal Render Pipeline](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@15.0/manual/index.html)
+
+Please see [Unity Editor compatibility](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@15.0/manual/requirements.html#unity-editor-compatibility) in the URP manual.
 
 ## Usage
-
-### Hardware acceleration 
-
-Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
 
 ### Procedure
 

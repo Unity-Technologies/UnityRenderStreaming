@@ -1,13 +1,13 @@
-# Streaming Management
+# Streaming Management Component
 
 Unity Render Streaming automatically creates and destroys streams as needed. It also allows the developer to customize the mechanism for controlling the stream. For a description of components related to individual streams, see the section on components for streaming.
 
-## [`RenderStreaming`](../api/Unity.RenderStreaming.RenderStreaming.html) component
+## [`RenderStreaming`](../api/Unity.RenderStreaming.RenderStreaming.html) component reference
 
 **Render Streaming** includes the following features.
 
 - Communication with signaling servers
-- Streaming input from cameras 
+- Streaming input from cameras
 - Associating browser input with events
 
 ![Render Streaming Inspector](images/renderstreaming_inspector.png)
@@ -24,11 +24,10 @@ Unity Render Streaming automatically creates and destroys streams as needed. It 
 | *Credencial* | The credential to use when logging into the TURN server. | |
 | *Credencial Type* | This attribute specifies what kind of `credential` is to be used when connecting to the TURN server. | `Password` |
 | **Interval** | Set the polling frequency (in seconds) to the signaling server <br>Valid only if you are using Http as the signaling protocol. | 5 (sec) |
-| **Hardware Encoder Support** | Enable the checkbox to make this video encoding replace values that use a [hardware encoder](index.md#hardware-encoder). | `False` |
 | **Handlers** | List of handlers of signaling process. | |
 | **Run On Awake** | Automatically started when called `Awake` method. | `True` |
 
-## [`SingleConnection`](../api/Unity.RenderStreaming.SingleConnection.html) component
+## [`SingleConnection`](../api/Unity.RenderStreaming.SingleConnection.html) component reference
 
 This component lists components that stream media or data via a single peer connection.
 
@@ -40,7 +39,7 @@ This component lists components that stream media or data via a single peer conn
 | --------- | ----------- | ------- |
 | **Streams** | List of streams | [] |
 
-## [`Broadcast`](../api/Unity.RenderStreaming.SingleConnection.html) component
+## [`Broadcast`](../api/Unity.RenderStreaming.SingleConnection.html) component reference
 
 This component lists components that stream media or data via multiple peer connections.
 

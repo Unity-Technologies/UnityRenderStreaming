@@ -8,11 +8,11 @@ The user input on the browser is converted to the message format of Input System
 
 You need to configure settings described below to use Input System. Note that different versions of Unity Editor support different methods.
 
-### For Unity 2021.2
+### For Unity 2021.3 or later
 
 1. Open **Package Manager** window and check Input System version **1.3** installed.
 
-2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
+2. Open **Project Settings** window, and **Player > Resolution and Presentation**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 
@@ -24,14 +24,14 @@ You need to configure settings described below to use Input System. Note that di
 
 ![Set Play Mode Input Behavior](images/set_playmode_input_behavior.png)
 
-### For Unity 2020.3 and 2019.4
+### For Unity 2020.3
 
 1. Check Input System version **1.3** installed.
-2. Open **Project Settings** window, and **Player > Resolution and Presentatoin**, and enable **Run In Background**.
+2. Open **Project Settings** window, and **Player > Resolution and Presentation**, and enable **Run In Background**.
 
 ![Enable Run In Background](images/enable_run_in_background.png)
 
-3. Open scene and move **Hirarchy** window, and select `EventSystem` object, 
+3. Open scene and move **Hierarchy** window, and select `EventSystem` object,
 
 ![Select EventSystem object](images/select_eventsystem_object.png)
 

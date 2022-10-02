@@ -16,10 +16,6 @@ This sample uses build-in render pipeline. If you want to try [High-Definition R
 
 ## Usage
 
-### Hardware acceleration
-
-Recommend enabling `Hardware Encoder support` on the `Render Streaming` inspector to improve performance using hardware acceleration.
-
 ### Procedure
 
 1) Launch the signaling server using public mode. Please refer to [this link](webapp.md) for launching.

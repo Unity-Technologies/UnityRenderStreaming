@@ -202,13 +202,13 @@ namespace Unity.RenderStreaming
             return RTCRtpSender.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
         }
 
-        protected virtual void Awake()
+        private protected virtual void Awake()
         {
             OnStartedStream += _OnStartedStream;
             OnStoppedStream += _OnStoppedStream;
         }
 
-        protected override void OnDestroy()
+        private protected override void OnDestroy()
         {
             base.OnDestroy();
 
@@ -257,14 +257,14 @@ namespace Unity.RenderStreaming
         }
 
 
-        protected override void OnEnable()
+        private protected override void OnEnable()
         {
             OnAudioConfigurationChanged(false);
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
             base.OnEnable();
         }
 
-        protected override void OnDisable()
+        private protected override void OnDisable()
         {
             AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
             base.OnDisable();
@@ -272,7 +272,7 @@ namespace Unity.RenderStreaming
 
         /// workaround.
         /// todo: Should add AudioStreamTrack supports AudioListener
-        protected virtual void OnAudioFilterRead(float[] data, int channels)
+        void OnAudioFilterRead(float[] data, int channels)
         {
             // todo: Should add AudioStreamTrack supports AudioListener
             if (m_Source == AudioStreamSource.AudioListener && m_onAudioFilterRead != null)

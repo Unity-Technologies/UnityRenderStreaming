@@ -1,11 +1,8 @@
-# Audio Streaming
+# Audio Streaming Component
 
-[`AudioStreamSender`](../api/Unity.RenderStreaming.AudioStreamSender.html) class and [`AudioStreamReceiver`]((../api/Unity.RenderStreaming.AudioStreamReceiver.html)) class are the base classes for sending and receiving audio. And various components are implemented using inheritance relationships with these class. Components are provided for the sender and receiver.
+[`AudioStreamSender`](../api/Unity.RenderStreaming.AudioStreamSender.html) class and [`AudioStreamReceiver`]((../api/Unity.RenderStreaming.AudioStreamReceiver.html)) class are the base classes for sending and receiving audio. Components are provided for the sender and receiver.
 
-> [!NOTE] 
-> There is currently a limitation in the audio codec selection. Currently, only **Opus** is used for the audio codec.
-
-## [`AudioStreamSender`](../api/Unity.RenderStreaming.AudioStreamSender.html) component
+## [`AudioStreamSender`](../api/Unity.RenderStreaming.AudioStreamSender.html) component reference
 
 This component streams the audio rendering results from [`AudioListener`](https://docs.unity3d.com/ScriptReference/AudioListener.html) component or [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html) component.
 
@@ -15,26 +12,25 @@ This component streams the audio rendering results from [`AudioListener`](https:
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| **Audio Source** | [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | None |
+| **Audio Source Type** | Choose the type of source for your audio streaming.  <br/> - *Audio Listener* <br/> - *Audio Source* <br/> - *Microphone* | *Audio Listener* |
+| *Audio Listener* | [`Audio Listener`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | |
+| *Audio Source* | [`Audio Source`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | |
+| *Microphone Device Index* | The index of the video input device to be used. See [Microphone.devices](https://docs.unity3d.com/ScriptReference/Microphone-devices.html). | 0 |
+| *Auto Request User Authorization* | Whether request permission to use microphone. You don't need to enable it if you call [Application.RequestUserAuthorization](https://docs.unity3d.com/ScriptReference/Application.RequestUserAuthorization.html) yourself. | Enabled |
+| **Audio Codec** | *Default* option means trying to use all available codecs for negotiating other peers. | Default |
+| **Bitrate (kbits/sec)** | The bitrate of the audio streaming. | |
+| *Min* | The minimum value of the bitrate. | 0 |
+| *Max* | The maximum value of the bitrate. | 1000 |
 
-## [`MicrophoneStreamSender`](../api/Unity.RenderStreaming.MicrophoneStreamSender.html) component
+## [`AudioStreamReceiver`](../api/Unity.RenderStreaming.AudioStreamReceiver.html) component reference
 
-This component streams the audio rendering results from [`Microphone`](https://docs.unity3d.com/ScriptReference/Microphone.html).
+The components receive audio track stream and rendering to [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html).
 
-![MicrophoneSender inspector](images/microphonesender_inspector.png)
+![AudioStreamReceiver inspector](images/audiostreamreceiver_inspector.png)
 
 ### Properties
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| **Audio Source** | [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | None |
-| **Device Index** | An index of the list of available microphone devices | 0 |
-
-An index of the list of available microphone devices
-
-
-## [`AudioStreamReceiver`](../api/Unity.RenderStreaming.AudioStreamReceiver.html) component
-
-The components receive audio track stream and rendering to [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html).
-
-![AudioStreamReceiver inspector](images/audiostreamreceiver_inspector.png)
+| **Target Audio Source** | [`AudioSource`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | None |
+| **Audio Codec** | *Default* option means trying to use all available codecs for negotiating other peers. | Default |

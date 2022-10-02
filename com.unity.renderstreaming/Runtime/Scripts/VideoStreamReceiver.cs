@@ -121,7 +121,7 @@ namespace Unity.RenderStreaming
             return RTCRtpReceiver.GetCapabilities(TrackKind.Video).SelectCodecCapabilities(codecs);
         }
 
-        protected virtual void Start()
+        private protected virtual void Awake()
         {
             OnStartedStream += StartedStream;
             OnStoppedStream += StoppedStream;

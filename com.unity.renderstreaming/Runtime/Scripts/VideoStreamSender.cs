@@ -417,12 +417,12 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected virtual void Awake()
+        private protected virtual void Awake()
         {
             OnStoppedStream += _OnStoppedStream;
         }
 
-        protected override void OnDestroy()
+        private protected override void OnDestroy()
         {
             base.OnDestroy();
 

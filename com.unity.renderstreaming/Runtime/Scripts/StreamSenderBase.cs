@@ -112,13 +112,13 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected virtual void OnDestroy()
+        private protected virtual void OnDestroy()
         {
             m_track?.Dispose();
             m_track = null;
         }
 
-        protected virtual void OnEnable()
+        private protected virtual void OnEnable()
         {
             if (m_track?.ReadyState == TrackState.Live)
             {
@@ -126,7 +126,7 @@ namespace Unity.RenderStreaming
             }
         }
 
-        protected virtual void OnDisable()
+        private protected virtual void OnDisable()
         {
             if (m_track?.ReadyState == TrackState.Live)
             {

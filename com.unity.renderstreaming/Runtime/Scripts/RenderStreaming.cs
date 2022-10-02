@@ -33,6 +33,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
 
+        /// <summary>
+        /// 
+        /// </summary>
         [SerializeField, Tooltip("Automatically started when called Awake method.")]
         public bool runOnAwake = true;
 #pragma warning restore 0649
@@ -99,17 +102,6 @@ namespace Unity.RenderStreaming
             return (ISignaling)Activator.CreateInstance(_type, args);
         }
 
-        void Awake()
-        {
-            if (!runOnAwake || m_running)
-                return;
-
-            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            ISignaling signaling = CreateSignaling(
-                signalingType, urlSignaling, interval, SynchronizationContext.Current);
-            _Run(conf, signaling, handlers.ToArray());
-        }
-
         /// <summary>
         ///
         /// </summary>
@@ -138,6 +130,12 @@ namespace Unity.RenderStreaming
             _Run(conf, signaling, handlers);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="conf"></param>
+        /// <param name="signaling"></param>
+        /// <param name="handlers"></param>
         private void _Run(
             RTCConfiguration? conf = null,
             ISignaling signaling = null,
@@ -180,6 +178,9 @@ namespace Unity.RenderStreaming
             m_running = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Stop()
         {
             m_instance?.Dispose();
@@ -187,7 +188,18 @@ namespace Unity.RenderStreaming
             m_running = false;
         }
 
-        public void OnDestroy()
+        void Awake()
+        {
+            if (!runOnAwake || m_running)
+                return;
+
+            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
+            ISignaling signaling = CreateSignaling(
+                signalingType, urlSignaling, interval, SynchronizationContext.Current);
+            _Run(conf, signaling, handlers.ToArray());
+        }
+
+        void OnDestroy()
         {
             Stop();
         }
