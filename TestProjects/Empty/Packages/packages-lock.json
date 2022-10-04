@@ -15,10 +15,12 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.0.2",
+      "version": "1.4.2",
       "depth": 1,
       "source": "registry",
-      "dependencies": {},
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.renderstreaming": {
@@ -26,12 +28,12 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.webrtc": "2.4.0-exp.4",
-        "com.unity.inputsystem": "1.0.2"
+        "com.unity.webrtc": "2.4.0-exp.11",
+        "com.unity.inputsystem": "1.4.1"
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.30",
+      "version": "1.1.31",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -42,7 +44,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "2.1.1",
+      "version": "3.0.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -51,10 +53,15 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.2.17",
+      "version": "1.6.4",
       "depth": 0,
       "source": "registry",
-      "dependencies": {},
+      "dependencies": {
+        "com.unity.modules.director": "1.0.0",
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.modules.particlesystem": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ugui": {
@@ -67,7 +74,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.4.0-exp.4",
+      "version": "2.4.0-exp.11",
       "depth": 1,
       "source": "registry",
       "dependencies": {
