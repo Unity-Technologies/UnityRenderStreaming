@@ -54,8 +54,8 @@ Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to
 | `3.1.0-exp.1` | - Android platform support | Jun 2021 |
 | `3.1.0-exp.2` | - Audio Renderer support <br/> - Multiplay sample <br/> - M1 Mac support | Dec 2021 |
 | `3.1.0-exp.3` | - Fix bugs | Feb 2022 |
-| `3.1.0-exp.4` | - Streaming settings API <br/> - *Unity 2022.1* support <br/> - Remove *Unity 2019.4* from support list | Sep 2022 |
-| `3.1.0-exp.5` |  | Nov 2022 |
+| `3.1.0-exp.4` | - Streaming settings API <br/> - *Unity 2022.1* support <br/> - Remove *Unity 2019.4* from support list | Oct 2022 |
+| `3.1.0-exp.5` | - Streaming Settings Window <br/> - Auto Configuration | Dec 2022 |
 
 ## FAQ
 
