@@ -34,7 +34,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             m_camera = gameObject.AddComponent<Camera>();
             var instruction = new WaitForCreateTrack();
-            instruction.Done(m_camera.CaptureStreamTrack(256, 256, 0));
+            instruction.Done(m_camera.CaptureStreamTrack(256, 256));
             return instruction;
         }
     }

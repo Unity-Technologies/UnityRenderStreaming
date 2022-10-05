@@ -192,7 +192,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
-            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720);
 
             var transceiver = target.AddSenderTrack(connectionId, track);
             Assert.That(transceiver.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
@@ -271,13 +271,13 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
-            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720);
             var transceiver1 = target.AddSenderTrack(connectionId, track);
             Assert.That(transceiver1.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
             var camObj2 = new GameObject("Camera2");
             var camera2 = camObj2.AddComponent<Camera>();
-            VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720, 0);
+            VideoStreamTrack track2 = camera2.CaptureStreamTrack(1280, 720);
             var transceiver2 = target.AddSenderTrack(connectionId, track2);
             Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
 
@@ -373,7 +373,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
-            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720);
 
             // send offer automatically after adding a Track
             var transceiver = target2.AddSenderTrack(connectionId, track);
@@ -450,7 +450,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var camObj = new GameObject("Camera");
             var camera = camObj.AddComponent<Camera>();
-            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720, 0);
+            VideoStreamTrack track = camera.CaptureStreamTrack(1280, 720);
             var transceiver2 = target2.AddSenderTrack(connectionId, track);
             Assert.That(transceiver2.Direction, Is.EqualTo(RTCRtpTransceiverDirection.SendOnly));
             target2.SendAnswer(connectionId);
