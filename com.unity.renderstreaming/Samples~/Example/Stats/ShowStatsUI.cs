@@ -103,57 +103,90 @@ namespace Unity.RenderStreaming.Samples
                     }
                 }
 
+                List<Coroutine> coroutines = new List<Coroutine>();
+
                 foreach (var sender in activeSenderList.Values.SelectMany(x => x))
                 {
-                    var op = sender.GetStats();
-                    yield return op;
-                    if (op.IsError)
-                    {
-                        continue;
-                    }
-
-                    var report = op.Value;
-                    if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
-                    {
-                        statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
-                        statsDisplay.lastReport = report;
-                    }
-                    else
-                    {
-                        var text = Instantiate(baseText, displayParent);
-                        text.text = "";
-                        text.gameObject.SetActive(true);
-                        lastSenderStats[sender] = new StatsDisplay {display = text, lastReport = report};
-                    }
+                    var coroutine = StartCoroutine(UpdateStats(sender));
+                    coroutines.Add(coroutine);
                 }
 
                 foreach (var receiver in activeReceiverList.Values.SelectMany(x => x))
                 {
-                    var op = receiver.GetStats();
-                    yield return op;
-
-                    if (op.IsError)
-                    {
-                        continue;
-                    }
-
-                    var report = op.Value;
-                    if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
-                    {
-                        statsDisplay.display.text = CreateDisplayString(report, statsDisplay.lastReport);
-                        statsDisplay.lastReport = report;
-                    }
-                    else
-                    {
-                        var text = Instantiate(baseText, displayParent);
-                        text.text = "";
-                        text.gameObject.SetActive(true);
-                        lastReceiverStats[receiver] = new StatsDisplay {display = text, lastReport = report};
-                    }
+                    var coroutine = StartCoroutine(UpdateStats(receiver));
+                    coroutines.Add(coroutine);
                 }
-
+                foreach(var coroutine in coroutines)
+                {
+                    yield return coroutine;
+                }
                 var noStatsData = !lastSenderStats.Any() && !lastReceiverStats.Any();
                 baseText.gameObject.SetActive(noStatsData);
+            }
+        }
+
+        IEnumerator UpdateStats(RTCRtpReceiver receiver)
+        {
+            var op = receiver.GetStats();
+            yield return op;
+
+            if (op.IsError)
+            {
+                yield break;
+            }
+
+            var report = op.Value;
+            if (report == null)
+            {
+                yield break;
+            }
+
+            if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
+            {
+                var lastReport = statsDisplay.lastReport;
+                statsDisplay.display.text = CreateDisplayString(report, lastReport);
+                statsDisplay.lastReport = report;
+                lastReport.Dispose();
+            }
+            else
+            {
+                var text = Instantiate(baseText, displayParent);
+                text.text = "";
+                text.gameObject.SetActive(true);
+                lastReceiverStats[receiver] = new StatsDisplay { display = text, lastReport = report };
+            }
+        }
+
+        IEnumerator UpdateStats(RTCRtpSender sender)
+        {
+            var op = sender.GetStats();
+            yield return op;
+
+
+            if (op.IsError)
+            {
+                yield break;
+            }
+
+            var report = op.Value;
+            if (report == null)
+            {
+                yield break;
+            }
+
+            if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
+            {
+                var lastReport = statsDisplay.lastReport;
+                statsDisplay.display.text = CreateDisplayString(report, lastReport);
+                statsDisplay.lastReport = report;
+                lastReport.Dispose();
+            }
+            else
+            {
+                var text = Instantiate(baseText, displayParent);
+                text.text = "";
+                text.gameObject.SetActive(true);
+                lastSenderStats[sender] = new StatsDisplay { display = text, lastReport = report };
             }
         }
 
