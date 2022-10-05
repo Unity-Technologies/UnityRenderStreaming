@@ -4,7 +4,7 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - yyyy-mm-dd
+## [3.1.0-exp.4] - 2022-10-06
 
 ### Added
 
@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Upgraded the version of Input System package `1.4.1`.
-- Upgraded the version of WebRTC package `2.4.0-exp.10`.
+- Upgraded the version of WebRTC package `2.4.0-exp.11`.
 - Merge features of three classes to `VideoStreamSender`.
   - `MicrophoneStreamSender`
   - `AudioStreamReceiver`

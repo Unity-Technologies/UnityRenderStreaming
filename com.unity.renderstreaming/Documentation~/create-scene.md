@@ -6,9 +6,6 @@ This tutorial explains how to edit an empty scene in Unity Editor and display th
 
 If Unity version is 2020 or later, Create a new empty scene. Select **File > New Scene** from the menu to open the dialog and select **Basic (Built-in)**.
 
-> [!NOTE]
-> This dialog is not opened if you are using Unity 2019.
-
 ![Create new scene](images/create_new_scene.png)
 
 Select the **Main Camera** object in the Hierarchy window, and add the **Render Streaming** component in the Inspector window.
