@@ -119,7 +119,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             track.Dispose();
 
             // With WebCam
-#if !(UNITY_IPHONE || UNITY_ANDROID)
+            /// todo:: macOS il2cpp standalone build is failed by IL2CPP error in Unity 2021.3.
+#if !(UNITY_IPHONE || UNITY_ANDROID || (UNITY_2021_3 && UNITY_STANDALONE_OSX))
             if(WebCamTexture.devices.Length > 0 && Application.HasUserAuthorization(UserAuthorization.WebCam))
             {
                 sender.source = VideoStreamSource.WebCamera;
