@@ -1,4 +1,4 @@
-{% metadata_file .yamato/meta/environments.yml %}
+{% metadata_file .yamato/package.metafile %}
 
 packages:
   - name: renderstreaming
@@ -344,7 +344,10 @@ test_{{ package.name }}_{{ editor.version }}:
 {% endfor %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
 {% for target in test_targets_android %}
+# todo: Exclude tests for Unity 2022.1 on Android platform because it is instable.
+{% if editor.version != "2022.1" %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
+{% endif %}
 {% endfor %}
 
 test_renderpipeline_{{ package.name }}_{{ editor.version }}:
@@ -406,7 +409,7 @@ publish_{{ package.name }}:
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
 {% for editor in editors %}
-{% if editor.version != "trunk" -%} # exclude trunk to test
+{% if editor.version != "trunk" %} # exclude trunk to test
     - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
 {% endif %}
 {% endfor %}
