@@ -344,8 +344,8 @@ test_{{ package.name }}_{{ editor.version }}:
 {% endfor %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
 {% for target in test_targets_android %}
-# todo: Exclude tests for Unity 2021.1 on Android platform because it is instable.
-{% if editor.version != "2021.1" %}
+# todo: Exclude tests for Unity 2022.1 on Android platform because it is instable.
+{% if editor.version != "2022.1" %}
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
 {% endif %}
 {% endfor %}
