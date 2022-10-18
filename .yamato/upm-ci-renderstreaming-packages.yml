@@ -139,11 +139,11 @@ test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name
 {% if platform.name == "win" %}
     - |
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --enable-load-and-test-isolation
 {% else %}
     - |
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --testfilter=!HttpSignaling" --enable-load-and-test-isolation
 {% endif %}
   artifacts:
     {{ packagename }}_{{ editor.version }}_{{ platform.name }}_test_results:
