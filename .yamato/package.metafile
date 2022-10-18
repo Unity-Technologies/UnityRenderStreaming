@@ -10,7 +10,7 @@ editors:
   - version: 2022.1
   - version: trunk
 platforms:
-  - name: win
+  - name: win-gpu
     type: Unity::VM::GPU
     image: renderstreaming/win10:v0.3.13-1084240
     flavor: b1.large
@@ -21,6 +21,21 @@ platforms:
 # todo(kazuki) : this comment is workaround for avoiding template test error on Yamato.
 # "PackageTestSuite.PackageValidationTests.PackageHasTests" unittest is failed
 # Error message : A package must have either playmode or editor tests in it. If you are using a different package for your tests, make sure to use the 'relatedPackages' field in your main package's manifest like explained here: https://confluence.hq.unity3d.com/display/PAK/How+to+add+a+test+project+for+your+package
+      - backend: mono
+        platform: editmode
+      - backend: mono
+        platform: playmode
+      - backend: mono
+        platform: standalone
+      - backend: il2cpp
+        platform: standalone
+  - name: win
+    type: Unity::VM
+    image: renderstreaming/win10:v0.3.13-1084239
+    flavor: b1.large
+    packed_webapp_name: webserver.exe
+    packed_webapp_platform: win
+    test_params:
       - backend: mono
         platform: editmode
       - backend: mono
@@ -70,7 +85,7 @@ platforms:
 #      - backend: il2cpp
 #        additional_component_arg: StandaloneSupport-IL2CPP
 #        platform: standalone
-  - name: linux
+  - name: linux-gpu
     type: Unity::VM::GPU
     image: renderstreaming/ubuntu:v0.2.4-1104053
     flavor: b1.large

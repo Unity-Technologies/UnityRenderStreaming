@@ -5,7 +5,7 @@
 {% for project in template_projects %}
 
 {% for editor in editors %}
-{% if editor.version == "2020.3" -%}
+{% if editor.version == "2020.3" %}
 
 prepack_{{ project.name }}_{{ editor.version }}:
   name: Pre-Pack {{ project.packagename }} {{ editor.version }} - Primed Artifacts
@@ -44,7 +44,7 @@ pack_{{ project.name }}_{{ editor.version }}:
         - "upm-ci~/**/*"
 
 {% for platform in platforms %}
-{% if platform.name == "win" -%}
+{% if platform.name == "win" or platform.name == "win-gpu" %}
 {% for param in platform.test_params %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
@@ -66,9 +66,9 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
 {% endfor %}
-{% else -%}
+{% else %}
 {% for param in platform.test_params %}
-{% if project.name != "renderstreaming-rtx" -%}
+{% if project.name != "renderstreaming-rtx" %}
 test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
   name : Test {{ project.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
@@ -85,29 +85,29 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   dependencies:
     - .yamato/upm-ci-template.yml#pack_{{ project.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.name }}
-{% endif -%}
+{% endif %}
 {% endfor %}
-{% endif -%}
+{% endif %}
 {% endfor %}
 
 trigger_template_test_{{ project.name }}_{{ editor.version }}:
   name : Trigger all Template test {{ project.packagename }} {{ editor.version }}
   dependencies:
     {% for platform in platforms %}
-    {% if platform.name == "win" -%}
+    {% if platform.name == "win" or platform.name == "win-gpu" %}
     {% for param in platform.test_params %}
     - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
-    {% else -%}
+    {% else %}
     {% if project.name != "renderstreaming-rtx" %}
     {% for param in platform.test_params %}
     - .yamato/upm-ci-template.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endif %}
-    {% endif -%}
+    {% endif %}
     {% endfor %}
 
-{% endif -%}
+{% endif %}
 {% endfor %}
 
 publish_{{ project.name }}:
