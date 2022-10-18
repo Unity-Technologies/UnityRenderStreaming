@@ -22,6 +22,7 @@ export const createServer = (config: Options): express.Application => {
   app.use(express.static(path.join(__dirname, '../client/public')));
   app.use('/module', express.static(path.join(__dirname, '../client/src')));
   app.get('/', (req, res) => {
+    // res.send("Hello world!");
     const indexPagePath: string = path.join(__dirname, '../client/public/index.html');
     fs.access(indexPagePath, (err) => {
       if (err) {
