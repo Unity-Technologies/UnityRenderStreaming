@@ -1,0 +1,23 @@
+compile_test:
+  name: Compilation Test
+  agent:
+    type: Unity::VM
+    flavor: b1.large
+    image: package-ci/win10:v4
+  commands:
+    # When unity-config will be part of the image, this will turn into a no-op
+    - |
+      where /q unity-config
+      if ERRORLEVEL 1 (
+        %GSUDO% choco install unity-config -y -s https://artifactory.prd.it.unity3d.com/artifactory/api/nuget/unity-choco-local
+      )
+    - unity-downloader-cli -c editor -u 2020.3 --wait
+    - .Editor\Unity.exe -createProject CompilationTestProject -logFile logs\CreateProject.log -batchmode -quit
+    - |
+      unity-config project set registry --project-path CompilationTestProject candidates
+      unity-config project add dependency --project-path CompilationTestProject com.unity.renderstreaming@3.1.0-exp.4
+    - .Editor\Unity.exe -projectPath CompilationTestProject -logFile logs\CompilePackage.log -batchmode -quit
+  artifacts:
+    logs:
+      paths:
+        - logs/*
