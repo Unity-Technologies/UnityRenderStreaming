@@ -605,7 +605,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [UnityTest, Timeout(30000)]
+        [UnityTest, Timeout(30000), LongRunning]
         public IEnumerator SwapTransceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -688,7 +688,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         [TestCase(TestMode.PublicMode, ExpectedResult = null)]
         [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
-        [UnityTest, Timeout(30000)]
+        [UnityTest, Timeout(30000), LongRunning]
         public IEnumerator ResendOfferUntilGotAnswer(TestMode mode)
         {
             MockSignaling.Reset(mode == TestMode.PrivateMode);

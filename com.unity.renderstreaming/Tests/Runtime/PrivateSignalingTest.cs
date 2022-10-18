@@ -238,9 +238,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(receivePolite1, Is.False);
             Assert.That(receivePolite2, Is.True);
 
-            // wait first connection list on http
-            yield return new WaitForSeconds(1);
-
             signaling1.CloseConnection(receiveConnectionId1);
 
             yield return new WaitUntil(() => raiseOnDestroy1 && raiseOnDestroy2);
@@ -250,7 +247,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.CloseConnection(receiveConnectionId2);
             signaling1.Stop();
             signaling2.Stop();
-            yield return new WaitForSeconds(1);
         }
 
 
@@ -285,7 +281,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
             signaling1.SendOffer(connectionId, m_DescOffer);
-            yield return new WaitForSeconds(3);
+
             // Do not receive offer other signaling if not connected same sendoffer connectionId in private mode
             Assert.IsFalse(offerRaised2);
 
@@ -315,7 +311,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.CloseConnection(connectionId2);
             signaling1.Stop();
             signaling2.Stop();
-            yield return new WaitForSeconds(1);
         }
 
         [UnityTest, Timeout(10000)]
@@ -379,7 +374,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.CloseConnection(connectionId2);
             signaling1.Stop();
             signaling2.Stop();
-            yield return new WaitForSeconds(1);
         }
 
 
@@ -454,10 +448,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.CloseConnection(connectionId2);
             signaling1.Stop();
             signaling2.Stop();
-            yield return new WaitForSeconds(1);
         }
 
-        [UnityTest, Timeout(10000)]
+        [UnityTest, Timeout(10000), LongRunning]
         public IEnumerator NotReceiveOwnOfferAnswer()
         {
             bool startRaised1 = false;
@@ -538,7 +531,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.CloseConnection(connectionId2);
             signaling1.Stop();
             signaling2.Stop();
-            yield return new WaitForSeconds(1);
         }
     }
 }
