@@ -316,7 +316,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         //todo:: crash in dispose process on standalone Linux and Android
         [UnityTest, Timeout(10000)]
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
-        public IEnumerator AddStreamSource()
+        public IEnumerator AddVideoStreamSource()
         {
             string connectionId = "12345";
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
@@ -331,6 +331,27 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(streamer.Track, Is.Not.Null);
             Assert.That(streamer.Transceivers, Is.Not.Empty);
+
+            // SetCodec
+            streamer.SetCodec(null);
+
+            // SetFramerate
+            var frameRate = streamer.frameRate;
+            streamer.SetFrameRate(frameRate);
+
+            // SetBitrate
+            var maxBitrate = streamer.maxBitrate;
+            var minBitrate = streamer.maxBitrate;
+            streamer.SetBitrate(minBitrate, maxBitrate);
+
+            // SetScaleResolutionDown
+            var scaleFactor = streamer.scaleResolutionDown;
+            streamer.SetScaleResolutionDown(scaleFactor);
+
+            // SetTextureSize
+            var width = streamer.width;
+            var height = streamer.height;
+            streamer.SetTextureSize(new Vector2Int((int)width, (int)height));
 
             container.test.component.DeleteConnection(connectionId);
             yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
