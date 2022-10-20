@@ -6,6 +6,8 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.WebRTC;
 using UnityEngine.TestTools;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
@@ -465,6 +467,54 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             receiver.SetCodec(null);
             Assert.That(receiver.codec, Is.Null);
+        }
+    }
+
+    class InputSenderTest
+    {
+        [Test]
+        public void SetChannel()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<InputSender>();
+            Assert.That(sender.Channel, Is.Null);
+            Assert.Throws<NullReferenceException>(() => { sender.SetChannel(null); } );
+
+            sender.enabled = false;
+            sender.enabled = true;
+
+            UnityEngine.Object.DestroyImmediate(go);
+        }
+    }
+
+    class InputReceiverTest
+    {
+        [Test]
+        public void SetChannel()
+        {
+            var go = new GameObject();
+            go.SetActive(false);
+            var receiver = go.AddComponent<InputReceiver>();
+            var asset = ScriptableObject.CreateInstance<InputActionAsset>();
+            receiver.actions = asset;
+            go.SetActive(true);
+
+            Assert.That(receiver.Channel, Is.Null);
+            Assert.Throws<NullReferenceException>(() => { receiver.SetChannel(null); });
+
+            receiver.enabled = false;
+            receiver.enabled = true;
+
+            Assert.That(receiver.inputIsActive, Is.True);
+            Assert.That(receiver.user.id, Is.Not.EqualTo(InputUser.InvalidId));
+            Assert.That(receiver.devices, Is.Empty);
+            Assert.That(receiver.defaultActionMap, Is.Null);
+
+            Assert.That(receiver.currentActionMap, Is.Null);
+            receiver.currentActionMap = new InputActionMap();
+            Assert.That(receiver.currentActionMap, Is.Not.Null);
+
+            UnityEngine.Object.DestroyImmediate(go);
         }
     }
 }
