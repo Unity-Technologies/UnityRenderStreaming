@@ -226,5 +226,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             sender.Dispose();
             receiver.Dispose();
         }
+
+        [Test]
+        public void SaveState()
+        {
+            var sender = new Sender();
+            var inputRemoting = new InputRemoting(sender);
+            var state = inputRemoting.SaveState();
+            inputRemoting.RestoreState(state, sender);
+            sender.Dispose();
+        }
     }
 }
