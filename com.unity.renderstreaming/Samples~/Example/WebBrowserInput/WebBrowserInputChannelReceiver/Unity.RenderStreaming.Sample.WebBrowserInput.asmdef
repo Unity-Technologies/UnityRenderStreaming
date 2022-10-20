@@ -1,0 +1,25 @@
+{
+    "name": "Unity.RenderStreaming.Sample.WebBrowserInput",
+    "rootNamespace": "",
+    "references": [
+        "GUID:40a5acf76f04c4c8ebb69605e4b0d5c7",
+        "GUID:f12aafacab75a87499e7e45c873ffab8",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -539,7 +539,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
-        [UnityTest, Timeout(10000)]
+        [UnityTest, Timeout(10000), LongRunning]
         public IEnumerator SendOfferThrowExceptionPrivateMode()
         {
             MockSignaling.Reset(true);

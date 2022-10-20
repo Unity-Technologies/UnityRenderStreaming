@@ -102,8 +102,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.sourceTexture, Is.Null);
             Assert.Throws<ArgumentNullException>(() => sender.CreateTrack());
 
-            var width = 256;
-            var height = 256;
+            var width = 640;
+            var height = 480;
             var format = WebRTC.WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
             var texture = new RenderTexture(width, height, 0, format);
             sender.sourceTexture = texture;
