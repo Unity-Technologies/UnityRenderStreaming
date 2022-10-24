@@ -512,7 +512,15 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             Assert.That(receiver.currentActionMap, Is.Null);
             receiver.currentActionMap = new InputActionMap();
-            Assert.That(receiver.currentActionMap, Is.Not.Null);
+            Assert.That(receiver.actionEvents, Is.Not.Null);
+            receiver.actionEvents = new PlayerInput.ActionEvent[]{};
+
+            receiver.SwitchCurrentActionMap(null);
+            receiver.PerformPairingWithDevice(null);
+            receiver.PerformPairingWithAllLocalDevices();
+            receiver.UnpairDevices(null);
+
+            receiver.SetChannel(null, null);
 
             UnityEngine.Object.DestroyImmediate(go);
         }

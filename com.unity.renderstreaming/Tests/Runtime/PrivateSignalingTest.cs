@@ -82,7 +82,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.IsTrue(System.IO.File.Exists(fileName), $"webapp file not found in {fileName}");
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                WindowStyle = ProcessWindowStyle.Hidden, FileName = fileName, UseShellExecute = false
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = fileName,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
             };
 
             string arguments = $"-m private -p {TestUtility.PortNumber}";
@@ -99,7 +103,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 Debug.Log(e.Data);
             };
+            m_ServerProcess.ErrorDataReceived += (sender, e) =>
+            {
+                Debug.Log(e.Data);
+            };
             bool success = m_ServerProcess.Start();
+            m_ServerProcess.BeginErrorReadLine();
+            m_ServerProcess.BeginOutputReadLine();
             Assert.True(success);
             Thread.Sleep(1000);
         }

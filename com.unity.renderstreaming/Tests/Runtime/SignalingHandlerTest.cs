@@ -316,6 +316,38 @@ namespace Unity.RenderStreaming.RuntimeTest
         //todo:: crash in dispose process on standalone Linux and Android
         [UnityTest, Timeout(10000)]
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
+        public IEnumerator AddAudioStreamSource()
+        {
+            string connectionId = "12345";
+            var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
+            var streamer = container.test.gameObject.AddComponent<AudioStreamSenderTester>();
+
+            Assert.That(streamer.Track, Is.Null);
+            Assert.That(streamer.Transceivers, Is.Empty);
+
+            container.test.component.AddComponent(streamer);
+            container.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container.test.component.ExistConnection(connectionId));
+
+            Assert.That(streamer.Track, Is.Not.Null);
+            Assert.That(streamer.Transceivers, Is.Not.Empty);
+
+            // SetCodec
+            streamer.SetCodec(null);
+
+            // SetBitrate
+            var maxBitrate = streamer.maxBitrate;
+            var minBitrate = streamer.maxBitrate;
+            streamer.SetBitrate(minBitrate, maxBitrate);
+
+            container.test.component.DeleteConnection(connectionId);
+            yield return new WaitUntil(() => !container.test.component.ExistConnection(connectionId));
+            container.Dispose();
+        }
+
+        //todo:: crash in dispose process on standalone Linux and Android
+        [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator AddVideoStreamSource()
         {
             string connectionId = "12345";

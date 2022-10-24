@@ -105,8 +105,10 @@ function _deleteConnection(sessionId:string, connectionId:string) {
 }
 
 function _deleteSession(sessionId: string) {
-  for(const connectionId of Array.from(clients.get(sessionId))) {
-    _deleteConnection(sessionId, connectionId);
+  if(clients.has(sessionId)) {
+    for(const connectionId of Array.from(clients.get(sessionId))) {
+      _deleteConnection(sessionId, connectionId);
+    }
   }
   offers.delete(sessionId);
   answers.delete(sessionId);
@@ -132,7 +134,7 @@ function _checkDeletedSession(sessionId: string): void {
   }
 }
 
-function _getConnection(sessionId: string): string[] {  
+function _getConnection(sessionId: string): string[] {
   _checkDeletedSession(sessionId);
   return Array.from(clients.get(sessionId));
 }
