@@ -43,6 +43,18 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void RunDefault()
+        {
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            var handlers = new SignalingHandlerBase[] { handler };
+            ISignaling mock = new MockSignaling();
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+            component.Run(handlers:handlers);
+        }
+
+
+        [Test]
         public void ThrowExceptionIfHandlerIsNullOrEmpty()
         {
             ISignaling mock = new MockSignaling();

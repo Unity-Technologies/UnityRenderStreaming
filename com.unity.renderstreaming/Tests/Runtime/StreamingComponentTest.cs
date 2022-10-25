@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // With camera
             sender.source = VideoStreamSource.Camera;
-            Assert.Throws<ArgumentNullException>(() => sender.CreateTrack());
+            Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<ArgumentNullException>());
 
             var camera = go.AddComponent<Camera>();
             sender.sourceCamera = camera;
@@ -102,7 +102,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             // With Texture
             sender.source = VideoStreamSource.Texture;
             Assert.That(sender.sourceTexture, Is.Null);
-            Assert.Throws<ArgumentNullException>(() => sender.CreateTrack());
+            Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<ArgumentNullException>());
 
             var width = 640;
             var height = 480;
@@ -112,8 +112,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.sourceTexture, Is.Not.Null);
             Assert.That(sender.width, Is.EqualTo(width));
             Assert.That(sender.height, Is.EqualTo(height));
-            Assert.Throws<InvalidOperationException>(() => sender.width = 1280);
-            Assert.Throws<InvalidOperationException>(() => sender.height = 720);
+            Assert.That(() => sender.width = 1280, Throws.Exception.TypeOf<InvalidOperationException>());
+            Assert.That(() => sender.height = 720, Throws.Exception.TypeOf<InvalidOperationException>());
             op = sender.CreateTrack();
             yield return op;
             track = op.Track;
@@ -128,7 +128,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 sender.source = VideoStreamSource.WebCamera;
                 Assert.That(sender.sourceDeviceIndex, Is.EqualTo(0));
                 sender.sourceDeviceIndex = -1;
-                Assert.Throws<ArgumentOutOfRangeException>(() => sender.CreateTrack());
+                Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
                 sender.sourceDeviceIndex = 0;
                 op = sender.CreateTrack();
                 yield return op;
@@ -165,7 +165,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.maxBitrate, Is.EqualTo(maxBitrate));
 
             minBitrate = 3000;
-            Assert.Throws<ArgumentException>(() => sender.SetBitrate(minBitrate, maxBitrate));
+            Assert.That(() => sender.SetBitrate(minBitrate, maxBitrate), Throws.Exception.TypeOf<ArgumentException>());
             UnityEngine.Object.DestroyImmediate(go);
         }
 
@@ -184,7 +184,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.frameRate, Is.EqualTo(framerate));
 
             framerate = -1;
-            Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetFrameRate(framerate));
+            Assert.That(() => sender.SetFrameRate(framerate), Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
 
             UnityEngine.Object.DestroyImmediate(go);
         }
@@ -204,10 +204,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.scaleResolutionDown, Is.EqualTo(scaleFactor));
 
             scaleFactor = -1;
-            Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetScaleResolutionDown(scaleFactor));
+            Assert.That(() => sender.SetScaleResolutionDown(scaleFactor), Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
 
             scaleFactor = 0.5f;
-            Assert.Throws<ArgumentOutOfRangeException>(() => sender.SetScaleResolutionDown(scaleFactor));
+            Assert.That(() => sender.SetScaleResolutionDown(scaleFactor), Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
 
             UnityEngine.Object.DestroyImmediate(go);
         }
@@ -317,7 +317,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             // With AudioListener
             sender.source = AudioStreamSource.AudioListener;
-            Assert.Throws<InvalidOperationException>(() => sender.CreateTrack());
+            Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<InvalidOperationException>());
 
             var audioListener = go.AddComponent<AudioListener>();
             var op = sender.CreateTrack();
@@ -331,7 +331,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var go2 = new GameObject();
             sender = go2.AddComponent<AudioStreamSender>();
             sender.source = AudioStreamSource.AudioSource;
-            Assert.Throws<InvalidOperationException>(() => sender.CreateTrack());
+            Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<InvalidOperationException>());
             var audioSource = go2.AddComponent<AudioSource>();
             sender.audioSource = audioSource;
             op = sender.CreateTrack();
@@ -356,6 +356,27 @@ namespace Unity.RenderStreaming.RuntimeTest
 #endif
             UnityEngine.Object.DestroyImmediate(go);
             UnityEngine.Object.DestroyImmediate(go2);
+        }
+
+        [UnityTest]
+        public IEnumerator ReplaceTrack()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<AudioStreamSender>();
+
+            Assert.That(() => sender.ReplaceTrack(null), Throws.Exception.TypeOf<ArgumentNullException>());
+
+            // With AudioListener
+            sender.source = AudioStreamSource.AudioListener;
+            var audioListener = go.AddComponent<AudioListener>();
+            sender.audioListener = audioListener;
+            var op = sender.CreateTrack();
+            yield return op;
+            var track = op.Track;
+            Assert.That(track, Is.Not.Null);
+            sender.ReplaceTrack(track);
+
+            UnityEngine.Object.DestroyImmediate(go);
         }
 
         [Test]
@@ -403,7 +424,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.maxBitrate, Is.EqualTo(maxBitrate));
 
             minBitrate = 3000;
-            Assert.Throws<ArgumentException>(() => sender.SetBitrate(minBitrate, maxBitrate));
+            Assert.That(() => sender.SetBitrate(minBitrate, maxBitrate), Throws.Exception.TypeOf<ArgumentException>());
             UnityEngine.Object.DestroyImmediate(go);
 
         }
@@ -478,12 +499,20 @@ namespace Unity.RenderStreaming.RuntimeTest
             var go = new GameObject();
             var sender = go.AddComponent<InputSender>();
             Assert.That(sender.Channel, Is.Null);
-            Assert.Throws<NullReferenceException>(() => { sender.SetChannel(null); } );
+            Assert.That(() => sender.SetChannel(null), Throws.Exception.TypeOf<NullReferenceException>());
 
             sender.enabled = false;
             sender.enabled = true;
 
+            sender.SetChannel(null, null);
+
+            var connection = new RTCPeerConnection();
+            var channel = connection.CreateDataChannel("test");
+            sender.SetChannel(null, channel);
+
             UnityEngine.Object.DestroyImmediate(go);
+            channel.Dispose();
+            connection.Dispose();
         }
     }
 
@@ -496,11 +525,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             go.SetActive(false);
             var receiver = go.AddComponent<InputReceiver>();
             var asset = ScriptableObject.CreateInstance<InputActionAsset>();
+            var mapName = "test";
+            asset.AddActionMap(mapName);
             receiver.actions = asset;
             go.SetActive(true);
 
             Assert.That(receiver.Channel, Is.Null);
-            Assert.Throws<NullReferenceException>(() => { receiver.SetChannel(null); });
+            Assert.That(() => receiver.SetChannel(null), Throws.Exception.TypeOf<NullReferenceException>());
 
             receiver.enabled = false;
             receiver.enabled = true;
@@ -515,10 +546,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(receiver.actionEvents, Is.Not.Null);
             receiver.actionEvents = new PlayerInput.ActionEvent[]{};
 
-            receiver.SwitchCurrentActionMap(null);
-            receiver.PerformPairingWithDevice(null);
+            receiver.SwitchCurrentActionMap(mapName);
+
+            var device = UnityEngine.InputSystem.InputSystem.devices.First();
+            receiver.PerformPairingWithDevice(device);
             receiver.PerformPairingWithAllLocalDevices();
-            receiver.UnpairDevices(null);
+            receiver.UnpairDevices(device);
 
             receiver.SetChannel(null, null);
 

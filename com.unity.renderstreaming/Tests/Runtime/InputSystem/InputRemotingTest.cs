@@ -228,6 +228,15 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        public void RemoveRemoteDevices()
+        {
+            var sender = new Sender();
+            var senderInput = new InputRemoting(sender);
+            senderInput.RemoveRemoteDevices(0);
+            sender.Dispose();
+        }
+
+        [Test]
         public void SaveState()
         {
             var sender = new Sender();
