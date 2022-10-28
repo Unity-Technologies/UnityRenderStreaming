@@ -71,6 +71,8 @@ namespace Unity.RenderStreaming.Samples
             };
 
         private RenderStreamingSettings settings;
+        private int lastWidth;
+        private int lastHeight;
 
         private void Awake()
         {
@@ -126,6 +128,7 @@ namespace Unity.RenderStreaming.Samples
         {
             var scale = scaleResolutionDownOptions.Values.ElementAt(index);
             videoStreamSender.SetScaleResolutionDown(scale);
+            SetInputChange();
         }
 
         private void ChangeFramerate(int index)
@@ -139,7 +142,10 @@ namespace Unity.RenderStreaming.Samples
             var resolution = resolutionOptions.Values.ElementAt(index);
 
             if (videoStreamSender.source != VideoStreamSource.Texture)
+            {
                 videoStreamSender.SetTextureSize(resolution);
+                SetInputChange();
+            }
         }
 
         private void Start()
@@ -153,26 +159,38 @@ namespace Unity.RenderStreaming.Samples
             inputReceiver.OnStartedChannel += OnStartedChannel;
         }
 
-        private void OnRectTransformDimensionsChange()
-        {
-            Debug.Log($"OnRectTransformDimensionsChange {(int)videoStreamSender.width}, {(int)videoStreamSender.height}");
-            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
-        }
-
         private void OnStartedChannel(string connectionId)
         {
-            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
-            inputReceiver.SetEnableInputPositionCorrection(true);
+            SetInputChange();
         }
 
         // Parameters can be changed from the Unity Editor inspector when in Play Mode,
         // So this method monitors the parameters every frame and updates scene UI.
-#if UNITY_EDITOR
         private void Update()
         {
+#if UNITY_EDITOR
             SyncDisplayVideoSenderParameters();
-        }
 #endif
+            // Call SetInputChange if window size is changed.
+            var width = Screen.width;
+            var height = Screen.height;
+            if (lastWidth == width && lastHeight == height)
+                return;
+            lastWidth = width;
+            lastHeight = height;
+
+            SetInputChange();
+        }
+
+        private void SetInputChange()
+        {
+            if (!inputReceiver.IsConnected)
+                return;
+            var width = (int)(videoStreamSender.width / videoStreamSender.scaleResolutionDown);
+            var height = (int)(videoStreamSender.height / videoStreamSender.scaleResolutionDown);
+            inputReceiver.SetInputRange(new Vector2Int(width, height));
+            inputReceiver.SetEnableInputPositionCorrection(true);
+        }
 
         private void SyncDisplayVideoSenderParameters()
         {

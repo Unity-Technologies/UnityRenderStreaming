@@ -44,6 +44,7 @@ namespace Unity.RenderStreaming.Samples
         private string connectionId;
         private InputSender inputSender;
         private RenderStreamingSettings settings;
+        private Vector2 lastSize;
 
         void Awake()
         {
@@ -72,6 +73,16 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: settings?.Signaling);
         }
 
+        private void Update()
+        {
+            // Call SetInputChange if window size is changed.
+            var size = remoteVideoImage.rectTransform.sizeDelta;
+            if (lastSize == size)
+                return;
+            lastSize = size;
+            SetInputChange();
+        }
+
         void OnUpdateReceiveTexture(Texture texture)
         {
             remoteVideoImage.texture = texture;
@@ -93,8 +104,7 @@ namespace Unity.RenderStreaming.Samples
             if (inputSender == null || !inputSender.IsConnected || remoteVideoImage.texture == null)
                 return;
             var (region, size) = remoteVideoImage.GetRegionAndSize();
-            resolution.text = $"{region.width} x {region.height}";
-            Debug.Log(resolution.text);
+            resolution.text = $"{(int)region.width} x {(int)region.height}";
             inputSender.SetInputRange(region, size);
             inputSender.EnableInputPositionCorrection(true);
         }
