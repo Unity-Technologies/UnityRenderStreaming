@@ -57,8 +57,6 @@ namespace Unity.RenderStreaming.Signaling
         {
             m_running = false;
 
-            ThreadPool.QueueUserWorkItem(_ => { HTTPDelete(); });
-
             if (m_signalingThread != null)
             {
                 if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
@@ -160,14 +158,13 @@ namespace Unity.RenderStreaming.Signaling
                     Debug.LogError("Signaling: HTTP polling error : " + e);
                 }
             }
+            HTTPDelete();
+
             Debug.Log("Signaling: HTTP polling thread ended");
         }
 
-        private HttpWebResponse HTTPGetResponse(HttpWebRequest request)
+        private static HttpWebResponse HTTPGetResponse(HttpWebRequest request)
         {
-            if (!m_running)
-                return null;
-
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();

@@ -376,6 +376,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(track, Is.Not.Null);
             sender.ReplaceTrack(track);
 
+            track.Dispose();
+            track = null;
+
             UnityEngine.Object.DestroyImmediate(go);
         }
 
@@ -555,6 +558,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             receiver.SetChannel(null, null);
 
+            UnityEngine.Object.DestroyImmediate(asset);
             UnityEngine.Object.DestroyImmediate(go);
         }
     }
