@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming.Samples
 {
     static class InputSenderExtension
     {
-        public static void SetInputRange(this InputSender sender, RawImage image)
+        public static (Rect, Vector2Int) GetRegionAndSize(this RawImage image)
         {
             // correct pointer position
             Vector3[] corners = new Vector3[4];
@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming.Samples
                 );
 
             var size = new Vector2Int(image.texture.width, image.texture.height);
-            sender.SetInputRange(region, size);
+            return (region, size);
         }
     }
 
@@ -38,6 +38,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
+        [SerializeField] private Text resolution;
 #pragma warning restore 0649
 
         private string connectionId;
@@ -82,11 +83,19 @@ namespace Unity.RenderStreaming.Samples
             SetInputChange();
         }
 
+        private void OnRectTransformDimensionsChange()
+        {
+            SetInputChange();
+        }
+
         void SetInputChange()
         {
             if (inputSender == null || !inputSender.IsConnected || remoteVideoImage.texture == null)
                 return;
-            inputSender.SetInputRange(remoteVideoImage);
+            var (region, size) = remoteVideoImage.GetRegionAndSize();
+            resolution.text = $"{region.width} x {region.height}";
+            Debug.Log(resolution.text);
+            inputSender.SetInputRange(region, size);
             inputSender.EnableInputPositionCorrection(true);
         }
 

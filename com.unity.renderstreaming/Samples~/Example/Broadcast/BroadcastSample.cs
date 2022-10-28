@@ -153,6 +153,12 @@ namespace Unity.RenderStreaming.Samples
             inputReceiver.OnStartedChannel += OnStartedChannel;
         }
 
+        private void OnRectTransformDimensionsChange()
+        {
+            Debug.Log($"OnRectTransformDimensionsChange {(int)videoStreamSender.width}, {(int)videoStreamSender.height}");
+            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
+        }
+
         private void OnStartedChannel(string connectionId)
         {
             inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
