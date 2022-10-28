@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming.Samples
     {
         public static void CalculateInputRegion(this InputReceiver reveiver, Vector2Int size)
         {
-            reveiver.SetInputRange(size, new Rect(0, 0, Screen.width, Screen.height));
+            reveiver.CalculateInputRegion(size, new Rect(0, 0, Screen.width, Screen.height));
         }
     }
 
