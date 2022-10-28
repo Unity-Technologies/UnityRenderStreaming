@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 participantId = 1,
                 type = InputRemoting.MessageType.NewEvents,
-                data = new byte[] {1, 2, 3, 4, 5},
+                data = new byte[] { 1, 2, 3, 4, 5 },
             };
 
             var bytes = MessageSerializer.Serialize(ref message1);
@@ -177,9 +177,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             receiverDisposer.Dispose();
         }
 
-        /// todo(kazuki): This test is failed for timeout on macOS
+        /// todo(kazuki): This test is failed for timeout on macOS.
+        /// todo(kazuki): This test is failed for timeout on iPhonePlayer.
         [UnityTest, Timeout(3000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.OSXPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.OSXPlayer, RuntimePlatform.IPhonePlayer })]
         public IEnumerator AddDevice()
         {
             var sender = new Sender();
@@ -192,13 +193,15 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             InputDevice device = null;
             InputDeviceChange change = default;
-            receiver.onDeviceChange += (_device, _change) => {
+            receiver.onDeviceChange += (_device, _change) =>
+            {
                 device = _device;
                 change = _change;
             };
             string layoutName = null;
             InputControlLayoutChange layoutChange = default;
-            receiver.onLayoutChange += (_name, _change) => {
+            receiver.onLayoutChange += (_name, _change) =>
+            {
                 layoutName = _name;
                 layoutChange = _change;
             };

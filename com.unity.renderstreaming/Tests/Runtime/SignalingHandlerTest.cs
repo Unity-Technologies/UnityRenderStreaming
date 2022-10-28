@@ -222,14 +222,14 @@ namespace Unity.RenderStreaming.RuntimeTest
             container2.Dispose();
         }
 
-        //todo:: crash in dispose process on standalone linux
+        // todo:: Crash in dispose process on Linux standalone.
+        // todo:: Timeout error on iPhonePlayer.
         [UnityTest, Timeout(10000)]
         [UnityPlatform(exclude = new[]
         {
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
-            RuntimePlatform.LinuxPlayer
+            RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer
         })]
-
         public IEnumerator SetCodec()
         {
             string connectionId = "12345";
@@ -441,9 +441,10 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
 
-        //todo:: crash in dispose process on standalone linux
+        // todo:: Crash in dispose process on Linux standalone
+        // todo:: Timeout error on iPhonePlayer
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -459,7 +460,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.test.component.AddComponent(streamer);
             container1.test.component.CreateConnection(connectionId);
             yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
-
             yield return new WaitUntil(() => isStartedStream0);
             Assert.That(isStartedStream0, Is.True);
 

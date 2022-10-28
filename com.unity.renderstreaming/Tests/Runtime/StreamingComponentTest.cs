@@ -375,10 +375,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var track = op.Track;
             Assert.That(track, Is.Not.Null);
             sender.ReplaceTrack(track);
-
-            track.Dispose();
-            track = null;
-
             UnityEngine.Object.DestroyImmediate(go);
         }
 
