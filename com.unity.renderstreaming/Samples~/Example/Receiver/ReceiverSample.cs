@@ -80,32 +80,32 @@ namespace Unity.RenderStreaming.Samples
             if (lastSize == size)
                 return;
             lastSize = size;
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         void OnUpdateReceiveTexture(Texture texture)
         {
             remoteVideoImage.texture = texture;
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         void OnStartedChannel(string connectionId)
         {
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         private void OnRectTransformDimensionsChange()
         {
-            SetInputChange();
+            CalculateInputRegion();
         }
 
-        void SetInputChange()
+        void CalculateInputRegion()
         {
             if (inputSender == null || !inputSender.IsConnected || remoteVideoImage.texture == null)
                 return;
             var (region, size) = remoteVideoImage.GetRegionAndSize();
             resolution.text = $"{(int)region.width} x {(int)region.height}";
-            inputSender.SetInputRange(region, size);
+            inputSender.CalculateInputResion(region, size);
             inputSender.EnableInputPositionCorrection(true);
         }
 

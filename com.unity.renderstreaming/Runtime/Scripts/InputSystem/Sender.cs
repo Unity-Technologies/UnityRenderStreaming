@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.InputSystem
         /// </summary>
         /// <param name="inputRegion"></param>
         /// <param name="outputRegion"></param>
-        public void SetInputRange(Rect inputRegion, Rect outputRegion)
+        public void CalculateInputRegion(Rect inputRegion, Rect outputRegion)
         {
             _corrector.inputRegion = inputRegion;
             _corrector.outputRegion = outputRegion;

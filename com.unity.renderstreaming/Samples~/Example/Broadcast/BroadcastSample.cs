@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming.Samples
 
     static class InputReceiverExtension
     {
-        public static void SetInputRange(this InputReceiver reveiver, Vector2Int size)
+        public static void CalculateInputRegion(this InputReceiver reveiver, Vector2Int size)
         {
             reveiver.SetInputRange(size, new Rect(0, 0, Screen.width, Screen.height));
         }
@@ -128,7 +128,7 @@ namespace Unity.RenderStreaming.Samples
         {
             var scale = scaleResolutionDownOptions.Values.ElementAt(index);
             videoStreamSender.SetScaleResolutionDown(scale);
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         private void ChangeFramerate(int index)
@@ -144,7 +144,7 @@ namespace Unity.RenderStreaming.Samples
             if (videoStreamSender.source != VideoStreamSource.Texture)
             {
                 videoStreamSender.SetTextureSize(resolution);
-                SetInputChange();
+                CalculateInputRegion();
             }
         }
 
@@ -161,7 +161,7 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnStartedChannel(string connectionId)
         {
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         // Parameters can be changed from the Unity Editor inspector when in Play Mode,
@@ -179,16 +179,16 @@ namespace Unity.RenderStreaming.Samples
             lastWidth = width;
             lastHeight = height;
 
-            SetInputChange();
+            CalculateInputRegion();
         }
 
-        private void SetInputChange()
+        private void CalculateInputRegion()
         {
             if (!inputReceiver.IsConnected)
                 return;
             var width = (int)(videoStreamSender.width / videoStreamSender.scaleResolutionDown);
             var height = (int)(videoStreamSender.height / videoStreamSender.scaleResolutionDown);
-            inputReceiver.SetInputRange(new Vector2Int(width, height));
+            inputReceiver.CalculateInputRegion(new Vector2Int(width, height));
             inputReceiver.SetEnableInputPositionCorrection(true);
         }
 
