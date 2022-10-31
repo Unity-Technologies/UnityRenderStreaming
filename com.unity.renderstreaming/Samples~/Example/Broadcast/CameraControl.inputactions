@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PressAnyKey",
+                    "type": "Value",
+                    "id": "02ca192d-af9c-45fe-85c1-c9c38dd9cd48",
+                    "expectedControlType": "Key",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -309,6 +318,17 @@
                     "processors": "",
                     "groups": "Touchscreen",
                     "action": "Press",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b38c6b49-abda-4492-8ceb-d54d14b65e2f",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PressAnyKey",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

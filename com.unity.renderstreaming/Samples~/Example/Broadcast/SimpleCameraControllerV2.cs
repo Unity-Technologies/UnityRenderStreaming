@@ -75,7 +75,6 @@ namespace Unity.RenderStreaming.Samples
         private bool invertY;
 
         [SerializeField] InputReceiver playerInput;
-        [SerializeField] UIController uiController;
 
         private readonly CameraState m_TargetCameraState = new CameraState();
         private readonly CameraState m_InterpolatingCameraState = new CameraState();
@@ -103,13 +102,11 @@ namespace Unity.RenderStreaming.Samples
                 case InputDeviceChange.Added:
                 {
                     playerInput.PerformPairingWithDevice(device);
-                    uiController.SetDevice(device, true);
                     return;
                 }
                 case InputDeviceChange.Removed:
                 {
                     playerInput.UnpairDevices(device);
-                    uiController.SetDevice(device, false);
                     return;
                 }
             }

@@ -1,4 +1,4 @@
-import { 
+import {
   Mouse,
   Keyboard,
   Gamepad,
@@ -36,8 +36,8 @@ export class Sender extends LocalInputManager {
       m_Product: "",
       m_Serial: "",
       m_Version: "",
-      m_Capabilities: ""  
-    };    
+      m_Capabilities: ""
+    };
     this.mouse = new Mouse("Mouse", "Mouse", 1, "", descriptionMouse);
     this._devices.push(this.mouse);
 
@@ -56,7 +56,7 @@ export class Sender extends LocalInputManager {
       m_Product: "",
       m_Serial: "",
       m_Version: "",
-      m_Capabilities: ""  
+      m_Capabilities: ""
     };
     this.keyboard = new Keyboard("Keyboard", "Keyboard", 2, "", descriptionKeyboard);
     this._devices.push(this.keyboard);
@@ -80,7 +80,7 @@ export class Sender extends LocalInputManager {
 
     window.addEventListener("gamepadconnected", this._onGamepadEvent.bind(this), false);
     window.addEventListener("gamepaddisconnected", this._onGamepadEvent.bind(this), false);
-    this._gamepadHandler = new GamepadHandler(); 
+    this._gamepadHandler = new GamepadHandler();
     this._gamepadHandler.addEventListener("gamepadupdated", this._onGamepadEvent.bind(this), false);
   }
 
@@ -92,7 +92,7 @@ export class Sender extends LocalInputManager {
       m_Product: "",
       m_Serial: "",
       m_Version: "",
-      m_Capabilities: ""  
+      m_Capabilities: ""
     };
     this.touchscreen = new Touchscreen("Touchscreen", "Touchscreen", 4, "", descriptionTouch);
     this._devices.push(this.touchscreen);
@@ -145,7 +145,9 @@ export class Sender extends LocalInputManager {
   _onTouchEvent(event) {
     this.touchscreen.queueEvent(event, this.timeSinceStartup);
     for(let touch of this.touchscreen.currentState.touchData) {
-      this._queueStateEvent(touch, this.touchscreen);
+      let clone = touch.copy();
+      clone.position = this._corrector.map(clone.position);
+      this._queueStateEvent(clone, this.touchscreen);
     }
   }
   _onGamepadEvent(event) {
@@ -160,14 +162,14 @@ export class Sender extends LocalInputManager {
       }
       case 'gamepadupdated': {
         this.gamepad.queueEvent(event);
-        this._queueStateEvent(this.gamepad.currentState, this.gamepad);    
+        this._queueStateEvent(this.gamepad.currentState, this.gamepad);
         break;
       }
     }
   }
 
   _queueStateEvent(state, device) {
-    const stateEvent = 
+    const stateEvent =
       StateEvent.fromState(state, device.deviceId, this.timeSinceStartup);
     const e = new CustomEvent(
       'event', {detail: { event: stateEvent, device: device}});
@@ -188,15 +190,15 @@ export class Sender extends LocalInputManager {
 
 export class Observer {
   /**
-   * 
-   * @param {RTCDataChannel} channel 
+   *
+   * @param {RTCDataChannel} channel
    */
   constructor(channel) {
-    this.channel = channel;    
+    this.channel = channel;
   }
   /**
-   * 
-   * @param {Message} message 
+   *
+   * @param {Message} message
    */
   onNext(message) {
     if(this.channel == null || this.channel.readyState != 'open') {
