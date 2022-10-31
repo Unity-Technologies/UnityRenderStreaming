@@ -1,13 +1,11 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 
 namespace Unity.RenderStreaming.Samples
 {
     [RequireComponent(typeof(RectTransform))]
-    class UIController : MonoBehaviour
+    class UIControllerV2 : MonoBehaviour
     {
         [SerializeField] Text text;
         [SerializeField] CanvasGroup canvasGroup;
@@ -67,7 +65,6 @@ namespace Unity.RenderStreaming.Samples
             var screenSize = new Vector2Int(Screen.width, Screen.height);
             position = position / screenSize * new Vector2(m_rectTransform.rect.width, m_rectTransform.rect.height);
             pointer.rectTransform.anchoredPosition = position;
-            Debug.Log(position);
         }
 
         public void OnPress(InputAction.CallbackContext context)
