@@ -366,42 +366,28 @@ export class TouchState {
 
 
   /**
-   * @param {Touch} touch
-   * @param {TouchState} state
-   * @param {String} type
+   * @param {Touch} touchId
+   * @param {Number[]} position
+   * @param {Number} pressure
+   * @param {Number[]} radius
+   * @param {TouchPhase} phaseId
+   * @param {Number} time
    */
-  constructor(touch, type, time) {
-    let phaseId = TouchPhase.Stationary;
-    switch(type) {
-      case 'touchstart': 
-      phaseId = TouchPhase.Began; break;
-      case 'touchend':
-      phaseId = TouchPhase.Ended; break;
-      case 'touchmove':
-      phaseId = TouchPhase.Moved; break;
-      case 'touchcancel':
-      phaseId = TouchPhase.Canceled; break;
-    }
-
-    let touchId = 0;
+  constructor(touchId, position, pressure, radius, phaseId, time) {
     let state = null;
-    if(phaseId == TouchPhase.Began) {
-      touchId = TouchState.incrementTouchId();
-    }
-    else {
-      state = TouchState.prevTouches[touch.identifier];
-      touchId = state.touchId;
+    if(phaseId != TouchPhase.Began) {
+      state = TouchState.prevTouches()[touchId];
     }
 
     this.touchId = touchId;
-    this.position = [touch.pageX, -touch.pageY];
+    this.position = position;
     if(phaseId == TouchPhase.Moved) {
       this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
     } else {
       this.delta = [0, 0];
     }
-    this.pressure = touch.force;
-    this.radius = [touch.radiusX, touch.radiusY];
+    this.pressure = pressure;
+    this.radius = radius;
     this.phaseId = phaseId;
     this.tapCount = 0;
     this.displayIndex = 0;
@@ -416,7 +402,7 @@ export class TouchState {
     }
 
     // cache state
-    TouchState.prevTouches[touch.identifier] = this;
+    TouchState.prevTouches[touchId] = this;
   }
 
   /**
@@ -457,6 +443,19 @@ export class TouchState {
 export class TouchscreenState extends IInputState {
   static get maxTouches() { return 10; } 
   static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
+  static convertPhaseId(type) {
+    let phaseId = TouchPhase.Stationary;
+    switch(type) {
+      case 'touchstart':
+      phaseId = TouchPhase.Began; break;
+      case 'touchend':
+      phaseId = TouchPhase.Ended; break;
+      case 'touchmove':
+      phaseId = TouchPhase.Moved; break;
+      case 'touchcancel':
+      phaseId = TouchPhase.Canceled; break;
+    }
+}
 
   /**
    * @param {TouchEvent} event
@@ -482,7 +481,13 @@ export class TouchscreenState extends IInputState {
         let touches = event.changedTouches;
         this.touchData = new Array(touches.length);
         for(let i = 0; i < touches.length; i++) {
-          this.touchData[i] = new TouchState(touches[i], event.type, time);
+          const touch = touches[i];
+          const touchId = touch.identifier;
+          const position = [touch.clientX, touch.clientY];
+          const phaseId = convertPhaseId(event.type);
+          const pressure = touch.force;
+          const radius = [touch.radiusX, touch.radiusY];
+          this.touchData[i] = new TouchState(touchId, position, pressure, radius, phaseId, time);
         }
         break;
       }

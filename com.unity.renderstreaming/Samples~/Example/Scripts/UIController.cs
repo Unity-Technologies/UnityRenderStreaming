@@ -2,6 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using EnhancedTouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -72,8 +73,7 @@ namespace Unity.RenderStreaming.Samples
             if (pointerFromMouse)
                 return;
 
-            var touches = m_screen?.GetTouches();
-
+            var touches = EnhancedTouch.activeTouches.Where(touch => touch.screen == m_screen);
             if (touches != null && touches.Count() > 0)
             {
                 var position = Vector2.zero;
@@ -107,7 +107,7 @@ namespace Unity.RenderStreaming.Samples
             Vector2 mousePos = mouse.position.ReadValue();
             Vector2 pos = mousePos / screenSize * new Vector2(m_rectTransform.rect.width, m_rectTransform.rect.height);
 
-            pointer.rectTransform.anchoredPosition = pos;
+            //pointer.rectTransform.anchoredPosition = pos;
             pointer.color = Color.red;
             return true;
         }
@@ -117,6 +117,22 @@ namespace Unity.RenderStreaming.Samples
             canvasGroup.alpha = 1f;
             text.text = c.ToString();
             timeTransition = 0;
+        }
+
+        public void OnPoint(InputAction.CallbackContext value)
+        {
+            var position = value.ReadValue<Vector2>();
+            var screenSize = new Vector2Int(Screen.width, Screen.height);
+            position = position / screenSize * new Vector2(m_rectTransform.rect.width, m_rectTransform.rect.height);
+            pointer.rectTransform.anchoredPosition = position;
+
+            Debug.Log(position);
+        }
+
+        public void OnPress(InputAction.CallbackContext value)
+        {
+            var button = value.ReadValueAsButton();
+            pointer.color = button ? Color.red : Color.clear;
         }
     }
 }
