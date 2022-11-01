@@ -178,32 +178,31 @@ namespace Unity.RenderStreaming.Samples
         {
         }
 
-        public void OnMovement(InputAction.CallbackContext value)
+        public void OnMovement(InputAction.CallbackContext context)
         {
-            inputMovement = value.ReadValue<Vector2>();
+            inputMovement = context.ReadValue<Vector2>();
         }
 
-        public void OnLook(InputAction.CallbackContext value)
+        public void OnLook(InputAction.CallbackContext context)
         {
-            inputLook = value.ReadValue<Vector2>();
+            inputLook = context.ReadValue<Vector2>();
         }
 
-        public void OnPosition(InputAction.CallbackContext value)
-        {
-            inputPosition = value.ReadValue<Vector3>();
-        }
-
-        public void OnRotate(InputAction.CallbackContext value)
-        {
-            inputRotation = value.ReadValue<Quaternion>();
-        }
-
-
-        public void ResetCamera()
+        public void OnResetCamera(InputAction.CallbackContext context)
         {
             m_InitialCameraState.UpdateTransform(transform);
             m_TargetCameraState.SetFromTransform(transform);
             m_InterpolatingCameraState.SetFromTransform(transform);
+        }
+
+        public void OnPosition(InputAction.CallbackContext context)
+        {
+            inputPosition = context.ReadValue<Vector3>();
+        }
+
+        public void OnRotate(InputAction.CallbackContext context)
+        {
+            inputRotation = context.ReadValue<Quaternion>();
         }
     }
 }

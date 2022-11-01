@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.XR;
 
@@ -18,10 +19,22 @@ namespace Unity.RenderStreaming.Samples
         }
     }
 
+    static class InputActionExtension
+    {
+        public static void AddListener(this InputAction action, Action<InputAction.CallbackContext> callback)
+        {
+            action.started += callback;
+            action.performed += callback;
+            action.canceled += callback;
+        }
+    }
+
     class BroadcastSample : MonoBehaviour
     {
         [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private InputReceiver inputReceiver;
+        [SerializeField] private SimpleCameraControllerV2 cameraController;
+        [SerializeField] private UIControllerV2 uiController;
         [SerializeField] private VideoStreamSender videoStreamSender;
         [SerializeField] private Dropdown bandwidthSelector;
         [SerializeField] private Dropdown scaleResolutionDownSelector;
@@ -157,6 +170,15 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: settings?.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
+            var map = inputReceiver.currentActionMap;
+            map["Movement"].AddListener(cameraController.OnMovement);
+            map["Look"].AddListener(cameraController.OnLook);
+            map["ResetCamera"].AddListener(cameraController.OnResetCamera);
+            map["Rotate"].AddListener(cameraController.OnRotate);
+            map["Position"].AddListener(cameraController.OnPosition);
+            map["Point"].AddListener(uiController.OnPoint);
+            map["Press"].AddListener(uiController.OnPress);
+            map["PressAnyKey"].AddListener(uiController.OnPressAnyKey);
         }
 
         private void OnStartedChannel(string connectionId)
