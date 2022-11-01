@@ -1,4 +1,4 @@
-import { 
+import {
   MemoryHelper,
 } from "./memoryhelper.js";
 
@@ -14,16 +14,16 @@ export class FourCC {
    */
 
   /**
-   * 
-   * @param {String} a 
-   * @param {String} b 
-   * @param {String} c 
-   * @param {String} d 
+   *
+   * @param {String} a
+   * @param {String} b
+   * @param {String} c
+   * @param {String} d
    */
   constructor(a, b, c, d) {
-    this._code = (a.charCodeAt() << 24) 
-    | (b.charCodeAt() << 16) 
-    | (c.charCodeAt() << 8) 
+    this._code = (a.charCodeAt() << 24)
+    | (b.charCodeAt() << 16)
+    | (c.charCodeAt() << 8)
     | d.charCodeAt();
   }
 
@@ -39,23 +39,23 @@ export class FourCC {
 export class InputDevice {
 
   /**
-   * 
+   *
    * name;
    * layout;
    * deviceId;
    * variants;
    * description;
-   * 
+   *
    * _inputState;
    */
-  
+
   /**
-   * 
-   * @param {Number} name 
-   * @param {String} layout 
-   * @param {Number} deviceId 
-   * @param {String} variants 
-   * @param {Object} description 
+   *
+   * @param {Number} name
+   * @param {String} layout
+   * @param {Number} deviceId
+   * @param {String} variants
+   * @param {Object} description
    */
   constructor(name, layout, deviceId, variants, description) {
     this.name = name;
@@ -68,8 +68,8 @@ export class InputDevice {
   }
 
   /**
-   * 
-   * @param {IInputState} state 
+   *
+   * @param {IInputState} state
    */
   updateState(state) {
     this._inputState = state;
@@ -78,7 +78,7 @@ export class InputDevice {
   queueEvent(event) {
     throw new Error(`Please implement this method. event:${event}`);
   }
-  
+
   /**
    * @returns {IInputState}
    */
@@ -89,7 +89,7 @@ export class InputDevice {
 
 export class Mouse extends InputDevice {
   /**
-   * @param {(MouseEvent|WheelEvent)} event 
+   * @param {(MouseEvent|WheelEvent)} event
    */
   queueEvent(event) {
     this.updateState(new MouseState(event));
@@ -99,8 +99,8 @@ export class Mouse extends InputDevice {
 export class Keyboard extends InputDevice {
   static get keycount() { return 110; }
   /**
-   * 
-   * @param {KeyboardEvent} event 
+   *
+   * @param {KeyboardEvent} event
    */
   queueEvent(event) {
     this.updateState(new KeyboardState(event, this.currentState));
@@ -109,7 +109,7 @@ export class Keyboard extends InputDevice {
 
 export class Touchscreen extends InputDevice {
   /**
-   * @param {TouchScreenEvent} event 
+   * @param {TouchScreenEvent} event
    */
   queueEvent(event, time) {
     this.updateState(new TouchscreenState(event, this.currentState, time));
@@ -118,7 +118,7 @@ export class Touchscreen extends InputDevice {
 
 export class Gamepad extends InputDevice {
   /**
-   * @param {GamepadButtonEvent | GamepadAxisEvent} event 
+   * @param {GamepadButtonEvent | GamepadAxisEvent} event
    */
   queueEvent(event) {
     this.updateState(new GamepadState(event));
@@ -129,29 +129,29 @@ export class InputEvent {
   static get invalidEventId() { return 0; }
   static get size() { return 20; }
 
-  /** 
+  /**
    * field offset 0
    * @member {Number} type;
-   * 
+   *
    * field offset 4
    * @member {Number} sizeInBytes;
-   * 
+   *
    * field offset 6
    * @member {Number} deviceId;
-   * 
+   *
    * field offset 8
    * @member {Number} time;
-   * 
+   *
    * field offset 16
    * @member {Number} eventId;
    */
 
   /**
-   * 
-   * @param {Number} type 
+   *
+   * @param {Number} type
    * @param {Number} sizeInBytes
-   * @param {Number} deviceId 
-   * @param {Number} time 
+   * @param {Number} deviceId
+   * @param {Number} time
    */
   constructor(type, sizeInBytes, deviceId, time) {
     this.type = type;
@@ -187,7 +187,7 @@ export class IInputState {
    * @returns {Number}
    */
    get format() {
-    throw new Error('Please implement this field');    
+    throw new Error('Please implement this field');
   }
 }
 
@@ -198,29 +198,29 @@ export class MouseState extends IInputState {
   /**
    * field offset 0
    * @member {Array} position;
-   * 
+   *
    * field offset 8
    * @member {Array} delta;
-   * 
+   *
    * field offset 16
    * @member {Array} scroll;
-   * 
+   *
    * field offset 24
    * @member {ArrayBuffer} buttons;
-   * 
+   *
    * field offset 26
    * @member {Array} displayIndex;
-   * 
+   *
    * field offset 28
    * @member {Array} clickCount;
    */
 
   /**
-   * @param {MouseEvent | WheelEvent} event 
+   * @param {MouseEvent | WheelEvent} event
    */
   constructor(event) {
     super();
-    
+
     this.position = [event.clientX, event.clientY];
     this.delta = [event.movementX, -event.movementY];
     this.scroll = [0, 0];
@@ -281,7 +281,7 @@ export class KeyboardState extends IInputState {
    */
 
   /**
-   * @param {KeyboardEvent} event 
+   * @param {KeyboardEvent} event
    */
   constructor(event, state) {
     super();
@@ -323,7 +323,7 @@ export class KeyboardState extends IInputState {
 export class TouchState {
   static get format() { return new FourCC('T', 'O', 'U', 'C').toInt32(); }
   static get size() { return 56; }
-  static incrementTouchId() { 
+  static incrementTouchId() {
     if(TouchState._currentTouchId === undefined) {
       TouchState._currentTouchId = 0;
     }
@@ -332,7 +332,7 @@ export class TouchState {
   static prevTouches() {
     if(TouchState._prevTouches === undefined) {
       // max touch count is 10
-      TouchState._prevTouches = new Array(10); 
+      TouchState._prevTouches = new Array(10);
     }
     return TouchState._prevTouches;
   }
@@ -366,42 +366,24 @@ export class TouchState {
 
 
   /**
-   * @param {Touch} touch
-   * @param {TouchState} state
-   * @param {String} type
+   * @param {Touch} touchId
+   * @param {TouchState} prevState
+   * @param {Number[]} position
+   * @param {Number} pressure
+   * @param {Number[]} radius
+   * @param {TouchPhase} phaseId
+   * @param {Number} time
    */
-  constructor(touch, type, time) {
-    let phaseId = TouchPhase.Stationary;
-    switch(type) {
-      case 'touchstart': 
-      phaseId = TouchPhase.Began; break;
-      case 'touchend':
-      phaseId = TouchPhase.Ended; break;
-      case 'touchmove':
-      phaseId = TouchPhase.Moved; break;
-      case 'touchcancel':
-      phaseId = TouchPhase.Canceled; break;
-    }
-
-    let touchId = 0;
-    let state = null;
-    if(phaseId == TouchPhase.Began) {
-      touchId = TouchState.incrementTouchId();
-    }
-    else {
-      state = TouchState.prevTouches[touch.identifier];
-      touchId = state.touchId;
-    }
-
+  constructor(touchId, prevState, position, pressure, radius, phaseId, time) {
     this.touchId = touchId;
-    this.position = [touch.pageX, -touch.pageY];
+    this.position = position != null ? position.slice() : null;
     if(phaseId == TouchPhase.Moved) {
-      this.delta = [this.position[0] - state.position[0], this.position[1] - state.position[1]];
+      this.delta = [this.position[0] - prevState.position[0], this.position[1] - prevState.position[1]];
     } else {
       this.delta = [0, 0];
     }
-    this.pressure = touch.force;
-    this.radius = [touch.radiusX, touch.radiusY];
+    this.pressure = pressure;
+    this.radius = radius != null ? radius.slice(): null;
     this.phaseId = phaseId;
     this.tapCount = 0;
     this.displayIndex = 0;
@@ -411,12 +393,27 @@ export class TouchState {
       this.startTime = time;
       this.startPosition = this.position.slice();
     } else {
-      this.startTime = state.startTime;
-      this.startPosition = state.startPosition.slice();
+      this.startTime = prevState != null ? prevState.startTime : null;
+      this.startPosition =  prevState != null ? prevState.startPosition.slice() : null;
     }
+  }
 
-    // cache state
-    TouchState.prevTouches[touch.identifier] = this;
+
+  copy() {
+    let state = new TouchState();
+    state.touchId = this.touchId;
+    state.position = this.position.slice();
+    state.delta = this.delta.slice();
+    state.pressure = this.pressure;
+    state.radius = this.radius.slice();
+    state.phaseId = this.phaseId;
+    state.tapCount = this.tapCount;
+    state.displayIndex = this.displayIndex;
+    state.flags = this.flags;
+    state.padding = this.padding;
+    state.startTime = this.startTime;
+    state.startPosition = this.startPosition.slice();
+    return state;
   }
 
   /**
@@ -451,12 +448,26 @@ export class TouchState {
    */
   get format() {
     return TouchState.format;
-  }  
+  }
 }
 
 export class TouchscreenState extends IInputState {
-  static get maxTouches() { return 10; } 
+  static get maxTouches() { return 10; }
   static get format() { return new FourCC('T', 'S', 'C', 'R').toInt32(); }
+  static convertPhaseId(type) {
+    let phaseId = TouchPhase.Stationary;
+    switch(type) {
+      case 'touchstart':
+      phaseId = TouchPhase.Began; break;
+      case 'touchend':
+      phaseId = TouchPhase.Ended; break;
+      case 'touchmove':
+      phaseId = TouchPhase.Moved; break;
+      case 'touchcancel':
+      phaseId = TouchPhase.Canceled; break;
+    }
+    return phaseId;
+  }
 
   /**
    * @param {TouchEvent} event
@@ -467,6 +478,7 @@ export class TouchscreenState extends IInputState {
     super();
 
     switch(event.type) {
+      // `click` event is called when releasing mouse button or finger on screen.
       case 'click' : {
         this.touchData = new Array(state.touchData.length);
         for(let i = 0; i < state.touchData.length; i++) {
@@ -482,7 +494,21 @@ export class TouchscreenState extends IInputState {
         let touches = event.changedTouches;
         this.touchData = new Array(touches.length);
         for(let i = 0; i < touches.length; i++) {
-          this.touchData[i] = new TouchState(touches[i], event.type, time);
+          const touch = touches[i];
+          const position = [touch.clientX, touch.clientY];
+          const phaseId = TouchscreenState.convertPhaseId(event.type);
+          const pressure = touch.force;
+          const radius = [touch.radiusX, touch.radiusY];
+
+          // `touchId` in InputSystem must be set uniquely.
+          // The numbers of `touch.identifier` in Web API are reused, so these are not unique.
+          const touchId = phaseId == TouchPhase.Began ? TouchState.incrementTouchId() : TouchState.prevTouches()[touch.identifier].touchId;
+          const prevState = phaseId != TouchPhase.Began ? TouchState.prevTouches()[touch.identifier] : null;
+          const touchData = new TouchState(touchId, prevState, position, pressure, radius, phaseId, time);
+
+          // cache state
+          TouchState.prevTouches()[touch.identifier] = touchData;
+          this.touchData[i] = touchData;
         }
         break;
       }
@@ -513,27 +539,27 @@ export class TouchscreenState extends IInputState {
 export class GamepadState extends IInputState {
   static get size() { return 28; }
   static get format() { return new FourCC('G', 'P', 'A', 'D').toInt32(); }
-  
+
   /**
    * field offset 0
    * @member buttons;
-   * 
+   *
    * field offset 4
    * @member leftStick;
-   * 
+   *
    * field offset 12
    * @member rightStick;
-   * 
+   *
    * field offset 20
    * @member leftTrigger;
-   * 
+   *
    * field offset 24
    * @member rightTrigger;
    */
 
   /**
-   * 
-   * @param {GamepadButtonEvent | GamepadAxisEvent} event 
+   *
+   * @param {GamepadButtonEvent | GamepadAxisEvent} event
    */
   constructor(event) {
     super();
@@ -545,7 +571,7 @@ export class GamepadState extends IInputState {
     this.rightStick = [ gamepad.axes[2], -gamepad.axes[3] ];
     this.leftTrigger = buttons[6].value;
     this.rightTrigger = buttons[7].value;
-    
+
     // see https://w3c.github.io/gamepad/#remapping
     MemoryHelper.writeSingleBit(this.buttons, GamepadButton.A, buttons[0].pressed);
     MemoryHelper.writeSingleBit(this.buttons, GamepadButton.B, buttons[1].pressed);
@@ -562,7 +588,7 @@ export class GamepadState extends IInputState {
     MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadUp, buttons[12].pressed);
     MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadDown, buttons[13].pressed);
     MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadLeft, buttons[14].pressed);
-    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadRight, buttons[15].pressed);    
+    MemoryHelper.writeSingleBit(this.buttons, GamepadButton.DpadRight, buttons[15].pressed);
   }
 
   /**
@@ -596,16 +622,16 @@ export class TextEvent {
   /**
    * field offset 0
    * @member {InputEvent} baseEvent;
-   * 
+   *
    * field offset 20
    * @member {Number} character;
    */
 
   /**
-   * 
-   * @param {Number} deviceId 
+   *
+   * @param {Number} deviceId
    * @param {Number} character
-   * @param {Number} time 
+   * @param {Number} time
    * @returns {TextEvent}
 
    */
@@ -613,7 +639,7 @@ export class TextEvent {
     const eventSize = InputEvent.size + MemoryHelper.sizeOfInt;
 
     let event = new TextEvent();
-    event.baseEvent = new InputEvent(TextEvent.format, eventSize, deviceId, time); 
+    event.baseEvent = new InputEvent(TextEvent.format, eventSize, deviceId, time);
     event.character = character;
     return event;
   }
@@ -638,18 +664,18 @@ export class StateEvent {
   /**
    * field offset 0
    * @member {InputEvent} baseEvent;
-   * 
+   *
    * field offset 20
    * @member {Number} stateFormat;
-   * 
+   *
    * field offset 24
    * @member {ArrayBuffer} stateData;
    */
 
   /**
-   * 
-   * @param {InputDevice} device 
-   * @param {Number} time 
+   *
+   * @param {InputDevice} device
+   * @param {Number} time
    * @returns {StateEvent}
    */
   static from(device, time) {
@@ -657,16 +683,16 @@ export class StateEvent {
   }
 
   /**
-   * 
-   * @param {IInputState} state 
+   *
+   * @param {IInputState} state
    * @param {Number} deviceId
-   * @param {Number} time 
+   * @param {Number} time
    */
   static fromState(state, deviceId, time) {
     const stateData = state.buffer;
     const stateSize = stateData.byteLength;
     const eventSize = InputEvent.size + MemoryHelper.sizeOfInt + stateSize;
-    
+
     let stateEvent = new StateEvent();
     stateEvent.baseEvent = new InputEvent(StateEvent.format, eventSize, deviceId, time);
     stateEvent.stateFormat = state.format;

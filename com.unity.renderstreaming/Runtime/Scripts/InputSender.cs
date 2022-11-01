@@ -41,9 +41,9 @@ namespace Unity.RenderStreaming
         /// </summary>
         /// <param name="size">Texture Size.</param>
         /// <param name="region">Region of the texture in world coordinate system.</param>
-        public void SetInputRange(Rect region, Vector2Int size)
+        public void CalculateInputResion(Rect region, Vector2Int size)
         {
-            sender.SetInputRange(region, new Rect(Vector2.zero, size));
+            sender.CalculateInputRegion(region, new Rect(Vector2.zero, size));
         }
 
         /// <summary>

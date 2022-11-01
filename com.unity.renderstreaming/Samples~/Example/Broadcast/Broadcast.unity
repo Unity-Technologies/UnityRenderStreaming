@@ -2740,37 +2740,11 @@ MonoBehaviour:
     type: 3}
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451157}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: OnMovement
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 548e32fd-77d1-40e5-8197-32ca56b41bc0
     m_ActionName: Player Controls/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451157}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: OnLook
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 8ebbde1f-3044-41bc-bdac-430e0eae1a68
     m_ActionName: Player Controls/Look[/Mouse/delta]
   - m_PersistentCalls:
@@ -2798,56 +2772,29 @@ MonoBehaviour:
     m_ActionId: e773b1f9-ce5b-4fa2-9c1f-d194202c43b7
     m_ActionName: Menu Controls/TogglePause[/Keyboard/p]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451157}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: ResetCamera
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 7f36745c-6b3f-404f-9df5-42688580b961
     m_ActionName: Player Controls/ResetCamera[/Keyboard/u]
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451157}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: OnRotate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 524fee92-4ef1-4fd9-9cb1-97fb72ae1195
     m_ActionName: Player Controls/Rotate
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 725451157}
-        m_TargetAssemblyTypeName: Unity.RenderStreaming.Samples.SimpleCameraControllerV2,
-          Unity.RenderStreaming.Sample
-        m_MethodName: OnPosition
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 50305201-a606-4afe-954c-0666ccaf6c53
     m_ActionName: Player Controls/Position
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 60e72b30-ed9b-46db-80b9-f3660fa002ba
+    m_ActionName: Player Controls/Point[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 245d7ad4-63bc-43e3-8d43-432ba35a43f0
+    m_ActionName: Player Controls/Press[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 02ca192d-af9c-45fe-85c1-c9c38dd9cd48
+    m_ActionName: Player Controls/Keyboard[/Keyboard/anyKey]
   m_DefaultActionMap: Player Controls
 --- !u!20 &725451154
 Camera:
@@ -2965,7 +2912,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2974,7 +2921,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 2.5
+      value: 2
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2984,10 +2931,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  rotationLerpTime: 0.01
+  rotationLerpTime: 0.6
   invertY: 0
   playerInput: {fileID: 725451153}
-  uiController: {fileID: 1215389824}
 --- !u!1 &736464805
 GameObject:
   m_ObjectHideFlags: 0
@@ -6182,6 +6128,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderStreaming: {fileID: 1623734776}
   inputReceiver: {fileID: 725451153}
+  cameraController: {fileID: 725451157}
+  uiController: {fileID: 1215389824}
   videoStreamSender: {fileID: 725451156}
   bandwidthSelector: {fileID: 1429950776}
   scaleResolutionDownSelector: {fileID: 1975420023}

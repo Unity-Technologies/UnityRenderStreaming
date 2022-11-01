@@ -6,7 +6,7 @@ namespace Unity.RenderStreaming.Samples
 {
     static class InputSenderExtension
     {
-        public static void SetInputRange(this InputSender sender, RawImage image)
+        public static (Rect, Vector2Int) GetRegionAndSize(this RawImage image)
         {
             // correct pointer position
             Vector3[] corners = new Vector3[4];
@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming.Samples
                 );
 
             var size = new Vector2Int(image.texture.width, image.texture.height);
-            sender.SetInputRange(region, size);
+            return (region, size);
         }
     }
 
@@ -38,11 +38,13 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private VideoStreamReceiver receiveVideoViewer;
         [SerializeField] private AudioStreamReceiver receiveAudioViewer;
         [SerializeField] private SingleConnection connection;
+        [SerializeField] private Text resolution;
 #pragma warning restore 0649
 
         private string connectionId;
         private InputSender inputSender;
         private RenderStreamingSettings settings;
+        private Vector2 lastSize;
 
         void Awake()
         {
@@ -71,22 +73,39 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: settings?.Signaling);
         }
 
+        private void Update()
+        {
+            // Call SetInputChange if window size is changed.
+            var size = remoteVideoImage.rectTransform.sizeDelta;
+            if (lastSize == size)
+                return;
+            lastSize = size;
+            CalculateInputRegion();
+        }
+
         void OnUpdateReceiveTexture(Texture texture)
         {
             remoteVideoImage.texture = texture;
-            SetInputChange();
+            CalculateInputRegion();
         }
 
         void OnStartedChannel(string connectionId)
         {
-            SetInputChange();
+            CalculateInputRegion();
         }
 
-        void SetInputChange()
+        private void OnRectTransformDimensionsChange()
+        {
+            CalculateInputRegion();
+        }
+
+        void CalculateInputRegion()
         {
             if (inputSender == null || !inputSender.IsConnected || remoteVideoImage.texture == null)
                 return;
-            inputSender.SetInputRange(remoteVideoImage);
+            var (region, size) = remoteVideoImage.GetRegionAndSize();
+            resolution.text = $"{(int)region.width} x {(int)region.height}";
+            inputSender.CalculateInputResion(region, size);
             inputSender.EnableInputPositionCorrection(true);
         }
 

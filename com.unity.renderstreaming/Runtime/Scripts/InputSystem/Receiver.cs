@@ -189,7 +189,7 @@ namespace Unity.RenderStreaming.InputSystem
         /// </summary>
         /// <param name="size">Texture Size.</param>
         /// <param name="region">Region of the texture in world coordinate system.</param>
-        public void SetInputRange(Rect inputRegion, Rect outputRegion)
+        public void CalculateInputRegion(Rect inputRegion, Rect outputRegion)
         {
             _corrector.inputRegion = inputRegion;
             _corrector.outputRegion = outputRegion;

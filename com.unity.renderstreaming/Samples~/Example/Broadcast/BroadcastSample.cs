@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.XR;
 
@@ -12,9 +13,19 @@ namespace Unity.RenderStreaming.Samples
 
     static class InputReceiverExtension
     {
-        public static void SetInputRange(this InputReceiver reveiver, Vector2Int size)
+        public static void CalculateInputRegion(this InputReceiver reveiver, Vector2Int size)
         {
-            reveiver.SetInputRange(size, new Rect(0, 0, Screen.width, Screen.height));
+            reveiver.CalculateInputRegion(size, new Rect(0, 0, Screen.width, Screen.height));
+        }
+    }
+
+    static class InputActionExtension
+    {
+        public static void AddListener(this InputAction action, Action<InputAction.CallbackContext> callback)
+        {
+            action.started += callback;
+            action.performed += callback;
+            action.canceled += callback;
         }
     }
 
@@ -22,6 +33,8 @@ namespace Unity.RenderStreaming.Samples
     {
         [SerializeField] private RenderStreaming renderStreaming;
         [SerializeField] private InputReceiver inputReceiver;
+        [SerializeField] private SimpleCameraControllerV2 cameraController;
+        [SerializeField] private UIControllerV2 uiController;
         [SerializeField] private VideoStreamSender videoStreamSender;
         [SerializeField] private Dropdown bandwidthSelector;
         [SerializeField] private Dropdown scaleResolutionDownSelector;
@@ -71,6 +84,8 @@ namespace Unity.RenderStreaming.Samples
             };
 
         private RenderStreamingSettings settings;
+        private int lastWidth;
+        private int lastHeight;
 
         private void Awake()
         {
@@ -126,6 +141,7 @@ namespace Unity.RenderStreaming.Samples
         {
             var scale = scaleResolutionDownOptions.Values.ElementAt(index);
             videoStreamSender.SetScaleResolutionDown(scale);
+            CalculateInputRegion();
         }
 
         private void ChangeFramerate(int index)
@@ -139,7 +155,10 @@ namespace Unity.RenderStreaming.Samples
             var resolution = resolutionOptions.Values.ElementAt(index);
 
             if (videoStreamSender.source != VideoStreamSource.Texture)
+            {
                 videoStreamSender.SetTextureSize(resolution);
+                CalculateInputRegion();
+            }
         }
 
         private void Start()
@@ -151,22 +170,49 @@ namespace Unity.RenderStreaming.Samples
             renderStreaming.Run(signaling: settings?.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
+            var map = inputReceiver.currentActionMap;
+            map["Movement"].AddListener(cameraController.OnMovement);
+            map["Look"].AddListener(cameraController.OnLook);
+            map["ResetCamera"].AddListener(cameraController.OnResetCamera);
+            map["Rotate"].AddListener(cameraController.OnRotate);
+            map["Position"].AddListener(cameraController.OnPosition);
+            map["Point"].AddListener(uiController.OnPoint);
+            map["Press"].AddListener(uiController.OnPress);
+            map["PressAnyKey"].AddListener(uiController.OnPressAnyKey);
         }
 
         private void OnStartedChannel(string connectionId)
         {
-            inputReceiver.SetInputRange(new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height));
-            inputReceiver.SetEnableInputPositionCorrection(true);
+            CalculateInputRegion();
         }
 
         // Parameters can be changed from the Unity Editor inspector when in Play Mode,
         // So this method monitors the parameters every frame and updates scene UI.
-#if UNITY_EDITOR
         private void Update()
         {
+#if UNITY_EDITOR
             SyncDisplayVideoSenderParameters();
-        }
 #endif
+            // Call SetInputChange if window size is changed.
+            var width = Screen.width;
+            var height = Screen.height;
+            if (lastWidth == width && lastHeight == height)
+                return;
+            lastWidth = width;
+            lastHeight = height;
+
+            CalculateInputRegion();
+        }
+
+        private void CalculateInputRegion()
+        {
+            if (!inputReceiver.IsConnected)
+                return;
+            var width = (int)(videoStreamSender.width / videoStreamSender.scaleResolutionDown);
+            var height = (int)(videoStreamSender.height / videoStreamSender.scaleResolutionDown);
+            inputReceiver.CalculateInputRegion(new Vector2Int(width, height));
+            inputReceiver.SetEnableInputPositionCorrection(true);
+        }
 
         private void SyncDisplayVideoSenderParameters()
         {
