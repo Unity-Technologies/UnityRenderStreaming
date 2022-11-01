@@ -43,7 +43,8 @@
   },
   "pkg": {
     "assets": [
-      "client/public/**/*"
+      "client/public/**/*",
+      "client/src/**/*"
     ],
     "targets": [
       "node10"
