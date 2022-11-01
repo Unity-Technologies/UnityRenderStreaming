@@ -7,7 +7,7 @@ using UE = UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Samples
 {
     using UnityInputSystem = UnityEngine.InputSystem.InputSystem;
 

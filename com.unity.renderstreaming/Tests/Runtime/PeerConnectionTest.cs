@@ -140,7 +140,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             peer.Dispose();
         }
 
-        [UnityTest, Timeout(5000)]
+        [UnityTest, Timeout(5000), LongRunning]
         public IEnumerator CalledSendOfferTwiceIfGetAnswerNotYet()
         {
             var peer = new PeerConnection(true, config, ResendOfferInterval,
@@ -848,7 +848,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             peer2.Dispose();
         }
 
-        [UnityTest, Timeout(5000)]
+        [UnityTest, Timeout(5000), LongRunning]
         [TestCase(true, ExpectedResult = null)]
         [TestCase(false, ExpectedResult = null)]
         public IEnumerator OnGotAnswerDescriptionAfterSendOfferImmediately(bool polite)

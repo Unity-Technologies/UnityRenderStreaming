@@ -42,6 +42,18 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.Run(signaling: mock, handlers: handlers);
         }
 
+        [Test, Ignore("Failed this test on macOS and Linux platform because of the signaling process.")]
+        public void RunDefault()
+        {
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            var handlers = new SignalingHandlerBase[] { handler };
+            ISignaling mock = new MockSignaling();
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+            component.Run(handlers:handlers);
+        }
+
+
         [Test]
         public void ThrowExceptionIfHandlerIsNullOrEmpty()
         {

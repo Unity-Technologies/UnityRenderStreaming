@@ -104,6 +104,24 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
+        public ReadOnlyArray<PlayerInput.ActionEvent> actionEvents
+        {
+            get => m_ActionEvents;
+            set
+            {
+                if (m_Enabled)
+                    UninitializeActions();
+
+                m_ActionEvents = value.ToArray();
+
+                if (m_Enabled)
+                    InitializeActions();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void OnEnable()
         {
             m_Enabled = true;
