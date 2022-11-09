@@ -1,4 +1,4 @@
-compile_test:
+compile_test_for_package_version:
   name: Compilation Test for Package Version
   agent:
     type: Unity::VM
@@ -24,7 +24,7 @@ compile_test:
       paths:
         - logs/*
 
-compile_test:
+compile_test_for_local_path:
   name: Compilation Test for Local Path
   agent:
     type: Unity::VM
