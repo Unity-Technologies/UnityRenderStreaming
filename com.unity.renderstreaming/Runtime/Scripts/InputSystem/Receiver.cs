@@ -59,8 +59,17 @@ namespace Unity.RenderStreaming.InputSystem
 
         private void OnMessage(byte[] bytes)
         {
-            MessageSerializer.Deserialize(bytes, out var message);
-            onMessage?.Invoke(message);
+			try
+            {
+                MessageSerializer.Deserialize(bytes, out var message);
+
+                onMessage?.Invoke(message);
+            }
+
+            catch (Exception)
+            {
+                Debug.LogError("Found the invalid message body that cannot be deserialized!");
+            }
         }
 
         /// <summary>
