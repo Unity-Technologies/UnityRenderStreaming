@@ -1,9 +1,9 @@
 # Web Application
 
-The **Web application** 
+The **Web application**
 
 - handles signaling between Unity and the Web browser
-- is the location of the Web page 
+- is the location of the Web page
 
 ## The Web Client
 
@@ -25,16 +25,16 @@ After downloading, run it from the command line.
 
 ### Command Options
 
-| Option                    | Details                                            | Default       |
-| ------------------------- | -------------------------------------------------- | ------------- |
-| `-h` `--help`             | Show the help menu                                 |               |
-| `-p` `—port \<number\>`   | Set the port number                                | `80`          |
-| `-s` `--secure`           | Use https                                          |               |
-| `-k` `—keyfile \<path\>`  | Designate the private key file to use with https   | `server.key`  |
+| Option | Details | Default |
+| ------ | ------- | ------- |
+| `-h` `--help` | Show the help menu | |
+| `-p` `—port \<number\>` | Set the port number | `80` |
+| `-s` `--secure` | Use https | |
+| `-k` `—keyfile \<path\>`  | Designate the private key file to use with https | `server.key` |
 | `-c` `—certfile \<path\>` | Designate the certification file to use with https | `server.cert` |
-| `-w` `--websocket`        | Use Websocket as signaling protocol                |               |
-| `-m` `—-mode \<type\>`    | Choose Communication mode public or private        | `public`      |
-| `-l` `—logging \<type\>`  | Choose http logging type (use [morgan](https://www.npmjs.com/package/morgan) library)      | `dev`         |
+| `-t` `--type \<type\>` | Type of signaling protocol, Choose websocket or http | `websocket` |
+| `-m` `—-mode \<type\>` | Choose Communication mode public or private | `public` |
+| `-l` `—logging \<type\>` | Choose http logging type (use [morgan](https://www.npmjs.com/package/morgan) library) | `dev` |
 
 ### Command Examples
 
@@ -50,13 +50,13 @@ This command will run the server as https. Port 443 will be used. A certificate 
 .\webserver -s -p 443
 ```
 
-The command will run in the mode that uses WebSocket as the signaling protocol.
+The command will run in the mode that uses **HTTP polling** as the signaling protocol.
 
 ```shell
-.\webserver -w
+.\webserver -t http
 ```
 
-The command will run in private mode. 
+The command will run in private mode.
 
 ```shell
 .\webserver -m private
@@ -66,7 +66,7 @@ The command will run in private mode.
 
 
 When running a https server, keep in mind to set the `URL signaling` property of the Renderstreaming component in Unity to https as well.
-Use this command to display the help guide. 
+Use this command to display the help guide.
 
 ```shell
 .\webserver -h

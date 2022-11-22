@@ -4,6 +4,12 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.6] - Unreleased
+
+### Changed
+
+- Websocket is in default for signaling protocol instead of HTTP polling.
+
 ## [3.1.0-exp.5] - 2022-12-22
 
 ### Changed

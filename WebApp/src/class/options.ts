@@ -3,7 +3,7 @@ export default interface Options {
   port?: number;
   keyfile?: string;
   certfile?: string;
-  websocket?: boolean;
+  type?: string;
   mode?: string;
   logging?: string;
 }
