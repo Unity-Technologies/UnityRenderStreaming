@@ -317,13 +317,13 @@ namespace Unity.RenderStreaming
             while (_runningResendCoroutine)
             {
                 failedConnections.Clear();
-                foreach (var peer in _mapConnectionIdAndPeer.Where(x => x.Value.waitingAnswer))
+                foreach (var peer in _mapConnectionIdAndPeer)
                 {
                     if (peer.Value.peer.ConnectionState == RTCPeerConnectionState.Failed)
                     {
                         failedConnections.Add(peer.Key);
                     }
-                    else
+                    else if(peer.Value.waitingAnswer)
                     {
                         peer.Value.SendOffer();
                     }
