@@ -756,7 +756,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityTest, Timeout(30000), LongRunning]
         public IEnumerator DeleteFailedPeers(TestMode mode)
         {
-            MockSignaling.Reset(true);
+            MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
