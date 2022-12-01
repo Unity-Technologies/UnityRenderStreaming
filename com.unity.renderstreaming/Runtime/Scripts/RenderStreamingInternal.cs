@@ -313,12 +313,27 @@ namespace Unity.RenderStreaming
 
         IEnumerator ResendOfferCoroutine()
         {
+            HashSet<string> failedConnections = new HashSet<string>();
             while (_runningResendCoroutine)
             {
-                foreach (var peer in _mapConnectionIdAndPeer.Where(x => x.Value.waitingAnswer))
+                failedConnections.Clear();
+                foreach (var peer in _mapConnectionIdAndPeer)
                 {
-                    peer.Value.SendOffer();
+                    if (peer.Value.peer.ConnectionState == RTCPeerConnectionState.Failed)
+                    {
+                        failedConnections.Add(peer.Key);
+                    }
+                    else if(peer.Value.waitingAnswer)
+                    {
+                        peer.Value.SendOffer();
+                    }
                 }
+
+                foreach (var connectionId in failedConnections)
+                {
+                    DestroyConnection(connectionId);
+                }
+
                 yield return 0;
             }
         }
@@ -340,6 +355,11 @@ namespace Unity.RenderStreaming
         }
 
         void OnDestroyConnection(ISignaling signaling, string connectionId)
+        {
+            DestroyConnection(connectionId);
+        }
+
+        void DestroyConnection(string connectionId)
         {
             DeletePeerConnection(connectionId);
             onDeletedConnection?.Invoke(connectionId);

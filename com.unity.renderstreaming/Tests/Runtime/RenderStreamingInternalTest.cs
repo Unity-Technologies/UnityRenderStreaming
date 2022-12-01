@@ -751,6 +751,71 @@ namespace Unity.RenderStreaming.RuntimeTest
             target2.Dispose();
         }
 
+        [TestCase(TestMode.PublicMode, ExpectedResult = null)]
+        [TestCase(TestMode.PrivateMode, ExpectedResult = null)]
+        [UnityTest, Timeout(30000), LongRunning]
+        public IEnumerator DeleteFailedPeers(TestMode mode)
+        {
+            MockSignaling.Reset(mode == TestMode.PrivateMode);
+
+            var dependencies1 = CreateDependencies();
+            var dependencies2 = CreateDependencies();
+            var target1 = new RenderStreamingInternal(ref dependencies1);
+            var target2 = new RenderStreamingInternal(ref dependencies2);
+
+            bool isStarted1 = false;
+            bool isStarted2 = false;
+            target1.onStart += () => { isStarted1 = true; };
+            target2.onStart += () => { isStarted2 = true; };
+            yield return new WaitUntil(() => isStarted1 && isStarted2);
+            Assert.That(isStarted1, Is.True);
+            Assert.That(isStarted2, Is.True);
+
+            bool isCreatedConnection1 = false;
+            bool isCreatedConnection2 = false;
+            target1.onCreatedConnection += _ => { isCreatedConnection1 = true; };
+            target2.onCreatedConnection += _ => { isCreatedConnection2 = true; };
+
+            var connectionId = "12345";
+
+            // target1 has impolite peer (request first)
+            target1.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection1);
+            Assert.That(isCreatedConnection1, Is.True);
+            target2.CreateConnection(connectionId);
+            yield return new WaitUntil(() => isCreatedConnection2);
+            Assert.That(isCreatedConnection2, Is.True);
+
+            bool isGotOffer2 = false;
+            bool isGotAnswer1 = false;
+            target2.onGotOffer += (_, sdp) => { isGotOffer2 = true; };
+            target1.onGotAnswer += (_, sdp) => { isGotAnswer1 = true; };
+
+            RTCRtpTransceiverInit init1 = new RTCRtpTransceiverInit()
+            {
+                direction = RTCRtpTransceiverDirection.SendOnly
+            };
+            target1.AddTransceiver(connectionId, TrackKind.Video, init1);
+
+            yield return new WaitUntil(() => isGotOffer2);
+            Assert.That(isGotOffer2, Is.True, $"{nameof(isGotOffer2)} is not True.");
+
+            target2.SendAnswer(connectionId);
+
+            yield return new WaitUntil(() => isGotAnswer1);
+            Assert.That(isGotAnswer1, Is.True, $"{nameof(isGotAnswer1)} is not True.");
+
+            // Improperly dispose of target1 to force failed state on target2
+            target1.Dispose();
+
+            bool isDeletedConnection2 = false;
+            target2.onDeletedConnection += _ => { isDeletedConnection2 = true; };
+            yield return new WaitUntil(() => isDeletedConnection2);
+            Assert.That(isDeletedConnection2, Is.True, $"{nameof(isDeletedConnection2)} is not True.");
+
+            target2.Dispose();
+        }
+
         [UnityTest, Timeout(10000)]
         public IEnumerator ReNegotiationAfterReceivingFirstOffer()
         {
