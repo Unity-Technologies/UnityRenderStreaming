@@ -207,7 +207,11 @@ namespace Unity.RenderStreaming
                 _processingSetDescription = false;
                 yield break;
             }
-
+            if (_peer.SignalingState != RTCSignalingState.HaveLocalOffer)
+            {
+                _processingSetDescription = false;
+                yield break;
+            }
             Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Offer);
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.HaveLocalOffer);
             _processingSetDescription = false;
