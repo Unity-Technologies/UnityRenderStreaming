@@ -20,7 +20,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(codecs, Is.Not.Empty);
             Assert.That(codecs.Any(codec => codec.name == "VP8"));
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
-            Assert.That(codecs.Any(codec => codec.name == "AV1X"));
+            Assert.That(codecs.Any(codec => codec.name == "AV1"));
 
             foreach(var codec in codecs)
             {
@@ -240,7 +240,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(codecs, Is.Not.Empty);
             Assert.That(codecs.Any(codec => codec.name == "VP8"));
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
-            Assert.That(codecs.Any(codec => codec.name == "AV1X"));
+            Assert.That(codecs.Any(codec => codec.name == "AV1"));
 
             foreach (var codec in codecs)
             {
