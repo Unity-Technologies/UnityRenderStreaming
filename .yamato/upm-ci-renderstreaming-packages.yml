@@ -322,7 +322,7 @@ trigger_test_{{ package.name }}_{{ editor.version }}:
     - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}
 {% if editor.version == "2020.3" -%}
   triggers:
-    expression: pull_request.target eq "develop"
+    expression: pull_request.target eq "main"
 {% endif -%}
 
 test_{{ package.name }}_{{ editor.version }}:
