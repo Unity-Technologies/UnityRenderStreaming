@@ -4,6 +4,17 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.5] - 2022-12-22
+
+### Changed
+
+- Upgrade the version of Input System package `1.4.4`.
+- Upgrade the version of WebRTC package `3.0.0-pre.2`.
+
+### Fixed
+
+- Fix incorrect mouse position in full-screen web player sample.
+
 ## [3.1.0-exp.4] - 2022-10-06
 
 ### Added
