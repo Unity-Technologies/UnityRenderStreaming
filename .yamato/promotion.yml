@@ -5,12 +5,8 @@ test_platforms:
     type: Unity::VM
     image: package-ci/win10:v1.21.0-1103459
     flavor: b1.large
-packages:
-  - name: renderstreaming
-    packagename: com.unity.renderstreaming
 ---
 
-{% for package in packages %}
 {% for editor in editors %}
 {% for platform in test_platforms %}
 promotion_test_{{ platform.name }}_{{ editor.version }}:
@@ -23,13 +19,13 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.packagename }} --platform editmode --backend mono
+    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.name }} --platform editmode --backend mono
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 {% endfor %}
 {% endfor %}
 
@@ -43,7 +39,7 @@ promote_dry_run:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package promote --dry-run --package-path {{ package.packagename }}
+    - upm-ci package promote --dry-run --package-path {{ package.name }}
   triggers:
     tags:
       only:
@@ -53,7 +49,7 @@ promote_dry_run:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 {% for editor in editors %}
 {% if editor.version != "trunk" -%} # exclude trunk to test
 {% for platform in test_platforms %}
@@ -72,7 +68,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package promote --package-path {{ package.packagename }}
+    - upm-ci package promote --package-path {{ package.name }}
   triggers:
     tags:
       only:
@@ -82,13 +78,11 @@ promote:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 {% for editor in editors %}
 {% if editor.version != "trunk" -%} # exclude trunk to test
 {% for platform in test_platforms %}
     - .yamato/promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
 {% endif %}
-{% endfor %}
-
 {% endfor %}
