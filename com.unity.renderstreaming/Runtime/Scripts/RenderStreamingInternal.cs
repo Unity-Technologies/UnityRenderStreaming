@@ -101,16 +101,6 @@ namespace Unity.RenderStreaming
         private bool _runningResendCoroutine;
         private float _resendInterval = 3.0f;
 
-        internal static void DomainLoad()
-        {
-            WebRTC.WebRTC.Initialize();
-        }
-
-        internal static void DomainUnload()
-        {
-            WebRTC.WebRTC.Dispose();
-        }
-
         /// <summary>
         ///
         /// </summary>

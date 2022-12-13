@@ -44,41 +44,6 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
-#if UNITY_EDITOR
-        [InitializeOnLoadMethod]
-        static void InitializeOnEditor()
-        {
-            /// todo(kazuki):: This is workaround.
-            /// When kicking the Unity Editor with batchmode flag on command line, The Unity Editor crashes 
-            /// caused by not unloading WebRTC native plugin. By this workaround, Some static methods of this
-            /// package don't work correctly when batchmode. These static methods depend on WebRTC API,
-            /// therefore the package initialization must be completed just after launching Editor.
-            /// In the future, we will remove this workaround after improving the initialization of the
-            /// WebRTC package.
-            if(!IsYamato)
-            {
-                if (Application.isBatchMode)
-                    return;
-            }
-            RenderStreamingInternal.DomainUnload();
-            RenderStreamingInternal.DomainLoad();
-            EditorApplication.quitting += RenderStreamingInternal.DomainUnload;
-        }
-
-        /// <summary>
-        /// Executed from the auto testing environment or not.
-        /// </summary>
-        static bool IsYamato => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("YAMATO_JOB_ID"));
-#else
-        [RuntimeInitializeOnLoadMethod]
-        static void InitializeOnRuntime()
-        {
-            RenderStreamingInternal.DomainUnload();
-            RenderStreamingInternal.DomainLoad();
-            Application.quitting += RenderStreamingInternal.DomainUnload;
-        }
-#endif
-
         static Type GetType(string typeName)
         {
             var type = Type.GetType(typeName);
