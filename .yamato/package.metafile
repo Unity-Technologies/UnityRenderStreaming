@@ -3,7 +3,7 @@ upm:
   package_version: stable
 intra_pypi_url: https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
 packagename: com.unity.renderstreaming
-package_displayname: Render Streaming
+package_displayname: RenderStreaming
 editors:
   - version: 2020.3
   - version: 2021.3
