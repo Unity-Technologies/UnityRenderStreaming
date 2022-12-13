@@ -1,11 +1,12 @@
 {% metadata_file .yamato/package.metafile %}
+
 ---
 
 {% for platform in platforms %}
 {% if platform.name != "macos" and platform.name != "macos-m1" %}
 {% for editor in editors %}
 codecoverage_{{ packagename }}_{{ platform.name }}_{{ editor.version }}:
-  name: Code coverage {{ package.displayname }} {{ platform.name }} {{ editor.version }}
+  name: Code coverage {{ package_displayname }} {{ platform.name }} {{ editor.version }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}

@@ -1,8 +1,9 @@
 {% metadata_file .yamato/package.metafile %}
+
 ---
 
 pack:
-  name: Pack {{ package.displayname }}
+  name: Pack {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu-20:v1.4.0-1081009
@@ -18,7 +19,7 @@ pack:
 
 {% for editor in editors %}
 build_{{ editor.version }}_ios:
-  name : Build {{ package.displayname }} with {{ editor.version }} for ios device
+  name : Build {{ package_displayname }} with {{ editor.version }} for ios device
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -41,7 +42,7 @@ build_{{ editor.version }}_ios:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
 test_{{ packagename }}_{{ editor.version }}_ios:
-  name: Test {{ package.displayname }} with {{ editor.version }} on ios device
+  name: Test {{ package_displayname }} with {{ editor.version }} on ios device
   agent:
     type: Unity::mobile::iPhone
     image: mobile/macos-10.15-testing:v0.0.7-909915
@@ -63,7 +64,7 @@ test_{{ packagename }}_{{ editor.version }}_ios:
 
 {% for target in test_targets_android %}
 build_{{ editor.version }}_android_{{ target.name }}:
-  name : Build {{ package.displayname }} with {{ editor.version }} for android device {{ target.name }}
+  name : Build {{ package_displayname }} with {{ editor.version }} for android device {{ target.name }}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -91,7 +92,7 @@ build_{{ editor.version }}_android_{{ target.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
 test_{{ packagename }}_{{ editor.version }}_android_{{ target.name }}:
-  name: Test {{ package.displayname }} with {{ editor.version }} on android device {{ target.name }}
+  name: Test {{ package_displayname }} with {{ editor.version }} on android device {{ target.name }}
   agent:
     type: Unity::mobile::shield
     image: mobile/android-package-ci-win:v0.1.4-1212670
@@ -123,7 +124,7 @@ test_{{ packagename }}_{{ editor.version }}_android_{{ target.name }}:
 {% if platform.name != "macos" and platform.name != "macos-m1" %}
 {% for param in platform.test_params %}
 test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -194,7 +195,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% if param.platform == "standalone" %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform == "standalone"
 
 build_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Build {{ package.displayname }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  name : Build {{ package_displayname }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -218,7 +219,7 @@ build_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.ver
     - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
 test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -248,7 +249,7 @@ test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name
 {% else %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform != "standalone"
 
 test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -313,7 +314,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% endfor %}
 
 trigger_test_{{ packagename }}_{{ editor.version }}:
-  name : Trigger test {{ package.displayname }} {{ editor.version }} all platforms
+  name : Trigger test {{ package_displayname }} {{ editor.version }} all platforms
   dependencies:
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}
 {% if editor.version == "2020.3" -%}
@@ -322,7 +323,7 @@ trigger_test_{{ packagename }}_{{ editor.version }}:
 {% endif -%}
 
 test_{{ packagename }}_{{ editor.version }}:
-  name : Test {{ package.displayname }} {{ editor.version }} all platforms
+  name : Test {{ package_displayname }} {{ editor.version }} all platforms
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -347,7 +348,7 @@ test_{{ packagename }}_{{ editor.version }}:
 {% endfor %}
 
 test_renderpipeline_{{ packagename }}_{{ editor.version }}:
-  name : Test {{ package.displayname }} {{ editor.version }} all RenderPipeline
+  name : Test {{ package_displayname }} {{ editor.version }} all RenderPipeline
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -359,7 +360,7 @@ test_renderpipeline_{{ packagename }}_{{ editor.version }}:
 {% endfor %}
 
 publish_dry_run_{{ packagename }}:
-  name: Publish Dry Run {{ package.displayname }}
+  name: Publish Dry Run {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/win10:v1.21.0-1103459
@@ -386,7 +387,7 @@ publish_dry_run_{{ packagename }}:
 {% endfor %}
 
 publish_{{ packagename }}:
-  name: Publish {{ package.displayname }}
+  name: Publish {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/win10:v1.21.0-1103459
