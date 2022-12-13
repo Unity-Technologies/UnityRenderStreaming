@@ -19,7 +19,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ package.name }} --platform editmode --backend mono
+    - upm-ci package test --unity-version {{ editor.version }} --package-path {{ packagename }} --platform editmode --backend mono
   artifacts:
     logs:
       paths:
@@ -39,7 +39,7 @@ promote_dry_run:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package promote --dry-run --package-path {{ package.name }}
+    - upm-ci package promote --dry-run --package-path {{ packagename }}
   triggers:
     tags:
       only:
@@ -68,7 +68,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package promote --package-path {{ package.name }}
+    - upm-ci package promote --package-path {{ packagename }}
   triggers:
     tags:
       only:
