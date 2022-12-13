@@ -409,4 +409,3 @@ publish_{{ package.name }}:
     - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
 {% endif %}
 {% endfor %}
-{% endfor %}
