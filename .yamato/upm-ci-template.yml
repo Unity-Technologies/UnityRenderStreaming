@@ -1,7 +1,7 @@
 # .yamato/upm-ci-template.yml
 {% metadata_file .yamato/package.metafile %}
-
 ---
+
 {% for project in template_projects %}
 
 {% for editor in editors %}

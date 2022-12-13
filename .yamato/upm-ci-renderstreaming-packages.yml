@@ -1,6 +1,6 @@
 {% metadata_file .yamato/package.metafile %}
-
 ---
+
 pack:
   name: Pack {{ package.displayname }}
   agent:
