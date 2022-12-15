@@ -16,7 +16,6 @@
     * [Audio Streaming Component](audio-streaming.md)
     * [Data Streaming Component](data-streaming.md)
 * [Using with Input System](use-inputsystem.md)
-* [Deploy to Furioos](deploy-to-furioos.md)
 * [Samples](samples.md)
     * [Receiver](sample-receiver.md)
     * [Broadcast](sample-broadcast.md)
@@ -26,5 +25,4 @@
     * [Gyroscope](sample-gyroscope.md)
     * [Web Browser Input](sample-browserinput.md)
     * [Multiplay](sample-multiplay.md)
-* [Project Template](template.md)
 * [FAQ](faq.md)
