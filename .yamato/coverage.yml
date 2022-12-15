@@ -1,5 +1,7 @@
 {% metadata_file .yamato/package.metafile %}
 
+# todo(kazuki): Use old version because Code Coverage 1.2.2 has some issues.
+coverage_pkg_version: 1.1.1
 ---
 
 {% for platform in platforms %}
@@ -18,11 +20,11 @@ codecoverage_{{ packagename }}_{{ platform.name }}_{{ editor.version }}:
 {% if platform.name == "win" %}
     - |
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
+      upm-ci package test -u {{ editor.version }} --extra-utr-arg=--coverage-pkg-version={{ coverage_pkg_version }} --package-path {{ packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming"
 {% else %}
     - |
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
+      upm-ci package test -u {{ editor.version }} --extra-utr-arg=--coverage-pkg-version={{ coverage_pkg_version }} --package-path {{ packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming"
 {% endif %}
   artifacts:
     {{ packagename }}_{{ editor.version }}_{{ platform.name }}_coverage_results:
