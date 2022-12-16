@@ -1,12 +1,9 @@
 {% metadata_file .yamato/package.metafile %}
 
-packages:
-  - name: renderstreaming
-    packagename: com.unity.renderstreaming
 ---
-{% for package in packages %}
-pack_{{ package.name }}:
-  name: Pack {{ package.packagename }}
+
+pack:
+  name: Pack {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu-20:v1.4.0-1081009
@@ -14,15 +11,15 @@ pack_{{ package.name }}:
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
     - find ./{{ project.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
-    - upm-ci package pack --package-path {{ package.packagename }}
+    - upm-ci package pack --package-path {{ packagename }}
   artifacts:
-    {{ package.name }}_package:
+    {{ packagename }}_package:
       paths:
         - "upm-ci~/packages/**/*"
 
 {% for editor in editors %}
-build_{{ package.name }}_{{ editor.version }}_ios:
-  name : Build {{ package.packagename }} with {{ editor.version }} for ios device
+build_{{ editor.version }}_ios:
+  name : Build {{ package_displayname }} with {{ editor.version }} for ios device
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -42,10 +39,10 @@ build_{{ package.name }}_{{ editor.version }}_ios:
       paths:
         - "build/logs/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
-test_{{ package.name }}_{{ editor.version }}_ios:
-  name: Test {{ package.packagename }} with {{ editor.version }} on ios device
+test_{{ packagename }}_{{ editor.version }}_ios:
+  name: Test {{ package_displayname }} with {{ editor.version }} on ios device
   agent:
     type: Unity::mobile::iPhone
     image: mobile/macos-10.15-testing:v0.0.7-909915
@@ -63,11 +60,11 @@ test_{{ package.name }}_{{ editor.version }}_ios:
       paths:
         - "build/test-results/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ editor.version }}_ios
+    - .yamato/upm-ci-renderstreaming-packages.yml#build_{{ editor.version }}_ios
 
 {% for target in test_targets_android %}
-build_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
-  name : Build {{ package.packagename }} with {{ editor.version }} for android device {{ target.name }}
+build_{{ editor.version }}_android_{{ target.name }}:
+  name : Build {{ package_displayname }} with {{ editor.version }} for android device {{ target.name }}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -92,17 +89,17 @@ build_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
       paths:
         - "build/logs/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
-test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
-  name: Test {{ package.packagename }} with {{ editor.version }} on android device {{ target.name }}
+test_{{ packagename }}_{{ editor.version }}_android_{{ target.name }}:
+  name: Test {{ package_displayname }} with {{ editor.version }} on android device {{ target.name }}
   agent:
     type: Unity::mobile::shield
     image: mobile/android-package-ci-win:v0.1.4-1212670
     flavor: b1.medium
   skip_checkout: true
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#build_{{ editor.version }}_android_{{ target.name }}
   commands:
     - wget http://artifactory-slo.bf.unity3d.com/artifactory/mobile-generic/android/ADBKeys.zip!/adbkey.pub -O %USERPROFILE%/.android/adbkey.pub
     - wget http://artifactory-slo.bf.unity3d.com/artifactory/mobile-generic/android/ADBKeys.zip!/adbkey -O %USERPROFILE%/.android/adbkey
@@ -126,8 +123,8 @@ test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}:
 {% for platform in platforms %}
 {% if platform.name != "macos" and platform.name != "macos-m1" %}
 {% for param in platform.test_params %}
-test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -142,18 +139,18 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% if platform.name == "win" %}
     - |
       set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
+      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000"
 {% else %}
     - |
       export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
+      upm-ci package test -u {{ editor.version }} --package-path {{ packagename }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
 {% endif %}
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ packagename }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% for project in test_projects %}
@@ -171,7 +168,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
 {% if platform.name != "win" %}
-    - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
+    - find ./{{ packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
 {% endif %}
     - upm-ci project pack --project-path {{ project.path }}
 {% if platform.name == "win" %}
@@ -184,7 +181,7 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
       upm-ci project test -u {{ editor.version }} --project-path {{ project.path }} --platform {{ param.platform }} --backend {{ param.backend }} --extra-utr-arg="--timeout=3000 --testfilter=!HttpSignaling"
 {% endif %}
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ packagename }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
@@ -197,8 +194,8 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 
 {% if param.platform == "standalone" %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform == "standalone"
 
-build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Build {{ package.packagename }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+build_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Build {{ package_displayname }} with {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:v1.20.0-1079282
@@ -219,10 +216,10 @@ build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.na
       paths:
         - "build/logs/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 
-test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -242,17 +239,17 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
   commands:
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ packagename }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#build_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#build_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% else %} # platform.name == "macos" or platform.name == "macos-m1" and param.platform != "standalone"
 
-test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ package.packagename }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
+test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ package_displayname }} {{ param.platform }} {{ param.backend }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -274,11 +271,11 @@ test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     - find upm-ci~/packages/ -name "*.tgz" | xargs -I file tar xvf file -C upm-ci~
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ packagename }}_{{ param.backend }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
     - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
 
 {% endif %}
@@ -303,10 +300,10 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
     EDITOR_VERSION: {{ editor.version }}
     EXTRA_UTR_ARG: --timeout=3000 --testfilter=!HttpSignaling
   commands:
-    - find ./{{ package.packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
+    - find ./{{ packagename }} -type l -exec bash -c 'sh BuildScripts~/convert_symlinks.sh "$0"' {} \;
     - BuildScripts~/test_package_mac.sh
   artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_test_results:
+    {{ packagename }}_{{ editor.version }}_{{ platform.name }}_test_results:
       paths:
         - "upm-ci~/test-results/**"
   dependencies:
@@ -316,17 +313,17 @@ test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.nam
 {% endif -%}
 {% endfor %}
 
-trigger_test_{{ package.name }}_{{ editor.version }}:
-  name : Trigger test {{ package.packagename }} {{ editor.version }} all platforms
+trigger_test_{{ packagename }}_{{ editor.version }}:
+  name : Trigger test {{ package_displayname }} {{ editor.version }} all platforms
   dependencies:
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}
 {% if editor.version == "2020.3" -%}
   triggers:
     expression: pull_request.target eq "main"
 {% endif -%}
 
-test_{{ package.name }}_{{ editor.version }}:
-  name : Test {{ package.packagename }} {{ editor.version }} all platforms
+test_{{ packagename }}_{{ editor.version }}:
+  name : Test {{ package_displayname }} {{ editor.version }} all platforms
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
@@ -335,116 +332,81 @@ test_{{ package.name }}_{{ editor.version }}:
 # XCode command line tools has not installed on m1 mac device (Standalone test don't need to install them)
 {% if platform.name == "macos-m1" %}
 {% if param.platform == "standalone" %}
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
 {% endif %}
 {% else %}
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
 {% endif %}
 {% endfor %}
 {% endfor %}
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_ios
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}_ios
 {% for target in test_targets_android %}
 # todo: Exclude tests for Unity 2022.1 on Android platform because it is instable.
 {% if editor.version != "2022.1" %}
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ package.name }}_{{ editor.version }}_android_{{ target.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}_android_{{ target.name }}
 {% endif %}
 {% endfor %}
 
-test_renderpipeline_{{ package.name }}_{{ editor.version }}:
-  name : test {{ package.packagename }} {{ editor.version }} all RenderPipeline
+test_renderpipeline_{{ packagename }}_{{ editor.version }}:
+  name : Test {{ package_displayname }} {{ editor.version }} all RenderPipeline
   dependencies:
 {% for platform in platforms %}
 {% for param in platform.test_params %}
 {% for project in test_projects %}
-    - .yamato/upm-ci-{{ package.name }}-packages.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ project.name }}_{{ param.platform }}_{{ param.backend }}_{{ platform.name }}_{{ editor.version }}
 {% endfor %}
 {% endfor %}
 {% endfor %}
 {% endfor %}
 
-publish_dry_run_{{ package.name }}:
-  name: Publish Dry Run {{ package.packagename }}
+publish_dry_run_{{ packagename }}:
+  name: Publish Dry Run {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/win10:v1.21.0-1103459
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package publish --dry-run --package-path {{ package.packagename }}
+    - upm-ci package publish --dry-run --package-path {{ packagename }}
   triggers:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   artifacts:
-    {{ package.name }}_artifacts.zip:
+    {{ packagename }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 {% for editor in editors %}
 {% if editor.version != "trunk" -%} # exclude trunk to test
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_win_{{ editor.version }}
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_macos_{{ editor.version }}
-    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ package.name }}_editmode_mono_linux_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_editmode_mono_win_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_editmode_mono_macos_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_editmode_mono_linux_{{ editor.version }}
 {% endif %}
 {% endfor %}
 
-publish_{{ package.name }}:
-  name: Publish {{ package.packagename }}
+publish_{{ packagename }}:
+  name: Publish {{ package_displayname }}
   agent:
     type: Unity::VM
     image: package-ci/win10:v1.21.0-1103459
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-    - upm-ci package publish --package-path {{ package.packagename }}
+    - upm-ci package publish --package-path {{ packagename }}
   triggers:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   artifacts:
-    {{ package.name }}_artifacts.zip:
+    {{ packagename }}_artifacts.zip:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#pack
 {% for editor in editors %}
 {% if editor.version != "trunk" %} # exclude trunk to test
-    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ package.name }}_{{ editor.version }}
+    - .yamato/upm-ci-renderstreaming-packages.yml#trigger_test_{{ packagename }}_{{ editor.version }}
 {% endif %}
-{% endfor %}
-
-{% for platform in platforms %}
-{% if platform.name != "macos" and platform.name != "macos-m1" %}
-{% for editor in editors %}
-codecoverage_{{ package.packagename }}_{{ platform.name }}_{{ editor.version }}:
-  name: Code coverage {{ package.packagename }} {{ platform.name }} {{ editor.version }}
-  agent:
-    type: {{ platform.type }}
-    image: {{ platform.image }}
-    flavor: {{ platform.flavor }}
-  commands:
-    - pip config set global.index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-    - pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-    - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
-{% if platform.name == "win" %}
-    - |
-      set WEBAPP_PATH=%cd%\Webapp\bin~\{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
-{% else %}
-    - |
-      export WEBAPP_PATH=$(pwd)/WebApp/bin~/{{ platform.packed_webapp_name }}
-      upm-ci package test -u {{ editor.version }} --package-path {{ package.packagename }} --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-UnityEngine.*,+Unity.RenderStreaming" --extra-utr-arg="--timeout=3000"
-{% endif %}
-  artifacts:
-    {{ package.name }}_{{ editor.version }}_{{ platform.name }}_coverage_results:
-      paths:
-        - "upm-ci~/test-results/**"
-  dependencies:
-    - .yamato/upm-ci-renderstreaming-packages.yml#pack_{{ package.name }}
-    - .yamato/upm-ci-webapp.yml#pack_{{ platform.packed_webapp_platform }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-
 {% endfor %}

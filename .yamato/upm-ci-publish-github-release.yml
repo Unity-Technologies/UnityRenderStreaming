@@ -1,4 +1,3 @@
-# .yamato/upm-ci-publish-github-release.yml
 {% metadata_file .yamato/package.metafile %}
 
 webapp-platforms:
