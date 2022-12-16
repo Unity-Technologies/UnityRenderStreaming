@@ -53,7 +53,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "com.unity.webrtc": "3.0.0-pre.2",
+        "com.unity.webrtc": "3.0.0-pre.3",
         "com.unity.inputsystem": "1.4.4",
         "com.unity.ugui": "1.0.0",
         "com.unity.modules.screencapture": "1.0.0"
@@ -106,7 +106,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "3.0.0-pre.2",
+      "version": "3.0.0-pre.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
