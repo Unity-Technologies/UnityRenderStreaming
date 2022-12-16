@@ -59,5 +59,15 @@ namespace Unity.RenderStreaming
                 new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        public override bool ParseArguments(string[] arguments)
+        {
+            return true;
+        }
     }
 }

@@ -6,6 +6,28 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// The attribute is used for commandline argument of "-signalingType".
+    /// </summary>
+    public sealed class SignalingTypeAttribute : Attribute
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string typename => m_typename;
+
+        private string m_typename;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="typename"></param>
+        public SignalingTypeAttribute(string name)
+        {
+            m_typename = name;
+        }
+    }
+
     internal sealed class SignalingSettingsAttribute : PropertyAttribute { }
 
     /// <summary>
@@ -84,6 +106,22 @@ namespace Unity.RenderStreaming
             return new IceServer(this.urls.ToArray(), this.username, this.credentialType, this.credential);
         }
 
+        public IceServer Clone(string[] urls = null, string username = null, IceCredentialType? credentialType = null, string credential = null)
+        {
+            var server = new IceServer(this.urls.ToArray(), this.username, this.credentialType, this.credential);
+            if (urls != null)
+                server.m_urls = urls;
+            if (username != null)
+                server.m_username = username;
+            if (credentialType != null)
+                server.m_credentialType = credentialType.Value;
+            if (credential != null)
+                server.m_credential = credential;
+            return server;
+        }
+
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -122,5 +160,28 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         public abstract Type signalingClass { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        public abstract bool ParseArguments(string[] arguments);
+    }
+
+    internal static class RuntimeTypeCache<T> where T : class
+    {
+        private static Type[] s_types;
+
+        public static Type[] GetTypesDerivedFrom()
+        {
+            if (s_types != null)
+                return s_types;
+
+            s_types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(domainAssembly => domainAssembly.GetTypes())
+                .Where(type => typeof(T).IsAssignableFrom(type) && !type.IsAbstract).ToArray();
+            return s_types;
+        }
     }
 }

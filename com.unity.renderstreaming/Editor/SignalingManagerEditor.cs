@@ -53,6 +53,7 @@ namespace Unity.RenderStreaming.Editor
             }
             root.Add(new ReorderableListField(serializedObject.FindProperty("handlers"), "Signaling Handler List"));
             root.Add(new PropertyField(serializedObject.FindProperty("runOnAwake"), "Run On Awake"));
+            root.Add(new PropertyField(serializedObject.FindProperty("evaluateCommandlineArguments"), "Evaluate Commandline Arguments"));
 
             EditorApplication.projectChanged += OnProjectChanged;
 

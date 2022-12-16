@@ -1,7 +1,3 @@
-using NUnit.Framework;
-using Unity.RenderStreaming.InputSystem;
-using Assert = NUnit.Framework.Assert;
-
 namespace Unity.RenderStreaming.RuntimeTest
 {
 #if UNITY_EDITOR && !INPUTSYSTEM_1_1_OR_NEWER
