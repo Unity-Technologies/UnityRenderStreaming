@@ -35,6 +35,12 @@ namespace Unity.RenderStreaming.Samples
         private Vector2Int streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
         private VideoCodecInfo receiverVideoCodec = null;
         private VideoCodecInfo senderVideoCodec = null;
+        private bool enabled = false;
+
+        public bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; } }
 
         public SignalingType SignalingType
         {
