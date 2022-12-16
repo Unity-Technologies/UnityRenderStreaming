@@ -4,6 +4,7 @@
     "references": [
         "Unity.InputSystem",
         "Unity.WebRTC",
+        "UnityEngine.UI",
         "Unity.XR.ARSubsystems",
         "Unity.TextMeshPro",
         "Unity.RenderPipelines.HighDefinition.Runtime",
