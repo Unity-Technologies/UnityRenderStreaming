@@ -67,8 +67,8 @@ function checkSessionId(req: Request, res: Response, next): void {
   if (!clients.has(id)) {
     res.sendStatus(404);
     return;
-  }
-  lastRequestedTime[id] = Date.now();
+  } 
+  lastRequestedTime.set(id, Date.now());
   next();
 }
 
@@ -124,11 +124,11 @@ function _checkDeletedSession(sessionId: string): void {
     if (pair == null) {
       continue;
     }
-    const otherSessionId = sessionId === pair[0] ? pair[1] : pair[0];
-    if(!lastRequestedTime.has(otherSessionId))
+	const otherSessionId = sessionId === pair[0] ? pair[1] : pair[0];
+	if(!lastRequestedTime.has(otherSessionId))
       continue;
-    if(lastRequestedTime[otherSessionId] > Date.now() - TimeoutRequestedTime)
-      continue;
+    if(lastRequestedTime.get(otherSessionId) > Date.now() - TimeoutRequestedTime)
+      continue;  
     _deleteSession(otherSessionId);
     console.log("deleted");
   }
@@ -342,7 +342,11 @@ function postOffer(req: Request, res: Response): void {
     return;
   }
 
-  connectionPair.set(connectionId, [sessionId, null]);
+  if(!connectionPair.has(connectionId))
+  {
+    connectionPair.set(connectionId, [sessionId, null]);
+  }
+  
   keySessionId = sessionId;
   const map = offers.get(keySessionId);
   map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
