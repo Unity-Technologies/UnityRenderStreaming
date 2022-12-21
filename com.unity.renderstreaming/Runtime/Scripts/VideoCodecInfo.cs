@@ -128,6 +128,8 @@ namespace Unity.RenderStreaming
                     return new H264CodecInfo(caps);
                 case "video/VP9":
                     return new VP9CodecInfo(caps);
+                case "video/AV1":
+                    return new AV1CodecInfo(caps);
                 default:
                     return new VideoCodecInfo(caps);
             }
@@ -257,4 +259,52 @@ namespace Unity.RenderStreaming
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum AV1Profile
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        Profile0 = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        Profile1 = 1,
+        /// <summary>
+        /// 
+        /// </summary>
+        Profile2 = 2,
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class AV1CodecInfo : VideoCodecInfo
+    {
+        const string KeyProfile = "profile";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public AV1Profile profile
+        {
+            get
+            {
+
+                if (parameters.TryGetValue(KeyProfile, out var value))
+                {
+                    return (AV1Profile)Enum.ToObject(typeof(AV1Profile), Convert.ToInt32(value));
+                }
+                // If the parameter is not present, it MUST be inferred to be 0 (“Main” profile).
+                // https://aomediacodec.github.io/av1-rtp-spec/#72-sdp-parameters
+                return AV1Profile.Profile0;
+            }
+        }
+
+        internal AV1CodecInfo(RTCRtpCodecCapability caps) : base(caps)
+        {
+        }
+    }
 }

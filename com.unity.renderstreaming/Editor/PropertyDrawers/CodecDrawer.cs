@@ -19,6 +19,7 @@ namespace Unity.RenderStreaming.Editor
             int channelCount { get; }
             int sampleRate { get; }
             string optionTitle { get; }
+            int order { get; }
         }
 
         class AudioCodec : Codec
@@ -37,6 +38,8 @@ namespace Unity.RenderStreaming.Editor
                 }
             }
 
+            public int order { get { return codec_.channelCount; } }
+
             public AudioCodec(AudioCodecInfo codec)
             {
                 codec_ = codec;
@@ -53,13 +56,14 @@ namespace Unity.RenderStreaming.Editor
             {
                 get
                 {
-                    if (codec_ is H264CodecInfo h264Codec)
+                    switch(codec_)
                     {
-                        return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
-                    }
-                    else if (codec_ is VP9CodecInfo vp9codec)
-                    {
-                        return $"Profile {(int)vp9codec.profile}";
+                        case H264CodecInfo h264Codec:
+                            return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
+                        case VP9CodecInfo vp9codec:
+                            return $"Profile {(int)vp9codec.profile}";
+                        case AV1CodecInfo av1codec:
+                            return $"Profile {(int)av1codec.profile}";
                     }
                     return null;
                 }
@@ -67,11 +71,27 @@ namespace Unity.RenderStreaming.Editor
 
             public int channelCount { get { throw new NotSupportedException(); } }
             public int sampleRate { get { throw new NotSupportedException(); } }
-
+            public int order
+            {
+                get
+                {
+                    switch (codec_)
+                    {
+                        case H264CodecInfo h264Codec:
+                            return (int)h264Codec.profile;
+                        case VP9CodecInfo vp9codec:
+                            return (int)vp9codec.profile;
+                        case AV1CodecInfo av1codec:
+                            return (int)av1codec.profile;
+                    }
+                    return 0;
+                }
+            }
             public VideoCodec(VideoCodecInfo codec)
             {
                 codec_ = codec;
             }
+
             VideoCodecInfo codec_;
         }
 
@@ -158,7 +178,7 @@ namespace Unity.RenderStreaming.Editor
                 codecNames = codecNames.Concat(codecs.Select(codec => codec.name)).Distinct().ToArray();
                 var mimeType = propertyMimeType.stringValue;
                 var codecName = mimeType.GetCodecName();
-                selectedCodecs = codecs.Where(codec => codec.name == codecName);
+                selectedCodecs = codecs.Where(codec => codec.name == codecName).OrderBy(codec => codec.order);
                 codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                 if (!selectedCodecs.Any())
                     selectCodecIndex = 0;
@@ -185,7 +205,7 @@ namespace Unity.RenderStreaming.Editor
                 if(0 < selectCodecIndex)
                 {
                     string codecName = codecNames[selectCodecIndex];
-                    selectedCodecs = codecs.Where(codec => codec.name == codecName);
+                    selectedCodecs = codecs.Where(codec => codec.name == codecName).OrderBy(codec => codec.order);
                     codecOptions = selectedCodecs.Select(codec => codec.optionTitle).ToArray();
                     hasCodecOptions = codecOptions.Length > 1;
                     var codec = selectedCodecs.First();

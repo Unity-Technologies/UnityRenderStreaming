@@ -155,6 +155,8 @@ namespace Unity.RenderStreaming.Samples
                     return $"{h264Codec.mimeType} {h264Codec.profile} {h264Codec.level.ToString().Insert(1, ".")} {h264Codec.codecImplementation}";
                 case VP9CodecInfo V9Codec:
                     return $"{V9Codec.mimeType} {V9Codec.profile} {V9Codec.codecImplementation}";
+                case AV1CodecInfo av1Codec:
+                    return $"{av1Codec.mimeType} {av1Codec.profile} {av1Codec.codecImplementation}";
                 default:
                     return $"{codec.mimeType} {codec.codecImplementation}";
             }
