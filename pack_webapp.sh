@@ -5,14 +5,14 @@ npm install --legacy-peer-deps
 npm run build
 npm run pack
 
+chmod a+x webserver
+
 app_name=webserver
 
 if [ "$(uname)" == 'Darwin' ]; then
   app_name=webserver_mac
+  mv webserver $app_name
 fi
-
-chmod a+x webserver
-mv webserver $app_name
 
 cd ..
 mkdir WebApp/bin~
