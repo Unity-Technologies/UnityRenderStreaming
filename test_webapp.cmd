@@ -1,3 +1,5 @@
+@echo off
+
 cd WebApp
 call npm install --legacy-peer-deps
 call npm run lint

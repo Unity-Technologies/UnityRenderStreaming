@@ -1,3 +1,5 @@
+#!/bin/bash -eu
+
 cd WebApp
 npm install --legacy-peer-deps
 npm run build
