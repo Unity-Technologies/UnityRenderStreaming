@@ -48,16 +48,17 @@ test_{{ platform.name }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor }}
   commands:
-    - |
-      cd WebApp
-      npm install --legacy-peer-deps
-      npm run lint
-      npm run test
+    - cd WebApp
+    - npm install --legacy-peer-deps
+    - npm run lint
+    - npm run test
 {% if platform.name == "win" %}
+    - |
       start npm run dev -- -p 8080
       ping -n 10 127.0.0.1 >NUL
       npm run newman
 {% else %}
+    - |
       npm run dev -- -p 8080 &
       sleep 5
       npm run newman -- -e ./test/env_macos.postman_environment.json
@@ -77,11 +78,10 @@ test_client_{{ platform.name }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor }}
   commands:
-    - |
-      cd WebApp/client
-      npm install
-      npm run lint
-      npm run test
+    - cd WebApp/client
+    - npm install
+    - npm run lint
+    - npm run test
   artifacts:
     logs:
       paths:
