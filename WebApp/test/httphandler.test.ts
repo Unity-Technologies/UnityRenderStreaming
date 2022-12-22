@@ -1,6 +1,8 @@
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import * as httpHandler from '../src/class/httphandler';
 
+const RetriesToForceTimeout = 11; // Waits a second each time, timeout is 10 sec for httphandler.
+
 describe('http signaling test in public mode', () => {
   const sessionId = "abcd1234";
   const sessionId2 = "abcd5678";
@@ -18,6 +20,8 @@ describe('http signaling test in public mode', () => {
 
   beforeEach(() => {
     mockClear();
+    httpHandler.checkSessionId(req, res, next);
+    httpHandler.checkSessionId(req2, res, next);
   });
 
   test('throw check has session', async () => {
@@ -184,6 +188,63 @@ describe('http signaling test in public mode', () => {
 
     await httpHandler.deleteSession(req2, res);
   });
+  
+  test('Timed out session2 deleted after session1 resends offer', async () => {
+    httpHandler.reset("public");
+
+    await httpHandler.createSession(sessionId, res);
+    await httpHandler.createSession(sessionId2, res);
+
+    req.url = "";
+    req2.url = "";    
+    await httpHandler.checkSessionId(req, res, next);
+    await httpHandler.checkSessionId(req2, res, next);
+
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+
+    const connectBody = { connectionId: connectionId };
+    req.body = connectBody;
+    await httpHandler.createConnection(req, res);
+
+    const offerBody = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer" };
+    req.body = offerBody;
+    await httpHandler.postOffer(req, res);
+
+    const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: false };
+    await httpHandler.getAll(req, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    await httpHandler.getAll(req2, res);
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+
+    const answerBody = { connectionId: connectionId, sdp: testsdp };
+    req2.body = answerBody;
+    await httpHandler.postAnswer(req2, res);
+    
+    // resend offer after answer to simulate PeerCandidate entering into failed state
+    req.body = offerBody;
+    await httpHandler.postOffer(req, res);
+
+    // Wait a second and then checkSession for only session1 to force timeout of session2.
+    for (let i = 0; i < RetriesToForceTimeout + 1; ++i)
+    {
+      await httpHandler.checkSessionId(req, res, next);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    // Get all for session1 to trigger cleaning up associated session that timed out.
+    await httpHandler.getAll(req, res);
+    
+    // Check that we do have session1 still
+    await httpHandler.checkSessionId(req, res, next);
+    expect(res.sendStatus).toHaveBeenLastCalledWith(200);
+    
+    // Check that we no longer have session2
+    await httpHandler.checkSessionId(req2, res, next);
+    expect(res.sendStatus).toHaveBeenLastCalledWith(404);
+    
+    await httpHandler.deleteSession(req, res);
+  }, 16000);
 });
 
 describe('http signaling test in private mode', () => {
@@ -202,6 +263,9 @@ describe('http signaling test in private mode', () => {
 
   beforeEach(() => {
     mockClear();
+      
+    httpHandler.checkSessionId(req, res, next);
+    httpHandler.checkSessionId(req2, res, next);
   });
 
   test('throw check has session', async () => {
