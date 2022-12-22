@@ -248,7 +248,10 @@ namespace Unity.RenderStreaming.Samples
 
             receiverBase.OnStartedStream += id =>
             {
-                activeReceiverList[receiverBase].Add(receiverBase.Transceiver.Receiver);
+                if(activeReceiverList.TryGetValue(receiverBase, out var hashSet))
+                {
+                    hashSet.Add(receiverBase.Transceiver.Receiver);
+                }
             };
             receiverBase.OnStoppedStream += id =>
             {
@@ -256,11 +259,13 @@ namespace Unity.RenderStreaming.Samples
                 {
                     foreach (var receiver in hashSet)
                     {
-                        DestroyImmediate(lastReceiverStats[receiver].display.gameObject);
-                        lastReceiverStats.Remove(receiver);
+                        if (lastReceiverStats.TryGetValue(receiver, out var statsDisplay))
+                        {
+                            DestroyImmediate(statsDisplay.display.gameObject);
+                            lastReceiverStats.Remove(receiver);
+                        }
                     }
                 }
-
                 activeReceiverList.Remove(receiverBase);
             };
 
