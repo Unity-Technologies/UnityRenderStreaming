@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -217,7 +216,7 @@ namespace Unity.RenderStreaming.Samples
                     {
                         if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
                         {
-                            DestroyImmediate(lastSenderStats[sender].display.gameObject);
+                            DestroyImmediate(statsDisplay.display.gameObject);
                             lastSenderStats.Remove(sender);
                         }
                     }
