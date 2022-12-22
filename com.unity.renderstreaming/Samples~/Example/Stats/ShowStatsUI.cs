@@ -215,11 +215,13 @@ namespace Unity.RenderStreaming.Samples
                 {
                     foreach (var sender in hashSet)
                     {
-                        DestroyImmediate(lastSenderStats[sender].display.gameObject);
-                        lastSenderStats.Remove(sender);
+                        if (lastSenderStats.TryGetValue(sender, out var statsDisplay))
+                        {
+                            DestroyImmediate(lastSenderStats[sender].display.gameObject);
+                            lastSenderStats.Remove(sender);
+                        }
                     }
                 }
-
                 activeSenderList.Remove(id);
             };
 

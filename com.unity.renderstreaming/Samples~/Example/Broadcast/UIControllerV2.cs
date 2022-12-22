@@ -61,6 +61,8 @@ namespace Unity.RenderStreaming.Samples
 
         public void OnPoint(InputAction.CallbackContext context)
         {
+            if(m_rectTransform == null)
+                return;
             var position = context.ReadValue<Vector2>();
             var screenSize = new Vector2Int(Screen.width, Screen.height);
             position = position / screenSize * new Vector2(m_rectTransform.rect.width, m_rectTransform.rect.height);
