@@ -90,7 +90,7 @@ namespace Unity.RenderStreaming.Samples
             positionAction.started -= UpdatePosition;
             positionAction.canceled -= UpdatePosition;
 
-            quaternionAction.Enable();
+            quaternionAction.Disable();
             quaternionAction.performed -= UpdateQuaternion;
             quaternionAction.started -= UpdateQuaternion;
             quaternionAction.canceled -= UpdateQuaternion;
