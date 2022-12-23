@@ -123,12 +123,25 @@ namespace Unity.RenderStreaming.InputSystem
 
         public virtual InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
-            return InputSystem.AddDevice(layout, name, variants);
+            // workaround(kazuki):
+            // Avoid assertion `Could not find active control after binding resolution.` in InputActionState class.
+            // Occrring this assertion if active InputActionMap is existed when calling InputSystem.AddDevice.
+            var actions = InputSystem.ListEnabledActions();
+            actions.ForEach(action => action.Disable());
+            var device = InputSystem.AddDevice(layout, name, variants);
+            actions.ForEach(action => action.Enable());
+            return device;
         }
 
         public virtual void RemoveDevice(InputDevice device)
         {
+            // workaround(kazuki):
+            // Avoid assertion `Could not find active control after binding resolution.` in InputActionState class.
+            // Occrring this assertion if active InputActionMap is existed when calling InputSystem.RemoveDevice.
+            var actions = InputSystem.ListEnabledActions();
+            actions.ForEach(action => action.Disable());
             InputSystem.RemoveDevice(device);
+            actions.ForEach(action => action.Enable());
         }
 
         public virtual void SetDeviceUsage(InputDevice device, string usage)
