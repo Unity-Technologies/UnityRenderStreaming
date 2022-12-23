@@ -557,5 +557,28 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(asset);
             UnityEngine.Object.DestroyImmediate(go);
         }
+
+        [Test]
+        public void InputUserId()
+        {
+            var go = new GameObject();
+            go.SetActive(false);
+            var receiver = go.AddComponent<InputReceiver>();
+
+            // user.id is InputUser.InvalidId in default.
+            Assert.That(receiver.actions, Is.Null);
+            Assert.That(receiver.user.id, Is.EqualTo(InputUser.InvalidId));
+
+            var asset = ScriptableObject.CreateInstance<InputActionAsset>();
+            var mapName = "test";
+            asset.AddActionMap(mapName);
+            receiver.actions = asset;
+
+            // user.id is not InputUser.InvalidId after set actions parameter.
+            Assert.That(receiver.actions, Is.Not.Null);
+            Assert.That(receiver.user.id, Is.EqualTo(InputUser.InvalidId));
+
+            UnityEngine.Object.DestroyImmediate(go);
+        }
     }
 }

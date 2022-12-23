@@ -320,6 +320,7 @@ namespace Unity.RenderStreaming
                 m_InputUser = new InputUser();
                 return;
             }
+            m_InputUser = InputUser.CreateUserWithoutPairedDevices();
 
             // If we don't have a valid user at this point, we don't have any paired devices.
             if (m_InputUser.valid)
