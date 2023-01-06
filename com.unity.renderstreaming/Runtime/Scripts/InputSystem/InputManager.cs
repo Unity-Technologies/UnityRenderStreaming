@@ -53,7 +53,7 @@ namespace Unity.RenderStreaming.InputSystem
         /// <param name="name"></param>
         /// <param name="variants"></param>
         /// <returns></returns>
-        InputDevice AddDevice(string layout, string name = null, string variants = null);
+        InputDevice AddDevice(string layout, string name = null);
         /// <summary>
         ///
         /// </summary>
@@ -64,7 +64,13 @@ namespace Unity.RenderStreaming.InputSystem
         /// </summary>
         /// <param name="device"></param>
         /// <param name="usage"></param>
-        void SetDeviceUsage(InputDevice device, string usage);
+        void AddDeviceUsage(InputDevice device, string usage);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="usage"></param>
+        void RemoveDeviceUsage(InputDevice device, string usage);
         /// <summary>
         ///
         /// </summary>
@@ -121,9 +127,9 @@ namespace Unity.RenderStreaming.InputSystem
             return InputSystem.GetDeviceById(deviceId);
         }
 
-        public virtual InputDevice AddDevice(string layout, string name = null, string variants = null)
+        public virtual InputDevice AddDevice(string layout, string name = null)
         {
-            return InputSystem.AddDevice(layout, name, variants);
+            return InputSystem.AddDevice(layout, name);
         }
 
         public virtual void RemoveDevice(InputDevice device)
@@ -131,9 +137,13 @@ namespace Unity.RenderStreaming.InputSystem
             InputSystem.RemoveDevice(device);
         }
 
-        public virtual void SetDeviceUsage(InputDevice device, string usage)
+        public virtual void AddDeviceUsage(InputDevice device, string usage)
         {
-            InputSystem.SetDeviceUsage(device, usage);
+            InputSystem.AddDeviceUsage(device, usage);
+        }
+        public virtual void RemoveDeviceUsage(InputDevice device, string usage)
+        {
+            InputSystem.RemoveDeviceUsage(device, usage);
         }
 
         public virtual InputControlLayout LoadLayout(string name)
