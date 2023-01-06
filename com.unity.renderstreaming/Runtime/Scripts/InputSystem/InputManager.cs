@@ -53,7 +53,7 @@ namespace Unity.RenderStreaming.InputSystem
         /// <param name="name"></param>
         /// <param name="variants"></param>
         /// <returns></returns>
-        InputDevice AddDevice(string layout, string name = null);
+        InputDevice AddDevice(string layout, string name = null, string variants = null);
         /// <summary>
         ///
         /// </summary>
@@ -127,9 +127,9 @@ namespace Unity.RenderStreaming.InputSystem
             return InputSystem.GetDeviceById(deviceId);
         }
 
-        public virtual InputDevice AddDevice(string layout, string name = null)
+        public virtual InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
-            return InputSystem.AddDevice(layout, name);
+            return InputSystem.AddDevice(layout, name, variants);
         }
 
         public virtual void RemoveDevice(InputDevice device)
