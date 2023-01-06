@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
@@ -129,11 +130,15 @@ namespace Unity.RenderStreaming.InputSystem
 
         public virtual InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
+            foreach (var device_ in InputSystem.devices.Where(device => device.enabled))
+                InputSystem.ResetDevice(device_);
             return InputSystem.AddDevice(layout, name, variants);
         }
 
         public virtual void RemoveDevice(InputDevice device)
         {
+            foreach (var device_ in InputSystem.devices.Where(device => device.enabled))
+                InputSystem.ResetDevice(device_);
             InputSystem.RemoveDevice(device);
         }
 

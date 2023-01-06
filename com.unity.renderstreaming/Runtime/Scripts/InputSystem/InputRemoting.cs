@@ -420,7 +420,6 @@ namespace Unity.RenderStreaming.InputSystem
         {
             public int remoteId; // Device ID used by sender.
             public int localId; // Device ID used by us in local system.
-            public string layoutName;
 
             public InputDeviceDescription description;
         }
@@ -654,16 +653,15 @@ namespace Unity.RenderStreaming.InputSystem
                 var deviceFlagsRemote = 1 << 3;
                 device.SetDeviceFlags(device.GetDeviceFlags() | deviceFlagsRemote);
 
-                //foreach (var usage in data.usages)
-                //    Receiver.m_LocalManager.AddDeviceUsage(device, new InternedString(usage));
+                foreach (var usage in data.usages)
+                    Receiver.m_LocalManager.AddDeviceUsage(device, usage);
 
                 // Remember it.
                 var record = new RemoteInputDevice
                 {
                     remoteId = data.deviceId,
                     localId = device.deviceId,
-                    description = data.description,
-                    layoutName = data.layout
+                    description = data.description
                 };
                 ArrayHelpers.Append(ref Receiver.m_Senders[senderIndex].devices, record);
             }
