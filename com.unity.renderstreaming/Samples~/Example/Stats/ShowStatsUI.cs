@@ -127,9 +127,9 @@ namespace Unity.RenderStreaming.Samples
         IEnumerator UpdateStats(RTCRtpReceiver receiver)
         {
             var op = receiver.GetStats();
-            yield return op;
+            yield return new WaitUntilWithTimeout(() => op.IsDone, 3f);
 
-            if (op.IsError)
+            if (op.IsError || !op.IsDone)
             {
                 yield break;
             }
@@ -159,10 +159,9 @@ namespace Unity.RenderStreaming.Samples
         IEnumerator UpdateStats(RTCRtpSender sender)
         {
             var op = sender.GetStats();
-            yield return op;
+            yield return new WaitUntilWithTimeout(() => op.IsDone, 3f);
 
-
-            if (op.IsError)
+            if (op.IsError || !op.IsDone)
             {
                 yield break;
             }
@@ -375,6 +374,35 @@ namespace Unity.RenderStreaming.Samples
             }
 
             return builder.ToString();
+        }
+    }
+
+    internal class WaitUntilWithTimeout : CustomYieldInstruction
+    {
+        public bool IsCompleted { get; private set; }
+
+        private readonly float timeoutTime;
+
+        private readonly System.Func<bool> predicate;
+
+        public override bool keepWaiting
+        {
+            get
+            {
+                IsCompleted = predicate();
+                if (IsCompleted)
+                {
+                    return false;
+                }
+
+                return !(Time.realtimeSinceStartup >= timeoutTime);
+            }
+        }
+
+        public WaitUntilWithTimeout(System.Func<bool> predicate, float timeout)
+        {
+            this.timeoutTime = Time.realtimeSinceStartup + timeout;
+            this.predicate = predicate;
         }
     }
 }
