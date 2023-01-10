@@ -110,7 +110,7 @@ async function setUp() {
   renderstreaming.onConnect = () => {
     const tracks = sendVideo.getLocalTracks();
     for (const track of tracks) {
-      renderstreaming.addTrack(track);
+      renderstreaming.addTransceiver(track, { direction: 'sendonly' });
     }
     setCodecPreferences();
     showStatsMessage();
