@@ -16,23 +16,24 @@
     <div id="warning" hidden=true></div>
 
     <div id="select">
-      <label for="videoSource">Video source: </label><select id="videoSource"></select>
-      <label for="audioSource">Audio source: </label><select id="audioSource"></select>
+      <label for="videoSource">Video source: </label>
+      <select id="videoSource" autocomplete="off"></select>
+      <label for="audioSource">Audio source: </label>
+      <select id="audioSource" autocomplete="off"></select>
     </div>
 
     <div id="resolutionSelect">
-      <label for="videoResolution">Video resolution: </label><select id="videoResolution"></select>
+      <label for="videoResolution">Video resolution: </label><select id="videoResolution" autocomplete="off"></select>
     </div>
     <div id="resolutionInput">
-      <label for="cameraWidth">Camera width:</label><input id="cameraWidth" type="number" min="0" max="4096" disabled>
-      <label for="cameraHeight">Camera height:</label><input id="cameraHeight" type="number" min="0" max="4096"
-        disabled>
+      <label for="cameraWidth">Camera width:</label><input id="cameraWidth" type="number" min="0" max="4096" autocomplete="off" disabled>
+      <label for="cameraHeight">Camera height:</label><input id="cameraHeight" type="number" min="0" max="4096" autocomplete="off" disabled>
     </div>
 
     <div id="buttons">
-      <button type="button" id="startVideoButton">Start Video</button>
-      <button type="button" id="setUpButton" disabled>Set Up</button>
-      <button type="button" id="hangUpButton" disabled>Hang Up</button>
+      <button type="button" id="startVideoButton" autocomplete="off">Start Video</button>
+      <button type="button" id="setUpButton" autocomplete="off" disabled>Set Up</button>
+      <button type="button" id="hangUpButton"  autocomplete="off" disabled>Hang Up</button>
     </div>
 
     <div id="preview">
@@ -54,7 +55,7 @@
     </div>
     <div class="box">
       <span>Codec preferences:</span>
-      <select id="codecPreferences" disabled>
+      <select id="codecPreferences" autocomplete="off" disabled>
         <option selected value="">Default</option>
       </select>
     </div>
