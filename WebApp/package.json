@@ -9,7 +9,7 @@
     "start": "node ./build/index.js",
     "dev": "ts-node ./src/index.ts",
     "lint": "eslint src/**/*.ts test/**/*.ts",
-    "pack": "pkg ."
+    "pack": "pkg"
   },
   "dependencies": {
     "@types/express": "^4.17.13",
