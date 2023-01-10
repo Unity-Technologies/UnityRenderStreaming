@@ -8,11 +8,10 @@ using UnityEngine.InputSystem.Users;
 using Unity.RenderStreaming.InputSystem;
 
 using Inputs = UnityEngine.InputSystem.InputSystem;
+using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
 
 namespace Unity.RenderStreaming
 {
-    using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
-
     /// <summary>
     /// Represents a separate player in the game complete with a set of actions exclusive
     /// to the player and a set of paired device.
@@ -308,11 +307,24 @@ namespace Unity.RenderStreaming
 
         private void AssignUserAndDevices()
         {
-            if (actions == null)
-                throw new InvalidOperationException("actions field is needed to assign.");
+            // If we already have a user at this point, clear out all its paired devices
+            // to start the pairing process from scratch.
+            if (m_InputUser.valid)
+                m_InputUser.UnpairDevices();
 
+            // All our input goes through actions so there's no point setting
+            // anything up if we have none.
+            if (m_Actions == null)
+            {
+                // Make sure user is invalid.
+                m_InputUser = new InputUser();
+                return;
+            }
             m_InputUser = InputUser.CreateUserWithoutPairedDevices();
-            m_InputUser.AssociateActionsWithUser(actions);
+
+            // If we don't have a valid user at this point, we don't have any paired devices.
+            if (m_InputUser.valid)
+                m_InputUser.AssociateActionsWithUser(actions);
         }
 
         private void UnassignUserAndDevices()

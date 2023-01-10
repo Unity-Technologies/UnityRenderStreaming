@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
@@ -64,7 +65,13 @@ namespace Unity.RenderStreaming.InputSystem
         /// </summary>
         /// <param name="device"></param>
         /// <param name="usage"></param>
-        void SetDeviceUsage(InputDevice device, string usage);
+        void AddDeviceUsage(InputDevice device, string usage);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="usage"></param>
+        void RemoveDeviceUsage(InputDevice device, string usage);
         /// <summary>
         ///
         /// </summary>
@@ -123,17 +130,25 @@ namespace Unity.RenderStreaming.InputSystem
 
         public virtual InputDevice AddDevice(string layout, string name = null, string variants = null)
         {
+            foreach (var device_ in InputSystem.devices.Where(device => device.enabled))
+                InputSystem.ResetDevice(device_);
             return InputSystem.AddDevice(layout, name, variants);
         }
 
         public virtual void RemoveDevice(InputDevice device)
         {
+            foreach (var device_ in InputSystem.devices.Where(device => device.enabled))
+                InputSystem.ResetDevice(device_);
             InputSystem.RemoveDevice(device);
         }
 
-        public virtual void SetDeviceUsage(InputDevice device, string usage)
+        public virtual void AddDeviceUsage(InputDevice device, string usage)
         {
-            InputSystem.SetDeviceUsage(device, usage);
+            InputSystem.AddDeviceUsage(device, usage);
+        }
+        public virtual void RemoveDeviceUsage(InputDevice device, string usage)
+        {
+            InputSystem.RemoveDeviceUsage(device, usage);
         }
 
         public virtual InputControlLayout LoadLayout(string name)

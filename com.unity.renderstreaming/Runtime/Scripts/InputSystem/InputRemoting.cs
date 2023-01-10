@@ -420,7 +420,6 @@ namespace Unity.RenderStreaming.InputSystem
         {
             public int remoteId; // Device ID used by sender.
             public int localId; // Device ID used by us in local system.
-            public string layoutName;
 
             public InputDeviceDescription description;
         }
@@ -582,7 +581,7 @@ namespace Unity.RenderStreaming.InputSystem
                 public string name;
                 public string layout;
                 public int deviceId;
-                public string variants;
+                public string[] usages;
                 public InputDeviceDescription description;
             }
 
@@ -595,8 +594,8 @@ namespace Unity.RenderStreaming.InputSystem
                     name = device.name,
                     layout = device.layout,
                     deviceId = device.deviceId,
-                    variants = device.variants,
-                    description = device.description
+                    description = device.description,
+                    usages = device.usages.Select(x => x.ToString()).ToArray()
                 };
 
                 var json = JsonUtility.ToJson(data);
@@ -634,11 +633,7 @@ namespace Unity.RenderStreaming.InputSystem
                 try
                 {
                     ////REVIEW: this gives remote devices names the same way that local devices receive them; should we make remote status visible in the name?
-                    device = Receiver.m_LocalManager.AddDevice(data.layout, data.name, data.variants);
-
-                    // todo(kazuki)::Avoid to use reflection
-                    // device.m_ParticipantId = msg.participantId;
-                    device.SetParticipantId(msg.participantId);
+                    device = Receiver.m_LocalManager.AddDevice(data.layout, data.name);
                 }
                 catch (Exception exception)
                 {
@@ -647,19 +642,26 @@ namespace Unity.RenderStreaming.InputSystem
                     return;
                 }
                 // todo(kazuki)::Avoid to use reflection
+                // device.m_ParticipantId = msg.participantId;
+                device.SetParticipantId(msg.participantId);
+
+                // todo(kazuki)::Avoid to use reflection
                 // device.m_Description = data.description;
                 // device.m_DeviceFlags |= InputDevice.DeviceFlags.Remote;
                 device.SetDescription(data.description);
+
                 var deviceFlagsRemote = 1 << 3;
                 device.SetDeviceFlags(device.GetDeviceFlags() | deviceFlagsRemote);
+
+                foreach (var usage in data.usages)
+                    Receiver.m_LocalManager.AddDeviceUsage(device, usage);
 
                 // Remember it.
                 var record = new RemoteInputDevice
                 {
                     remoteId = data.deviceId,
                     localId = device.deviceId,
-                    description = data.description,
-                    layoutName = data.layout
+                    description = data.description
                 };
                 ArrayHelpers.Append(ref Receiver.m_Senders[senderIndex].devices, record);
             }
@@ -771,10 +773,20 @@ namespace Unity.RenderStreaming.InputSystem
                 var device = Receiver.TryGetDeviceByRemoteId(data.deviceId, senderIndex);
                 if (device != null)
                 {
-                    ////TODO: clearing usages and setting multiple usages
+                    foreach (var deviceUsage in device.usages)
+                    {
+                        if (!data.usages.Contains(deviceUsage))
+                            Receiver.m_LocalManager.RemoveDeviceUsage(device, new InternedString(deviceUsage));
+                    }
 
                     if (data.usages.Length == 1)
-                        Receiver.m_LocalManager.SetDeviceUsage(device, new InternedString(data.usages[0]));
+                        Receiver.m_LocalManager.AddDeviceUsage(device, new InternedString(data.usages[0]));
+                    foreach (var dataUsage in data.usages)
+                    {
+                        var internedDataUsage = new InternedString(dataUsage);
+                        if (!device.usages.Contains(internedDataUsage))
+                            Receiver.m_LocalManager.AddDeviceUsage(device, new InternedString(dataUsage));
+                    }
                 }
             }
         }
