@@ -80,7 +80,6 @@ async function startVideo() {
   cameraWidthInput.disabled = true;
   cameraHeightInput.disabled = true;
   startButton.disabled = true;
-  setupButton.disabled = false;
 
   let width = 0;
   let height = 0;
@@ -94,6 +93,9 @@ async function startVideo() {
   }
 
   await sendVideo.startLocalVideo(videoSelect.value, audioSelect.value, width, height);
+
+  // enable setup button after initializing local video.
+  setupButton.disabled = false;
 }
 
 async function setUp() {
