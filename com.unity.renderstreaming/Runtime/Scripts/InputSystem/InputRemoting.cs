@@ -653,8 +653,9 @@ namespace Unity.RenderStreaming.InputSystem
                 var deviceFlagsRemote = 1 << 3;
                 device.SetDeviceFlags(device.GetDeviceFlags() | deviceFlagsRemote);
 
-                foreach (var usage in data.usages)
-                    Receiver.m_LocalManager.AddDeviceUsage(device, usage);
+                if(data.usages != null)
+                    foreach (var usage in data.usages)
+                        Receiver.m_LocalManager.AddDeviceUsage(device, usage);
 
                 // Remember it.
                 var record = new RemoteInputDevice

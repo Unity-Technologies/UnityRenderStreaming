@@ -43,7 +43,7 @@ export class InputDevice {
    * name;
    * layout;
    * deviceId;
-   * variants;
+   * usages;
    * description;
    *
    * _inputState;
@@ -54,14 +54,14 @@ export class InputDevice {
    * @param {Number} name
    * @param {String} layout
    * @param {Number} deviceId
-   * @param {String} variants
+   * @param {String[]} usages
    * @param {Object} description
    */
-  constructor(name, layout, deviceId, variants, description) {
+  constructor(name, layout, deviceId, usages, description) {
     this.name = name;
     this.layout = layout;
     this.deviceId = deviceId;
-    this.variants = variants;
+    this.usages = usages;
     this.description = description;
 
     this._inputState = null;

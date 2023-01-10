@@ -38,7 +38,7 @@ export class Sender extends LocalInputManager {
       m_Version: "",
       m_Capabilities: ""
     };
-    this.mouse = new Mouse("Mouse", "Mouse", 1, "", descriptionMouse);
+    this.mouse = new Mouse("Mouse", "Mouse", 1, null, descriptionMouse);
     this._devices.push(this.mouse);
 
     this._elem.addEventListener('click', this._onMouseEvent.bind(this), false);
@@ -58,7 +58,7 @@ export class Sender extends LocalInputManager {
       m_Version: "",
       m_Capabilities: ""
     };
-    this.keyboard = new Keyboard("Keyboard", "Keyboard", 2, "", descriptionKeyboard);
+    this.keyboard = new Keyboard("Keyboard", "Keyboard", 2, null, descriptionKeyboard);
     this._devices.push(this.keyboard);
 
     document.addEventListener('keyup', this._onKeyEvent.bind(this), false);
@@ -75,7 +75,7 @@ export class Sender extends LocalInputManager {
       m_Version: "",
       m_Capabilities: ""
     };
-    this.gamepad = new Gamepad("Gamepad", "Gamepad", 3, "", descriptionGamepad);
+    this.gamepad = new Gamepad("Gamepad", "Gamepad", 3, null, descriptionGamepad);
     this._devices.push(this.gamepad);
 
     window.addEventListener("gamepadconnected", this._onGamepadEvent.bind(this), false);
@@ -94,7 +94,7 @@ export class Sender extends LocalInputManager {
       m_Version: "",
       m_Capabilities: ""
     };
-    this.touchscreen = new Touchscreen("Touchscreen", "Touchscreen", 4, "", descriptionTouch);
+    this.touchscreen = new Touchscreen("Touchscreen", "Touchscreen", 4, null, descriptionTouch);
     this._devices.push(this.touchscreen);
 
     this._elem.addEventListener('touchend', this._onTouchEvent.bind(this), false);
