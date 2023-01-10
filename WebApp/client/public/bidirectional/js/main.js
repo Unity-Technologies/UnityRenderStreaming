@@ -57,10 +57,6 @@ setupButton.addEventListener('click', setUp);
 const hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
-window.addEventListener('beforeunload', async () => {
-  await sendVideo.stop();
-}, true);
-
 setupConfig();
 
 async function setupConfig() {
@@ -84,7 +80,6 @@ async function startVideo() {
   cameraWidthInput.disabled = true;
   cameraHeightInput.disabled = true;
   startButton.disabled = true;
-  setupButton.disabled = false;
 
   let width = 0;
   let height = 0;
@@ -98,6 +93,9 @@ async function startVideo() {
   }
 
   await sendVideo.startLocalVideo(videoSelect.value, audioSelect.value, width, height);
+
+  // enable setup button after initializing local video.
+  setupButton.disabled = false;
 }
 
 async function setUp() {
@@ -126,6 +124,10 @@ async function setUp() {
       sendVideo.addRemoteTrack(data.track);
     }
   };
+
+  window.addEventListener('beforeunload', async () => {
+    await renderstreaming.stop();
+  }, true);
 
   await renderstreaming.start();
   await renderstreaming.createConnection(connectionId);

@@ -88,7 +88,7 @@ export class RenderStreaming {
 
   /**
    * if not set argument, a generated uuid is used.
-   * @param {string | null} connectionId 
+   * @param {string | null} connectionId
    */
   async createConnection(connectionId) {
     this._connectionId = connectionId ? connectionId : uuid4();
@@ -150,7 +150,7 @@ export class RenderStreaming {
   }
 
   /**
-   * @param {string} label 
+   * @param {string} label
    * @returns {RTCDataChannel | null}
    */
   createDataChannel(label) {
@@ -158,7 +158,7 @@ export class RenderStreaming {
   }
 
   /**
-   * @param {MediaStreamTrack} track 
+   * @param {MediaStreamTrack} track
    * @returns {RTCRtpSender | null}
    */
   addTrack(track) {

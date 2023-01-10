@@ -5,7 +5,7 @@ export const LetterBoxType = {
 
 export class PointerCorrector {
   /**
-   * @param {Number} videoWidth 
+   * @param {Number} videoWidth
    * @param {Number} videoHeight
    * @param {DOMRect} rect
    */
@@ -63,7 +63,7 @@ export class PointerCorrector {
   }
 
   /**
-   * @param {Number} videoWidth 
+   * @param {Number} videoWidth
    * @param {Number} videoHeight
    * @param {DOMRect} rect
    */
@@ -99,8 +99,8 @@ export class PointerCorrector {
   /**
    * Returns rectangle for displaying video with the origin at the left-top of the element.
    * Not considered applying CSS like `object-fit`.
-   * @returns {Object} 
-   */  
+   * @returns {Object}
+   */
   get contentRect() {
     const letterBoxType = this.letterBoxType;
     const letterBoxSize = this.letterBoxSize;
@@ -116,4 +116,4 @@ export class PointerCorrector {
   _reset() {
     this._contentRect = this.contentRect;
   }
-}  
+}
