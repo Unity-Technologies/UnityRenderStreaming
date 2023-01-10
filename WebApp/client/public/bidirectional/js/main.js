@@ -57,6 +57,12 @@ setupButton.addEventListener('click', setUp);
 const hangUpButton = document.getElementById('hangUpButton');
 hangUpButton.addEventListener('click', hangUp);
 
+window.addEventListener('beforeunload', async () => {
+  if(!renderstreaming)
+    return;
+  await renderstreaming.stop();
+}, true);
+
 setupConfig();
 
 async function setupConfig() {
@@ -124,10 +130,6 @@ async function setUp() {
       sendVideo.addRemoteTrack(data.track);
     }
   };
-
-  window.addEventListener('beforeunload', async () => {
-    await renderstreaming.stop();
-  }, true);
 
   await renderstreaming.start();
   await renderstreaming.createConnection(connectionId);
