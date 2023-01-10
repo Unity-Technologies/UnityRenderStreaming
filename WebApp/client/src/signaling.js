@@ -76,7 +76,7 @@ export class Signaling extends EventTarget {
             break;
           default:
             break;
-        }     
+        }
       }
       await this.sleep(this.interval);
     }
