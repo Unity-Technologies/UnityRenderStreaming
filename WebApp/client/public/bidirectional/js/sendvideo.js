@@ -7,10 +7,10 @@ export class SendVideo {
   }
 
   /**
-   * @param {MediaTrackConstraints} videoSource 
-   * @param {MediaTrackConstraints} audioSource 
-   * @param {number} videoWidth 
-   * @param {number} videoHeight 
+   * @param {MediaTrackConstraints} videoSource
+   * @param {MediaTrackConstraints} audioSource
+   * @param {number} videoWidth
+   * @param {number} videoHeight
    */
   async startLocalVideo(videoSource, audioSource, videoWidth, videoHeight) {
     try {
@@ -42,7 +42,7 @@ export class SendVideo {
   }
 
   /**
-   * @param {MediaStreamTrack} track 
+   * @param {MediaStreamTrack} track
    */
   addRemoteTrack(track) {
     if (this.remoteVideo.srcObject == null) {
