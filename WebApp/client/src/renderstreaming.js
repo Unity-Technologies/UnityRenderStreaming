@@ -166,6 +166,16 @@ export class RenderStreaming {
   }
 
   /**
+   * @param {MediaStreamTrack | string} trackOrKind
+   * @param {RTCRtpTransceiverInit | null} init
+   * @returns {RTCRtpTransceiver | null}
+   */
+  addTransceiver(trackOrKind, init) {
+    return this._peer.addTransceiver(this._connectionId, trackOrKind, init);
+  }
+
+
+  /**
    * @returns {RTCRtpTransceiver[] | null}
    */
   getTransceivers() {
