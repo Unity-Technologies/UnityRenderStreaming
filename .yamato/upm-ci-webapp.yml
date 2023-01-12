@@ -77,7 +77,7 @@ test_client_{{ platform.name }}:
 trigger_webapp_test_{{ project.name }}:
   name : Trigger all WebApp test {{ project.packagename }}
   triggers:
-    expression: pull_request.target eq "develop"
+    expression: pull_request.target eq "main"
   dependencies:
     {% for platform in platforms %}
     - .yamato/upm-ci-webapp.yml#test_{{ platform.name }}

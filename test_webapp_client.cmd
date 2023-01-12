@@ -1,3 +1,5 @@
+@echo off
+
 cd WebApp\client
 call npm install
 call npm run lint
