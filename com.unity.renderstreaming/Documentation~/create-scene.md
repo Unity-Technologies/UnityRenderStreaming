@@ -31,7 +31,7 @@ Add a [**Video Stream Sender**](video-streaming.html#videostreamsenderapiunityre
 
 ![Add VideoStreamSender component](images/add_videostreamsender_component.png)
 
-Assign the [**Video Stream Sender**](video-streaming.html#videostreamsenderapiunityrenderstreamingvideostreamsenderhtml-component) component to the **Broadcast** component property.
+Assign the [**Video Stream Sender**](video-streaming.html#videostreamsenderapiunityrenderstreamingvideostreamsenderhtml-component) component to the **Broadcast** component property. And set camera
 
 ![Assign VideoStreamSender component to streams](images/assign_videostreamsender_to_streams.png)
 
