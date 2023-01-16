@@ -12,6 +12,7 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming
 {
+    [AddComponentMenu("Render Streaming/Render Streaming")]
     public sealed class RenderStreaming : MonoBehaviour
     {
 #pragma warning disable 0649
