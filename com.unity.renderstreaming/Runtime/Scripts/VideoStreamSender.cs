@@ -167,14 +167,21 @@ namespace Unity.RenderStreaming
             get { return m_Source; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Source == value)
+                    return;
+
                 m_Source = value;
                 if (m_Texture != null)
                 {
                     m_TextureSize.x = m_Texture.width;
                     m_TextureSize.y = m_Texture.height;
                 }
+
+                if (!isPlaying)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -186,9 +193,16 @@ namespace Unity.RenderStreaming
             get { return m_Camera; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Camera == value)
+                    return;
+
                 m_Camera = value;
+
+                if (!isPlaying)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -200,8 +214,6 @@ namespace Unity.RenderStreaming
             get { return m_Texture; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
                 m_Texture = value;
                 m_TextureSize.x = m_Texture.width;
                 m_TextureSize.y = m_Texture.height;
@@ -216,8 +228,6 @@ namespace Unity.RenderStreaming
             get { return m_WebCamDeviceIndex; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
                 m_WebCamDeviceIndex = value;
             }
         }
@@ -410,11 +420,11 @@ namespace Unity.RenderStreaming
                 throw new InvalidOperationException("Video source is set Texture.");
             m_TextureSize = size;
 
-            if (isPlaying)
-            {
-                var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
-            }
+            if (!isPlaying)
+                return;
+
+            var op = CreateTrack();
+            StartCoroutine(op, _ => ReplaceTrack(_.Track));
         }
 
         private protected virtual void Awake()
@@ -430,6 +440,11 @@ namespace Unity.RenderStreaming
             m_sourceImpl = null;
         }
 
+        private protected virtual void OnValidate()
+        {
+
+        }
+
         void _OnStoppedStream(string connectionId)
         {
             m_sourceImpl?.Dispose();
@@ -443,13 +458,13 @@ namespace Unity.RenderStreaming
             return m_sourceImpl.CreateTrack();
         }
 
-        void StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
+        Coroutine StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
         {
             if (coroutine == null)
                 throw new ArgumentNullException("coroutine");
             if (callback == null)
                 throw new ArgumentNullException("callback");
-            StartCoroutine(_Coroutine(coroutine, callback));
+            return StartCoroutine(_Coroutine(coroutine, callback));
         }
 
         IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
