@@ -31,6 +31,21 @@ namespace Unity.RenderStreaming
             }
         }
 
+        internal Coroutine StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
+        {
+            if (coroutine == null)
+                throw new ArgumentNullException("coroutine");
+            if (callback == null)
+                throw new ArgumentNullException("callback");
+            return StartCoroutine(_Coroutine(coroutine, callback));
+        }
+
+        internal IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
+        {
+            yield return StartCoroutine(coroutine);
+            callback(coroutine);
+        }
+
         /// <summary>
         ///
         /// </summary>

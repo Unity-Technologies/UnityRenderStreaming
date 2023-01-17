@@ -74,9 +74,15 @@ namespace Unity.RenderStreaming
             get { return m_Source; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Source == value)
+                    return;
                 m_Source = value;
+
+                if (!isPlaying)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -112,9 +118,15 @@ namespace Unity.RenderStreaming
             get { return m_MicrophoneDeviceIndex; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_MicrophoneDeviceIndex == value)
+                    return;
                 m_MicrophoneDeviceIndex = value;
+
+                if (!isPlaying || m_Source != AudioStreamSource.Microphone)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -126,9 +138,15 @@ namespace Unity.RenderStreaming
             get { return m_AudioSource; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_AudioSource == value)
+                    return;
                 m_AudioSource = value;
+
+                if (!isPlaying || m_Source != AudioStreamSource.AudioSource)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -140,9 +158,15 @@ namespace Unity.RenderStreaming
             get { return m_AudioListener; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_AudioListener == value)
+                    return;
                 m_AudioListener = value;
+
+                if (!isPlaying || m_Source != AudioStreamSource.AudioListener)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 

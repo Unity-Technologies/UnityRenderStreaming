@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]
-        private Vector2Int m_TextureSize = new Vector2Int(1280, 720);
+        private Vector2Int m_TextureSize = new(1280, 720);
 
         [SerializeField]
         private VideoStreamSource m_Source;
@@ -169,8 +169,8 @@ namespace Unity.RenderStreaming
             {
                 if (m_Source == value)
                     return;
-
                 m_Source = value;
+
                 if (m_Texture != null)
                 {
                     m_TextureSize.x = m_Texture.width;
@@ -195,10 +195,9 @@ namespace Unity.RenderStreaming
             {
                 if (m_Camera == value)
                     return;
-
                 m_Camera = value;
 
-                if (!isPlaying)
+                if (!isPlaying || m_Source != VideoStreamSource.Camera)
                     return;
 
                 var op = CreateTrack();
@@ -214,9 +213,18 @@ namespace Unity.RenderStreaming
             get { return m_Texture; }
             set
             {
+                if (m_Texture == value)
+                    return;
                 m_Texture = value;
+
                 m_TextureSize.x = m_Texture.width;
                 m_TextureSize.y = m_Texture.height;
+
+                if (!isPlaying || m_Source != VideoStreamSource.Texture)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -228,7 +236,15 @@ namespace Unity.RenderStreaming
             get { return m_WebCamDeviceIndex; }
             set
             {
+                if (m_WebCamDeviceIndex == value)
+                    return;
                 m_WebCamDeviceIndex = value;
+
+                if (!isPlaying || m_Source != VideoStreamSource.WebCamera)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutine(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -338,7 +354,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                var codecs = new VideoCodecInfo[] { m_Codec };
+                var codecs = new[] { m_Codec };
                 RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
@@ -440,11 +456,6 @@ namespace Unity.RenderStreaming
             m_sourceImpl = null;
         }
 
-        private protected virtual void OnValidate()
-        {
-
-        }
-
         void _OnStoppedStream(string connectionId)
         {
             m_sourceImpl?.Dispose();
@@ -457,22 +468,6 @@ namespace Unity.RenderStreaming
             m_sourceImpl = CreateVideoStreamSource();
             return m_sourceImpl.CreateTrack();
         }
-
-        Coroutine StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
-        {
-            if (coroutine == null)
-                throw new ArgumentNullException("coroutine");
-            if (callback == null)
-                throw new ArgumentNullException("callback");
-            return StartCoroutine(_Coroutine(coroutine, callback));
-        }
-
-        IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
-        {
-            yield return StartCoroutine(coroutine);
-            callback(coroutine);
-        }
-
 
         VideoStreamSourceImpl CreateVideoStreamSource()
         {

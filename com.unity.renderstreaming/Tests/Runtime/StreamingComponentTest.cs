@@ -259,8 +259,6 @@ namespace Unity.RenderStreaming.RuntimeTest
                         Assert.That(h264codec.level, Is.GreaterThan(0));
                         Assert.That(h264codec.profile, Is.Not.Zero);
                         break;
-                    default:
-                        break;
                 }
             }
         }
