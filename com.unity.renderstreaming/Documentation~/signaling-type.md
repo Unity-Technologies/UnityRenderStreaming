@@ -13,11 +13,11 @@ In the example, the schema given to `URL Signaling` is used to determine which t
 If it starts with `http`, `Http Signaling` is used. If it starts with `ws`, `WebSocket Signaling` is used.
 
 ```
-# launch server for HTTP
-webserver.exe 
-
 # launch server for WebSocket
-webserver.exe -w
+webserver.exe
+
+# launch server for HTTP
+webserver.exe -t http
 ```
 
 ## `Http Signaling`

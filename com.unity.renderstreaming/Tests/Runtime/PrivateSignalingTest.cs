@@ -91,9 +91,9 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             string arguments = $"-m private -p {TestUtility.PortNumber}";
 
-            if (m_SignalingType == typeof(WebSocketSignaling))
+            if (m_SignalingType == typeof(HttpSignaling))
             {
-                arguments += " -w";
+                arguments += " -t http";
             }
 
             startInfo.Arguments = arguments;
