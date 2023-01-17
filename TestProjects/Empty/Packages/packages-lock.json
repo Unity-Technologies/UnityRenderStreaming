@@ -15,7 +15,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.4.2",
+      "version": "1.4.4",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -28,8 +28,10 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.webrtc": "2.4.0-exp.11",
-        "com.unity.inputsystem": "1.4.1"
+        "com.unity.webrtc": "3.0.0-pre.4",
+        "com.unity.inputsystem": "1.4.4",
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.screencapture": "1.0.0"
       }
     },
     "com.unity.test-framework": {
@@ -74,12 +76,13 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "2.4.0-exp.11",
+      "version": "3.0.0-pre.4",
       "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.editorcoroutines": "1.0.0"
+        "com.unity.editorcoroutines": "1.0.0",
+        "com.unity.modules.audio": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
