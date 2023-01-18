@@ -676,7 +676,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityPlatform(exclude = new[]
         {
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
-            RuntimePlatform.LinuxPlayer
+            RuntimePlatform.LinuxPlayer, RuntimePlatform.Android
         })]
         public IEnumerator SetCodecOnSender()
         {
@@ -782,7 +782,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityPlatform(exclude = new[]
         {
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
-            RuntimePlatform.LinuxPlayer
+            RuntimePlatform.LinuxPlayer, RuntimePlatform.Android
         })]
         public IEnumerator SetCodecOnReceiver()
         {
