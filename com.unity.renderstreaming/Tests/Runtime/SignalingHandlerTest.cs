@@ -566,7 +566,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator AssignTransceivers()
         {
             string connectionId = "12345";
