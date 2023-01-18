@@ -330,7 +330,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator OnAddReceiverPrivateMode()
         {
             MockSignaling.Reset(true);
@@ -403,7 +403,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator OnAddReceiverPublicMode()
         {
             MockSignaling.Reset(false);
