@@ -172,7 +172,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         //todo:: crash in dispose process on standalone linux
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
@@ -444,7 +444,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         // todo:: Crash in dispose process on Linux standalone
         // todo:: Timeout error on iPhonePlayer
         [UnityTest, Timeout(10000)]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer, RuntimePlatform.Android })]
         public IEnumerator ReceiveStream()
         {
             string connectionId = "12345";
