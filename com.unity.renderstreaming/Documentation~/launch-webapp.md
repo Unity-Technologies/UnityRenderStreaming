@@ -1,6 +1,6 @@
 # Launching The Web Application
 
-After installing the package, you will need to install and run the signaling server. If you want to learn about signaling, you can see [this page](overview.md). 
+After installing the package, you will need to install and run the signaling server. If you want to learn about signaling, you can see [this page](overview.md).
 
 ## Download web application
 
@@ -18,7 +18,7 @@ When the select download folder window appears, click on `Select Folder` to down
 After the download is finished and a `powershell` or `cmd` window is opened, and run `webserver.exe` with `-w` option. Please refer to [this page](webapp.md) for commandline options.
 
 ```
-.\webserver.exe -w
+.\webserver.exe
 ```
 
 You can see logs on the commandline like below.

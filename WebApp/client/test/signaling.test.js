@@ -28,8 +28,8 @@ describe.each([
     } else {
       const path = Path.resolve(`../bin~/${serverExeName()}`);
       let cmd = `${path} -p ${portNumber}`;
-      if (mode == "websocket") {
-        cmd += " -w";
+      if (mode == "http") {
+        cmd += " -t http";
       }
 
       await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
@@ -228,8 +228,8 @@ describe.each([
 
     const path = Path.resolve(`../bin~/${serverExeName()}`);
     let cmd = `${path} -p ${portNumber} -m private`;
-    if (mode == "websocket") {
-      cmd += " -w";
+    if (mode == "http") {
+      cmd += " -t http";
     }
 
     await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
