@@ -268,10 +268,7 @@ namespace Unity.RenderStreaming
             switch (m_Source)
             {
                 case AudioStreamSource.AudioListener:
-                    var source = new AudioStreamSourceAudioListener(this);
-                    // todo:: workaround.
-                    m_onAudioFilterRead = source.OnAudioFilterRead;
-                    return source;
+                    return new AudioStreamSourceAudioListener(this);
                 case AudioStreamSource.AudioSource:
                     return new AudioStreamSourceAudioSource(this);
                 case AudioStreamSource.Microphone:
@@ -315,20 +312,20 @@ namespace Unity.RenderStreaming
 
         class AudioStreamSourceAudioListener : AudioStreamSourceImpl
         {
+            private AudioListener m_audioListener;
             AudioStreamTrack m_audioTrack;
 
             public AudioStreamSourceAudioListener(AudioStreamSender parent) : base(parent)
             {
-                // todo: Should add AudioStreamTrack supports AudioListener
-                if (!parent.GetComponent<AudioListener>())
-                    throw new InvalidOperationException("Audio Listener have to be set the same gameObject.");
+                m_audioListener = parent.m_AudioListener;
+                if (m_audioListener == null)
+                    throw new ArgumentException("The audioListener is not assigned.");
             }
 
             public override WaitForCreateTrack CreateTrack()
             {
                 var instruction = new WaitForCreateTrack();
-                m_audioTrack = new AudioStreamTrack();
-                instruction.Done(m_audioTrack);
+                instruction.Done(new AudioStreamTrack(m_audioListener));
                 return instruction;
             }
 
@@ -342,24 +339,6 @@ namespace Unity.RenderStreaming
             {
                 Dispose();
             }
-
-            public void OnAudioFilterRead(float[] data, int channels, int sampleRate)
-            {
-                NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
-                try
-                {
-                    m_audioTrack?.SetData(ref nativeArray, channels, sampleRate);
-                }
-                // todo(kazuki):: Should catch only ObjectDisposedException but
-                // AudioStreamTrack also throws NullReferenceException.
-                catch (Exception)
-                {
-                }
-                finally
-                {
-                    nativeArray.Dispose();
-                }
-            }
         }
 
         class AudioStreamSourceAudioSource : AudioStreamSourceImpl
@@ -369,7 +348,7 @@ namespace Unity.RenderStreaming
             {
                 m_audioSource = parent.m_AudioSource;
                 if (m_audioSource == null)
-                    throw new InvalidOperationException("The audioSource is not assigned.");
+                    throw new ArgumentException("The audioSource is not assigned.");
 
             }
 
