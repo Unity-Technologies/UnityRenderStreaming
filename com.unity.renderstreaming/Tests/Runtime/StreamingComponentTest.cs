@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Unity.Collections;
 using UnityEngine;
 using Unity.WebRTC;
 using UnityEngine.TestTools;
@@ -311,6 +312,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             var go = new GameObject();
             var sender = go.AddComponent<AudioStreamSender>();
+
             MediaStreamTrack track;
 
             // With AudioSource
@@ -320,6 +322,16 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<InvalidOperationException>());
             sender.audioSource = go2.AddComponent<AudioSource>();
             var op = sender.CreateTrack();
+            yield return op;
+            track = op.Track;
+            Assert.That(track, Is.Not.Null);
+            track.Dispose();
+
+            // APIOnly
+            var go3 = new GameObject();
+            sender = go3.AddComponent<AudioStreamSender>();
+            sender.source = AudioStreamSource.APIOnly;
+            op = sender.CreateTrack();
             yield return op;
             track = op.Track;
             Assert.That(track, Is.Not.Null);
@@ -352,6 +364,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 #endif
             UnityEngine.Object.DestroyImmediate(go);
             UnityEngine.Object.DestroyImmediate(go2);
+            UnityEngine.Object.DestroyImmediate(go3);
         }
 
         [UnityTest]
@@ -440,6 +453,21 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             sender.SetCodec(null);
             Assert.That(sender.codec, Is.Null);
+        }
+
+        [Test]
+        public void SetData()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<AudioStreamSender>();
+
+            NativeArray<float> nativeArray = new NativeArray<float>(256, Allocator.Temp);
+            Assert.That(() => sender.SetData(ref nativeArray, 2), Throws.Exception.TypeOf<InvalidOperationException>());
+
+            sender.source = AudioStreamSource.APIOnly;
+            Assert.That(() => sender.SetData(ref nativeArray, 2), Throws.Nothing);
+
+            nativeArray.Dispose();
         }
     }
 
