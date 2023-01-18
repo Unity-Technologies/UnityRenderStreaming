@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]
-        private Vector2Int m_TextureSize = new(1280, 720);
+        private Vector2Int m_TextureSize = new Vector2Int(1280, 720);
 
         [SerializeField]
         private VideoStreamSource m_Source;
