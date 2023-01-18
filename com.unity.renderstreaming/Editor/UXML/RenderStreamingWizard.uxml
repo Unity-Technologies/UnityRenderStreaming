@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+         xmlns:urs="Unity.RenderStreaming.Editor.UI"
+         xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements"
+         noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:ScrollView name="renderStreamingWizardContainer">
+        <ui:VisualElement class="ScopeBox" name="checkUpdateContainer">
+            <ui:Label class="h1" text="UnityRenderStreaming Version"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="ScopeBox" name="configurationCheckingContainer">
+            <ui:Label class="h1" text="Configuration Checking"/>
+            <ui:VisualElement name="configurationCheckButtons"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="ScopeBox" name="buildSettingsCheckingContainer">
+            <ui:Label class="h1" text="Build Settings Checking"/>
+            <ui:VisualElement name="buildSettingsCheckButtons"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="ScopeBox" name="otherCheckingContainer">
+            <ui:Label class="h1" text="Others"/>
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>
