@@ -228,7 +228,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [UnityPlatform(exclude = new[]
         {
             RuntimePlatform.WindowsEditor, RuntimePlatform.OSXEditor, RuntimePlatform.LinuxEditor,
-            RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer
+            RuntimePlatform.LinuxPlayer, RuntimePlatform.IPhonePlayer, RuntimePlatform.Android
         })]
         public IEnumerator SetCodec()
         {
