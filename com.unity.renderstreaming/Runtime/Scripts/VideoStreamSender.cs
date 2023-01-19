@@ -86,24 +86,24 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum VideoStreamSource
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Camera = 0,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Screen = 1,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         WebCamera = 2,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Texture = 3
     }
@@ -160,35 +160,42 @@ namespace Unity.RenderStreaming
         private VideoStreamSourceImpl m_sourceImpl = null;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoStreamSource source
         {
             get { return m_Source; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Source == value)
+                    return;
                 m_Source = value;
-                if (m_Texture != null)
-                {
-                    m_TextureSize.x = m_Texture.width;
-                    m_TextureSize.y = m_Texture.height;
-                }
+
+                if (!isPlaying)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public Camera sourceCamera
         {
             get { return m_Camera; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Camera == value)
+                    return;
                 m_Camera = value;
+
+                if (!isPlaying || m_Source != VideoStreamSource.Camera)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -200,11 +207,15 @@ namespace Unity.RenderStreaming
             get { return m_Texture; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_Texture == value)
+                    return;
                 m_Texture = value;
-                m_TextureSize.x = m_Texture.width;
-                m_TextureSize.y = m_Texture.height;
+
+                if (!isPlaying || m_Source != VideoStreamSource.Texture)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -216,14 +227,20 @@ namespace Unity.RenderStreaming
             get { return m_WebCamDeviceIndex; }
             set
             {
-                if (isPlaying)
-                    throw new InvalidOperationException("Can not change this parameter after the streaming is started.");
+                if (m_WebCamDeviceIndex == value)
+                    return;
                 m_WebCamDeviceIndex = value;
+
+                if (!isPlaying || m_Source != VideoStreamSource.WebCamera)
+                    return;
+
+                var op = CreateTrack();
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public WebCamTexture sourceWebCamTexture
         {
@@ -263,7 +280,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float scaleResolutionDown
         {
@@ -271,7 +288,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint width
         {
@@ -283,7 +300,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint height
         {
@@ -295,7 +312,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoCodecInfo codec
         {
@@ -303,7 +320,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool autoRequestUserAuthorization
         {
@@ -312,7 +329,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="codec"></param>
         public void SetCodec(VideoCodecInfo codec)
@@ -328,7 +345,7 @@ namespace Unity.RenderStreaming
                 if (transceiver.Sender.Track.ReadyState == TrackState.Ended)
                     continue;
 
-                var codecs = new VideoCodecInfo[] { m_Codec };
+                var codecs = new[] { m_Codec };
                 RTCErrorType error = transceiver.SetCodecPreferences(SelectCodecCapabilities(codecs).ToArray());
                 if (error != RTCErrorType.None)
                     throw new InvalidOperationException($"Set codec is failed. errorCode={error}");
@@ -336,7 +353,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
@@ -401,7 +418,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="size"></param>
         public void SetTextureSize(Vector2Int size)
@@ -410,11 +427,11 @@ namespace Unity.RenderStreaming
                 throw new InvalidOperationException("Video source is set Texture.");
             m_TextureSize = size;
 
-            if (isPlaying)
-            {
-                var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
-            }
+            if (!isPlaying)
+                return;
+
+            var op = CreateTrack();
+            StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
         }
 
         private protected virtual void Awake()
@@ -442,22 +459,6 @@ namespace Unity.RenderStreaming
             m_sourceImpl = CreateVideoStreamSource();
             return m_sourceImpl.CreateTrack();
         }
-
-        void StartCoroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
-        {
-            if (coroutine == null)
-                throw new ArgumentNullException("coroutine");
-            if (callback == null)
-                throw new ArgumentNullException("callback");
-            StartCoroutine(_Coroutine(coroutine, callback));
-        }
-
-        IEnumerator _Coroutine<T>(T coroutine, Action<T> callback) where T : IEnumerator
-        {
-            yield return StartCoroutine(coroutine);
-            callback(coroutine);
-        }
-
 
         VideoStreamSourceImpl CreateVideoStreamSource()
         {
