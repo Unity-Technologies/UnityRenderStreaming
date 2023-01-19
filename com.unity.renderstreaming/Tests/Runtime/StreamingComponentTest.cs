@@ -311,33 +311,30 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             var go = new GameObject();
             var sender = go.AddComponent<AudioStreamSender>();
-            MediaStreamTrack track = null;
+            MediaStreamTrack track;
 
             // With AudioListener
             sender.source = AudioStreamSource.AudioListener;
             Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<InvalidOperationException>());
 
-            var audioListener = go.AddComponent<AudioListener>();
+            sender.audioListener = go.AddComponent<AudioListener>();
             var op = sender.CreateTrack();
             yield return op;
             track = op.Track;
             Assert.That(track, Is.Not.Null);
             track.Dispose();
-            track = null;
 
             // With AudioSource
             var go2 = new GameObject();
             sender = go2.AddComponent<AudioStreamSender>();
             sender.source = AudioStreamSource.AudioSource;
             Assert.That(() => sender.CreateTrack(), Throws.Exception.TypeOf<InvalidOperationException>());
-            var audioSource = go2.AddComponent<AudioSource>();
-            sender.audioSource = audioSource;
+            sender.audioSource = go2.AddComponent<AudioSource>();
             op = sender.CreateTrack();
             yield return op;
             track = op.Track;
             Assert.That(track, Is.Not.Null);
             track.Dispose();
-            track = null;
 
             // With Microphone
 #if !(UNITY_IPHONE || UNITY_ANDROID)

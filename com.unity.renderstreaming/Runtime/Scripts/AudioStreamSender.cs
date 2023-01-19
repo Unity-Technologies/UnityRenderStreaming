@@ -319,7 +319,7 @@ namespace Unity.RenderStreaming
             {
                 m_audioListener = parent.m_AudioListener;
                 if (m_audioListener == null)
-                    throw new ArgumentException("The audioListener is not assigned.");
+                    throw new InvalidOperationException("The audioListener is not assigned.");
             }
 
             public override WaitForCreateTrack CreateTrack()
@@ -348,7 +348,7 @@ namespace Unity.RenderStreaming
             {
                 m_audioSource = parent.m_AudioSource;
                 if (m_audioSource == null)
-                    throw new ArgumentException("The audioSource is not assigned.");
+                    throw new InvalidOperationException("The audioSource is not assigned.");
 
             }
 
