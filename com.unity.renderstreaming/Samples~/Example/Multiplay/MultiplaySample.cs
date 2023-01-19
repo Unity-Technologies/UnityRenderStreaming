@@ -11,7 +11,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] ToggleGroup toggleGroupRole;
         [SerializeField] InputField inputFieldUsername;
         [SerializeField] Button buttonStart;
-        [SerializeField] RenderStreaming renderStreaming;
+        [SerializeField] RenderStreamingHandler renderStreaming;
         [SerializeField] GameObject prefabHost;
         [SerializeField] GameObject prefabGuest;
         [SerializeField] GameObject prefabPlayer;

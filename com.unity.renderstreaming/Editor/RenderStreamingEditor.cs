@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming.Editor
     /// <summary>
     /// Render Streaming inspector.
     /// </summary>
-    [CustomEditor(typeof(RenderStreaming))]
+    [CustomEditor(typeof(RenderStreamingHandler))]
     internal class RenderStreamingEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()

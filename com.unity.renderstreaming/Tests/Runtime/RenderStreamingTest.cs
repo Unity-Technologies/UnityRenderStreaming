@@ -10,14 +10,14 @@ namespace Unity.RenderStreaming.RuntimeTest
 {
     class RenderStreamingTest
     {
-        RenderStreaming component;
+        RenderStreamingHandler component;
 
         [SetUp]
         public void SetUp()
         {
             GameObject obj = new GameObject();
             obj.SetActive(false);
-            component = obj.AddComponent<RenderStreaming>();
+            component = obj.AddComponent<RenderStreamingHandler>();
         }
 
         [TearDown]
