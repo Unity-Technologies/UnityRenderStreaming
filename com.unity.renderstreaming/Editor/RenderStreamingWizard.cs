@@ -135,8 +135,6 @@ namespace Editor
                 if (buildSettingsEntries == null)
                     buildSettingsEntries = new[]
                     {
-                        // new Entry(IsBuildTargetWindows64, FixBuildTargetWindows64),
-                        // new Entry(IsBuildTargetLinux64, FixBuildTargetLinux64),
                         new Entry(macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
                         new Entry(macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect, FixMacMicrophoneUsage),
                         new Entry(iOSCameraUsageDescription, IsIOSCameraUsageCorrect, FixIOSCameraUsage),
@@ -168,18 +166,6 @@ namespace Editor
         private void FixInputSystemPlayModeInputBehavior() =>
             InputSystem.settings.editorInputBehaviorInPlayMode =
             InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
-
-        // private bool IsBuildTargetWindows64() =>
-        //     EditorUserBuildSettings.selectedBuildTargetGroup == BuildTargetGroup.Standalone &&
-        //     EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64;
-        // private void FixBuildTargetWindows64() =>
-        //     EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
-        //
-        // private bool IsBuildTargetLinux64() =>
-        //     EditorUserBuildSettings.selectedBuildTargetGroup == BuildTargetGroup.Standalone &&
-        //     EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneLinux64;
-        // private void FixBuildTargetLinux64() =>
-        //     EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneLinux64);
 
         private bool IsMacCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
         private void FixMacCameraUsage() => PlayerSettings.macOS.cameraUsageDescription = "For WebCamTexture";
