@@ -82,7 +82,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -126,7 +126,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -146,7 +146,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -166,7 +166,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -313,8 +313,6 @@ namespace Unity.RenderStreaming
         class AudioStreamSourceAudioListener : AudioStreamSourceImpl
         {
             private AudioListener m_audioListener;
-            AudioStreamTrack m_audioTrack;
-
             public AudioStreamSourceAudioListener(AudioStreamSender parent) : base(parent)
             {
                 m_audioListener = parent.m_AudioListener;
@@ -331,7 +329,6 @@ namespace Unity.RenderStreaming
 
             public override void Dispose()
             {
-                m_audioTrack = null;
                 GC.SuppressFinalize(this);
             }
 
@@ -343,7 +340,7 @@ namespace Unity.RenderStreaming
 
         class AudioStreamSourceAudioSource : AudioStreamSourceImpl
         {
-            AudioSource m_audioSource;
+            private AudioSource m_audioSource;
             public AudioStreamSourceAudioSource(AudioStreamSender parent) : base(parent)
             {
                 m_audioSource = parent.m_AudioSource;

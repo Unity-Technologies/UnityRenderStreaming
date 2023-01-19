@@ -175,7 +175,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -195,7 +195,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -215,7 +215,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -235,7 +235,7 @@ namespace Unity.RenderStreaming
                     return;
 
                 var op = CreateTrack();
-                StartCoroutine(op, _ => ReplaceTrack(_.Track));
+                StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
             }
         }
 
@@ -431,7 +431,7 @@ namespace Unity.RenderStreaming
                 return;
 
             var op = CreateTrack();
-            StartCoroutine(op, _ => ReplaceTrack(_.Track));
+            StartCoroutineWithCallback(op, _ => ReplaceTrack(_.Track));
         }
 
         private protected virtual void Awake()
