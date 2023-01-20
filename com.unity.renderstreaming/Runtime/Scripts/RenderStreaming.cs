@@ -1,4 +1,5 @@
 using System;
+using Unity.WebRTC;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -45,6 +46,13 @@ namespace Unity.RenderStreaming
             // todo: load from assets
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
             settings.automaticStreaming = true;
+            var signalingSettings = new WebSocketSignalingSettings();
+            signalingSettings.urlSignaling = "127.0.0.1:80";
+            signalingSettings.iceServers = new RTCIceServer[]
+            {
+                new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+            };
+            settings.signalingSettings = signalingSettings;
             s_Settings = settings;
         }
     }
