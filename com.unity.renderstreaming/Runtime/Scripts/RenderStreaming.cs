@@ -48,7 +48,7 @@ namespace Unity.RenderStreaming
         {
             // todo: load from assets
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
-            settings.AutomaticStreaming = true;
+            settings.AutomaticStreaming = false;
             var signalingSettings = new WebSocketSignalingSettings
             {
                 urlSignaling = "ws://127.0.0.1:80",
