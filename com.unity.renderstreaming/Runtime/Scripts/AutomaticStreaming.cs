@@ -28,10 +28,10 @@ namespace Unity.RenderStreaming
             videoStreamSender.SetTextureSize(new Vector2Int(Screen.width, Screen.height));
             broadcast.AddComponent(videoStreamSender);
 
-            audioStreamSender = gameObject.AddComponent<AudioStreamSender>();
             // ToDo: URS-545 Add method in AudioStreamSender class to send audio buffer
+            // audioStreamSender = gameObject.AddComponent<AudioStreamSender>();
             // audioStreamSender.source = AudioStreamSource.APIOnly;
-            broadcast.AddComponent(audioStreamSender);
+            // broadcast.AddComponent(audioStreamSender);
 
             inputReceiver = gameObject.AddComponent<AutoInputReceiver>();
             broadcast.AddComponent(inputReceiver);
@@ -42,17 +42,18 @@ namespace Unity.RenderStreaming
             renderstreaming.SetSignalingSettings(signalingSettings);
             renderstreaming.Run();
 
-            SceneManager.activeSceneChanged += (scene1, scene2) =>
-            {
-                var audioListener = FindObjectOfType<AudioListener>();
-                if (audioListener == null || audioListener.gameObject.GetComponent<AutoAudioFilter>() != null)
-                {
-                    return;
-                }
-
-                var autoFilter = audioListener.gameObject.AddComponent<AutoAudioFilter>();
-                autoFilter.SetSender(audioStreamSender);
-            };
+            // ToDo: URS-545 Add method in AudioStreamSender class to send audio buffer
+            // SceneManager.activeSceneChanged += (scene1, scene2) =>
+            // {
+            //     var audioListener = FindObjectOfType<AudioListener>();
+            //     if (audioListener == null || audioListener.gameObject.GetComponent<AutoAudioFilter>() != null)
+            //     {
+            //         return;
+            //     }
+            //
+            //     var autoFilter = audioListener.gameObject.AddComponent<AutoAudioFilter>();
+            //     autoFilter.SetSender(audioStreamSender);
+            // };
         }
 
         private void OnDestroy()
