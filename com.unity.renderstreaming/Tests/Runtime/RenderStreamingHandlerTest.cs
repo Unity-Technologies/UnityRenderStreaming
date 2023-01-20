@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    class RenderStreamingTest
+    class RenderStreamingHandlerTest
     {
         RenderStreamingHandler component;
 
