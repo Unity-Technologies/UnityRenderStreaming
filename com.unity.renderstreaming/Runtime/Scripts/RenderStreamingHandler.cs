@@ -17,14 +17,14 @@ namespace Unity.RenderStreaming
     {
 #pragma warning disable 0649
         // ToDo: Create component UI on URS-553
-        [SerializeReference] private SignalingSettings signalingSettings = new WebSocketSignalingSettings
-        {
-            urlSignaling = "ws://127.0.0.1:80",
-            iceServers = new RTCIceServer[]
+        [SerializeReference]
+        private SignalingSettings signalingSettings = new WebSocketSignalingSettings(
+            url: "ws://127.0.0.1:80",
+            iceServers: new IceServer[]
             {
-                new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+                new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
             }
-        };
+         );
 
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
@@ -143,13 +143,9 @@ namespace Unity.RenderStreaming
             SignalingHandlerBase[] handlers = null
             )
         {
+            RTCIceServer[] iceServers = signalingSettings.iceServers.Cast<RTCIceServer>().ToArray();
             RTCConfiguration _conf =
-                conf.GetValueOrDefault(new RTCConfiguration { iceServers = signalingSettings.iceServers });
-
-            if (signaling != null)
-            {
-                signalingSettings.urlSignaling = signaling.Url;
-            }
+                conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
 
             ISignaling _signaling = signaling ?? CreateSignaling(signalingSettings, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
@@ -187,10 +183,11 @@ namespace Unity.RenderStreaming
 
         void Awake()
         {
-            if (!runOnAwake || m_running　|| handlers.Count == 0)
+            if (!runOnAwake || m_running || handlers.Count == 0)
                 return;
 
-            RTCConfiguration conf = new RTCConfiguration { iceServers = signalingSettings.iceServers };
+            RTCIceServer[] iceServers = signalingSettings.iceServers.Cast<RTCIceServer>().ToArray();
+            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
             ISignaling signaling = CreateSignaling(signalingSettings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
         }
