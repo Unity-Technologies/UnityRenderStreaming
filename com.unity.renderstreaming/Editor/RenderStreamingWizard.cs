@@ -22,7 +22,8 @@ namespace Editor
             public readonly string button;
             public readonly MessageType messageType;
 
-            public ConfigStyle(string label, string error, string button = resolve, MessageType messageType = MessageType.Error)
+            public ConfigStyle(string label, string error, string button = resolve,
+                MessageType messageType = MessageType.Error)
             {
                 this.label = label;
                 this.error = error;
@@ -34,12 +35,15 @@ namespace Editor
         static readonly ConfigStyle renderStreamingSettings = new ConfigStyle(
             label: "Render Streaming Setting",
             error: "Render Streaming Setting not set");
+
         static readonly ConfigStyle runInBackground = new ConfigStyle(
             label: "Run In Background",
             error: "Run In Background is currently false.");
+
         static readonly ConfigStyle inputSystemBackgroundBehavior = new ConfigStyle(
             label: "InputSystem Background Behavior",
             error: "InputSystem Background Behavior needs Ignore Focus.");
+
         static readonly ConfigStyle inputSystemPlayModeInputBehavior = new ConfigStyle(
             label: "InputSystem PlayMode Input Behavior",
             error: "InputSystem PlayMode Input Behavior needs AllDeviceInputAlwaysGoesToGameView.");
@@ -47,38 +51,56 @@ namespace Editor
         static readonly ConfigStyle buildTargetWindows64 = new ConfigStyle(
             label: "Build Target Windows64",
             error: "Require build target architecture x64 on Windows.");
+
         static readonly ConfigStyle buildTargetLinux64 = new ConfigStyle(
             label: "Build Target Linux",
             error: "Require build target architecture x86_x64 on Linux.");
+
         static readonly ConfigStyle macCameraUsageDescription = new ConfigStyle(
             label: "macOS Camera Usage Description",
             error: "Require Camera Usage Description for WebCam access on macOS.");
+
         static readonly ConfigStyle macMicrophoneUsageDescription = new ConfigStyle(
             label: "macOS Microphone Usage Description",
             error: "Require Microphone Usage Description for Microphone access on macOS.");
+
         static readonly ConfigStyle iOSCameraUsageDescription = new ConfigStyle(
             label: "iOS Camera Usage Description",
             error: "Require Camera Usage Description for WebCam access on iOS.");
+
         static readonly ConfigStyle iOSMicrophoneUsageDescription = new ConfigStyle(
             label: "iOS Microphone Usage Description",
             error: "Require Microphone Usage Description for Microphone access on iOS.");
+
         static readonly ConfigStyle androidMinimumAPILevel = new ConfigStyle(
             label: "Android Minimum API Level",
             error: "Require Minimum API Level is 24 or higher.");
+
         static readonly ConfigStyle androidScriptBackend = new ConfigStyle(
             label: "Android Script Backend",
             error: "Require Script Backend is IL2CPP.");
+
         static readonly ConfigStyle androidTargetArchitecture = new ConfigStyle(
             label: "Android Target Architecture",
             error: "Android Target Architecture only supported ARM64.");
+
         static readonly ConfigStyle androidInternetAccess = new ConfigStyle(
             label: "Android Internet Access",
             error: "InternetAccess must be set Required on Android.");
+
+        enum Scope
+        {
+            Configuration,
+            Build
+        }
+
         struct Entry
         {
             public delegate bool Checker();
+
             public delegate void Fixer();
 
+            public readonly Scope scope;
             public readonly ConfigStyle configStyle;
             public readonly Checker check;
             public readonly Fixer fix;
@@ -87,6 +109,7 @@ namespace Editor
             public readonly bool displayAssetName;
 
             public Entry(
+                Scope scope,
                 ConfigStyle configStyle,
                 Checker check,
                 Fixer fix,
@@ -95,6 +118,7 @@ namespace Editor
                 bool displayAssetName = false
             )
             {
+                this.scope = scope;
                 this.configStyle = configStyle;
                 this.check = check;
                 this.fix = fix;
@@ -104,47 +128,41 @@ namespace Editor
             }
         }
 
-        private Entry[] configurationEntries;
+        private Entry[] entries;
 
-        Entry[] ConfigurationEntries
+        Entry[] Entries
         {
             get
             {
                 // due to functor, cannot static link directly in an array and need lazy init
-                if (configurationEntries == null)
-                    configurationEntries = new[]
+                if (entries == null)
+                    entries = new[]
                     {
-                        new Entry(renderStreamingSettings, IsRenderStreamingSettingsCorrect,
+                        new Entry(Scope.Configuration, renderStreamingSettings, IsRenderStreamingSettingsCorrect,
                             FixRenderStreamingSettingsCorrect),
-                        new Entry(runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
-                        new Entry(inputSystemBackgroundBehavior, IsInputSystemBackgroundBehaviorCorrect,
+                        new Entry(Scope.Configuration, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
+                        new Entry(Scope.Configuration, inputSystemBackgroundBehavior,
+                            IsInputSystemBackgroundBehaviorCorrect,
                             FixInputSystemBackgroundBehavior),
-                        new Entry(inputSystemPlayModeInputBehavior, IsInputSystemPlayModeInputBehaviorCorrect,
+                        new Entry(Scope.Configuration, inputSystemPlayModeInputBehavior,
+                            IsInputSystemPlayModeInputBehaviorCorrect,
                             FixInputSystemPlayModeInputBehavior),
+                        new Entry(Scope.Build, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
+                        new Entry(Scope.Build, macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect,
+                            FixMacMicrophoneUsage),
+                        new Entry(Scope.Build, iOSCameraUsageDescription, IsIOSCameraUsageCorrect, FixIOSCameraUsage),
+                        new Entry(Scope.Build, iOSMicrophoneUsageDescription, IsIOSMicrophoneUsageCorrect,
+                            FixIOSMicrophoneUsage),
+                        new Entry(Scope.Build, androidMinimumAPILevel, IsAndroidMinimumAPILevelCorrect,
+                            FixAndroidMinimumAPILevel),
+                        new Entry(Scope.Build, androidScriptBackend, IsAndroidScriptBackendCorrect,
+                            FixAndroidScriptBackend),
+                        new Entry(Scope.Build, androidTargetArchitecture, IsAndroidTargetArchitectureCorrect,
+                            FixAndroidTargetArchitecture),
+                        new Entry(Scope.Build, androidInternetAccess, IsAndroidInternetAccessCorrect,
+                            FixAndroidInternetAccess),
                     };
-                return configurationEntries;
-            }
-        }
-
-        private Entry[] buildSettingsEntries;
-
-        Entry[] BuildSettingsEntries
-        {
-            get
-            {
-                if (buildSettingsEntries == null)
-                    buildSettingsEntries = new[]
-                    {
-                        new Entry(macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
-                        new Entry(macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect, FixMacMicrophoneUsage),
-                        new Entry(iOSCameraUsageDescription, IsIOSCameraUsageCorrect, FixIOSCameraUsage),
-                        new Entry(iOSMicrophoneUsageDescription, IsIOSMicrophoneUsageCorrect, FixIOSMicrophoneUsage),
-                        new Entry(androidMinimumAPILevel, IsAndroidMinimumAPILevelCorrect, FixAndroidMinimumAPILevel),
-                        new Entry(androidScriptBackend, IsAndroidScriptBackendCorrect, FixAndroidScriptBackend),
-                        new Entry(androidTargetArchitecture, IsAndroidTargetArchitectureCorrect, FixAndroidTargetArchitecture),
-                        new Entry(androidInternetAccess, IsAndroidInternetAccessCorrect, FixAndroidInternetAccess),
-                    };
-                return buildSettingsEntries;
+                return entries;
             }
         }
 
@@ -157,40 +175,49 @@ namespace Editor
 
         private bool IsInputSystemBackgroundBehaviorCorrect() =>
             InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
+
         private void FixInputSystemBackgroundBehavior() =>
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
 
         private bool IsInputSystemPlayModeInputBehaviorCorrect() =>
             InputSystem.settings.editorInputBehaviorInPlayMode ==
             InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+
         private void FixInputSystemPlayModeInputBehavior() =>
             InputSystem.settings.editorInputBehaviorInPlayMode =
-            InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+                InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
         private bool IsMacCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
         private void FixMacCameraUsage() => PlayerSettings.macOS.cameraUsageDescription = "For WebCamTexture";
 
-        private bool IsMacMicrophoneUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
+        private bool IsMacMicrophoneUsageCorrect() =>
+            !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
+
         private void FixMacMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
         private bool IsIOSCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.cameraUsageDescription);
         private void FixIOSCameraUsage() => PlayerSettings.iOS.cameraUsageDescription = "For WebCamTexture";
 
-        private bool IsIOSMicrophoneUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
+        private bool IsIOSMicrophoneUsageCorrect() =>
+            !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
+
         private void FixIOSMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
         private bool IsAndroidMinimumAPILevelCorrect() =>
             PlayerSettings.Android.minSdkVersion >= AndroidSdkVersions.AndroidApiLevel24;
+
         private void FixAndroidMinimumAPILevel() =>
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
 
         private bool IsAndroidScriptBackendCorrect() =>
             PlayerSettings.GetScriptingBackend(BuildTargetGroup.Android) == ScriptingImplementation.IL2CPP;
+
         private void FixAndroidScriptBackend() =>
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
 
         private bool IsAndroidTargetArchitectureCorrect() =>
             (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) == AndroidArchitecture.ARM64;
+
         private void FixAndroidTargetArchitecture() =>
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
 
@@ -210,9 +237,12 @@ namespace Editor
         }
 
         private VisualElement checkUpdateContainer => cache.Get<VisualElement>("checkUpdateContainer");
+        private Button fixAllButton => cache.Get<Button>("fixAllButton");
         private VisualElement configurationCheckButtons => cache.Get<VisualElement>("configurationCheckButtons");
+
         private VisualElement buildSettingsCheckingContainer =>
             cache.Get<VisualElement>("buildSettingsCheckingContainer");
+
         private VisualElement otherCheckingContainer => cache.Get<VisualElement>("otherCheckingContainer");
         private VisualElementCache cache;
 
@@ -229,22 +259,39 @@ namespace Editor
             rootVisualElement.styleSheets.Add(formatStyleSheet);
             cache = new VisualElementCache(newVisualElement);
 
-            BindCheckVersionChecker();
-            BindConfigurationChecker();
-            BindBuildSettingChecker();
+            BindCheckVersion();
+            BindChecker();
             BindOthers();
         }
 
+        private int inspectorCounter = 0;
+
         private void OnInspectorUpdate()
         {
+            if (inspectorCounter % 10 != 0)
+            {
+                return;
+            }
+
+
+            fixAllButton.SetEnabled(entries.Any(x => !x.check()));
+
             foreach (var visualElement in configurationCheckButtons.Children().Where(c => c is VisualElementUpdatable))
             {
                 var updatable = (VisualElementUpdatable)visualElement;
                 updatable.CheckUpdate();
             }
+
+            foreach (var visualElement in buildSettingsCheckingContainer.Children().Where(c => c is VisualElementUpdatable))
+            {
+                var updatable = (VisualElementUpdatable)visualElement;
+                updatable.CheckUpdate();
+            }
+
+            inspectorCounter = 0;
         }
 
-        private void BindCheckVersionChecker()
+        private void BindCheckVersion()
         {
             // todo : detect current version
             const string version = "3.1.0-exp.5";
@@ -258,9 +305,17 @@ namespace Editor
             checkUpdateContainer.Add(versionCheckContainer);
         }
 
-        private void BindConfigurationChecker()
+        private void BindChecker()
         {
-            foreach (var entry in ConfigurationEntries)
+            fixAllButton.clickable.clicked += () =>
+            {
+                foreach (var entry in Entries)
+                {
+                    entry.fix();
+                }
+            };
+
+            foreach (var entry in Entries.Where(x => x.scope == Scope.Configuration))
             {
                 configurationCheckButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
@@ -272,11 +327,8 @@ namespace Editor
                     entry.configStyle.messageType == MessageType.Error || entry.forceDisplayCheck,
                     entry.skipErrorIcon));
             }
-        }
 
-        private void BindBuildSettingChecker()
-        {
-            foreach (var entry in BuildSettingsEntries)
+            foreach (var entry in Entries.Where(x => x.scope == Scope.Build))
             {
                 buildSettingsCheckingContainer.Add(new ConfigInfoLine(
                     entry.configStyle.label,
@@ -302,8 +354,7 @@ namespace Editor
 
             var toggle = new Toggle("Show on start")
             {
-                value = RenderStreamingProjectSettings.wizardIsStartPopup,
-                name = "WizardCheckbox"
+                value = RenderStreamingProjectSettings.wizardIsStartPopup, name = "WizardCheckbox"
             };
             toggle.RegisterValueChangedCallback(evt
                 => RenderStreamingProjectSettings.wizardIsStartPopup = evt.newValue);
