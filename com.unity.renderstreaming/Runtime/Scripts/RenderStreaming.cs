@@ -14,34 +14,34 @@ namespace Unity.RenderStreaming
 #endif
     public static class RenderStreaming
     {
-        private static RenderStreamingSettings s_Settings;
+        private static RenderStreamingSettings s_settings;
         private static GameObject s_automaticStreamingObject;
 
         public static RenderStreamingSettings Settings
         {
-            get => s_Settings;
+            get => s_settings;
             set
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
-                if (s_Settings == value)
+                if (s_settings == value)
                     return;
 
-                s_Settings = value;
+                s_settings = value;
                 ApplySettings();
             }
         }
 
         public static bool AutomaticStreaming
         {
-            get => s_Settings.AutomaticStreaming;
-            set => s_Settings.AutomaticStreaming = value;
+            get => s_settings.AutomaticStreaming;
+            set => s_settings.AutomaticStreaming = value;
         }
 
         public static T GetSignalingSettings<T>() where T : SignalingSettings
         {
-            return s_Settings.SignalingSettings as T;
+            return s_settings.SignalingSettings as T;
         }
 
         static RenderStreaming()
@@ -58,7 +58,7 @@ namespace Unity.RenderStreaming
                 }
             };
             settings.SignalingSettings = signalingSettings;
-            s_Settings = settings;
+            s_settings = settings;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -77,12 +77,12 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            if (s_Settings.AutomaticStreaming && s_automaticStreamingObject == null)
+            if (s_settings.AutomaticStreaming && s_automaticStreamingObject == null)
             {
                 CreateAutomaticStreaming();
             }
 
-            if (!s_Settings.AutomaticStreaming)
+            if (!s_settings.AutomaticStreaming)
             {
                 CleanUpAutomaticStreaming();
             }
