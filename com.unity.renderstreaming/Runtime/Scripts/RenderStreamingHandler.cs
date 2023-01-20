@@ -71,6 +71,59 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        /// <param name="settings"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void SetSignalingSettings(SignalingSettings settings)
+        {
+            if (m_running)
+            {
+                throw new InvalidOperationException("The Signaling process has already started.");
+            }
+
+            urlSignaling = settings.urlSignaling;
+            signalingType = settings.signalingClass.FullName;
+            iceServers = settings.iceServers;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="handlerBase"></param>
+        public void AddSignalingHandler(SignalingHandlerBase handlerBase)
+        {
+            if (handlers.Contains(handlerBase))
+            {
+                return;
+            }
+            handlers.Add(handlerBase);
+
+            if (!m_running)
+            {
+                return;
+            }
+            handlerBase.SetHandler(m_instance);
+            m_provider.Subscribe(handlerBase);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="handlerBase"></param>
+        public void RemoveSignalingHandler(SignalingHandlerBase handlerBase)
+        {
+            handlers.Remove(handlerBase);
+
+            if (!m_running)
+            {
+                return;
+            }
+            handlerBase.SetHandler(null);
+            m_provider.Unsubscribe(handlerBase);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="signaling"></param>
         /// <param name="handlers"></param>
         public void Run(
@@ -156,7 +209,7 @@ namespace Unity.RenderStreaming
 
         void Awake()
         {
-            if (!runOnAwake || m_running)
+            if (!runOnAwake || m_running　|| handlers.Count == 0)
                 return;
 
             RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
