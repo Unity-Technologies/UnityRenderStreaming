@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
@@ -98,6 +99,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.OSXPlayer, RuntimePlatform.Android })]
         public void ImportJsonArgument()
         {
             string filepath = "dummy.json";
