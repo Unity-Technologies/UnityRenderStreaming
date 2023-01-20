@@ -6,13 +6,17 @@
         <ui:VisualElement class="ScopeBox" name="checkUpdateContainer">
             <ui:Label class="h1" text="UnityRenderStreaming Version"/>
         </ui:VisualElement>
-        <ui:VisualElement class="ScopeBox" name="configurationCheckingContainer">
-            <ui:Label class="h1" text="Configuration Checking"/>
-            <ui:VisualElement name="configurationCheckButtons"/>
-        </ui:VisualElement>
-        <ui:VisualElement class="ScopeBox" name="buildSettingsCheckingContainer">
-            <ui:Label class="h1" text="Build Settings Checking"/>
-            <ui:VisualElement name="buildSettingsCheckButtons"/>
+            <ui:Label class="h1" text="Configuration"/>
+            <ui:Button class="FixAll" name="fixAllButton" text="Fix All"/>
+            <ui:VisualElement name="checkerContainer">
+            <ui:VisualElement class="ScopeBox" name="configurationCheckingContainer">
+                <ui:Label class="h2" text="Configuration Checking"/>
+                <ui:VisualElement name="configurationCheckButtons"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="ScopeBox" name="buildSettingsCheckingContainer">
+                <ui:Label class="h2" text="Build Settings Checking"/>
+                <ui:VisualElement name="buildSettingsCheckButtons"/>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="ScopeBox" name="otherCheckingContainer">
             <ui:Label class="h1" text="Others"/>

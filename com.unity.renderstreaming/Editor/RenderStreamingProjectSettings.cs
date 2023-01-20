@@ -41,6 +41,9 @@ namespace Editor
 
         static RenderStreamingProjectSettings CreateOrLoad()
         {
+            // Object loaded and created from this method.
+            // So RenderStreamingProjectSettings constructor is called implicitly.
+            // If RenderStreamingProjectSettings could be loaded, then s_Instance is assigned the loaded instance.
             InternalEditorUtility.LoadSerializedFileAndForget(filePath);
 
             if (s_Instance == null)
