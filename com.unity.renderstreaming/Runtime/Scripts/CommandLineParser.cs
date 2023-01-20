@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     [Serializable]
-    public struct CommandLineInfo
+    internal struct CommandLineInfo
     {
         public string signalingType;
         public string signalingUrl;

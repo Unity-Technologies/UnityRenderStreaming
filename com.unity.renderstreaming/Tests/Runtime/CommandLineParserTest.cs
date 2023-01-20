@@ -106,6 +106,15 @@ namespace Unity.RenderStreaming.RuntimeTest
             string[] arguments = { "-importJson", filepath };
             Assert.That(CommandLineParser.TryParse(arguments), Is.False);
             Assert.That(CommandLineParser.ImportJson.Value, Is.Null);
+            string json = "{\"signalingType\":\"websocket\",\"signalingUrl\":\"ws://localhost\",\"pollingInterval\":\"1\"}";
+            File.WriteAllText(filepath, json);
+            Assert.That(CommandLineParser.TryParse(arguments), Is.True);
+            Assert.That(CommandLineParser.ImportJson.Value, Is.Not.Null);
+            var info = CommandLineParser.ImportJson.Value.Value;
+            Assert.That(info.signalingUrl, Is.EqualTo("ws://localhost"));
+            Assert.That(info.signalingType, Is.EqualTo("websocket"));
+            Assert.That(info.iceServers, Is.Null);
+            Assert.That(info.pollingInterval, Is.EqualTo("1"));
             File.Delete(filepath);
         }
 
