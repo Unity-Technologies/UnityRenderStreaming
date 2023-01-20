@@ -268,6 +268,7 @@ namespace Editor
 
         private void OnInspectorUpdate()
         {
+            inspectorCounter++;
             if (inspectorCounter % 10 != 0)
             {
                 return;
