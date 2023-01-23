@@ -16,20 +16,18 @@ namespace Unity.RenderStreaming
     public sealed class RenderStreamingHandler : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Signaling server url.")]
-        private string urlSignaling = "http://localhost";
-
-        [SerializeField, Tooltip("Type of signaling.")]
-        private string signalingType = typeof(HttpSignaling).FullName;
-
-        [SerializeField, Tooltip("Array to set your own STUN/TURN servers.")]
-        private RTCIceServer[] iceServers = new RTCIceServer[]
-        {
-            new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
-        };
-
         [SerializeField, Tooltip("Time interval for polling from signaling server.")]
         private float interval = 5.0f;
+
+        // ToDo: Create component UI on URS-553
+        [SerializeReference] private SignalingSettings signalingSettings = new WebSocketSignalingSettings
+        {
+            urlSignaling = "ws://127.0.0.1:80",
+            iceServers = new RTCIceServer[]
+            {
+                new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+            }
+        };
 
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
@@ -46,39 +44,6 @@ namespace Unity.RenderStreaming
         private bool m_running;
 
         public bool Running => m_running;
-
-        static Type GetType(string typeName)
-        {
-            var type = Type.GetType(typeName);
-            if (type != null) return type;
-            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
-            {
-                type = assembly.GetType(typeName);
-                if (type != null) return type;
-            }
-            return null;
-        }
-
-        static SignalingSettings CreateSignalingSettings(string signalingTypeName, string url, float interval)
-        {
-            var signalingType = GetType(signalingTypeName);
-            if (signalingType == typeof(FurioosSignaling))
-            {
-                return new FurioosSignalingSettings {urlSignaling = url};
-            }
-
-            if (signalingType == typeof(WebSocketSignaling))
-            {
-                return new WebSocketSignalingSettings {urlSignaling = url};
-            }
-
-            if (signalingType == typeof(HttpSignaling))
-            {
-                return new HttpSignalingSettings {urlSignaling = url, interval = interval};
-            }
-
-            throw new InvalidOperationException();
-        }
 
         static ISignaling CreateSignaling(SignalingSettings settings, SynchronizationContext context)
         {
@@ -102,9 +67,7 @@ namespace Unity.RenderStreaming
                 throw new InvalidOperationException("The Signaling process has already started.");
             }
 
-            urlSignaling = settings.urlSignaling;
-            signalingType = settings.signalingClass.FullName;
-            iceServers = settings.iceServers;
+            signalingSettings = settings;
         }
 
         /// <summary>
@@ -184,19 +147,14 @@ namespace Unity.RenderStreaming
             )
         {
             RTCConfiguration _conf =
-                conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
+                conf.GetValueOrDefault(new RTCConfiguration { iceServers = signalingSettings.iceServers });
 
             if (signaling != null)
             {
-                signalingType = signaling.GetType().FullName;
-
-                //todo:: This property is not needed by FurioosSignaling.
-                urlSignaling = signaling.Url;
-                interval = signaling.Interval;
+                signalingSettings.urlSignaling = signaling.Url;
             }
 
-            var settings = CreateSignalingSettings(signalingType, urlSignaling, interval);
-            ISignaling _signaling = signaling ?? CreateSignaling(settings, SynchronizationContext.Current);
+            ISignaling _signaling = signaling ?? CreateSignaling(signalingSettings, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
             {
                 config = _conf,
@@ -235,9 +193,8 @@ namespace Unity.RenderStreaming
             if (!runOnAwake || m_running　|| handlers.Count == 0)
                 return;
 
-            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            var settings = CreateSignalingSettings(signalingType, urlSignaling, interval);
-            ISignaling signaling = CreateSignaling(settings, SynchronizationContext.Current);
+            RTCConfiguration conf = new RTCConfiguration { iceServers = signalingSettings.iceServers };
+            ISignaling signaling = CreateSignaling(signalingSettings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
         }
 
