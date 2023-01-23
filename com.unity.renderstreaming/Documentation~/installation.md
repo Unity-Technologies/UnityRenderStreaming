@@ -11,7 +11,7 @@ Check Package Manager window, Click `+` button and select `Add package from git 
 Input the string below to the input field.
 
 ```
-com.unity.renderstreaming@3.1.0-exp.5
+com.unity.renderstreaming@3.1.0-exp.6
 ```
 
 The list of version string is [here](https://github.com/Unity-Technologies/UnityRenderStreaming/tags). In most cases, the latest version is recommended to use.
