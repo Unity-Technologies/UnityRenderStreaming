@@ -36,8 +36,6 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                if (!Application.isPlaying)
-                    return false;
                 if (string.IsNullOrEmpty(Transceiver.Mid))
                     return false;
                 if (Transceiver.Sender.Track.ReadyState == TrackState.Ended)
