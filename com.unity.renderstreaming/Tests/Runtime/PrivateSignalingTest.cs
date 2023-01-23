@@ -132,12 +132,21 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             if (type == typeof(WebSocketSignaling))
             {
-                return new WebSocketSignaling($"ws://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
+                var settings = new WebSocketSignalingSettings
+                {
+                    urlSignaling = $"ws://localhost:{TestUtility.PortNumber}"
+                };
+                return new WebSocketSignaling(settings, mainThread);
             }
 
             if (type == typeof(HttpSignaling))
             {
-                return new HttpSignaling($"http://localhost:{TestUtility.PortNumber}", 0.1f, mainThread);
+                var settings = new HttpSignalingSettings
+                {
+                    urlSignaling = $"http://localhost:{TestUtility.PortNumber}",
+                    interval = 0.1f
+                };
+                return new HttpSignaling(settings, mainThread);
             }
 
             if (type == typeof(MockSignaling))

@@ -26,10 +26,10 @@ namespace Unity.RenderStreaming.Signaling
 	    public string Url { get { return m_url; } }
 	    public float Interval { get { return m_timeout; } }
 
-        public HttpSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
+        public HttpSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            m_url = url;
-            m_timeout = timeout;
+            m_url = signalingSettings.urlSignaling;
+            m_timeout = ((HttpSignalingSettings) signalingSettings).interval;
             m_mainThreadContext = mainThreadContext;
 
             if (m_url.StartsWith("https"))

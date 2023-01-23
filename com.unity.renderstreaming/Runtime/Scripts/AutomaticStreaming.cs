@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.Collections;
 using Unity.RenderStreaming.InputSystem;
 using Unity.WebRTC;
 using UnityEngine;
@@ -28,10 +29,9 @@ namespace Unity.RenderStreaming
             videoStreamSender.SetTextureSize(new Vector2Int(Screen.width, Screen.height));
             broadcast.AddComponent(videoStreamSender);
 
-            // ToDo: URS-545 Add method in AudioStreamSender class to send audio buffer
-            // audioStreamSender = gameObject.AddComponent<AudioStreamSender>();
-            // audioStreamSender.source = AudioStreamSource.APIOnly;
-            // broadcast.AddComponent(audioStreamSender);
+            audioStreamSender = gameObject.AddComponent<AudioStreamSender>();
+            audioStreamSender.source = AudioStreamSource.APIOnly;
+            broadcast.AddComponent(audioStreamSender);
 
             inputReceiver = gameObject.AddComponent<AutoInputReceiver>();
             broadcast.AddComponent(inputReceiver);
@@ -42,18 +42,17 @@ namespace Unity.RenderStreaming
             renderstreaming.SetSignalingSettings(signalingSettings);
             renderstreaming.Run();
 
-            // ToDo: URS-545 Add method in AudioStreamSender class to send audio buffer
-            // SceneManager.activeSceneChanged += (scene1, scene2) =>
-            // {
-            //     var audioListener = FindObjectOfType<AudioListener>();
-            //     if (audioListener == null || audioListener.gameObject.GetComponent<AutoAudioFilter>() != null)
-            //     {
-            //         return;
-            //     }
-            //
-            //     var autoFilter = audioListener.gameObject.AddComponent<AutoAudioFilter>();
-            //     autoFilter.SetSender(audioStreamSender);
-            // };
+            SceneManager.activeSceneChanged += (scene1, scene2) =>
+            {
+                var audioListener = FindObjectOfType<AudioListener>();
+                if (audioListener == null || audioListener.gameObject.GetComponent<AutoAudioFilter>() != null)
+                {
+                    return;
+                }
+
+                var autoFilter = audioListener.gameObject.AddComponent<AutoAudioFilter>();
+                autoFilter.SetSender(audioStreamSender);
+            };
         }
 
         private void OnDestroy()
@@ -69,7 +68,6 @@ namespace Unity.RenderStreaming
         class AutoAudioFilter : MonoBehaviour
         {
             private AudioStreamSender sender;
-            private int m_sampleRate;
 
             public void SetSender(AudioStreamSender sender)
             {
@@ -81,31 +79,15 @@ namespace Unity.RenderStreaming
                 this.hideFlags = HideFlags.HideInInspector;
             }
 
-            private void OnEnable()
-            {
-                OnAudioConfigurationChanged(false);
-                AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
-            }
-
-            private void OnDisable()
-            {
-                AudioSettings.OnAudioConfigurationChanged -= OnAudioConfigurationChanged;
-            }
-
-            private void OnAudioConfigurationChanged(bool deviceWasChanged)
-            {
-                m_sampleRate = AudioSettings.outputSampleRate;
-            }
-
             private void OnAudioFilterRead(float[] data, int channels)
             {
-                // ToDo: URS-545 Add method in AudioStreamSender class to send audio buffer
-                // if (sender == null || sender.source != AudioStreamSource.APIOnly)
-                // {
-                //     return;
-                // }
-                //
-                // sender.SetData(data, channels, m_sampleRate);
+                if (sender == null || sender.source != AudioStreamSource.APIOnly)
+                {
+                    return;
+                }
+
+                var nativeArray = new NativeArray<float>(data, Allocator.Temp);
+                sender.SetData(ref nativeArray, channels);
             }
 
             private void OnDestroy()

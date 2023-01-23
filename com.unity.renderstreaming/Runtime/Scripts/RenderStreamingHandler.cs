@@ -59,15 +59,35 @@ namespace Unity.RenderStreaming
             return null;
         }
 
-        static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context)
+        static SignalingSettings CreateSignalingSettings(string signalingTypeName, string url, float interval)
         {
-            Type _type = GetType(type);
-            if (_type == null)
+            var signalingType = GetType(signalingTypeName);
+            if (signalingType == typeof(FurioosSignaling))
             {
-                throw new ArgumentException($"Signaling type is undefined. {type}");
+                return new FurioosSignalingSettings {urlSignaling = url};
             }
-            object[] args = { url, interval, context };
-            return (ISignaling)Activator.CreateInstance(_type, args);
+
+            if (signalingType == typeof(WebSocketSignaling))
+            {
+                return new WebSocketSignalingSettings {urlSignaling = url};
+            }
+
+            if (signalingType == typeof(HttpSignaling))
+            {
+                return new HttpSignalingSettings {urlSignaling = url, interval = interval};
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        static ISignaling CreateSignaling(SignalingSettings settings, SynchronizationContext context)
+        {
+            if (settings.signalingClass == null)
+            {
+                throw new ArgumentException($"Signaling type is undefined. {settings.signalingClass}");
+            }
+            object[] args = { settings, context };
+            return (ISignaling)Activator.CreateInstance(settings.signalingClass, args);
         }
 
         /// <summary>
@@ -174,8 +194,9 @@ namespace Unity.RenderStreaming
                 urlSignaling = signaling.Url;
                 interval = signaling.Interval;
             }
-            ISignaling _signaling = signaling ?? CreateSignaling(
-                signalingType, urlSignaling, interval, SynchronizationContext.Current);
+
+            var settings = CreateSignalingSettings(signalingType, urlSignaling, interval);
+            ISignaling _signaling = signaling ?? CreateSignaling(settings, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
             {
                 config = _conf,
@@ -215,8 +236,8 @@ namespace Unity.RenderStreaming
                 return;
 
             RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            ISignaling signaling = CreateSignaling(
-                signalingType, urlSignaling, interval, SynchronizationContext.Current);
+            var settings = CreateSignalingSettings(signalingType, urlSignaling, interval);
+            ISignaling signaling = CreateSignaling(settings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
         }
 

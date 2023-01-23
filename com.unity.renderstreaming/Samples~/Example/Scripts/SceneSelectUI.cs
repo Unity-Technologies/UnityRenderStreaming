@@ -67,23 +67,33 @@ namespace Unity.RenderStreaming.Samples
                 switch (signalingType)
                 {
                     case SignalingType.Furioos:
+                    {
+                        var schema = signalingSecured ? "https" : "http";
+                        var settings = new FurioosSignalingSettings
                         {
-                            var schema = signalingSecured ? "https" : "http";
-                            return new FurioosSignaling(
-                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
-                        }
+                            urlSignaling = $"{schema}://{signalingAddress}"
+                        };
+                        return new FurioosSignaling(settings, SynchronizationContext.Current);
+                    }
                     case SignalingType.WebSocket:
+                    {
+                        var schema = signalingSecured ? "wss" : "ws";
+                        var settings = new WebSocketSignalingSettings
                         {
-                            var schema = signalingSecured ? "wss" : "ws";
-                            return new WebSocketSignaling(
-                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
-                        }
+                            urlSignaling = $"{schema}://{signalingAddress}"
+                        };
+                        return new WebSocketSignaling(settings, SynchronizationContext.Current);
+                    }
                     case SignalingType.Http:
+                    {
+                        var schema = signalingSecured ? "https" : "http";
+                        var settings = new HttpSignalingSettings
                         {
-                            var schema = signalingSecured ? "https" : "http";
-                            return new HttpSignaling(
-                                $"{schema}://{signalingAddress}", signalingInterval, SynchronizationContext.Current);
-                        }
+                            urlSignaling = $"{schema}://{signalingAddress}",
+                            interval = signalingInterval
+                        };
+                        return new FurioosSignaling(settings, SynchronizationContext.Current);
+                    }
                 }
 
                 throw new InvalidOperationException();

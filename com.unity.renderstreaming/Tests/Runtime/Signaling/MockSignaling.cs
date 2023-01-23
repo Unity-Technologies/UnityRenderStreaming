@@ -225,7 +225,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             manager = new MockPublicSignalingManager();
         }
 
-        public MockSignaling(string url = "", float interval = 0.1f, SynchronizationContext context = null)
+        public MockSignaling(SignalingSettings settings = null, SynchronizationContext context = null)
         {
         }
 
