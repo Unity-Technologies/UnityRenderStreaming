@@ -1,4 +1,3 @@
-using System;
 using Unity.WebRTC;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,41 +13,29 @@ namespace Unity.RenderStreaming
 #endif
     public static class RenderStreaming
     {
-        private static RenderStreamingSettings s_settings;
-        private static GameObject s_automaticStreamingObject;
+        internal static RenderStreamingSettings s_settings;
+        internal static GameObject s_automaticStreamingObject;
 
-        public static RenderStreamingSettings Settings
+        public static bool AutomaticStreaming
         {
-            get => s_settings;
+            get => s_settings.automaticStreaming;
             set
             {
-                if (value == null)
-                    throw new ArgumentNullException(nameof(value));
-
-                if (s_settings == value)
-                    return;
-
-                s_settings = value;
+                s_settings.automaticStreaming = value;
                 ApplySettings();
             }
         }
 
-        public static bool AutomaticStreaming
-        {
-            get => s_settings.AutomaticStreaming;
-            set => s_settings.AutomaticStreaming = value;
-        }
-
         public static T GetSignalingSettings<T>() where T : SignalingSettings
         {
-            return s_settings.SignalingSettings as T;
+            return s_settings.signalingSettings as T;
         }
 
         static RenderStreaming()
         {
             // todo: load from assets
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
-            settings.AutomaticStreaming = false;
+            settings.automaticStreaming = false;
             var signalingSettings = new WebSocketSignalingSettings
             {
                 urlSignaling = "ws://127.0.0.1:80",
@@ -57,7 +44,7 @@ namespace Unity.RenderStreaming
                     new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
                 }
             };
-            settings.SignalingSettings = signalingSettings;
+            settings.signalingSettings = signalingSettings;
             s_settings = settings;
         }
 
@@ -70,19 +57,19 @@ namespace Unity.RenderStreaming
             }
         }
 
-        internal static void ApplySettings()
+        private static void ApplySettings()
         {
             if (!Application.isPlaying)
             {
                 return;
             }
 
-            if (s_settings.AutomaticStreaming && s_automaticStreamingObject == null)
+            if (s_settings.automaticStreaming && s_automaticStreamingObject == null)
             {
                 CreateAutomaticStreaming();
             }
 
-            if (!s_settings.AutomaticStreaming)
+            if (!s_settings.automaticStreaming)
             {
                 CleanUpAutomaticStreaming();
             }
