@@ -60,8 +60,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             ISignaling mock = new MockSignaling();
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
-            Assert.That(() => component.Run(signaling: mock),
-                Throws.InvalidOperationException);
+            Assert.That(() => component.Run(signaling: mock), Throws.InvalidOperationException);
 
             var handlers = new SignalingHandlerBase[] {};
             Assert.That(() => component.Run(signaling: mock, handlers:handlers),
@@ -82,6 +81,32 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.Stop();
             yield return 0;
             component.Run(signaling:mock, handlers:handlers);
+        }
+
+        [Test]
+        public void AddAndRemoveSignalingSettings()
+        {
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+            component.SetSignalingSettings(new MockSignalingSettings());
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            component.AddSignalingHandler(handler);
+            Assert.That(() => component.Run(), Throws.Nothing);
+            component.RemoveSignalingHandler(handler);
+        }
+
+        [Test]
+        public void ThrowExceptionSetSignalingOnRunning()
+        {
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+            component.SetSignalingSettings(new MockSignalingSettings());
+            var handler = component.gameObject.AddComponent<SingleConnection>();
+            component.AddSignalingHandler(handler);
+            Assert.That(() => component.Run(), Throws.Nothing);
+            Assert.That(component.Running, Is.True);
+
+            Assert.That(() => component.SetSignalingSettings(new MockSignalingSettings()), Throws.InvalidOperationException);
         }
     }
 }

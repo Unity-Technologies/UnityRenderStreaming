@@ -45,6 +45,8 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
+        public bool Running => m_running;
+
         static Type GetType(string typeName)
         {
             var type = Type.GetType(typeName);
