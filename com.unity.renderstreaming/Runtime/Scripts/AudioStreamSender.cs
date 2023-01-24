@@ -298,10 +298,8 @@ namespace Unity.RenderStreaming
         {
             if (m_Source != AudioStreamSource.APIOnly)
                 throw new InvalidOperationException("To use this method, please set AudioStreamSource.APIOnly to source property");
-            // ToDo: Application.isPlaying needed call from Main thread.
-            // this method call from not Main thread. avoid exception.
-            // if (!isPlaying)
-            //     return;
+            if (!isPlaying)
+                return;
             (m_sourceImpl as AudioStreamSourceAPIOnly)?.SetData(ref nativeArray, channels, m_sampleRate);
         }
 
