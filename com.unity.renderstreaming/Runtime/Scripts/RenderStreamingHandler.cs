@@ -16,9 +16,6 @@ namespace Unity.RenderStreaming
     public sealed class RenderStreamingHandler : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Time interval for polling from signaling server.")]
-        private float interval = 5.0f;
-
         // ToDo: Create component UI on URS-553
         [SerializeReference] private SignalingSettings signalingSettings = new WebSocketSignalingSettings
         {
@@ -161,7 +158,7 @@ namespace Unity.RenderStreaming
                 signaling = _signaling,
                 startCoroutine = StartCoroutine,
                 stopCoroutine = StopCoroutine,
-                resentOfferInterval = interval,
+                resentOfferInterval = 5.0f,
             };
             var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
             if (_handlers.Count() == 0)

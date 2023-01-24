@@ -23,8 +23,6 @@ namespace Unity.RenderStreaming.Signaling
 
         string Url { get; }
 
-        float Interval { get; }
-
         void OpenConnection(string connectionId);
         void CloseConnection(string connectionId);
         void SendOffer(string connectionId, RTCSessionDescription offer);

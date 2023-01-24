@@ -517,11 +517,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(connectionId1, Is.EqualTo(connectionId));
             Assert.That(connectionId2, Is.EqualTo(connectionId));
 
+            const float resendInterval = 0.1f;
             signaling1.OnOffer += (s, e) => { offerRaised1 = true; };
             signaling2.OnOffer += (s, e) => { offerRaised2 = true; };
             signaling1.SendOffer(connectionId1, m_DescOffer);
             // check each signaling invoke onOffer
-            yield return new WaitForSeconds(signaling1.Interval * 5);
+            yield return new WaitForSeconds(resendInterval * 5);
             Assert.That(offerRaised1, Is.False, () => "Receive own offer on private mode");
             Assert.That(offerRaised2, Is.True);
 
@@ -529,7 +530,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.OnAnswer += (s, e) => { answerRaised2 = true; };
             signaling2.SendAnswer(connectionId1, m_DescAnswer);
             // check each signaling invoke onAnswer
-            yield return new WaitForSeconds(signaling2.Interval * 5);
+            yield return new WaitForSeconds(resendInterval * 5);
             Assert.That(answerRaised1, Is.True);
             Assert.That(answerRaised2, Is.False, () => "Receive own answer on private mode");
 

@@ -19,12 +19,8 @@ namespace Unity.RenderStreaming.Signaling
 
         private string m_sessionId;
         private long m_lastTimeGetAllRequest;
-        private long m_lastTimeGetOfferRequest;
-        private long m_lastTimeGetAnswerRequest;
-        private long m_lastTimeGetCandidateRequest;
 
 	    public string Url { get { return m_url; } }
-	    public float Interval { get { return m_timeout; } }
 
         public HttpSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
@@ -123,9 +119,6 @@ namespace Unity.RenderStreaming.Signaling
         {
             // ignore messages arrived before 30 secs ago
             m_lastTimeGetAllRequest = DateTime.UtcNow.Millisecond - 30000;
-            m_lastTimeGetOfferRequest = DateTime.UtcNow.Millisecond - 30000;
-            m_lastTimeGetAnswerRequest = DateTime.UtcNow.Millisecond - 30000;
-            m_lastTimeGetCandidateRequest = DateTime.UtcNow.Millisecond - 30000;
 
             while (m_running && string.IsNullOrEmpty(m_sessionId))
             {

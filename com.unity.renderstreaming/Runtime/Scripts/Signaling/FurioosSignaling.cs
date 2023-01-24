@@ -36,8 +36,6 @@ namespace Unity.RenderStreaming.Signaling
 
         public string Url { get { return string.Empty; } }
 
-        public float Interval { get { return m_timeout; } }
-
         public FurioosSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
             m_timeout = 5.0f;
