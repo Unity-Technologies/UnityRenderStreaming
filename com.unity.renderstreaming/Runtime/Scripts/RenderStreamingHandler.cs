@@ -143,7 +143,7 @@ namespace Unity.RenderStreaming
             SignalingHandlerBase[] handlers = null
             )
         {
-            RTCIceServer[] iceServers = signalingSettings.iceServers.Cast<RTCIceServer>().ToArray();
+            RTCIceServer[] iceServers = signalingSettings.iceServers.OfType<RTCIceServer>().ToArray();
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
 
