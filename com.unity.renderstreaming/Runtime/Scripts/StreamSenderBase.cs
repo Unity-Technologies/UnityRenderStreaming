@@ -113,8 +113,6 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                if (!Application.isPlaying)
-                    return false;
                 foreach (var transceiver in Transceivers.Values)
                 {
                     if (string.IsNullOrEmpty(transceiver.Mid))
