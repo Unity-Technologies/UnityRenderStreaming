@@ -163,6 +163,5 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(asset.info.Equals(otherAsset.info), Is.True);
             AssetDatabase.DeleteAsset(exportPath);
         }
-
     }
 }

@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming.Editor
     /// </summary>
     public class CustomSignalingSettingsEditor : Attribute
     {
-        private static readonly TypeCache.TypeCollection customInspectorType =
+        private static readonly TypeCache.TypeCollection types =
             TypeCache.GetTypesWithAttribute<CustomSignalingSettingsEditor>();
 
         private readonly Type inspectedType;
@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming.Editor
 
         internal static Type FindCustomInspectorTypeByType(Type inspectorType)
         {
-            foreach (var type in customInspectorType)
+            foreach (var type in types)
             {
                 foreach (CustomSignalingSettingsEditor custom in
                          type.GetCustomAttributes(typeof(CustomSignalingSettingsEditor), false))
