@@ -76,16 +76,10 @@ namespace Unity.RenderStreaming
 
         public IceServer Clone()
         {
-            return new IceServer()
-            {
-                m_urls = this.urls.ToArray(),
-                m_username = this.username,
-                m_credentialType = this.credentialType,
-                m_credential = this.credential
-            };
+            return new IceServer(this.urls.ToArray(), this.username, this.credentialType, this.credential);
         }
 
-        internal IceServer(string[] urls = null, string username = null, string credential = null, IceCredentialType credentialType = IceCredentialType.Password)
+        public IceServer(string[] urls = null, string username = null, IceCredentialType credentialType = IceCredentialType.Password, string credential = null)
         {
             m_urls = urls?.ToArray();
             m_username = username;
@@ -95,7 +89,7 @@ namespace Unity.RenderStreaming
 
         internal IceServer(RTCIceServer server)
         {
-            m_urls = server.urls;
+            m_urls = server.urls.ToArray();
             m_username = server.username;
             m_credential = server.credential;
             m_credentialType = (IceCredentialType)server.credentialType;
