@@ -14,17 +14,19 @@ namespace Unity.RenderStreaming.Editor
     {
         public override void OnInspectorGUI()
         {
-            {
-                serializedObject.Update();
-                ShowSignalingTypes(serializedObject.FindProperty("signalingType"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"), new GUIContent("Signaling URL"));
-                ShowIceServerList(serializedObject.FindProperty("iceServers"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("handlers"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("runOnAwake"));
-
-                serializedObject.ApplyModifiedProperties();
-            }
+            // ToDo: Create component UI on URS-553
+            base.OnInspectorGUI();
+            // {
+            //     serializedObject.Update();
+            //     ShowSignalingTypes(serializedObject.FindProperty("signalingType"));
+            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"), new GUIContent("Signaling URL"));
+            //     ShowIceServerList(serializedObject.FindProperty("iceServers"));
+            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
+            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("handlers"));
+            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("runOnAwake"));
+            //
+            //     serializedObject.ApplyModifiedProperties();
+            // }
         }
 
         static void ShowIceServerList(SerializedProperty list)

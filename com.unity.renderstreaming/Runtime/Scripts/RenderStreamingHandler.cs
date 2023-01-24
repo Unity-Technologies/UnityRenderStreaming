@@ -16,20 +16,15 @@ namespace Unity.RenderStreaming
     public sealed class RenderStreamingHandler : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField, Tooltip("Signaling server url.")]
-        private string urlSignaling = "http://localhost";
-
-        [SerializeField, Tooltip("Type of signaling.")]
-        private string signalingType = typeof(HttpSignaling).FullName;
-
-        [SerializeField, Tooltip("Array to set your own STUN/TURN servers.")]
-        private RTCIceServer[] iceServers = new RTCIceServer[]
+        // ToDo: Create component UI on URS-553
+        [SerializeReference] private SignalingSettings signalingSettings = new WebSocketSignalingSettings
         {
-            new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+            urlSignaling = "ws://127.0.0.1:80",
+            iceServers = new RTCIceServer[]
+            {
+                new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+            }
         };
-
-        [SerializeField, Tooltip("Time interval for polling from signaling server.")]
-        private float interval = 5.0f;
 
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
@@ -45,27 +40,67 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
-        static Type GetType(string typeName)
+        public bool Running => m_running;
+
+        static ISignaling CreateSignaling(SignalingSettings settings, SynchronizationContext context)
         {
-            var type = Type.GetType(typeName);
-            if (type != null) return type;
-            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
+            if (settings.signalingClass == null)
             {
-                type = assembly.GetType(typeName);
-                if (type != null) return type;
+                throw new ArgumentException($"Signaling type is undefined. {settings.signalingClass}");
             }
-            return null;
+            object[] args = { settings, context };
+            return (ISignaling)Activator.CreateInstance(settings.signalingClass, args);
         }
 
-        static ISignaling CreateSignaling(string type, string url, float interval, SynchronizationContext context)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void SetSignalingSettings(SignalingSettings settings)
         {
-            Type _type = GetType(type);
-            if (_type == null)
+            if (m_running)
             {
-                throw new ArgumentException($"Signaling type is undefined. {type}");
+                throw new InvalidOperationException("The Signaling process has already started.");
             }
-            object[] args = { url, interval, context };
-            return (ISignaling)Activator.CreateInstance(_type, args);
+
+            signalingSettings = settings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="handlerBase"></param>
+        public void AddSignalingHandler(SignalingHandlerBase handlerBase)
+        {
+            if (handlers.Contains(handlerBase))
+            {
+                return;
+            }
+            handlers.Add(handlerBase);
+
+            if (!m_running)
+            {
+                return;
+            }
+            handlerBase.SetHandler(m_instance);
+            m_provider.Subscribe(handlerBase);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="handlerBase"></param>
+        public void RemoveSignalingHandler(SignalingHandlerBase handlerBase)
+        {
+            handlers.Remove(handlerBase);
+
+            if (!m_running)
+            {
+                return;
+            }
+            handlerBase.SetHandler(null);
+            m_provider.Unsubscribe(handlerBase);
         }
 
         /// <summary>
@@ -109,25 +144,21 @@ namespace Unity.RenderStreaming
             )
         {
             RTCConfiguration _conf =
-                conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
+                conf.GetValueOrDefault(new RTCConfiguration { iceServers = signalingSettings.iceServers });
 
             if (signaling != null)
             {
-                signalingType = signaling.GetType().FullName;
-
-                //todo:: This property is not needed by FurioosSignaling.
-                urlSignaling = signaling.Url;
-                interval = signaling.Interval;
+                signalingSettings.urlSignaling = signaling.Url;
             }
-            ISignaling _signaling = signaling ?? CreateSignaling(
-                signalingType, urlSignaling, interval, SynchronizationContext.Current);
+
+            ISignaling _signaling = signaling ?? CreateSignaling(signalingSettings, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
             {
                 config = _conf,
                 signaling = _signaling,
                 startCoroutine = StartCoroutine,
                 stopCoroutine = StopCoroutine,
-                resentOfferInterval = interval,
+                resentOfferInterval = 5.0f,
             };
             var _handlers = (handlers ?? this.handlers.AsEnumerable()).Where(_ => _ != null);
             if (_handlers.Count() == 0)
@@ -156,12 +187,11 @@ namespace Unity.RenderStreaming
 
         void Awake()
         {
-            if (!runOnAwake || m_running)
+            if (!runOnAwake || m_running　|| handlers.Count == 0)
                 return;
 
-            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            ISignaling signaling = CreateSignaling(
-                signalingType, urlSignaling, interval, SynchronizationContext.Current);
+            RTCConfiguration conf = new RTCConfiguration { iceServers = signalingSettings.iceServers };
+            ISignaling signaling = CreateSignaling(signalingSettings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
         }
 

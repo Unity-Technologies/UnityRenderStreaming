@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
@@ -222,6 +223,10 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
         static MockSignaling()
         {
             manager = new MockPublicSignalingManager();
+        }
+
+        public MockSignaling(SignalingSettings settings = null, SynchronizationContext context = null)
+        {
         }
 
         public void Start()

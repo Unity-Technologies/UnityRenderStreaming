@@ -1,15 +1,22 @@
-using System.Collections;
 using NUnit.Framework;
-using Unity.RenderStreaming.RuntimeTest.Signaling;
-using Unity.RenderStreaming.Signaling;
 using UnityEngine;
-using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
     class RenderStreamingTest
     {
-        // todo
+        [Test]
+        public void AutomaticStreaming()
+        {
+            RenderStreaming.AutomaticStreaming = true;
+
+            var automaticStreaming = Object.FindObjectOfType<AutomaticStreaming>();
+            Assert.That(automaticStreaming, Is.Not.Null);
+
+            RenderStreaming.AutomaticStreaming = false;
+
+            automaticStreaming = Object.FindObjectOfType<AutomaticStreaming>();
+            Assert.That(automaticStreaming, Is.Null);
+        }
     }
 }

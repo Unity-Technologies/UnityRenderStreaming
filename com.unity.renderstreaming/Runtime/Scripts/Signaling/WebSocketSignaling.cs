@@ -20,12 +20,10 @@ namespace Unity.RenderStreaming.Signaling
 
         public string Url { get { return m_url; } }
 
-        public float Interval { get { return m_timeout; } }
-
-        public WebSocketSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
+        public WebSocketSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            m_url = url;
-            m_timeout = timeout;
+            m_url = signalingSettings.urlSignaling;
+            m_timeout = 5.0f;
             m_mainThreadContext = mainThreadContext;
             m_wsCloseEvent = new AutoResetEvent(false);
         }
