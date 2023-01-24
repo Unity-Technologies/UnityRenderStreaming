@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.Editor
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class CustomSignalingSettingsEditor : Attribute
     {
         private static readonly TypeCache.TypeCollection customInspectorType =
