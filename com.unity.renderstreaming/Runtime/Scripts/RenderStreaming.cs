@@ -42,9 +42,9 @@ namespace Unity.RenderStreaming
             {
                 throw new InvalidOperationException("Signaling settings can't overwrite on playing.");
             }
+
             s_settings.signalingSettings = settings;
             ApplySettings();
-            Debug.Log("");
         }
 #endif
 
@@ -69,12 +69,10 @@ namespace Unity.RenderStreaming
                 s_settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
             }
 
-            EditorApplication.playModeStateChanged += ChangePlayMode;
-        }
-
-        private static void ChangePlayMode(PlayModeStateChange change)
-        {
-            m_running = change == PlayModeStateChange.EnteredPlayMode;
+            EditorApplication.playModeStateChanged += change =>
+            {
+                m_running = change == PlayModeStateChange.EnteredPlayMode;
+            };
         }
 #endif
 

@@ -45,6 +45,15 @@ namespace Unity.RenderStreaming
 
             var renderStreamingSettingsField =  rootVisualElement.Q<ObjectField>("renderStreamingSettingsField");
             renderStreamingSettingsField.SetValueWithoutNotify(RenderStreaming.s_settings);
+            renderStreamingSettingsField.RegisterCallback<ChangeEvent<Object>>(ev =>
+            {
+                var settings = ev.newValue as RenderStreamingSettings;
+                if (settings != null)
+                {
+                    RenderStreaming.s_settings = settings;
+                    RenderStreaming.ApplySettings();
+                }
+            });
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
