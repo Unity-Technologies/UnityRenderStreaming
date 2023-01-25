@@ -147,7 +147,7 @@ namespace Unity.RenderStreaming
         public WebSocketSignalingSettings(string url, IceServer[] iceServers = null)
         {
             m_url = url;
-            m_iceServers = iceServers.Select(server => server.Clone()).ToArray();
+            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
     }
 
