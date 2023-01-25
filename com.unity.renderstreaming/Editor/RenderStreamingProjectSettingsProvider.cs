@@ -52,6 +52,9 @@ namespace Unity.RenderStreaming
                 {
                     RenderStreaming.s_settings = settings;
                     RenderStreaming.ApplySettings();
+
+                    EditorBuildSettings.AddConfigObject(RenderStreaming.EditorBuildSettingsConfigKey,
+                        RenderStreaming.s_settings, true);
                 }
             });
         }
