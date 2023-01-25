@@ -49,21 +49,32 @@ namespace Unity.RenderStreaming.Editor
 
         void OnChangedValue(ChangeEvent<string> e, SerializedProperty property)
         {
+            var handler = property.serializedObject.targetObject as RenderStreamingHandler;
+            if (handler == null)
+                return;
+
+            // cache current settings.
+            var settings = handler.GetSignalingSettings();
+            var type = settings.GetType();
+            table[type] = settings;
+
             var label = e.newValue;
             var inspectedType = CustomSignalingSettingsEditor.FindInspectedTypeByLabel(label);
             if (!table.ContainsKey(inspectedType))
             {
-                var settings = Activator.CreateInstance(inspectedType) as SignalingSettings;
-                table.Add(inspectedType, settings);
+                var newSettings = Activator.CreateInstance(inspectedType) as SignalingSettings;
+                table.Add(inspectedType, newSettings);
             }
-            var handler = property.serializedObject.targetObject as RenderStreamingHandler;
-            handler.SetSignalingSettings(table[inspectedType]);
+            property.managedReferenceValue = table[inspectedType];
 
             var inspectorType = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(inspectedType);
             var editor = Activator.CreateInstance(inspectorType) as ISignalingSettingEditor;
             var newValue = editor.CreateInspectorGUI(property);
             ReplaceElement(editorGUI, newValue);
             editorGUI = newValue;
+
+            // bind new serializedObject.
+            editorGUI.Bind(property.serializedObject);
         }
 
         static void ReplaceElement(VisualElement oldValue, VisualElement newValue)
@@ -93,8 +104,9 @@ namespace Unity.RenderStreaming.Editor
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling")));
-            root.Add(new PropertyField(property.FindPropertyRelative("interval")));
+            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
+            root.Add(new PropertyField(property.FindPropertyRelative("interval"), "Polling Interval"));
             return root;
         }
 
@@ -112,8 +124,8 @@ namespace Unity.RenderStreaming.Editor
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling")));
-//            root.Add(new PropertyField(property.FindPropertyRelative("interval")));
+            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
             return root;
         }
 
