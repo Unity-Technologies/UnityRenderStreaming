@@ -18,6 +18,8 @@ namespace Unity.RenderStreaming.EditorTest
         [CustomSignalingSettingsEditor(typeof(DummySignalingSettings))]
         class DummySignalingSettingsEditor : ISignalingSettingEditor
         {
+            public string Label => "Mock";
+
             public VisualElement ExtendInspectorGUI()
             {
                 return new TextField("Interval");

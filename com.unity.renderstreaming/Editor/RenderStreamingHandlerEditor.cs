@@ -3,6 +3,9 @@ using UnityEngine;
 using Unity.RenderStreaming.Signaling;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.UIElements;
+using UnityEditorInternal;
+using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -12,55 +15,31 @@ namespace Unity.RenderStreaming.Editor
     [CustomEditor(typeof(RenderStreamingHandler))]
     internal class RenderStreamingHandlerEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
+        // todo(kazuki): workaround.
+        // ListView.reorderMode is not supported on Unity 2020.3.
+        private ReorderableList reorderable;
+
+        public override VisualElement CreateInspectorGUI()
         {
-            // ToDo: Create component UI on URS-553
-            base.OnInspectorGUI();
-            // {
-            //     serializedObject.Update();
-            //     ShowSignalingTypes(serializedObject.FindProperty("signalingType"));
-            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("urlSignaling"), new GUIContent("Signaling URL"));
-            //     ShowIceServerList(serializedObject.FindProperty("iceServers"));
-            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("interval"));
-            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("handlers"));
-            //     EditorGUILayout.PropertyField(serializedObject.FindProperty("runOnAwake"));
-            //
-            //     serializedObject.ApplyModifiedProperties();
-            // }
+            var root = new VisualElement();
+            root.Add(new PropertyField(serializedObject.FindProperty("signalingSettings"), "Signaling Settings"));
+            root.Add(CreateHandlerList(serializedObject.FindProperty("handlers"), "Signaling Handler List"));
+            root.Add(new PropertyField(serializedObject.FindProperty("runOnAwake"), "Run On Awake"));
+            return root;
         }
 
-        static void ShowIceServerList(SerializedProperty list)
+        VisualElement CreateHandlerList(SerializedProperty property, string label)
         {
-            EditorGUILayout.PropertyField(list.FindPropertyRelative("Array.size"), new GUIContent(list.displayName));
-            EditorGUI.indentLevel += 1;
-            for (int i = 0; i < list.arraySize; i++)
+            reorderable = new ReorderableList(serializedObject, property)
             {
-                var element = list.GetArrayElementAtIndex(i);
-                var label = "Ice server [" + i + "]";
-                EditorGUILayout.PropertyField(element, new GUIContent(label), false);
-                if (element.isExpanded)
-                {
-                    EditorGUI.indentLevel += 1;
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("urls"), true);
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("username"));
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("credential"));
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("credentialType"));
-                    EditorGUI.indentLevel -= 1;
-                }
-            }
-            EditorGUI.indentLevel -= 1;
-        }
+                drawElementCallback = (rect, index, isActive, isFocused) => EditorGUI.PropertyField(rect, property.GetArrayElementAtIndex(index)),
+                drawHeaderCallback = rect => EditorGUI.LabelField(rect, label)
+            };
 
-        static readonly IReadOnlyList<System.Type> relevantISygnalingTypes =
-            TypeCache.GetTypesDerivedFrom<ISignaling>().Where(t => t.IsVisible && t.IsClass).ToList();
-        static readonly string[] options = relevantISygnalingTypes.Select(t => t.Name).ToArray();
-        static readonly string[] types = relevantISygnalingTypes.Select(t => t.FullName).ToArray();
-
-        static void ShowSignalingTypes(SerializedProperty signalingType)
-        {
-            int selected = Mathf.Max(0, System.Array.IndexOf(types, signalingType.stringValue));
-            selected = EditorGUILayout.Popup("Signaling Type", selected, options);
-            signalingType.stringValue = types[selected];
+            return new IMGUIContainer(() =>
+            {
+                reorderable.DoLayoutList();
+            });
         }
     }
 }

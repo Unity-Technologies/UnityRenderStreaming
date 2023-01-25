@@ -7,45 +7,47 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace Unity.RenderStreaming
 {
+    internal sealed class SignalingSettingsAttribute : PropertyAttribute { }
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum IceCredentialType
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Password = 0,
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         OAuth = 1
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [Serializable]
     public class IceServer
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public ReadOnlyArray<string> urls => m_urls;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string username => m_username;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public IceCredentialType credentialType => m_credentialType;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string credential => m_credential;
 
@@ -59,7 +61,7 @@ namespace Unity.RenderStreaming
         private string m_credential;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="server"></param>
         public static implicit operator RTCIceServer(IceServer server)
@@ -97,22 +99,22 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public abstract class SignalingSettings
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string url => m_url;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public ReadOnlyArray<IceServer> iceServers => m_iceServers;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public abstract Type signalingClass { get; }
 
