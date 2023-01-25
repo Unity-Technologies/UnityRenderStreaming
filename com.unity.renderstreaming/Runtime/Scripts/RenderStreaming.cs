@@ -13,10 +13,12 @@ namespace Unity.RenderStreaming
 #endif
     public static class RenderStreaming
     {
-        public const string EditorBuildSettingsConfigKey = "com.unity.renderstreaming.settings";
-        public const string DefaultRenderStreamingSettingsPath = "Packages/com.unity.renderstreaming/Runtime/RenderStreamingSettings.asset";
+        internal const string EditorBuildSettingsConfigKey = "com.unity.renderstreaming.settings";
+        internal const string DefaultRenderStreamingSettingsPath = "Packages/com.unity.renderstreaming/Runtime/RenderStreamingSettings.asset";
         internal static RenderStreamingSettings s_settings;
         internal static GameObject s_automaticStreamingObject;
+
+        private static bool m_running;
 
         public static bool AutomaticStreaming
         {
@@ -36,7 +38,7 @@ namespace Unity.RenderStreaming
 #if UNITY_EDITOR
         public static void SetSignalingSettings(SignalingSettings settings)
         {
-            if (Application.isPlaying)
+            if (m_running)
             {
                 throw new InvalidOperationException("Signaling settings can't overwrite on playing.");
             }
@@ -49,6 +51,15 @@ namespace Unity.RenderStreaming
         static RenderStreaming()
         {
 #if UNITY_EDITOR
+            InitializeInEditor();
+#else
+            m_running = true;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private static void InitializeInEditor()
+        {
             if (EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey, out RenderStreamingSettings settingsAsset))
             {
                 s_settings = settingsAsset;
@@ -57,8 +68,15 @@ namespace Unity.RenderStreaming
             {
                 s_settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
             }
-#endif
+
+            EditorApplication.playModeStateChanged += ChangePlayMode;
         }
+
+        private static void ChangePlayMode(PlayModeStateChange change)
+        {
+            m_running = change == PlayModeStateChange.EnteredPlayMode;
+        }
+#endif
 
         [RuntimeInitializeOnLoadMethod(loadType: RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RunInitialize()
@@ -77,7 +95,7 @@ namespace Unity.RenderStreaming
 
         internal static void ApplySettings()
         {
-            if (!Application.isPlaying)
+            if (!m_running)
             {
                 return;
             }
