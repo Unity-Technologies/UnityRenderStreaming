@@ -134,7 +134,7 @@ namespace Unity.RenderStreaming
         public HttpSignalingSettings(string url, IceServer[] iceServers = null, float interval = 5.0f)
         {
             m_url = url;
-            m_iceServers = iceServers.Select(server => server.Clone()).ToArray();
+            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
             m_interval = interval;
         }
     }
@@ -159,7 +159,7 @@ namespace Unity.RenderStreaming
         public FurioosSignalingSettings(string url, IceServer[] iceServers = null)
         {
             m_url = url;
-            m_iceServers = iceServers.Select(server => server.Clone()).ToArray();
+            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
     }
 }
