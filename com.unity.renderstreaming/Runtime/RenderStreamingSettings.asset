@@ -22,4 +22,9 @@ MonoBehaviour:
       type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
       data:
         urlSignaling: ws://127.0.0.1:80
-        iceServers: []
+        iceServers:
+        - credential: 
+          credentialType: 0
+          urls:
+          - stun:stun.l.google.com:19302
+          username: 

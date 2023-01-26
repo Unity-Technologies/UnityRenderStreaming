@@ -1,5 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
+using Unity.RenderStreaming.Signaling;
+using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -17,11 +19,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void SetUpTest()
         {
             temp = RenderStreaming.Settings;
-#if UNITY_EDITOR
-            // The test is performed with the default settings.
-            RenderStreaming.Settings =
-                AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
-#endif
         }
 
         [TearDown]
@@ -59,20 +56,30 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void LoadDefaultSettings()
+        public void CheckDefaultSettings()
         {
             RenderStreamingSettings defaultSettings = null;
 #if UNITY_EDITOR
-                defaultSettings =
-                    AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
+            defaultSettings =
+                AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
 #else
-                defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
-                                           ScriptableObject.CreateInstance<RenderStreamingSettings>();
+            defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
+                                       ScriptableObject.CreateInstance<RenderStreamingSettings>();
 #endif
-            Assert.That(RenderStreaming.Settings.automaticStreaming, Is.EqualTo(defaultSettings.automaticStreaming));
-            Assert.That(RenderStreaming.Settings.signalingSettings.signalingClass, Is.EqualTo(defaultSettings.signalingSettings.signalingClass));
-            Assert.That(RenderStreaming.Settings.signalingSettings.urlSignaling, Is.EqualTo(defaultSettings.signalingSettings.urlSignaling));
-            Assert.That(RenderStreaming.Settings.signalingSettings.iceServers, Is.EquivalentTo(defaultSettings.signalingSettings.iceServers));
+            var url = "ws://127.0.0.1:80";
+            var iceServers = new RTCIceServer[]
+            {
+                new RTCIceServer()
+                {
+                    urls = new string[] {"stun:stun.l.google.com:19302"},
+                }
+            };
+
+            Assert.That(defaultSettings.automaticStreaming, Is.False);
+            var defaultSignalingSettings = defaultSettings.signalingSettings;
+            Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
+            Assert.That(defaultSignalingSettings.urlSignaling, Is.EqualTo(url));
+            Assert.That(defaultSignalingSettings.iceServers[0].urls, Is.EquivalentTo(iceServers[0].urls));
         }
 
         [Test]
