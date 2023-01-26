@@ -11,20 +11,20 @@ namespace Unity.RenderStreaming.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (RenderStreaming.s_settings == null)
+            if (RenderStreaming.Settings == null)
                 return;
 
             // If we operate on temporary object instead of input setting asset,
             // adding temporary asset would result in preloadedAssets containing null object "{fileID: 0}".
             // Hence we ignore adding temporary objects to preloaded assets.
-            if (!EditorUtility.IsPersistent(RenderStreaming.s_settings))
+            if (!EditorUtility.IsPersistent(RenderStreaming.Settings))
                 return;
 
             // Add InputSettings object assets, if it's not in there already.
             var preloadedAssets = PlayerSettings.GetPreloadedAssets();
-            if (!preloadedAssets.Contains(RenderStreaming.s_settings))
+            if (!preloadedAssets.Contains(RenderStreaming.Settings))
             {
-                ArrayHelpers.Append(ref preloadedAssets, RenderStreaming.s_settings);
+                ArrayHelpers.Append(ref preloadedAssets, RenderStreaming.Settings);
                 PlayerSettings.SetPreloadedAssets(preloadedAssets);
             }
         }

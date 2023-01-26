@@ -14,11 +14,42 @@ namespace Unity.RenderStreaming
     public static class RenderStreaming
     {
         internal const string EditorBuildSettingsConfigKey = "com.unity.renderstreaming.settings";
-        internal const string DefaultRenderStreamingSettingsPath = "Packages/com.unity.renderstreaming/Runtime/RenderStreamingSettings.asset";
-        internal static RenderStreamingSettings s_settings;
-        internal static GameObject s_automaticStreamingObject;
+        internal const string DefaultRenderStreamingSettingsPath =
+            "Packages/com.unity.renderstreaming/Runtime/RenderStreamingSettings.asset";
+
+        private static RenderStreamingSettings s_settings;
+        private static GameObject s_automaticStreamingObject;
 
         private static bool m_running;
+
+        public static RenderStreamingSettings Settings
+        {
+            get => s_settings;
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+
+                if (s_settings == value)
+                    return;
+
+                // In the editor, we keep track of the settings asset through EditorBuildSettings.
+#if UNITY_EDITOR
+                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(value)))
+                {
+                    EditorBuildSettings.AddConfigObject(EditorBuildSettingsConfigKey, value, true);
+                }
+#endif
+
+                if (m_running && s_settings.signalingSettings == value.signalingSettings)
+                {
+                    Debug.LogWarning("Signaling settings doesn't change on already started signaling instance.");
+                }
+
+                s_settings = value;
+                ApplySettings();
+            }
+        }
 
         public static bool AutomaticStreaming
         {

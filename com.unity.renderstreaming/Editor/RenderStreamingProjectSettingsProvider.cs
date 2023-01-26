@@ -44,17 +44,13 @@ namespace Unity.RenderStreaming
             rootVisualElement.Add(newVisualElement);
 
             var renderStreamingSettingsField =  rootVisualElement.Q<ObjectField>("renderStreamingSettingsField");
-            renderStreamingSettingsField.SetValueWithoutNotify(RenderStreaming.s_settings);
+            renderStreamingSettingsField.SetValueWithoutNotify(RenderStreaming.Settings);
             renderStreamingSettingsField.RegisterCallback<ChangeEvent<Object>>(ev =>
             {
                 var settings = ev.newValue as RenderStreamingSettings;
                 if (settings != null)
                 {
-                    RenderStreaming.s_settings = settings;
-                    RenderStreaming.ApplySettings();
-
-                    EditorBuildSettings.AddConfigObject(RenderStreaming.EditorBuildSettingsConfigKey,
-                        RenderStreaming.s_settings, true);
+                    RenderStreaming.Settings = settings;
                 }
             });
         }
