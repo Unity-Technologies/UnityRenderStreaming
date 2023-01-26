@@ -107,15 +107,19 @@ namespace Unity.RenderStreaming
         }
 #endif
 
-        [RuntimeInitializeOnLoadMethod(loadType: RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void RunInitialize()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void LoadSettings()
         {
             if (s_settings == null)
             {
                 s_settings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
                              ScriptableObject.CreateInstance<RenderStreamingSettings>();
             }
+        }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void RunInitialize()
+        {
             if (AutomaticStreaming)
             {
                 CreateAutomaticStreaming();
