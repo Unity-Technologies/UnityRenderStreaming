@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 namespace Unity.RenderStreaming
 {
@@ -34,7 +34,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public ReadOnlyArray<string> urls => m_urls;
+        public IReadOnlyCollection<string> urls => m_urls;
 
         /// <summary>
         ///
@@ -117,22 +117,12 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public string url => m_url;
-
-        /// <summary>
-        ///
-        /// </summary>
-        public ReadOnlyArray<IceServer> iceServers => m_iceServers;
+        public abstract IReadOnlyCollection<IceServer> iceServers { get; }
 
         /// <summary>
         ///
         /// </summary>
         public abstract Type signalingClass { get; }
-
-        [SerializeField]
-        protected string m_url = "http://127.0.0.1:80";
-        [SerializeField]
-        protected IceServer[] m_iceServers;
     }
 
     [Serializable]
@@ -144,12 +134,26 @@ namespace Unity.RenderStreaming
         public override Type signalingClass => typeof(HttpSignaling);
 
         /// <summary>
+        ///
+        /// </summary>
+        public override IReadOnlyCollection<IceServer> iceServers => m_iceServers;
+
+        /// <summary>
+        ///
+        /// </summary>
+        public string url => m_url;
+
+        /// <summary>
         /// 
         /// </summary>
         public float interval => m_interval;
 
         [SerializeField]
         private float m_interval;
+        [SerializeField]
+        protected string m_url;
+        [SerializeField]
+        protected IceServer[] m_iceServers;
 
         /// <summary>
         /// 
@@ -159,7 +163,7 @@ namespace Unity.RenderStreaming
         /// <param name="interval"></param>
         public HttpSignalingSettings(string url, IceServer[] iceServers = null, float interval = 5.0f)
         {
-            m_url = url;
+            m_url = url ?? throw new ArgumentNullException("url");
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
             m_interval = interval;
         }
@@ -190,13 +194,28 @@ namespace Unity.RenderStreaming
         public override Type signalingClass => typeof(WebSocketSignaling);
 
         /// <summary>
+        ///
+        /// </summary>
+        public override IReadOnlyCollection<IceServer> iceServers => m_iceServers;
+
+        /// <summary>
+        ///
+        /// </summary>
+        public string url => m_url;
+
+        [SerializeField]
+        protected string m_url;
+        [SerializeField]
+        protected IceServer[] m_iceServers;
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="url"></param>
         /// <param name="iceServers"></param>
         public WebSocketSignalingSettings(string url, IceServer[] iceServers = null)
         {
-            m_url = url;
+            m_url = url ?? throw new ArgumentNullException("url");
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
 
@@ -225,13 +244,28 @@ namespace Unity.RenderStreaming
         public override Type signalingClass => typeof(FurioosSignaling);
 
         /// <summary>
+        ///
+        /// </summary>
+        public override IReadOnlyCollection<IceServer> iceServers => m_iceServers;
+
+        /// <summary>
+        ///
+        /// </summary>
+        public string url => m_url;
+
+        [SerializeField]
+        protected string m_url;
+        [SerializeField]
+        protected IceServer[] m_iceServers;
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="url"></param>
         /// <param name="iceServers"></param>
         public FurioosSignalingSettings(string url, IceServer[] iceServers = null)
         {
-            m_url = url;
+            m_url = url ?? throw new ArgumentNullException("url");
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
 
