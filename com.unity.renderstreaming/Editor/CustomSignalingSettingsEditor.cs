@@ -75,9 +75,14 @@ namespace Unity.RenderStreaming.Editor
 
         internal static string FindLabelByInspectorType(Type inspectorType)
         {
-            CustomSignalingSettingsEditor custom =
-                inspectorType.GetCustomAttributes(typeof(CustomSignalingSettingsEditor), false)[0] as CustomSignalingSettingsEditor;
-            return custom?.label;
+            var attributes =
+                inspectorType.GetCustomAttributes(typeof(CustomSignalingSettingsEditor), false);
+            foreach (var attribute in attributes)
+            {
+                if (attribute is CustomSignalingSettingsEditor custom)
+                    return custom.label;
+            }
+            return null;
         }
 
         internal static IEnumerable<string> Labels()

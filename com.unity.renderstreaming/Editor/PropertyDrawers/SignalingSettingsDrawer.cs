@@ -89,16 +89,12 @@ namespace Unity.RenderStreaming.Editor
     /// </summary>
     public interface ISignalingSettingEditor
     {
-        string Label { get; }
         VisualElement CreateInspectorGUI(SerializedProperty property);
-        void SetSignalingSettings(SignalingSettings settings);
     }
 
     [CustomSignalingSettingsEditor(typeof(HttpSignalingSettings), "HTTP Polling")]
     internal class HttpSignalingSettingsEditor : ISignalingSettingEditor
     {
-        public string Label => "HTTP Polling";
-
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -117,8 +113,6 @@ namespace Unity.RenderStreaming.Editor
     [CustomSignalingSettingsEditor(typeof(WebSocketSignalingSettings), "WebSocket")]
     internal class WebSocketSignalingSettingsEditor : ISignalingSettingEditor
     {
-        public string Label => "WebSocket";
-
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
@@ -136,8 +130,6 @@ namespace Unity.RenderStreaming.Editor
     [CustomSignalingSettingsEditor(typeof(FurioosSignalingSettings), "Furioos")]
     internal class FurioosSignalingSettingsEditor : ISignalingSettingEditor
     {
-        public string Label => "Furioos";
-
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
