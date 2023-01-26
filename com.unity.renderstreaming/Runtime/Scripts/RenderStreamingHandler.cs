@@ -21,7 +21,7 @@ namespace Unity.RenderStreaming
         private SignalingSettings signalingSettings = new WebSocketSignalingSettings
         (
             url: "ws://127.0.0.1:80",
-            iceServers = new IceServer[]
+            iceServers: new[]
             {
                 new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
             }

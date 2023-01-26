@@ -76,11 +76,22 @@ namespace Unity.RenderStreaming
             return iceServer;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IceServer Clone()
         {
             return new IceServer(this.urls.ToArray(), this.username, this.credentialType, this.credential);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="urls"></param>
+        /// <param name="username"></param>
+        /// <param name="credentialType"></param>
+        /// <param name="credential"></param>
         public IceServer(string[] urls = null, string username = null, IceCredentialType credentialType = IceCredentialType.Password, string credential = null)
         {
             m_urls = urls?.ToArray();
@@ -127,68 +138,112 @@ namespace Unity.RenderStreaming
     [Serializable]
     public class HttpSignalingSettings : SignalingSettings
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public override Type signalingClass => typeof(HttpSignaling);
 
+        /// <summary>
+        /// 
+        /// </summary>
         public float interval => m_interval;
 
         [SerializeField]
         private float m_interval;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="iceServers"></param>
+        /// <param name="interval"></param>
         public HttpSignalingSettings(string url, IceServer[] iceServers = null, float interval = 5.0f)
         {
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
             m_interval = interval;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpSignalingSettings()
         {
             m_url = "http://127.0.0.1";
             m_iceServers = new[]
             {
-                new IceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+                new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
             m_interval = 5f;
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class WebSocketSignalingSettings : SignalingSettings
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public override Type signalingClass => typeof(WebSocketSignaling);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="iceServers"></param>
         public WebSocketSignalingSettings(string url, IceServer[] iceServers = null)
         {
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public WebSocketSignalingSettings()
         {
             m_url = "ws://127.0.0.1";
             m_iceServers = new[]
             {
-                new IceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+                new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Serializable]
     public class FurioosSignalingSettings : SignalingSettings
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public override Type signalingClass => typeof(FurioosSignaling);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="iceServers"></param>
         public FurioosSignalingSettings(string url, IceServer[] iceServers = null)
         {
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public FurioosSignalingSettings()
         {
             m_url = "http://127.0.0.1";
             m_iceServers = new[]
             {
-                new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+                new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
         }
     }

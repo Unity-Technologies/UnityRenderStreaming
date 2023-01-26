@@ -98,9 +98,9 @@ namespace Unity.RenderStreaming.Editor
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
-            root.Add(new PropertyField(property.FindPropertyRelative("interval"), "Polling Interval"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_interval"), "Polling Interval"));
             return root;
         }
 
@@ -116,8 +116,8 @@ namespace Unity.RenderStreaming.Editor
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }
 
@@ -133,8 +133,8 @@ namespace Unity.RenderStreaming.Editor
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
             VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }
 
