@@ -163,8 +163,13 @@ namespace Unity.RenderStreaming
         /// <param name="interval"></param>
         public HttpSignalingSettings(string url, IceServer[] iceServers = null, float interval = 5.0f)
         {
-            m_url = url ?? throw new ArgumentNullException("url");
-            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
+            if (url == null)
+                throw new ArgumentNullException("url");
+            if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                throw new ArgumentException("url is not well formed Uri");
+
+            m_url = url;
+            m_iceServers = iceServers == null ? Array.Empty<IceServer>() : iceServers.Select(server => server.Clone()).ToArray();
             m_interval = interval;
         }
 
@@ -215,8 +220,13 @@ namespace Unity.RenderStreaming
         /// <param name="iceServers"></param>
         public WebSocketSignalingSettings(string url, IceServer[] iceServers = null)
         {
-            m_url = url ?? throw new ArgumentNullException("url");
-            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
+            if (url == null)
+                throw new ArgumentNullException("url");
+            if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                throw new ArgumentException("url is not well formed Uri");
+
+            m_url = url;
+            m_iceServers = iceServers == null ? Array.Empty<IceServer>() : iceServers.Select(server => server.Clone()).ToArray();
         }
 
         /// <summary>
@@ -265,8 +275,13 @@ namespace Unity.RenderStreaming
         /// <param name="iceServers"></param>
         public FurioosSignalingSettings(string url, IceServer[] iceServers = null)
         {
-            m_url = url ?? throw new ArgumentNullException("url");
-            m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
+            if (url == null)
+                throw new ArgumentNullException("url");
+            if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                throw new ArgumentException("url is not well formed Uri");
+
+            m_url = url;
+            m_iceServers = iceServers == null ? Array.Empty<IceServer>() : iceServers.Select(server => server.Clone()).ToArray();
         }
 
         /// <summary>
