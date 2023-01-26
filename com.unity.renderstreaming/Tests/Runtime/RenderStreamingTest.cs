@@ -1,7 +1,6 @@
-using System.Linq;
 using NUnit.Framework;
+using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
-using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -66,20 +65,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
                                        ScriptableObject.CreateInstance<RenderStreamingSettings>();
 #endif
-            var url = "ws://127.0.0.1:80";
-            var iceServers = new RTCIceServer[]
-            {
-                new RTCIceServer()
-                {
-                    urls = new string[] {"stun:stun.l.google.com:19302"},
-                }
-            };
-
             Assert.That(defaultSettings.automaticStreaming, Is.False);
             var defaultSignalingSettings = defaultSettings.signalingSettings;
             Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
-            Assert.That(defaultSignalingSettings.urlSignaling, Is.EqualTo(url));
-            Assert.That(defaultSignalingSettings.iceServers[0].urls, Is.EquivalentTo(iceServers[0].urls));
+            Assert.That(defaultSignalingSettings.url, Is.EqualTo("ws://127.0.0.1:80"));
+            Assert.That(defaultSignalingSettings.iceServers[0].urls, Is.EquivalentTo(new string[] {"stun:stun.l.google.com:19302"}));
         }
 
         [Test]
@@ -88,6 +78,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(() => RenderStreaming.Settings = null, Throws.ArgumentNullException);
 
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
+            settings.signalingSettings = new MockSignalingSettings();
+
             RenderStreaming.Settings = settings;
             Assert.That(RenderStreaming.Settings.automaticStreaming, Is.EqualTo(settings.automaticStreaming));
             Assert.That(RenderStreaming.Settings.signalingSettings, Is.EqualTo(settings.signalingSettings));

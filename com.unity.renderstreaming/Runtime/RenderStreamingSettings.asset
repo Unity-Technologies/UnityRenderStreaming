@@ -21,10 +21,10 @@ MonoBehaviour:
     - rid: 8728215194478051424
       type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
       data:
-        urlSignaling: ws://127.0.0.1:80
-        iceServers:
-        - credential: 
-          credentialType: 0
-          urls:
+        m_url: ws://127.0.0.1:80
+        m_iceServers:
+        - m_urls:
           - stun:stun.l.google.com:19302
-          username: 
+          m_username: 
+          m_credentialType: 0
+          m_credential: 

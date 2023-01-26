@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Unity.RenderStreaming
@@ -6,6 +5,6 @@ namespace Unity.RenderStreaming
     public class RenderStreamingSettings : ScriptableObject
     {
         [SerializeField] public bool automaticStreaming;
-        [SerializeReference] public SignalingSettings signalingSettings = new WebSocketSignalingSettings();
+        [SerializeReference] public SignalingSettings signalingSettings;
     }
 }
