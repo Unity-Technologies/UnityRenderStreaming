@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming
 
         private static bool m_running;
 
-        public static RenderStreamingSettings Settings
+        internal static RenderStreamingSettings Settings
         {
             get => s_settings;
             set
@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
                 }
 #endif
 
-                if (m_running && s_settings.signalingSettings == value.signalingSettings)
+                if (m_running && s_settings.signalingSettings != value.signalingSettings)
                 {
                     Debug.LogWarning("Signaling settings doesn't change on already started signaling instance.");
                 }

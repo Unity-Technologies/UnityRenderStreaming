@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming.Editor
 
         public void OnPostprocessBuild(BuildReport report)
         {
-            // Revert back to original state by removing all input settings from preloaded assets.
+            // Revert back to original state by removing all render streaming settings from preloaded assets.
             var preloadedAssets = PlayerSettings.GetPreloadedAssets();
             while (preloadedAssets != null && preloadedAssets.Length > 0)
             {
