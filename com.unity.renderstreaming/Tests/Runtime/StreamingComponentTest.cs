@@ -369,7 +369,7 @@ namespace Unity.RenderStreaming.RuntimeTest
 
         // workaround(kazuki): Fix NullReferenceException in AudioStreamTrack.ProcessAudio.
         [UnityTest]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer})]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor})]
         public IEnumerator ReplaceTrack()
         {
             var go = new GameObject();
