@@ -36,14 +36,13 @@ namespace Unity.RenderStreaming
             // todo: load from assets
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
             settings.automaticStreaming = false;
-            var signalingSettings = new WebSocketSignalingSettings
-            {
-                urlSignaling = "ws://127.0.0.1:80",
-                iceServers = new RTCIceServer[]
+            var signalingSettings = new WebSocketSignalingSettings(
+                url: "ws://127.0.0.1:80",
+                iceServers: new[]
                 {
-                    new RTCIceServer() {urls = new string[] {"stun:stun.l.google.com:19302"}}
+                    new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
                 }
-            };
+            );
             settings.signalingSettings = signalingSettings;
             s_settings = settings;
         }

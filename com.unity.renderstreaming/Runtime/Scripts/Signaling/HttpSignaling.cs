@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public HttpSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            m_url = signalingSettings.urlSignaling;
+            m_url = signalingSettings.url;
             m_timeout = ((HttpSignalingSettings) signalingSettings).interval;
             m_mainThreadContext = mainThreadContext;
 

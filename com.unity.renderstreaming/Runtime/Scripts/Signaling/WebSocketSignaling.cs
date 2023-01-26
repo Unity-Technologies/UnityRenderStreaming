@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming.Signaling
 
         public WebSocketSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            m_url = signalingSettings.urlSignaling;
+            m_url = signalingSettings.url;
             m_timeout = 5.0f;
             m_mainThreadContext = mainThreadContext;
             m_wsCloseEvent = new AutoResetEvent(false);

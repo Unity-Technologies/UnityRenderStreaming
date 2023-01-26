@@ -70,28 +70,28 @@ namespace Unity.RenderStreaming.Samples
                     {
                         var schema = signalingSecured ? "https" : "http";
                         var settings = new FurioosSignalingSettings
-                        {
-                            urlSignaling = $"{schema}://{signalingAddress}"
-                        };
+                        (
+                            url: $"{schema}://{signalingAddress}"
+                        );
                         return new FurioosSignaling(settings, SynchronizationContext.Current);
                     }
                     case SignalingType.WebSocket:
                     {
                         var schema = signalingSecured ? "wss" : "ws";
                         var settings = new WebSocketSignalingSettings
-                        {
-                            urlSignaling = $"{schema}://{signalingAddress}"
-                        };
+                        (
+                            url: $"{schema}://{signalingAddress}"
+                        );
                         return new WebSocketSignaling(settings, SynchronizationContext.Current);
                     }
                     case SignalingType.Http:
                     {
                         var schema = signalingSecured ? "https" : "http";
                         var settings = new HttpSignalingSettings
-                        {
-                            urlSignaling = $"{schema}://{signalingAddress}",
-                            interval = signalingInterval
-                        };
+                        (
+                            url: $"{schema}://{signalingAddress}",
+                            interval: signalingInterval
+                        );
                         return new FurioosSignaling(settings, SynchronizationContext.Current);
                     }
                 }
