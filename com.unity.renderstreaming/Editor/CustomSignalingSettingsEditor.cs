@@ -17,6 +17,11 @@ namespace Unity.RenderStreaming.Editor
         private readonly Type inspectedType;
         private readonly string label;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inspectedType"></param>
+        /// <param name="label"></param>
         public CustomSignalingSettingsEditor(Type inspectedType, string label)
         {
             if (inspectedType == null)
