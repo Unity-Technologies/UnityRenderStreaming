@@ -1,10 +1,5 @@
 using UnityEditor;
-using UnityEngine;
-using Unity.RenderStreaming.Signaling;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor.UIElements;
-using UnityEditorInternal;
 using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming.Editor

@@ -128,6 +128,7 @@ namespace Unity.RenderStreaming
     public class HttpSignalingSettings : SignalingSettings
     {
         public override Type signalingClass => typeof(HttpSignaling);
+
         public float interval => m_interval;
 
         [SerializeField]
@@ -138,6 +139,15 @@ namespace Unity.RenderStreaming
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
             m_interval = interval;
+
+        public HttpSignalingSettings()
+        {
+            m_url = "http://127.0.0.1";
+            m_iceServers = new[]
+            {
+                new IceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+            };
+            m_interval = 5f;
         }
     }
 
@@ -151,6 +161,15 @@ namespace Unity.RenderStreaming
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
         }
+
+        public WebSocketSignalingSettings()
+        {
+            m_url = "ws://127.0.0.1";
+            m_iceServers = new[]
+            {
+                new IceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+            };
+        }
     }
 
     [Serializable]
@@ -162,6 +181,15 @@ namespace Unity.RenderStreaming
         {
             m_url = url;
             m_iceServers = iceServers?.Select(server => server.Clone()).ToArray();
+        }
+
+        public FurioosSignalingSettings()
+        {
+            m_url = "http://127.0.0.1";
+            m_iceServers = new[]
+            {
+                new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}
+            };
         }
     }
 }

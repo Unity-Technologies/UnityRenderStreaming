@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEditorInternal;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming.Editor
@@ -66,6 +63,7 @@ namespace Unity.RenderStreaming.Editor
                 table.Add(inspectedType, newSettings);
             }
             property.managedReferenceValue = table[inspectedType];
+            property.serializedObject.ApplyModifiedProperties();
 
             var inspectorType = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(inspectedType);
             var editor = Activator.CreateInstance(inspectorType) as ISignalingSettingEditor;
@@ -142,7 +140,10 @@ namespace Unity.RenderStreaming.Editor
 
         public VisualElement CreateInspectorGUI(SerializedProperty property)
         {
-            return new TextField("Interval");
+            VisualElement root = new VisualElement();
+            root.Add(new PropertyField(property.FindPropertyRelative("urlSignaling"), "URL"));
+            root.Add(new PropertyField(property.FindPropertyRelative("iceServers"), "ICE Servers"));
+            return root;
         }
 
         public void SetSignalingSettings(SignalingSettings settings)
