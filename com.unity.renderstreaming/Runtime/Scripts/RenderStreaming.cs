@@ -13,6 +13,8 @@ namespace Unity.RenderStreaming
 #endif
     public static class RenderStreaming
     {
+        public const string EditorBuildSettingsConfigKey = "com.unity.renderstreaming.settings";
+        public const string DefaultRenderStreamingSettingsPath = "Packages/com.unity.renderstreaming/Runtime/RenderStreamingSettings.asset";
         internal static RenderStreamingSettings s_settings;
         internal static GameObject s_automaticStreamingObject;
 
@@ -31,32 +33,49 @@ namespace Unity.RenderStreaming
             return s_settings.signalingSettings as T;
         }
 
+#if UNITY_EDITOR
+        public static void SetSignalingSettings(SignalingSettings settings)
+        {
+            if (Application.isPlaying)
+            {
+                throw new InvalidOperationException("Signaling settings can't overwrite on playing.");
+            }
+            s_settings.signalingSettings = settings;
+            ApplySettings();
+            Debug.Log("");
+        }
+#endif
+
         static RenderStreaming()
         {
-            // todo: load from assets
-            var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
-            settings.automaticStreaming = false;
-            var signalingSettings = new WebSocketSignalingSettings(
-                url: "ws://127.0.0.1:80",
-                iceServers: new[]
-                {
-                    new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
-                }
-            );
-            settings.signalingSettings = signalingSettings;
-            s_settings = settings;
+#if UNITY_EDITOR
+            if (EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey, out RenderStreamingSettings settingsAsset))
+            {
+                s_settings = settingsAsset;
+            }
+            else
+            {
+                s_settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
+            }
+#endif
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(loadType: RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void RunInitialize()
         {
+            if (s_settings == null)
+            {
+                s_settings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
+                             ScriptableObject.CreateInstance<RenderStreamingSettings>();
+            }
+
             if (AutomaticStreaming)
             {
                 CreateAutomaticStreaming();
             }
         }
 
-        private static void ApplySettings()
+        internal static void ApplySettings()
         {
             if (!Application.isPlaying)
             {
