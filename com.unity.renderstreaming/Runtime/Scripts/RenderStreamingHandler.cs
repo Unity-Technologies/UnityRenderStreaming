@@ -17,14 +17,15 @@ namespace Unity.RenderStreaming
     {
 #pragma warning disable 0649
         // ToDo: Create component UI on URS-553
-        [SerializeReference]
-        private SignalingSettings signalingSettings = new WebSocketSignalingSettings(
+        [SerializeReference, SignalingSettings]
+        private SignalingSettings signalingSettings = new WebSocketSignalingSettings
+        (
             url: "ws://127.0.0.1:80",
-            iceServers: new IceServer[]
+            iceServers: new[]
             {
                 new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
             }
-         );
+        );
 
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
@@ -60,11 +61,17 @@ namespace Unity.RenderStreaming
         public void SetSignalingSettings(SignalingSettings settings)
         {
             if (m_running)
-            {
                 throw new InvalidOperationException("The Signaling process has already started.");
-            }
+
+            if (settings == null)
+                throw new ArgumentNullException("settings");
 
             signalingSettings = settings;
+        }
+
+        public SignalingSettings GetSignalingSettings()
+        {
+            return signalingSettings;
         }
 
         /// <summary>

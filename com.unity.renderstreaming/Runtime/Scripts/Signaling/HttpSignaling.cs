@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using Unity.WebRTC;
@@ -24,8 +22,12 @@ namespace Unity.RenderStreaming.Signaling
 
         public HttpSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            m_url = signalingSettings.url;
-            m_timeout = ((HttpSignalingSettings) signalingSettings).interval;
+            if (signalingSettings == null)
+                throw new ArgumentNullException(nameof(signalingSettings));
+            if (!(signalingSettings is HttpSignalingSettings settings))
+                throw new ArgumentException("signalingSettings is not HttpSignalingSettings");
+            m_url = settings.url;
+            m_timeout = settings.interval;
             m_mainThreadContext = mainThreadContext;
 
             if (m_url.StartsWith("https"))
