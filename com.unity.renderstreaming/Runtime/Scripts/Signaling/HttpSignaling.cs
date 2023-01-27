@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming.Signaling
         {
             if (signalingSettings == null)
                 throw new ArgumentNullException(nameof(signalingSettings));
-            if (signalingSettings is not HttpSignalingSettings settings)
+            if (!(signalingSettings is HttpSignalingSettings settings))
                 throw new ArgumentException("signalingSettings is not HttpSignalingSettings");
             m_url = settings.url;
             m_timeout = settings.interval;

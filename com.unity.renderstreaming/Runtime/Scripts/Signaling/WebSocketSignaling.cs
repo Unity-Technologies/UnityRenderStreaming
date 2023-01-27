@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming.Signaling
         {
             if(signalingSettings == null)
                 throw new ArgumentNullException(nameof(signalingSettings));
-            if (signalingSettings is not WebSocketSignalingSettings settings)
+            if(!(signalingSettings is WebSocketSignalingSettings settings))
                 throw new ArgumentException("signalingSettings is not WebSocketSignalingSettings");
             m_url = settings.url;
             m_timeout = 5.0f;
