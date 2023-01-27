@@ -61,9 +61,10 @@ namespace Unity.RenderStreaming
         public void SetSignalingSettings(SignalingSettings settings)
         {
             if (m_running)
-            {
                 throw new InvalidOperationException("The Signaling process has already started.");
-            }
+
+            if (settings == null)
+                throw new ArgumentNullException("settings");
 
             signalingSettings = settings;
         }

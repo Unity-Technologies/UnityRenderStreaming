@@ -7,6 +7,6 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
     {
         public override Type signalingClass => typeof(MockSignaling);
 
-        public override IReadOnlyCollection<IceServer> iceServers => null;
+        public override IReadOnlyCollection<IceServer> iceServers => Array.Empty<IceServer>();
     }
 }

@@ -84,7 +84,19 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void AddAndRemoveSignalingSettings()
+        public void GetDefaultSignalingSettings()
+        {
+            component.runOnAwake = false;
+            component.gameObject.SetActive(true);
+
+            var settings = component.GetSignalingSettings() as WebSocketSignalingSettings;
+            Assert.That(settings, Is.Not.Null);
+            Assert.That(settings.url, Is.Not.Null);
+            Assert.That(settings.iceServers, Is.Not.Null);
+        }
+
+        [Test]
+        public void AddAndRemoveSignalingHandler()
         {
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
