@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming.Samples
         private bool useDefaultSettings = false;
         private SignalingType signalingType = SignalingType.WebSocket;
         private string signalingAddress = "localhost";
-        private float signalingInterval = 5;
+        private int signalingInterval = 5000;
         private bool signalingSecured = false;
         private Vector2Int streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
         private VideoCodecInfo receiverVideoCodec = null;
@@ -61,7 +61,7 @@ namespace Unity.RenderStreaming.Samples
             set { signalingSecured = value; }
         }
 
-        public float SignalingInterval
+        public int SignalingInterval
         {
             get { return signalingInterval; }
             set { signalingInterval = value; }
@@ -309,13 +309,13 @@ namespace Unity.RenderStreaming.Samples
 
         private void OnChangeSignalingInterval(string value)
         {
-            if (float.TryParse(value, out float _value))
+            if (int.TryParse(value, out int _value))
             {
                 settings.SignalingInterval = _value;
             }
             else
             {
-                settings.SignalingInterval = 5;
+                settings.SignalingInterval = 5000;
             }
         }
 

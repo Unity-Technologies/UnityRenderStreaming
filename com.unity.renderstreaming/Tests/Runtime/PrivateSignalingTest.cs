@@ -144,7 +144,7 @@ namespace Unity.RenderStreaming.RuntimeTest
                 var settings = new HttpSignalingSettings
                 (
                     url: $"http://localhost:{TestUtility.PortNumber}",
-                    interval: 0.1f
+                    interval: 100
                 );
                 return new HttpSignaling(settings, mainThread);
             }
