@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -66,10 +67,11 @@ namespace Unity.RenderStreaming.RuntimeTest
                                        ScriptableObject.CreateInstance<RenderStreamingSettings>();
 #endif
             Assert.That(defaultSettings.automaticStreaming, Is.False);
-            var defaultSignalingSettings = defaultSettings.signalingSettings;
+            var defaultSignalingSettings = defaultSettings.signalingSettings as WebSocketSignalingSettings;
+            Assert.That(defaultSignalingSettings, Is.Not.Null);
             Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
             Assert.That(defaultSignalingSettings.url, Is.EqualTo("ws://127.0.0.1:80"));
-            Assert.That(defaultSignalingSettings.iceServers[0].urls, Is.EquivalentTo(new string[] {"stun:stun.l.google.com:19302"}));
+            Assert.That(defaultSignalingSettings.iceServers.ElementAt(0).urls, Is.EquivalentTo(new string[] {"stun:stun.l.google.com:19302"}));
         }
 
         [Test]

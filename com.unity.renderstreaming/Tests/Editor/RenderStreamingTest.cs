@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 namespace Unity.RenderStreaming.EditorTest
@@ -18,7 +19,7 @@ namespace Unity.RenderStreaming.EditorTest
 
             var settings = RenderStreaming.GetSignalingSettings<WebSocketSignalingSettings>();
             Assert.That(settings.url, Is.EqualTo(url));
-            Assert.That(settings.iceServers[0].urls, Is.EquivalentTo(iceServers[0].urls));
+            Assert.That(settings.iceServers.ElementAt(0).urls, Is.EquivalentTo(iceServers[0].urls));
         }
     }
 }

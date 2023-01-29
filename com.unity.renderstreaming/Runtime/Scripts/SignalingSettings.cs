@@ -34,7 +34,7 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
-        public IReadOnlyList<string> urls => m_urls;
+        public IReadOnlyCollection<string> urls => m_urls;
 
         /// <summary>
         ///
