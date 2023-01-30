@@ -27,18 +27,30 @@ namespace Unity.RenderStreaming.Editor
             return root;
         }
 
-        ISignalingSettingEditor CreateEditor(SerializedProperty property)
+        static ISignalingSettingEditor CreateEditor(SerializedProperty property)
         {
-            var handler = property.serializedObject.targetObject as SignalingManager;
-            var settings = handler.GetSignalingSettings();
+            SignalingSettings settings = null;
+            if (property.serializedObject.targetObject is SignalingManager handler)
+            {
+                settings = handler.GetSignalingSettings();
+            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            {
+                settings = renderStreamingSettings.signalingSettings;
+            }
             var type = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(settings.GetType());
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
         }
 
         VisualElement CreatePopUpSignalingType(SerializedProperty property, string label)
         {
-            var handler = property.serializedObject.targetObject as SignalingManager;
-            var settings = handler.GetSignalingSettings();
+            SignalingSettings settings = null;
+            if (property.serializedObject.targetObject is SignalingManager handler)
+            {
+                settings = handler.GetSignalingSettings();
+            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            {
+                settings = renderStreamingSettings.signalingSettings;
+            }
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
             var element = new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
@@ -48,12 +60,20 @@ namespace Unity.RenderStreaming.Editor
 
         void OnChangedValue(ChangeEvent<string> e, SerializedProperty property)
         {
-            var handler = property.serializedObject.targetObject as SignalingManager;
-            if (handler == null)
+            SignalingSettings settings = null;
+            if (property.serializedObject.targetObject is SignalingManager handler)
+            {
+                settings = handler.GetSignalingSettings();
+            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            {
+                settings = renderStreamingSettings.signalingSettings;
+            }
+            else
+            {
                 return;
+            }
 
             // cache current settings.
-            var settings = handler.GetSignalingSettings();
             var type = settings.GetType();
             table[type] = settings;
 
