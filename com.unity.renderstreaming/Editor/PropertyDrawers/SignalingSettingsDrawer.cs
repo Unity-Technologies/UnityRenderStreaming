@@ -33,10 +33,12 @@ namespace Unity.RenderStreaming.Editor
             if (property.serializedObject.targetObject is SignalingManager handler)
             {
                 settings = handler.GetSignalingSettings();
-            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            }
+            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
             {
                 settings = renderStreamingSettings.signalingSettings;
             }
+
             var type = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(settings.GetType());
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
         }
@@ -47,10 +49,12 @@ namespace Unity.RenderStreaming.Editor
             if (property.serializedObject.targetObject is SignalingManager handler)
             {
                 settings = handler.GetSignalingSettings();
-            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            }
+            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
             {
                 settings = renderStreamingSettings.signalingSettings;
             }
+
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
             var element = new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
@@ -64,7 +68,8 @@ namespace Unity.RenderStreaming.Editor
             if (property.serializedObject.targetObject is SignalingManager handler)
             {
                 settings = handler.GetSignalingSettings();
-            } else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
+            }
+            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
             {
                 settings = renderStreamingSettings.signalingSettings;
             }
@@ -84,6 +89,7 @@ namespace Unity.RenderStreaming.Editor
                 var newSettings = Activator.CreateInstance(inspectedType) as SignalingSettings;
                 table.Add(inspectedType, newSettings);
             }
+
             property.managedReferenceValue = table[inspectedType];
             property.serializedObject.ApplyModifiedProperties();
 
