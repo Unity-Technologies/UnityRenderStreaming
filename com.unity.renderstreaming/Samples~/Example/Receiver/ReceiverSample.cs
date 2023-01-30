@@ -70,7 +70,11 @@ namespace Unity.RenderStreaming.Samples
         {
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.Run(signaling: settings?.Signaling);
+
+            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
+            if (settings?.SignalingSettings != null)
+                renderStreaming.SetSignalingSettings(settings.SignalingSettings);
+            renderStreaming.Run();
         }
 
         private void Update()

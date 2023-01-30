@@ -7,7 +7,7 @@ namespace Unity.RenderStreaming
         [SerializeReference]
         public SignalingSettings settings;
 
-        public static ScriptableObject Create()
+        public static SignalingSettingsObject Create()
         {
             var instance = CreateInstance<SignalingSettingsObject>();
             instance.settings = new WebSocketSignalingSettings();

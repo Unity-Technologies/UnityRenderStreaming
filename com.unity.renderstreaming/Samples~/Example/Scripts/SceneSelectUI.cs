@@ -28,6 +28,7 @@ namespace Unity.RenderStreaming.Samples
         public const int DefaultStreamWidth = 1280;
         public const int DefaultStreamHeight = 720;
 
+        private bool useDefaultSettings = false;
         private SignalingType signalingType = SignalingType.WebSocket;
         private string signalingAddress = "localhost";
         private float signalingInterval = 5;
@@ -35,6 +36,12 @@ namespace Unity.RenderStreaming.Samples
         private Vector2Int streamSize = new Vector2Int(DefaultStreamWidth, DefaultStreamHeight);
         private VideoCodecInfo receiverVideoCodec = null;
         private VideoCodecInfo senderVideoCodec = null;
+
+        public bool UseDefaultSettings
+        {
+            get { return useDefaultSettings; }
+            set { useDefaultSettings = value; }
+        }
 
         public SignalingType SignalingType
         {
@@ -60,7 +67,7 @@ namespace Unity.RenderStreaming.Samples
             set { signalingInterval = value; }
         }
 
-        public ISignaling Signaling
+        public SignalingSettings SignalingSettings
         {
             get
             {
@@ -69,33 +76,29 @@ namespace Unity.RenderStreaming.Samples
                     case SignalingType.Furioos:
                     {
                         var schema = signalingSecured ? "https" : "http";
-                        var settings = new FurioosSignalingSettings
+                        return new FurioosSignalingSettings
                         (
                             url: $"{schema}://{signalingAddress}"
                         );
-                        return new FurioosSignaling(settings, SynchronizationContext.Current);
                     }
                     case SignalingType.WebSocket:
                     {
                         var schema = signalingSecured ? "wss" : "ws";
-                        var settings = new WebSocketSignalingSettings
+                        return new WebSocketSignalingSettings
                         (
                             url: $"{schema}://{signalingAddress}"
                         );
-                        return new WebSocketSignaling(settings, SynchronizationContext.Current);
                     }
                     case SignalingType.Http:
                     {
                         var schema = signalingSecured ? "https" : "http";
-                        var settings = new HttpSignalingSettings
+                        return new HttpSignalingSettings
                         (
                             url: $"{schema}://{signalingAddress}",
                             interval: signalingInterval
                         );
-                        return new FurioosSignaling(settings, SynchronizationContext.Current);
                     }
                 }
-
                 throw new InvalidOperationException();
             }
         }
@@ -121,6 +124,7 @@ namespace Unity.RenderStreaming.Samples
 
     internal class SceneSelectUI : MonoBehaviour
     {
+        [SerializeField] private Toggle toggleUseDefaultSettings;
         [SerializeField] private Dropdown dropdownSignalingType;
         [SerializeField] private InputField inputFieldSignalingAddress;
         [SerializeField] private Toggle toggleSignalingSecured;
@@ -178,16 +182,20 @@ namespace Unity.RenderStreaming.Samples
             SampleManager.Instance.Initialize();
             settings  = SampleManager.Instance.Settings;
 
+            toggleUseDefaultSettings.isOn = settings.UseDefaultSettings;
             dropdownSignalingType.value = (int)settings.SignalingType;
             inputFieldSignalingAddress.text = settings.SignalingAddress;
             toggleSignalingSecured.isOn = settings.SignalingSecured;
             inputFieldSignalingInterval.text =
                 settings.SignalingInterval.ToString(CultureInfo.InvariantCulture);
 
+            toggleUseDefaultSettings.onValueChanged.AddListener(OnChangeUseDefaultSettings);
             dropdownSignalingType.onValueChanged.AddListener(OnChangeSignalingType);
             inputFieldSignalingAddress.onValueChanged.AddListener(OnChangeSignalingAddress);
             toggleSignalingSecured.onValueChanged.AddListener(OnChangeSignalingSecured);
             inputFieldSignalingInterval.onValueChanged.AddListener(OnChangeSignalingInterval);
+
+            SetInteractableSignalingUI(!settings.UseDefaultSettings);
 
             var optionList = streamSizeList.Select(size => new Dropdown.OptionData($" {size.x} x {size.y} ")).ToList();
             optionList.Add(new Dropdown.OptionData(" Custom "));
@@ -283,6 +291,20 @@ namespace Unity.RenderStreaming.Samples
         private void OnChangeSignalingSecured(bool value)
         {
             settings.SignalingSecured = value;
+        }
+
+        private void OnChangeUseDefaultSettings(bool value)
+        {
+            settings.UseDefaultSettings = value;
+            SetInteractableSignalingUI(!value);
+        }
+
+        private void SetInteractableSignalingUI(bool interactable)
+        {
+            dropdownSignalingType.interactable = interactable;
+            inputFieldSignalingAddress.interactable = interactable;
+            toggleSignalingSecured.interactable = interactable;
+            inputFieldSignalingInterval.interactable = interactable;
         }
 
         private void OnChangeSignalingInterval(string value)
