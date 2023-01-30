@@ -12,8 +12,8 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming
 {
-    [AddComponentMenu("Render Streaming/Render Streaming Handler")]
-    public sealed class RenderStreamingHandler : MonoBehaviour
+    [AddComponentMenu("Render Streaming/Signaling Manager")]
+    public sealed class SignalingManager : MonoBehaviour
     {
 #pragma warning disable 0649
         // ToDo: Create component UI on URS-553
@@ -37,7 +37,7 @@ namespace Unity.RenderStreaming
         public bool runOnAwake = true;
 #pragma warning restore 0649
 
-        private RenderStreamingInternal m_instance;
+        private SignalingManagerInternal m_instance;
         private SignalingEventProvider m_provider;
         private bool m_running;
 
@@ -167,7 +167,7 @@ namespace Unity.RenderStreaming
             if (_handlers.Count() == 0)
                 throw new InvalidOperationException("Handler list is empty.");
 
-            m_instance = new RenderStreamingInternal(ref dependencies);
+            m_instance = new SignalingManagerInternal(ref dependencies);
             m_provider = new SignalingEventProvider(m_instance);
 
             foreach (var handler in _handlers)

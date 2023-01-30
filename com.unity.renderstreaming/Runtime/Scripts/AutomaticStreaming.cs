@@ -12,7 +12,7 @@ namespace Unity.RenderStreaming
 {
     internal class AutomaticStreaming : MonoBehaviour
     {
-        private RenderStreamingHandler renderstreaming;
+        private SignalingManager renderstreaming;
         private Broadcast broadcast;
         private VideoStreamSender videoStreamSender;
         private AudioStreamSender audioStreamSender;
@@ -36,7 +36,7 @@ namespace Unity.RenderStreaming
             inputReceiver = gameObject.AddComponent<AutoInputReceiver>();
             broadcast.AddComponent(inputReceiver);
 
-            renderstreaming = gameObject.AddComponent<RenderStreamingHandler>();
+            renderstreaming = gameObject.AddComponent<SignalingManager>();
             renderstreaming.AddSignalingHandler(broadcast);
             var signalingSettings = RenderStreaming.GetSignalingSettings<WebSocketSignalingSettings>();
             renderstreaming.SetSignalingSettings(signalingSettings);

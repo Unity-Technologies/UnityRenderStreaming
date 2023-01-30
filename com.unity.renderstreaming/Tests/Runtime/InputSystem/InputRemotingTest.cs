@@ -48,7 +48,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         private MonoBehaviourTest<MyMonoBehaviourTest> _test;
-        private RenderStreamingInternal _target1, _target2;
+        private SignalingManagerInternal _target1, _target2;
         private RTCDataChannel _channel1, _channel2;
         private string connectionId = "12345";
         const float ResendOfferInterval = 3f;
@@ -76,8 +76,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            _target1 = new RenderStreamingInternal(ref dependencies1);
-            _target2 = new RenderStreamingInternal(ref dependencies2);
+            _target1 = new SignalingManagerInternal(ref dependencies1);
+            _target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;

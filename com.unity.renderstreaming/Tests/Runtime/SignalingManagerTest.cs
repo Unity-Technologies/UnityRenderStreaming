@@ -8,16 +8,16 @@ using Object = UnityEngine.Object;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    class RenderStreamingHandlerTest
+    class SignalingManagerTest
     {
-        RenderStreamingHandler component;
+        SignalingManager component;
 
         [SetUp]
         public void SetUp()
         {
             GameObject obj = new GameObject();
             obj.SetActive(false);
-            component = obj.AddComponent<RenderStreamingHandler>();
+            component = obj.AddComponent<SignalingManager>();
         }
 
         [TearDown]
