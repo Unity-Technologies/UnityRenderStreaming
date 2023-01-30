@@ -51,8 +51,42 @@ namespace Unity.RenderStreaming
                 if (settings != null)
                 {
                     RenderStreaming.Settings = settings;
+                    ShowRenderStreamingSettingsProperty();
                 }
             });
+
+            var createSettingsButton = rootVisualElement.Q<Button>("createSettingsButton");
+            createSettingsButton.clicked += () =>
+            {
+                CreateNewSettingsAsset("Assets/new RenderStreamingSettings.asset");
+                Repaint();
+            };
+
+            ShowRenderStreamingSettingsProperty();
+        }
+
+        private static void CreateNewSettingsAsset(string relativePath)
+        {
+            var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
+            AssetDatabase.CreateAsset(settings, relativePath);
+            EditorGUIUtility.PingObject(settings);
+        }
+
+        private void ShowRenderStreamingSettingsProperty()
+        {
+            var settingsPropertyContainer = rootVisualElement.Q("settingsPropertyContainer");
+            settingsPropertyContainer.Clear();
+
+            var editor = UnityEditor.Editor.CreateEditor(RenderStreaming.Settings);
+            var inspectorGUI = editor.CreateInspectorGUI();
+            inspectorGUI.Bind(editor.serializedObject);
+            settingsPropertyContainer.Add(inspectorGUI);
+
+            if (AssetDatabase.GetAssetPath(RenderStreaming.Settings) == RenderStreaming.DefaultRenderStreamingSettingsPath)
+            {
+                inspectorGUI.SetEnabled(false);
+                settingsPropertyContainer.Add(new HelpBox("If edit settings, please create new RenderStreamingSettings.", HelpBoxMessageType.Info));
+            }
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)

@@ -2,6 +2,7 @@
     <ui:VisualElement name="renderStreamingContainer">
         <ui:Label text="Render Streaming" name="titleLabel"/>
         <uie:ObjectField label="RenderStreaming Settings" name="renderStreamingSettingsField" type="Unity.RenderStreaming.RenderStreamingSettings, Unity.RenderStreaming" />
-        <ui:Foldout text="Foldout" />
+        <ui:Button text="Create new Settings" name="createSettingsButton" />
+        <ui:VisualElement name="settingsPropertyContainer" />
     </ui:VisualElement>
 </ui:UXML>
