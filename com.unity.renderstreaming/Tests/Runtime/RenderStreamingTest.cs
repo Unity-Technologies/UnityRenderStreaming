@@ -36,7 +36,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             var defaultSettings = RenderStreaming.Settings;
             RenderStreaming.Settings =
                 AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
-            EditorBuildSettings.AddConfigObject(RenderStreaming.EditorBuildSettingsConfigKey, defaultSettings, true);
+            if (defaultSettings != null)
+            {
+                EditorBuildSettings.AddConfigObject(RenderStreaming.EditorBuildSettingsConfigKey, defaultSettings, true);
+            }
 #endif
         }
 
