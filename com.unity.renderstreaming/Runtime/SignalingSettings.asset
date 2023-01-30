@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22c294fb286b37446a86664f4fb41023, type: 3}
+  m_Name: SignalingSettings
+  m_EditorClassIdentifier: 
+  settings:
+    id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
+      data:
+        m_url: ws://127.0.0.1
+        m_iceServers:
+        - m_urls:
+          - stun:stun.l.google.com:19302
+          m_username: 
+          m_credentialType: 0
+          m_credential: 

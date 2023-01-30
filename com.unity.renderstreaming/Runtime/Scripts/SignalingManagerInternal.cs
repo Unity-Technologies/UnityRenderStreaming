@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
-using UnityEngine.Assertions;
 
 namespace Unity.RenderStreaming
 {

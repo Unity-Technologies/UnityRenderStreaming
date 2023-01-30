@@ -13,17 +13,5 @@ MonoBehaviour:
   m_Name: RenderStreamingSettings
   m_EditorClassIdentifier: 
   automaticStreaming: 0
-  signalingSettings:
-    id: 0
-  references:
-    version: 1
-    00000000:
-      type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
-      data:
-        m_url: ws://127.0.0.1:80
-        m_iceServers:
-        - m_urls:
-          - stun:stun.l.google.com:19302
-          m_username: 
-          m_credentialType: 0
-          m_credential: 
+  m_signalingSettings: {fileID: 11400000, guid: 65662d71af45cc24fa4da622b2a770f9,
+    type: 2}
