@@ -27,7 +27,7 @@ namespace Unity.RenderStreaming.Editor
 
         ISignalingSettingEditor CreateEditor(SerializedProperty property)
         {
-            var handler = property.serializedObject.targetObject as RenderStreamingHandler;
+            var handler = property.serializedObject.targetObject as SignalingManager;
             var settings = handler.GetSignalingSettings();
             var type = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(settings.GetType());
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
@@ -35,7 +35,7 @@ namespace Unity.RenderStreaming.Editor
 
         VisualElement CreatePopUpSignalingType(SerializedProperty property, string label)
         {
-            var handler = property.serializedObject.targetObject as RenderStreamingHandler;
+            var handler = property.serializedObject.targetObject as SignalingManager;
             var settings = handler.GetSignalingSettings();
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
@@ -46,7 +46,7 @@ namespace Unity.RenderStreaming.Editor
 
         void OnChangedValue(ChangeEvent<string> e, SerializedProperty property)
         {
-            var handler = property.serializedObject.targetObject as RenderStreamingHandler;
+            var handler = property.serializedObject.targetObject as SignalingManager;
             if (handler == null)
                 return;
 

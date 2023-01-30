@@ -92,7 +92,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         const float ResendOfferInterval = 3.0f;
 
         public MonoBehaviourTest<T> test;
-        public RenderStreamingInternal instance;
+        public SignalingManagerInternal instance;
         public SignalingEventProvider provider;
 
         private static RenderStreamingDependencies CreateDependencies(MonoBehaviour behaviour)
@@ -114,7 +114,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             var test = new MonoBehaviourTest<T>();
             var dependencies = CreateDependencies(test.component);
-            var instance = new RenderStreamingInternal(ref dependencies);
+            var instance = new SignalingManagerInternal(ref dependencies);
             var provider = new SignalingEventProvider(instance);
             var container = new TestContainer<T> { test = test, instance = instance, provider = provider };
             test.component.SetHandler(instance);

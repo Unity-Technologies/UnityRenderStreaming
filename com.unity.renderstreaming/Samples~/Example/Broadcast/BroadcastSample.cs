@@ -31,7 +31,7 @@ namespace Unity.RenderStreaming.Samples
 
     class BroadcastSample : MonoBehaviour
     {
-        [SerializeField] private RenderStreamingHandler renderStreaming;
+        [SerializeField] private SignalingManager renderStreaming;
         [SerializeField] private InputReceiver inputReceiver;
         [SerializeField] private SimpleCameraControllerV2 cameraController;
         [SerializeField] private UIControllerV2 uiController;

@@ -5,7 +5,7 @@ namespace Unity.RenderStreaming.Samples
 {
     class WebBrowserInputSample : MonoBehaviour
     {
-        [SerializeField] RenderStreamingHandler renderStreaming;
+        [SerializeField] SignalingManager renderStreaming;
         [SerializeField] Dropdown dropdownCamera;
         [SerializeField] Transform[] cameras;
         [SerializeField] CopyTransform copyTransform;

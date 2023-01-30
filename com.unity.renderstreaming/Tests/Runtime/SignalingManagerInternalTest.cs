@@ -15,16 +15,16 @@ namespace Unity.RenderStreaming.RuntimeTest
         PublicMode
     }
 
-    static class RenderStreamingInternalExtension
+    static class SignalingManagerInternalExtension
     {
-        public static RTCRtpTransceiver AddSenderTrack(this RenderStreamingInternal target, string connectionId, MediaStreamTrack track)
+        public static RTCRtpTransceiver AddSenderTrack(this SignalingManagerInternal target, string connectionId, MediaStreamTrack track)
         {
             RTCRtpTransceiverInit init = new RTCRtpTransceiverInit() { direction = RTCRtpTransceiverDirection.SendOnly };
             return target.AddTransceiver(connectionId, track, init);
         }
     }
 
-    class RenderStreamingInternalTest
+    class SignalingManagerInternalTest
     {
         class MyMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
         {
@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -94,8 +94,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -118,7 +118,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -153,7 +153,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -175,7 +175,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -218,7 +218,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -255,7 +255,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
 
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
@@ -302,7 +302,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             MockSignaling.Reset(mode == TestMode.PrivateMode);
 
             var dependencies = CreateDependencies();
-            var target = new RenderStreamingInternal(ref dependencies);
+            var target = new SignalingManagerInternal(ref dependencies);
             bool isStarted = false;
             target.onStart += () => { isStarted = true; };
             yield return new WaitUntil(() => isStarted);
@@ -337,8 +337,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -410,8 +410,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -481,8 +481,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -546,8 +546,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -612,8 +612,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -695,8 +695,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -760,8 +760,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;
@@ -823,8 +823,8 @@ namespace Unity.RenderStreaming.RuntimeTest
 
             var dependencies1 = CreateDependencies();
             var dependencies2 = CreateDependencies();
-            var target1 = new RenderStreamingInternal(ref dependencies1);
-            var target2 = new RenderStreamingInternal(ref dependencies2);
+            var target1 = new SignalingManagerInternal(ref dependencies1);
+            var target2 = new SignalingManagerInternal(ref dependencies2);
 
             bool isStarted1 = false;
             bool isStarted2 = false;

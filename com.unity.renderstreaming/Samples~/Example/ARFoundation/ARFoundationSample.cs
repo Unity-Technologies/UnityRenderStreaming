@@ -11,7 +11,7 @@ namespace Unity.RenderStreaming.Samples
     internal class ARFoundationSample : MonoBehaviour
     {
 #pragma warning disable 0649
-        [SerializeField] private RenderStreamingHandler renderStreaming;
+        [SerializeField] private SignalingManager renderStreaming;
         [SerializeField] private Button startButton;
         [SerializeField] private Button stopButton;
         [SerializeField] private RawImage remoteVideoImage;
