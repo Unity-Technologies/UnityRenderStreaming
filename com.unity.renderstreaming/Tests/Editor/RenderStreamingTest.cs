@@ -1,10 +1,30 @@
 using System.Linq;
 using NUnit.Framework;
+using UnityEditor;
 
 namespace Unity.RenderStreaming.EditorTest
 {
     public class RenderStreamingTest
     {
+        private RenderStreamingSettings temp;
+
+        [SetUp]
+        public void Setup()
+        {
+            temp = RenderStreaming.Settings;
+            RenderStreaming.Settings =
+                AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (temp != null)
+            {
+                RenderStreaming.Settings = temp;
+            }
+        }
+
         [Test]
         public void SignalingSettings()
         {
