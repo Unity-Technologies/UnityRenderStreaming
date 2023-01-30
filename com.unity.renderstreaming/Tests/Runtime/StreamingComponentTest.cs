@@ -367,9 +367,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go3);
         }
 
-        // workaround(kazuki): Fix NullReferenceException in AudioStreamTrack.ProcessAudio.
+        // workaround(kazuki): Fix NullReferenceException in AudioStreamTrack.ProcessAudio. (WRS-231)
         [UnityTest]
-        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.OSXEditor, RuntimePlatform.OSXPlayer, RuntimePlatform.LinuxEditor, RuntimePlatform.LinuxPlayer })]
         public IEnumerator ReplaceTrack()
         {
             var go = new GameObject();

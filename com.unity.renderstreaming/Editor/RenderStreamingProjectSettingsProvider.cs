@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.RenderStreaming
@@ -39,6 +42,17 @@ namespace Unity.RenderStreaming
             VisualElement newVisualElement = new VisualElement();
             template.CloneTree(newVisualElement);
             rootVisualElement.Add(newVisualElement);
+
+            var renderStreamingSettingsField =  rootVisualElement.Q<ObjectField>("renderStreamingSettingsField");
+            renderStreamingSettingsField.SetValueWithoutNotify(RenderStreaming.Settings);
+            renderStreamingSettingsField.RegisterCallback<ChangeEvent<Object>>(ev =>
+            {
+                var settings = ev.newValue as RenderStreamingSettings;
+                if (settings != null)
+                {
+                    RenderStreaming.Settings = settings;
+                }
+            });
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
