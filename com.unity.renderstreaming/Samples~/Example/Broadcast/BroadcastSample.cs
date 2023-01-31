@@ -186,10 +186,7 @@ namespace Unity.RenderStreaming.Samples
 
             if (renderStreaming.runOnAwake)
                 return;
-            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
-            if (settings?.SignalingSettings != null)
-                renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-            renderStreaming.Run();
+            renderStreaming.Run(signaling: settings?.Signaling);
 
             inputReceiver.OnStartedChannel += OnStartedChannel;
             var map = inputReceiver.currentActionMap;

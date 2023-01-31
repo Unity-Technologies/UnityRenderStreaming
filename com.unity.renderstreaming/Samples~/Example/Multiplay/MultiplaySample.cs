@@ -87,10 +87,9 @@ namespace Unity.RenderStreaming.Samples
             playerController.CheckPairedDevices();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
-            if (settings?.SignalingSettings != null)
-                renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-            renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});
+            renderStreaming.Run(signaling: settings?.Signaling,
+                handlers: new SignalingHandlerBase[] {handler}
+            );
         }
 
         IEnumerator SetUpGuest(string username, string connectionId)
@@ -99,10 +98,9 @@ namespace Unity.RenderStreaming.Samples
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
-            if (settings?.SignalingSettings != null)
-                renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-            renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});
+            renderStreaming.Run(signaling: settings?.Signaling,
+                handlers: new SignalingHandlerBase[] {handler}
+            );
 
             videoImage.gameObject.SetActive(true);
             var receiveVideoViewer = guestPlayer.GetComponent<VideoStreamReceiver>();

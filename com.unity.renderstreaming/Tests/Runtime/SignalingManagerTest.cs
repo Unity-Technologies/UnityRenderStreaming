@@ -32,14 +32,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void UseDefaultSettings()
-        {
-            Assert.That(component.useDefaultSettings, Is.True);
-            component.useDefaultSettings = false;
-            Assert.That(component.useDefaultSettings, Is.False);
-        }
-
-        [Test]
         public void Run()
         {
             var handler = component.gameObject.AddComponent<SingleConnection>();
@@ -98,7 +90,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.gameObject.SetActive(true);
 
             var settings = component.GetSignalingSettings() as WebSocketSignalingSettings;
-            Assert.That(settings, Is.Null);
+            Assert.That(settings, Is.Not.Null);
+            Assert.That(settings.url, Is.Not.Null);
+            Assert.That(settings.iceServers, Is.Not.Null);
         }
 
         [Test]

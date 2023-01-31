@@ -38,6 +38,8 @@ namespace Unity.RenderStreaming
 
             renderstreaming = gameObject.AddComponent<SignalingManager>();
             renderstreaming.AddSignalingHandler(broadcast);
+            var signalingSettings = RenderStreaming.GetSignalingSettings<WebSocketSignalingSettings>();
+            renderstreaming.SetSignalingSettings(signalingSettings);
             renderstreaming.Run();
 
             SceneManager.activeSceneChanged += (scene1, scene2) =>

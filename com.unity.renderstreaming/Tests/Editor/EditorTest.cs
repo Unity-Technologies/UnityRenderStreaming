@@ -163,13 +163,5 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(asset.info.Equals(otherAsset.info), Is.True);
             AssetDatabase.DeleteAsset(exportPath);
         }
-
-        [Test]
-        public void CreateSignalingSettings()
-        {
-            var asset = SignalingSettingsObject.Create();
-            AssetDatabase.CreateAsset(asset, "Assets/SignalingSettings.asset");
-            AssetDatabase.Refresh();
-        }
     }
 }
