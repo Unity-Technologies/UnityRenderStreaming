@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -18,10 +19,11 @@ namespace Unity.RenderStreaming.Editor
         {
             editor = CreateEditor(property);
             var root = new VisualElement();
+            var box = new Box();
+            root.Add(box);
             editorGUI = editor.CreateInspectorGUI(property);
-
-            root.Add(CreatePopUpSignalingType(property, "Signaling Type"));
-            root.Add(editorGUI);
+            box.Add(CreatePopUpSignalingType(property, "Signaling Type"));
+            box.Add(editorGUI);
             return root;
         }
 
@@ -99,8 +101,8 @@ namespace Unity.RenderStreaming.Editor
         {
             VisualElement root = new VisualElement();
             root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             root.Add(new PropertyField(property.FindPropertyRelative("m_interval"), "Polling Interval"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }
 
