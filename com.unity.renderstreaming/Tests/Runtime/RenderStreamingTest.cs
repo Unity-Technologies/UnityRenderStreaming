@@ -69,7 +69,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
                                        ScriptableObject.CreateInstance<RenderStreamingSettings>();
 #endif
-            Assert.That(defaultSettings.automaticStreaming, Is.False);
+            Assert.That(defaultSettings.automaticStreaming, Is.True);
             var defaultSignalingSettings = defaultSettings.signalingSettings as WebSocketSignalingSettings;
             Assert.That(defaultSignalingSettings, Is.Not.Null);
             Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
