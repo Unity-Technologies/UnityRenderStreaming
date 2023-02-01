@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.RenderStreaming;
 using Unity.RenderStreaming.Editor;
 using Unity.RenderStreaming.Editor.UI;
 using UnityEditor;
@@ -167,62 +168,63 @@ namespace Editor
         }
 
         // todo: checking renderstreaming setting is not null
-        private bool IsRenderStreamingSettingsCorrect() => false;
-        private void FixRenderStreamingSettingsCorrect() => Debug.Log("set or create renderstreaming settings");
+        private static bool IsRenderStreamingSettingsCorrect() => RenderStreaming.Settings != null;
+        private static void FixRenderStreamingSettingsCorrect() => RenderStreaming.Settings =
+            AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
 
-        private bool IsRunInBackgroundCorrect() => PlayerSettings.runInBackground;
-        private void FixRunInBackground() => PlayerSettings.runInBackground = true;
+        private static bool IsRunInBackgroundCorrect() => PlayerSettings.runInBackground;
+        private static void FixRunInBackground() => PlayerSettings.runInBackground = true;
 
-        private bool IsInputSystemBackgroundBehaviorCorrect() =>
+        private static bool IsInputSystemBackgroundBehaviorCorrect() =>
             InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
 
-        private void FixInputSystemBackgroundBehavior() =>
+        private static void FixInputSystemBackgroundBehavior() =>
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
 
-        private bool IsInputSystemPlayModeInputBehaviorCorrect() =>
+        private static bool IsInputSystemPlayModeInputBehaviorCorrect() =>
             InputSystem.settings.editorInputBehaviorInPlayMode ==
             InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
-        private void FixInputSystemPlayModeInputBehavior() =>
+        private static void FixInputSystemPlayModeInputBehavior() =>
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
-        private bool IsMacCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
-        private void FixMacCameraUsage() => PlayerSettings.macOS.cameraUsageDescription = "For WebCamTexture";
+        private static bool IsMacCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
+        private static void FixMacCameraUsage() => PlayerSettings.macOS.cameraUsageDescription = "For WebCamTexture";
 
-        private bool IsMacMicrophoneUsageCorrect() =>
+        private static bool IsMacMicrophoneUsageCorrect() =>
             !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
 
-        private void FixMacMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
+        private static void FixMacMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
-        private bool IsIOSCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.cameraUsageDescription);
-        private void FixIOSCameraUsage() => PlayerSettings.iOS.cameraUsageDescription = "For WebCamTexture";
+        private static bool IsIOSCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.cameraUsageDescription);
+        private static void FixIOSCameraUsage() => PlayerSettings.iOS.cameraUsageDescription = "For WebCamTexture";
 
-        private bool IsIOSMicrophoneUsageCorrect() =>
+        private static bool IsIOSMicrophoneUsageCorrect() =>
             !string.IsNullOrEmpty(PlayerSettings.iOS.microphoneUsageDescription);
 
-        private void FixIOSMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
+        private static void FixIOSMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
-        private bool IsAndroidMinimumAPILevelCorrect() =>
+        private static bool IsAndroidMinimumAPILevelCorrect() =>
             PlayerSettings.Android.minSdkVersion >= AndroidSdkVersions.AndroidApiLevel24;
 
-        private void FixAndroidMinimumAPILevel() =>
+        private static void FixAndroidMinimumAPILevel() =>
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
 
-        private bool IsAndroidScriptBackendCorrect() =>
+        private static bool IsAndroidScriptBackendCorrect() =>
             PlayerSettings.GetScriptingBackend(BuildTargetGroup.Android) == ScriptingImplementation.IL2CPP;
 
-        private void FixAndroidScriptBackend() =>
+        private static void FixAndroidScriptBackend() =>
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
 
-        private bool IsAndroidTargetArchitectureCorrect() =>
+        private static bool IsAndroidTargetArchitectureCorrect() =>
             (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) == AndroidArchitecture.ARM64;
 
-        private void FixAndroidTargetArchitecture() =>
+        private static void FixAndroidTargetArchitecture() =>
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
 
-        private bool IsAndroidInternetAccessCorrect() => PlayerSettings.Android.forceInternetPermission;
-        private void FixAndroidInternetAccess() => PlayerSettings.Android.forceInternetPermission = true;
+        private static bool IsAndroidInternetAccessCorrect() => PlayerSettings.Android.forceInternetPermission;
+        private static void FixAndroidInternetAccess() => PlayerSettings.Android.forceInternetPermission = true;
 
         const string kTemplatePath = "Packages/com.unity.renderstreaming/Editor/UXML/RenderStreamingWizard.uxml";
         const string kStylePath = "Packages/com.unity.renderstreaming/Editor/Styles/RenderStreamingWizard.uss";
