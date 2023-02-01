@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -78,8 +80,7 @@ namespace Unity.RenderStreaming
             var createSettingsButton = new Button {text = "Create New Settings Asset"};
             createSettingsButton.clicked += () =>
             {
-                const string newSettingsPath = "Assets/new RenderStreamingSettings.asset";
-                CreateNewSettingsAsset(newSettingsPath);
+                CreateNewSettingsAsset();
                 Repaint();
             };
             selectorContainer.Add(createSettingsButton);
@@ -110,6 +111,34 @@ namespace Unity.RenderStreaming
         {
             var guids = AssetDatabase.FindAssets("t:RenderStreamingSettings");
             return guids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+        }
+
+        private static void CreateNewSettingsAsset()
+        {
+            // Query for file name.
+            var projectName = PlayerSettings.productName;
+            var path = EditorUtility.SaveFilePanel("Create Render Streaming Settings File", "Assets",
+                projectName, "asset");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            // Make sure the path is in the Assets/ folder.
+            path = path.Replace("\\", "/"); // Make sure we only get '/' separators.
+            var dataPath = Application.dataPath + "/";
+            if (!path.StartsWith(dataPath, StringComparison.CurrentCultureIgnoreCase))
+            {
+                Debug.LogError($"Render Streaming settings must be stored in Assets folder of the project (got: '{path}')");
+                return;
+            }
+
+            // Make sure it ends with .asset.
+            var extension = Path.GetExtension(path);
+            if (string.Compare(extension, ".asset", StringComparison.InvariantCultureIgnoreCase) != 0)
+                path += ".asset";
+
+            // Create settings file.
+            var relativePath = "Assets/" + path.Substring(dataPath.Length);
+            CreateNewSettingsAsset(relativePath);
         }
 
         private static void CreateNewSettingsAsset(string relativePath)
