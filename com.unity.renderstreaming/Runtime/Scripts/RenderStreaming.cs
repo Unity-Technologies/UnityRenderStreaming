@@ -105,6 +105,14 @@ namespace Unity.RenderStreaming
             {
                 m_running = change == PlayModeStateChange.EnteredPlayMode;
             };
+
+            EditorApplication.projectChanged += () =>
+            {
+                if (!EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey, out RenderStreamingSettings _))
+                {
+                    Settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
+                }
+            };
         }
 #endif
 
