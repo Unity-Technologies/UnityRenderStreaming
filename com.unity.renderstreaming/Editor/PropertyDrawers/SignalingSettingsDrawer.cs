@@ -27,34 +27,16 @@ namespace Unity.RenderStreaming.Editor
             return root;
         }
 
-        static ISignalingSettingEditor CreateEditor(SerializedProperty property)
+        ISignalingSettingEditor CreateEditor(SerializedProperty property)
         {
-            SignalingSettings settings = null;
-            if (property.serializedObject.targetObject is SignalingManager handler)
-            {
-                settings = handler.GetSignalingSettings();
-            }
-            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
-            {
-                settings = renderStreamingSettings.signalingSettings;
-            }
-
+            var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var type = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(settings.GetType());
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
         }
 
         VisualElement CreatePopUpSignalingType(SerializedProperty property, string label)
         {
-            SignalingSettings settings = null;
-            if (property.serializedObject.targetObject is SignalingManager handler)
-            {
-                settings = handler.GetSignalingSettings();
-            }
-            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
-            {
-                settings = renderStreamingSettings.signalingSettings;
-            }
-
+            var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
             var element = new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
@@ -64,19 +46,8 @@ namespace Unity.RenderStreaming.Editor
 
         void OnChangedValue(ChangeEvent<string> e, SerializedProperty property)
         {
-            SignalingSettings settings = null;
-            if (property.serializedObject.targetObject is SignalingManager handler)
-            {
-                settings = handler.GetSignalingSettings();
-            }
-            else if (property.serializedObject.targetObject is RenderStreamingSettings renderStreamingSettings)
-            {
-                settings = renderStreamingSettings.signalingSettings;
-            }
-            else
-            {
+            if(!(fieldInfo.GetValue(property.serializedObject.targetObject) is SignalingSettings settings))
                 return;
-            }
 
             // cache current settings.
             var type = settings.GetType();
