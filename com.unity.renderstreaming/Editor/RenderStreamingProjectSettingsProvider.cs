@@ -58,7 +58,7 @@ namespace Unity.RenderStreaming
             var selectorContainer = rootVisualElement.Q<VisualElement>("renderStreamingSettingsSelector");
 
             var defaultIndex = ArrayHelpers.IndexOf(availableRenderStreamingSettingsAssets, AssetDatabase.GetAssetPath(settings));
-            var choices = availableRenderStreamingSettingsAssets.Select(x => x.Split('/').Last()).ToList();
+            var choices = availableRenderStreamingSettingsAssets.Select(x => x.Replace('/', '\\')).ToList();
             var selectPopup = new PopupField<string>(label: label, choices: choices, defaultIndex: defaultIndex)
             {
                 name = "renderStreamingSettingsSelectPopup"
