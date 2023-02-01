@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace Unity.RenderStreaming.Editor
 {
     [CustomEditor(typeof(RenderStreamingSettings))]
-    internal class SignalingSettingsEditor : UnityEditor.Editor
+    internal class RenderStreamingSettingsEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
