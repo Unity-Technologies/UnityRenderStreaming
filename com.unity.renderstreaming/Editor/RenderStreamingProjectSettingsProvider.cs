@@ -12,8 +12,11 @@ namespace Unity.RenderStreaming
         internal VisualElement rootVisualElement { get; private set; }
         private bool isDefaultSettings => AssetDatabase.GetAssetPath(RenderStreaming.Settings) ==
                                           RenderStreaming.DefaultRenderStreamingSettingsPath;
+        private bool noSettingsInAssets => availableRenderStreamingSettingsAssets.Length == 0
+                                           || availableRenderStreamingSettingsAssets.All(x => x == RenderStreaming.DefaultRenderStreamingSettingsPath);
         private string[] availableRenderStreamingSettingsAssets;
         private int currentSelectedSettingsAsset;
+        private RenderStreamingSettings settings;
 
         const string kSettingsPath = "Project/Render Streaming";
         const string kTemplatePath = "Packages/com.unity.renderstreaming/Editor/UXML/RenderStreamingProjectSettings.uxml";
@@ -47,52 +50,60 @@ namespace Unity.RenderStreaming
             template.CloneTree(newVisualElement);
             rootVisualElement.Add(newVisualElement);
 
+            settings = RenderStreaming.Settings;
             availableRenderStreamingSettingsAssets = FindRenderStreamingSettingsPathInProject();
 
             var selectorContainer = rootVisualElement.Q<VisualElement>("renderStreamingSettingsSelector");
 
-            var defaultIndex = ArrayHelpers.IndexOf(availableRenderStreamingSettingsAssets, AssetDatabase.GetAssetPath(RenderStreaming.Settings));
+            var defaultIndex = ArrayHelpers.IndexOf(availableRenderStreamingSettingsAssets, AssetDatabase.GetAssetPath(settings));
             var choices = availableRenderStreamingSettingsAssets.Select(x => x.Split('/').Last()).ToList();
-            var selectPopup = new PopupField<string>(label: label, choices: choices, defaultIndex: defaultIndex);
+            var selectPopup = new PopupField<string>(label: label, choices: choices, defaultIndex: defaultIndex)
+            {
+                name = "renderStreamingSettingsSelectPopup"
+            };
             selectPopup.RegisterValueChangedCallback(evt =>
             {
                 currentSelectedSettingsAsset = selectPopup.index;
                 var newSettings =
                     AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(availableRenderStreamingSettingsAssets[currentSelectedSettingsAsset]);
-                if (newSettings == RenderStreaming.Settings)
+                if (newSettings == settings)
                 {
                     return;
                 }
 
                 RenderStreaming.Settings = newSettings;
-                ShowRenderStreamingSettingsProperty();
             });
             selectorContainer.Add(selectPopup);
 
-            var createSettingsButton = new Button{text = "Create New Settings Asset"};
+            var createSettingsButton = new Button {text = "Create New Settings Asset"};
             createSettingsButton.clicked += () =>
             {
                 const string newSettingsPath = "Assets/new RenderStreamingSettings.asset";
                 CreateNewSettingsAsset(newSettingsPath);
-                RenderStreaming.Settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(newSettingsPath);
                 Repaint();
             };
             selectorContainer.Add(createSettingsButton);
 
-            var createAssetHelpBox = new HelpBox("Please Create new Settings.", HelpBoxMessageType.Info);
-            if (availableRenderStreamingSettingsAssets.Length == 0
-                || availableRenderStreamingSettingsAssets.All(x => x == RenderStreaming.DefaultRenderStreamingSettingsPath))
+            var createAssetHelpBox = new HelpBox("Settings for the Render Streaming are not stored in an asset. Click the button above to create a settings asset you can edit.", HelpBoxMessageType.Info)
             {
-                createAssetHelpBox.style.display = DisplayStyle.Flex;
-            }
-            else
-            {
-                createAssetHelpBox.style.display = DisplayStyle.None;
-            }
+                style = {display = noSettingsInAssets ? DisplayStyle.Flex : DisplayStyle.None}
+            };
             selectorContainer.Add(createAssetHelpBox);
 
             ShowRenderStreamingSettingsProperty();
+        }
 
+        public override void OnInspectorUpdate()
+        {
+            if (RenderStreaming.Settings == settings && settings != null)
+            {
+                return;
+            }
+
+            settings = RenderStreaming.Settings;
+            var index = ArrayHelpers.IndexOf(availableRenderStreamingSettingsAssets, AssetDatabase.GetAssetPath(settings));
+            rootVisualElement.Q<PopupField<string>>("renderStreamingSettingsSelectPopup").index = index;
+            ShowRenderStreamingSettingsProperty();
         }
 
         private static string[] FindRenderStreamingSettingsPathInProject()
@@ -106,6 +117,7 @@ namespace Unity.RenderStreaming
             var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
             AssetDatabase.CreateAsset(settings, relativePath);
             EditorGUIUtility.PingObject(settings);
+            RenderStreaming.Settings = settings;
         }
 
         private void ShowRenderStreamingSettingsProperty()
@@ -113,15 +125,15 @@ namespace Unity.RenderStreaming
             var settingsPropertyContainer = rootVisualElement.Q("settingsPropertyContainer");
             settingsPropertyContainer.Clear();
 
-            var editor = UnityEditor.Editor.CreateEditor(RenderStreaming.Settings);
+            var editor = UnityEditor.Editor.CreateEditor(settings);
             var inspectorGUI = editor.CreateInspectorGUI();
+            inspectorGUI.SetEnabled(!isDefaultSettings);
             inspectorGUI.Bind(editor.serializedObject);
-            settingsPropertyContainer.Add(inspectorGUI);
-            if (isDefaultSettings)
+            if (!noSettingsInAssets && isDefaultSettings)
             {
-                inspectorGUI.SetEnabled(false);
-                settingsPropertyContainer.Add(new HelpBox("If edit settings, please create/select other RenderStreamingSettings.", HelpBoxMessageType.Info));
+                settingsPropertyContainer.Add(new HelpBox("This is package default settings. Please select other settings asset you can edit.", HelpBoxMessageType.Info));
             }
+            settingsPropertyContainer.Add(inspectorGUI);
         }
 
         public RenderStreamingProjectSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
