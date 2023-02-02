@@ -169,6 +169,7 @@ namespace Editor
         }
 
         private static bool IsRenderStreamingSettingsCorrect() => RenderStreaming.Settings != null;
+
         private static void FixRenderStreamingSettingsCorrect() => RenderStreaming.Settings =
             AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
 
@@ -189,7 +190,9 @@ namespace Editor
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
-        private static bool IsMacCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
+        private static bool IsMacCameraUsageCorrect() =>
+            !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
+
         private static void FixMacCameraUsage() => PlayerSettings.macOS.cameraUsageDescription = "For WebCamTexture";
 
         private static bool IsMacMicrophoneUsageCorrect() =>
@@ -197,7 +200,9 @@ namespace Editor
 
         private static void FixMacMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
-        private static bool IsIOSCameraUsageCorrect() => !string.IsNullOrEmpty(PlayerSettings.iOS.cameraUsageDescription);
+        private static bool IsIOSCameraUsageCorrect() =>
+            !string.IsNullOrEmpty(PlayerSettings.iOS.cameraUsageDescription);
+
         private static void FixIOSCameraUsage() => PlayerSettings.iOS.cameraUsageDescription = "For WebCamTexture";
 
         private static bool IsIOSMicrophoneUsageCorrect() =>
@@ -240,10 +245,10 @@ namespace Editor
 
         private VisualElement checkUpdateContainer => cache.Get<VisualElement>("checkUpdateContainer");
         private Button fixAllButton => cache.Get<Button>("fixAllButton");
-        private VisualElement configurationCheckButtons => cache.Get<VisualElement>("configurationCheckButtons");
+        private VisualElement playmodeCheckingButtons => cache.Get<VisualElement>("configurationCheckButtons");
 
-        private VisualElement buildSettingsCheckingContainer =>
-            cache.Get<VisualElement>("buildSettingsCheckingContainer");
+        private VisualElement buildSettingsCheckingButton =>
+            cache.Get<VisualElement>("buildSettingsCheckButtons");
 
         private VisualElement otherCheckingContainer => cache.Get<VisualElement>("otherCheckingContainer");
         private VisualElementCache cache;
@@ -280,8 +285,8 @@ namespace Editor
 
             fixAllButton.SetEnabled(entries.Any(x => !x.check()));
 
-            foreach (var visualElement in configurationCheckButtons.Children()
-                         .Concat(buildSettingsCheckingContainer.Children())
+            foreach (var visualElement in playmodeCheckingButtons.Children()
+                         .Concat(buildSettingsCheckingButton.Children())
                          .Select(c => c as VisualElementUpdatable)
                          .Where(c => c != null))
             {
@@ -294,7 +299,7 @@ namespace Editor
         private void BindCheckVersion()
         {
             // todo : detect current version
-            const string version = "3.1.0-exp.5";
+            const string version = "3.1.0-exp.6";
             var versionCheckContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
             var versionLabel = new Label($"Current Install :{version}");
             var checkUpdateButton = new Button {text = "Check update"};
@@ -315,9 +320,10 @@ namespace Editor
                 }
             };
 
+
             foreach (var entry in Entries.Where(x => x.scope == Scope.Configuration))
             {
-                configurationCheckButtons.Add(new ConfigInfoLine(
+                playmodeCheckingButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
                     entry.configStyle.error,
                     entry.configStyle.messageType,
@@ -330,7 +336,7 @@ namespace Editor
 
             foreach (var entry in Entries.Where(x => x.scope == Scope.Build))
             {
-                buildSettingsCheckingContainer.Add(new ConfigInfoLine(
+                buildSettingsCheckingButton.Add(new ConfigInfoLine(
                     entry.configStyle.label,
                     entry.configStyle.error,
                     entry.configStyle.messageType,
