@@ -167,7 +167,6 @@ namespace Editor
             }
         }
 
-        // todo: checking renderstreaming setting is not null
         private static bool IsRenderStreamingSettingsCorrect() => RenderStreaming.Settings != null;
         private static void FixRenderStreamingSettingsCorrect() => RenderStreaming.Settings =
             AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
@@ -270,6 +269,7 @@ namespace Editor
 
         private void OnInspectorUpdate()
         {
+            // limit inspector update per 1 second.
             inspectorCounter++;
             if (inspectorCounter % 10 != 0)
             {
@@ -279,16 +279,12 @@ namespace Editor
 
             fixAllButton.SetEnabled(entries.Any(x => !x.check()));
 
-            foreach (var visualElement in configurationCheckButtons.Children().Where(c => c is VisualElementUpdatable))
+            foreach (var visualElement in configurationCheckButtons.Children()
+                         .Concat(buildSettingsCheckingContainer.Children())
+                         .Select(c => c as VisualElementUpdatable)
+                         .Where(c => c != null))
             {
-                var updatable = (VisualElementUpdatable)visualElement;
-                updatable.CheckUpdate();
-            }
-
-            foreach (var visualElement in buildSettingsCheckingContainer.Children().Where(c => c is VisualElementUpdatable))
-            {
-                var updatable = (VisualElementUpdatable)visualElement;
-                updatable.CheckUpdate();
+                visualElement.CheckUpdate();
             }
 
             inspectorCounter = 0;
