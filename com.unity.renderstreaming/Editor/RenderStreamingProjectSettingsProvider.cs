@@ -123,7 +123,6 @@ namespace Unity.RenderStreaming
                 return;
 
             // Make sure the path is in the Assets/ folder.
-            path = path.Replace("\\", "/"); // Make sure we only get '/' separators.
             var dataPath = Application.dataPath + "/";
             if (!path.StartsWith(dataPath, StringComparison.CurrentCultureIgnoreCase))
             {
