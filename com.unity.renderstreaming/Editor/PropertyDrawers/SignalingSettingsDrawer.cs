@@ -31,14 +31,14 @@ namespace Unity.RenderStreaming.Editor
             return root;
         }
 
-        static ISignalingSettingEditor CreateEditor(SerializedProperty property)
+        ISignalingSettingEditor CreateEditor(SerializedProperty property)
         {
             var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var type = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(settings.GetType());
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
         }
 
-        static PopupField<string> CreatePopUpSignalingType(SerializedProperty property, string label)
+        PopupField<string> CreatePopUpSignalingType(SerializedProperty property, string label)
         {
             var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
@@ -56,16 +56,13 @@ namespace Unity.RenderStreaming.Editor
 
         void OnSignalingSettingsObjectChange(SerializedPropertyChangeEvent e, SerializedProperty property)
         {
-            var handler = property.serializedObject.targetObject as SignalingManager;
-            var settings = handler.GetSignalingSettings();
+            var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var label = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
 
             if (popupFieldSignalingType.value == label)
                 return;
             popupFieldSignalingType.value = label;
             RecreateEditorGUI(label, property);
-
-            //editorGUI.MarkDirtyRepaint();
         }
 
         void OnPopupFieldValueChange(ChangeEvent<string> e, SerializedProperty property)
@@ -79,8 +76,6 @@ namespace Unity.RenderStreaming.Editor
 
             var label = e.newValue;
             RecreateEditorGUI(label, property);
-
-            //editorGUI.MarkDirtyRepaint();
         }
 
         void RecreateEditorGUI(string label, SerializedProperty property)
