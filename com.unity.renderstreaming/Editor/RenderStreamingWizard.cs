@@ -126,6 +126,7 @@ namespace Editor
                 this.forceDisplayCheck = forceDisplayCheck;
                 this.skipErrorIcon = skipErrorIcon;
                 this.displayAssetName = displayAssetName;
+                this.displayAssetName = false;
             }
         }
 
@@ -294,9 +295,9 @@ namespace Editor
         {
             // todo : detect current version
             const string version = "3.1.0-exp.5";
-            var versionCheckContainer = new VisualElement() {style = {flexDirection = FlexDirection.Row}};
+            var versionCheckContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
             var versionLabel = new Label($"Current Install :{version}");
-            var checkUpdateButton = new Button() {text = "Check update"};
+            var checkUpdateButton = new Button {text = "Check update"};
             versionCheckContainer.Add(versionLabel);
             versionCheckContainer.Add(checkUpdateButton);
             versionCheckContainer.style.paddingLeft = versionCheckContainer.style.paddingLeft.value.value + 15;
@@ -343,9 +344,9 @@ namespace Editor
 
         private void BindOthers()
         {
-            var webappContainer = new VisualElement() {style = {flexDirection = FlexDirection.Row}};
+            var webappContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
             var webappLabel = new Label("Download Latest WebApp");
-            var webappButton = new Button() {text = "Download"};
+            var webappButton = new Button {text = "Download"};
             webappContainer.Add(webappLabel);
             webappContainer.Add(webappButton);
             webappContainer.style.paddingLeft = webappContainer.style.paddingLeft.value.value + 15;

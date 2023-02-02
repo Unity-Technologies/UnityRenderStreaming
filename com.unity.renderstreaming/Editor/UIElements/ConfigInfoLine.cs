@@ -9,13 +9,9 @@ namespace Unity.RenderStreaming.Editor.UI
     {
         static class Style
         {
-            const string k_IconFolder =
-                @"Packages/com.unity.render-pipelines.high-definition/Editor/Wizard/WizardResources/";
-
-            public static readonly Texture ok = EditorGUIUtility.Load(k_IconFolder + "OK") as Texture;
-            public static readonly Texture error = EditorGUIUtility.Load(k_IconFolder + "Error") as Texture;
-            // public static readonly Texture warning = CoreEditorUtils.LoadIcon(k_IconFolder, "Warning");
-
+            const string k_IconFolder = "Packages/com.unity.renderstreaming/Editor/Icon/";
+            public static readonly Texture ok = EditorGUIUtility.Load(k_IconFolder + "OK.png") as Texture;
+            public static readonly Texture error = EditorGUIUtility.Load(k_IconFolder + "Error.png") as Texture;
             public const int k_IndentStepSize = 15;
         }
 
@@ -34,8 +30,8 @@ namespace Unity.RenderStreaming.Editor.UI
             testRow.Add(testLabel);
             if (m_VisibleStatus)
             {
-                var statusOk = new Image() {image = Style.ok, name = "StatusOK"};
-                var statusError = new Image() {image = Style.error, name = "StatusError"};
+                var statusOk = new Image {image = Style.ok, name = "StatusOK"};
+                var statusError = new Image {image = Style.error, name = "StatusError"};
                 testRow.Add(statusOk);
                 testRow.Add(statusError);
             }
