@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc8ba17751ad4107a50fa1415017b6b1, type: 3}
   m_Name: RenderStreamingSettings
   m_EditorClassIdentifier: 
-  automaticStreaming: 0
+  automaticStreaming: 1
   signalingSettings:
     id: 0
   references:

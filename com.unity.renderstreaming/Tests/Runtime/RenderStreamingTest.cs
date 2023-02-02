@@ -69,7 +69,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
                                        ScriptableObject.CreateInstance<RenderStreamingSettings>();
 #endif
-            Assert.That(defaultSettings.automaticStreaming, Is.False);
+            Assert.That(defaultSettings.automaticStreaming, Is.True);
             var defaultSignalingSettings = defaultSettings.signalingSettings as WebSocketSignalingSettings;
             Assert.That(defaultSignalingSettings, Is.Not.Null);
             Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
@@ -88,20 +88,27 @@ namespace Unity.RenderStreaming.RuntimeTest
             RenderStreaming.Settings = settings;
             Assert.That(RenderStreaming.Settings.automaticStreaming, Is.EqualTo(settings.automaticStreaming));
             Assert.That(RenderStreaming.Settings.signalingSettings, Is.EqualTo(settings.signalingSettings));
+
+            Object.DestroyImmediate(settings);
         }
 
         [Test]
         public void AutomaticStreaming()
         {
-            RenderStreaming.AutomaticStreaming = true;
+            var settings = ScriptableObject.CreateInstance<RenderStreamingSettings>();
+            settings.automaticStreaming = false;
+            settings.signalingSettings = new WebSocketSignalingSettings();
+            RenderStreaming.Settings = settings;
 
+            RenderStreaming.AutomaticStreaming = true;
             var automaticStreaming = Object.FindObjectOfType<AutomaticStreaming>();
             Assert.That(automaticStreaming, Is.Not.Null);
 
             RenderStreaming.AutomaticStreaming = false;
-
             automaticStreaming = Object.FindObjectOfType<AutomaticStreaming>();
             Assert.That(automaticStreaming, Is.Null);
+
+            Object.DestroyImmediate(settings);
         }
     }
 }

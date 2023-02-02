@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:VisualElement name="renderStreamingContainer">
         <ui:Label text="Render Streaming" name="titleLabel"/>
-        <uie:ObjectField label="RenderStreaming Settings" name="renderStreamingSettingsField" type="Unity.RenderStreaming.RenderStreamingSettings, Unity.RenderStreaming" />
-        <ui:Foldout text="Foldout" />
+        <ui:VisualElement name="renderStreamingSettingsSelector" />
+        <ui:VisualElement name="settingsPropertyContainer" />
     </ui:VisualElement>
 </ui:UXML>
