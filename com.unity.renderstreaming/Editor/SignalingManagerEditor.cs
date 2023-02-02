@@ -21,11 +21,8 @@ namespace Unity.RenderStreaming.Editor
 
         VisualElement root;
         Button openProjectSettingsButton;
-        //PropertyField signalingSettingsObjectField;
-        PopupField<string> signalingSettingsPopupField;
+        PopupField<SignalingSettingsObject> signalingSettingsPopupField;
         PropertyField signalingSettingsField;
-
-        private string[] availableSignalingSettingsPaths;
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -56,19 +53,32 @@ namespace Unity.RenderStreaming.Editor
             }
             root.Add(new ReorderableListField(serializedObject.FindProperty("handlers"), "Signaling Handler List"));
             root.Add(new PropertyField(serializedObject.FindProperty("runOnAwake"), "Run On Awake"));
+
+            EditorApplication.projectChanged += OnProjectChanged;
             return root;
         }
 
-        PopupField<string> CreatePopUpSignalingType(SerializedProperty property, string label)
+        PopupField<SignalingSettingsObject> CreatePopUpSignalingType(SerializedProperty property, string label)
         {
             var asset = property.objectReferenceValue as SignalingSettingsObject;
-            var path = AssetDatabase.GetAssetPath(asset);
+            var paths = GetAvailableSignalingSettingsPath();
+
+            var field = new PopupField<SignalingSettingsObject>(label: label);
+            field.formatSelectedValueCallback = v => AssetDatabase.GetAssetPath(v);
+            field.formatListItemCallback = v => AssetDatabase.GetAssetPath(v);
+            if (paths.Length == 0)
+                return field;
+            var availableObjects = paths.Select(path => AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path)).ToArray();
+            var defaultIndex = ArrayHelpers.IndexOf(availableObjects, asset);
+            field.choices = availableObjects.ToList();
+            field.index = defaultIndex < 0 ? 0 : defaultIndex;
+            return field;
+        }
+
+        string[] GetAvailableSignalingSettingsPath()
+        {
             var guids = AssetDatabase.FindAssets("t:SignalingSettingsObject");
-            if (guids.Length == 0)
-                return new PopupField<string>(label: label);
-            availableSignalingSettingsPaths = guids.Select(AssetDatabase.GUIDToAssetPath).Where(_ => _.StartsWith("Assets")).ToArray();
-            var defaultIndex = ArrayHelpers.IndexOf(availableSignalingSettingsPaths, path);
-            return new PopupField<string>(label: label, choices: availableSignalingSettingsPaths.ToList(), defaultIndex: defaultIndex);
+            return guids.Select(AssetDatabase.GUIDToAssetPath).Where(_ => _.StartsWith("Assets")).ToArray();
         }
 
         static bool IsValidSignalingSettingsObject(SignalingSettingsObject asset)
@@ -80,21 +90,41 @@ namespace Unity.RenderStreaming.Editor
             return true;
         }
 
-        static void CreateDefaultSignalingSettings(SignalingManager handler)
+        void CreateDefaultSignalingSettings()
         {
             // Create Default SignalingSettings in Assets folder when the useDefault flag is turned off first time.
-            SignalingSettingsObject obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
-            if (obj == null)
+            SignalingSettingsObject asset = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
+            if (asset == null)
             {
                 if (!AssetDatabase.CopyAsset(DefaultSignalingSettingsLoadPath, DefaultSignalingSettingsSavePath))
                 {
                     Debug.LogError("CopyAssets is failed.");
                     return;
                 }
-                obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
+                asset = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
             }
-            handler.signalingSettingsObject = obj;
+            var handler = serializedObject.targetObject as SignalingManager;
+            handler.signalingSettingsObject = asset;
             handler.SetSignalingSettings(handler.signalingSettingsObject.settings);
+        }
+
+        private void OnProjectChanged()
+        {
+            var paths = GetAvailableSignalingSettingsPath();
+            var availableObjects = paths.Select(path => AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path)).ToArray();
+
+            // Force to use default settings if there are no available settings in project folder.
+            if (availableObjects.Length == 0)
+            {
+                serializedObject.FindProperty("m_useDefault").boolValue = true;
+                serializedObject.ApplyModifiedProperties();
+                return;
+            }
+
+            var defaultIndex = ArrayHelpers.IndexOf(availableObjects, signalingSettingsPopupField.value);
+            defaultIndex = defaultIndex < 0 ? 0 : defaultIndex;
+            signalingSettingsPopupField.choices = availableObjects.ToList();
+            signalingSettingsPopupField.index = defaultIndex;
         }
 
         private void OnClickedOpenProjectSettingsButton()
@@ -117,18 +147,18 @@ namespace Unity.RenderStreaming.Editor
                 signalingSettingsField.style.display = DisplayStyle.Flex;
                 openProjectSettingsButton.style.display = DisplayStyle.None;
 
-                var handler = e.changedProperty.serializedObject.targetObject as SignalingManager;
-                if (!IsValidSignalingSettingsObject(handler.signalingSettingsObject))
+                //var handler = e.changedProperty.serializedObject.targetObject as SignalingManager;
+                var property = serializedObject.FindProperty("signalingSettingsObject");
+                if (!IsValidSignalingSettingsObject(property.objectReferenceValue as SignalingSettingsObject))
                 {
-                    CreateDefaultSignalingSettings(handler);
+                    CreateDefaultSignalingSettings();
                 }
             }
         }
 
-        private void OnValueChangeSignalingSettingsObject(ChangeEvent<string> e)
+        private void OnValueChangeSignalingSettingsObject(ChangeEvent<SignalingSettingsObject> e)
         {
-            var path = availableSignalingSettingsPaths[signalingSettingsPopupField.index];
-            var asset = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path);
+            var asset = e.newValue;
             if (asset == null)
             {
                 Debug.LogError("Setting None is not allowed for this parameter. Reverted.");
@@ -139,8 +169,10 @@ namespace Unity.RenderStreaming.Editor
                 Debug.LogError("Setting an asset not placed under Assets folder is not allowed for this parameter. Reverted.");
                 return;
             }
-            var property= serializedObject.FindProperty("signalingSettingsObject");
+            var property = serializedObject.FindProperty("signalingSettingsObject");
             property.objectReferenceValue = asset;
+
+            serializedObject.ApplyModifiedProperties();
 
             var handler = serializedObject.targetObject as SignalingManager;
             handler.SetSignalingSettings(asset.settings);
@@ -158,10 +190,6 @@ namespace Unity.RenderStreaming.Editor
             var handler = serializedObject.targetObject as SignalingManager;
             if (handler.signalingSettingsObject != null)
                 handler.signalingSettingsObject.settings = handler.GetSignalingSettings();
-
-            //Debug.Log("OnValueChangeSignalingSettings:" + handler.GetSignalingSettings().GetType());
-            //Debug.Log("OnValueChangeSignalingSettings:" + AssetDatabase.GetAssetPath(handler.signalingSettingsObject));
-
         }
     }
 }
