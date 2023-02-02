@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming.Editor
             return field;
         }
 
-        string[] GetAvailableSignalingSettingsPath()
+        static string[] GetAvailableSignalingSettingsPath()
         {
             var guids = AssetDatabase.FindAssets("t:SignalingSettingsObject");
             return guids.Select(AssetDatabase.GUIDToAssetPath).Where(_ => _.StartsWith("Assets")).ToArray();
@@ -111,20 +111,28 @@ namespace Unity.RenderStreaming.Editor
         private void OnProjectChanged()
         {
             var paths = GetAvailableSignalingSettingsPath();
-            var availableObjects = paths.Select(path => AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path)).ToArray();
 
             // Force to use default settings if there are no available settings in project folder.
-            if (availableObjects.Length == 0)
+            if (paths.Length == 0)
             {
                 serializedObject.FindProperty("m_useDefault").boolValue = true;
                 serializedObject.ApplyModifiedProperties();
                 return;
             }
 
-            var defaultIndex = ArrayHelpers.IndexOf(availableObjects, signalingSettingsPopupField.value);
-            defaultIndex = defaultIndex < 0 ? 0 : defaultIndex;
+            var asset = serializedObject.FindProperty("signalingSettingsObject").objectReferenceValue;
+            var availableObjects = paths.Select(path => AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path)).ToArray();
+            var defaultIndex = ArrayHelpers.IndexOf(availableObjects, asset);
+            if (defaultIndex < 0)
+            {
+                defaultIndex = 0;
+                using var e = ChangeEvent<SignalingSettingsObject>.GetPooled(null, availableObjects[defaultIndex]);
+                e.target = signalingSettingsPopupField;
+                root.SendEvent(e);
+            }
             signalingSettingsPopupField.choices = availableObjects.ToList();
             signalingSettingsPopupField.index = defaultIndex;
+
         }
 
         private void OnClickedOpenProjectSettingsButton()
@@ -147,7 +155,6 @@ namespace Unity.RenderStreaming.Editor
                 signalingSettingsField.style.display = DisplayStyle.Flex;
                 openProjectSettingsButton.style.display = DisplayStyle.None;
 
-                //var handler = e.changedProperty.serializedObject.targetObject as SignalingManager;
                 var property = serializedObject.FindProperty("signalingSettingsObject");
                 if (!IsValidSignalingSettingsObject(property.objectReferenceValue as SignalingSettingsObject))
                 {

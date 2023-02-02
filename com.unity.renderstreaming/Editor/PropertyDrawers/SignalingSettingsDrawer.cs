@@ -94,12 +94,13 @@ namespace Unity.RenderStreaming.Editor
             editor = Activator.CreateInstance(inspectorType) as ISignalingSettingEditor;
             var newValue = editor.CreateInspectorGUI(property);
 
+            // Unbind old element to serializedObject.
             editorGUI.Unbind();
 
             ReplaceVisualElement(editorGUI, newValue);
             editorGUI = newValue;
 
-            // bind new serializedObject.
+            // bind new element to serializedObject.
             editorGUI.Bind(property.serializedObject);
         }
     }
