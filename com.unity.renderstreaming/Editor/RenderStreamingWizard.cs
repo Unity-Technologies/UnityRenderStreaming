@@ -4,6 +4,7 @@ using Unity.RenderStreaming;
 using Unity.RenderStreaming.Editor;
 using Unity.RenderStreaming.Editor.UI;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -223,7 +224,7 @@ namespace Editor
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
 
         private static bool IsAndroidTargetArchitectureCorrect() =>
-            (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) == AndroidArchitecture.ARM64;
+            PlayerSettings.Android.targetArchitectures == AndroidArchitecture.ARM64;
 
         private static void FixAndroidTargetArchitecture() =>
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
@@ -241,6 +242,52 @@ namespace Editor
             var window = GetWindow<RenderStreamingWizard>("Render Streaming Wizard");
             window.minSize = new Vector2(500, 450);
             RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce = true;
+        }
+
+        static RenderStreamingWizard()
+        {
+            WizardBehaviour();
+        }
+
+        private static int frameToWait;
+
+        private static void WizardBehaviourDelayed()
+        {
+            if (frameToWait > 0)
+                --frameToWait;
+            else
+            {
+                EditorApplication.update -= WizardBehaviourDelayed;
+
+                if (RenderStreamingProjectSettings.wizardIsStartPopup && !RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce)
+                {
+                    //Application.isPlaying cannot be called in constructor. Do it here
+                    if (Application.isPlaying)
+                        return;
+
+                    OpenWindow();
+                }
+
+                EditorApplication.quitting += () => RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce = false;
+            }
+        }
+
+        [DidReloadScripts]
+        static void CheckPersistentPopupAlreadyOpened()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce)
+                    EditorApplication.quitting += () => RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce = false;
+            };
+        }
+
+        [DidReloadScripts]
+        static void WizardBehaviour()
+        {
+            //We need to wait at least one frame or the popup will not show up
+            frameToWait = 10;
+            EditorApplication.update += WizardBehaviourDelayed;
         }
 
         private VisualElement checkUpdateContainer => cache.Get<VisualElement>("checkUpdateContainer");
