@@ -55,6 +55,11 @@ namespace Unity.RenderStreaming.Editor
             root.Add(new PropertyField(serializedObject.FindProperty("runOnAwake"), "Run On Awake"));
 
             EditorApplication.projectChanged += OnProjectChanged;
+
+            // Disable UI when running in Playmode
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            if (EditorApplication.isPlaying)
+                root.SetEnabled(false);
             return root;
         }
 
@@ -106,6 +111,19 @@ namespace Unity.RenderStreaming.Editor
             var handler = serializedObject.targetObject as SignalingManager;
             handler.signalingSettingsObject = asset;
             handler.SetSignalingSettings(handler.signalingSettingsObject.settings);
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange e)
+        {
+            switch (e)
+            {
+                case PlayModeStateChange.EnteredPlayMode:
+                    root.SetEnabled(false);
+                    break;
+                case PlayModeStateChange.ExitingPlayMode:
+                    root.SetEnabled(true);
+                    break;
+            }
         }
 
         private void OnProjectChanged()

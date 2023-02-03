@@ -92,6 +92,11 @@ namespace Unity.RenderStreaming
             selectorContainer.Add(createAssetHelpBox);
 
             ShowRenderStreamingSettingsProperty();
+
+            // Disable UI when running in Playmode
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            if(EditorApplication.isPlaying)
+                rootVisualElement.SetEnabled(false);
         }
 
         public override void OnInspectorUpdate()
@@ -146,6 +151,19 @@ namespace Unity.RenderStreaming
             AssetDatabase.CreateAsset(settings, relativePath);
             EditorGUIUtility.PingObject(settings);
             RenderStreaming.Settings = settings;
+        }
+
+        private void OnPlayModeStateChanged(PlayModeStateChange e)
+        {
+            switch (e)
+            {
+                case PlayModeStateChange.EnteredPlayMode:
+                    rootVisualElement.SetEnabled(false);
+                    break;
+                case PlayModeStateChange.ExitingPlayMode:
+                    rootVisualElement.SetEnabled(true);
+                    break;
+            }
         }
 
         private void ShowRenderStreamingSettingsProperty()
