@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -12,6 +11,7 @@ namespace Unity.RenderStreaming.Editor
     class SignalingSettingsDrawer : PropertyDrawer
     {
         private VisualElement editorGUI;
+        private PopupField<string> popupFieldSignalingType;
         private ISignalingSettingEditor editor;
         private Dictionary<Type, SignalingSettings> table = new Dictionary<Type, SignalingSettings>();
 
@@ -19,10 +19,14 @@ namespace Unity.RenderStreaming.Editor
         {
             editor = CreateEditor(property);
             var root = new VisualElement();
+            root.RegisterCallback<SerializedPropertyChangeEvent, SerializedProperty>(OnSignalingSettingsObjectChange, property);
+
             var box = new Box();
             root.Add(box);
             editorGUI = editor.CreateInspectorGUI(property);
-            box.Add(CreatePopUpSignalingType(property, "Signaling Type"));
+            popupFieldSignalingType = CreatePopUpSignalingType(property, "Signaling Type");
+            popupFieldSignalingType.RegisterValueChangedCallback(e => OnPopupFieldValueChange(e, property));
+            box.Add(popupFieldSignalingType);
             box.Add(editorGUI);
             return root;
         }
@@ -34,17 +38,34 @@ namespace Unity.RenderStreaming.Editor
             return Activator.CreateInstance(type) as ISignalingSettingEditor;
         }
 
-        VisualElement CreatePopUpSignalingType(SerializedProperty property, string label)
+        PopupField<string> CreatePopUpSignalingType(SerializedProperty property, string label)
         {
             var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
-            var element = new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
-            element.RegisterValueChangedCallback(e => OnChangedValue(e, property));
-            return element;
+            return new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
         }
 
-        void OnChangedValue(ChangeEvent<string> e, SerializedProperty property)
+        static void ReplaceVisualElement(VisualElement oldValue, VisualElement newValue)
+        {
+            var root = oldValue.parent;
+            var index = root.IndexOf(oldValue);
+            root.Remove(oldValue);
+            root.Insert(index, newValue);
+        }
+
+        void OnSignalingSettingsObjectChange(SerializedPropertyChangeEvent e, SerializedProperty property)
+        {
+            var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
+            var label = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
+
+            if (popupFieldSignalingType.value == label)
+                return;
+            popupFieldSignalingType.value = label;
+            RecreateEditorGUI(label, property);
+        }
+
+        void OnPopupFieldValueChange(ChangeEvent<string> e, SerializedProperty property)
         {
             if(!(fieldInfo.GetValue(property.serializedObject.targetObject) is SignalingSettings settings))
                 return;
@@ -54,6 +75,11 @@ namespace Unity.RenderStreaming.Editor
             table[type] = settings;
 
             var label = e.newValue;
+            RecreateEditorGUI(label, property);
+        }
+
+        void RecreateEditorGUI(string label, SerializedProperty property)
+        {
             var inspectedType = CustomSignalingSettingsEditor.FindInspectedTypeByLabel(label);
             if (!table.ContainsKey(inspectedType))
             {
@@ -65,21 +91,17 @@ namespace Unity.RenderStreaming.Editor
             property.serializedObject.ApplyModifiedProperties();
 
             var inspectorType = CustomSignalingSettingsEditor.FindInspectorTypeByInspectedType(inspectedType);
-            var editor = Activator.CreateInstance(inspectorType) as ISignalingSettingEditor;
+            editor = Activator.CreateInstance(inspectorType) as ISignalingSettingEditor;
             var newValue = editor.CreateInspectorGUI(property);
-            ReplaceElement(editorGUI, newValue);
+
+            // Unbind old element to serializedObject.
+            editorGUI.Unbind();
+
+            ReplaceVisualElement(editorGUI, newValue);
             editorGUI = newValue;
 
-            // bind new serializedObject.
+            // bind new element to serializedObject.
             editorGUI.Bind(property.serializedObject);
-        }
-
-        static void ReplaceElement(VisualElement oldValue, VisualElement newValue)
-        {
-            var root = oldValue.parent;
-            var index = root.IndexOf(oldValue);
-            root.Remove(oldValue);
-            root.Insert(index, newValue);
         }
     }
 
@@ -102,11 +124,6 @@ namespace Unity.RenderStreaming.Editor
             root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }
-
-        public void SetSignalingSettings(SignalingSettings settings)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
     [CustomSignalingSettingsEditor(typeof(WebSocketSignalingSettings), "WebSocket")]
@@ -119,11 +136,6 @@ namespace Unity.RenderStreaming.Editor
             root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }
-
-        public void SetSignalingSettings(SignalingSettings settings)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
     [CustomSignalingSettingsEditor(typeof(FurioosSignalingSettings), "Furioos")]
@@ -135,11 +147,6 @@ namespace Unity.RenderStreaming.Editor
             root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
             root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
-        }
-
-        public void SetSignalingSettings(SignalingSettings settings)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

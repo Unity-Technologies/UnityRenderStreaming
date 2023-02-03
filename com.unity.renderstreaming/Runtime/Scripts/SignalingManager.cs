@@ -16,16 +16,14 @@ namespace Unity.RenderStreaming
     public sealed class SignalingManager : MonoBehaviour
     {
 #pragma warning disable 0649
-        // ToDo: Create component UI on URS-553
+        [SerializeField]
+        private bool m_useDefault = true;
+
+        [SerializeField]
+        internal SignalingSettingsObject signalingSettingsObject;
+
         [SerializeReference, SignalingSettings]
-        private SignalingSettings signalingSettings = new WebSocketSignalingSettings
-        (
-            url: "ws://127.0.0.1:80",
-            iceServers: new[]
-            {
-                new IceServer(urls: new[] {"stun:stun.l.google.com:19302"})
-            }
-        );
+        private SignalingSettings signalingSettings = new WebSocketSignalingSettings();
 
         [SerializeField, Tooltip("List of handlers of signaling process.")]
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
@@ -54,6 +52,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
+        /// Use settings in Project Settings.
+        /// </summary>
+        public bool useDefaultSettings
+        {
+            get { return m_useDefault; }
+            set { m_useDefault = value; }
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="settings"></param>
@@ -69,6 +76,10 @@ namespace Unity.RenderStreaming
             signalingSettings = settings;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public SignalingSettings GetSignalingSettings()
         {
             return signalingSettings;
@@ -138,6 +149,45 @@ namespace Unity.RenderStreaming
             _Run(conf, signaling, handlers);
         }
 
+//        void OnValidate()
+//        {
+//#if UNITY_EDITOR
+//            if (Application.isPlaying)
+//                return;
+
+//            if (!m_useDefault)
+//            {
+//                if (!IsValidSignalingSettingsObject(signalingSettingsObject))
+//                {
+//                    // Create Default SignalingSettings in Assets folder when the useDefault flag is turned off first time.
+//                    SignalingSettingsObject obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
+//                    if (obj == null)
+//                    {
+//                        if (!AssetDatabase.CopyAsset(DefaultSignalingSettingsLoadPath, DefaultSignalingSettingsSavePath))
+//                        {
+//                            Debug.LogError("CopyAssets is failed.");
+//                            return;
+//                        }
+//                        obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
+//                    }
+//                    signalingSettingsObject = obj;
+//                    signalingSettings = signalingSettingsObject.settings;
+//                }
+//            }
+//#endif
+//        }
+
+#if UNITY_EDITOR
+        bool IsValidSignalingSettingsObject(SignalingSettingsObject asset)
+        {
+            if (asset == null)
+                return false;
+            if (AssetDatabase.GetAssetPath(asset).IndexOf("Assets", StringComparison.Ordinal) != 0)
+                return false;
+            return true;
+        }
+#endif
+
         /// <summary>
         ///
         /// </summary>
@@ -150,11 +200,12 @@ namespace Unity.RenderStreaming
             SignalingHandlerBase[] handlers = null
             )
         {
-            RTCIceServer[] iceServers = signalingSettings.iceServers.OfType<RTCIceServer>().ToArray();
+            var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
+            RTCIceServer[] iceServers = settings.iceServers.OfType<RTCIceServer>().ToArray();
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
 
-            ISignaling _signaling = signaling ?? CreateSignaling(signalingSettings, SynchronizationContext.Current);
+            ISignaling _signaling = signaling ?? CreateSignaling(settings, SynchronizationContext.Current);
             RenderStreamingDependencies dependencies = new RenderStreamingDependencies
             {
                 config = _conf,
@@ -193,9 +244,10 @@ namespace Unity.RenderStreaming
             if (!runOnAwake || m_running || handlers.Count == 0)
                 return;
 
-            RTCIceServer[] iceServers = signalingSettings.iceServers.Cast<RTCIceServer>().ToArray();
+            var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
+            RTCIceServer[] iceServers = settings.iceServers.OfType<RTCIceServer>().ToArray();
             RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            ISignaling signaling = CreateSignaling(signalingSettings, SynchronizationContext.Current);
+            ISignaling signaling = CreateSignaling(settings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
         }
 

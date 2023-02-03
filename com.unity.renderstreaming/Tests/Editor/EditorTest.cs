@@ -163,5 +163,14 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(asset.info.Equals(otherAsset.info), Is.True);
             AssetDatabase.DeleteAsset(exportPath);
         }
+
+        [Test]
+        public void CreateSignalingSettingsObject()
+        {
+            var asset = SignalingSettingsObject.Create();
+            Assert.That(asset, Is.Not.Null);
+            Assert.That(asset.settings, Is.Not.Null);
+            Assert.That(asset.settings, Is.TypeOf<WebSocketSignalingSettings>());
+        }
     }
 }
