@@ -48,8 +48,9 @@ namespace Unity.RenderStreaming.Samples
         {
             if (!renderStreaming.runOnAwake)
             {
-                renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
-                if(settings?.SignalingSettings != null)
+                if (settings != null)
+                    renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
+                if (settings?.SignalingSettings != null)
                     renderStreaming.SetSignalingSettings(settings.SignalingSettings);
                 renderStreaming.Run();
             }

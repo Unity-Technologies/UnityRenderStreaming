@@ -87,7 +87,8 @@ namespace Unity.RenderStreaming.Samples
             playerController.CheckPairedDevices();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
+            if (settings != null)
+                renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
             if (settings?.SignalingSettings != null)
                 renderStreaming.SetSignalingSettings(settings.SignalingSettings);
             renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});
@@ -99,7 +100,8 @@ namespace Unity.RenderStreaming.Samples
             var handler = guestPlayer.GetComponent<SingleConnection>();
 
             statsUI.AddSignalingHandler(handler);
-            renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
+            if (settings != null)
+                renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
             if (settings?.SignalingSettings != null)
                 renderStreaming.SetSignalingSettings(settings.SignalingSettings);
             renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});

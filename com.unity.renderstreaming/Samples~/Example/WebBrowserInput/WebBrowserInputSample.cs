@@ -22,13 +22,14 @@ namespace Unity.RenderStreaming.Samples
         {
             dropdownCamera.onValueChanged.AddListener(OnChangeCamera);
 
-            if (!renderStreaming.runOnAwake)
-            {
-                renderStreaming.useDefaultSettings = settings?.UseDefaultSettings ?? true;
-                if (settings?.SignalingSettings != null)
-                    renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-                renderStreaming.Run();
-            }
+            if (renderStreaming.runOnAwake)
+                return;
+
+            if (settings != null)
+                renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
+            if (settings?.SignalingSettings != null)
+                renderStreaming.SetSignalingSettings(settings.SignalingSettings);
+            renderStreaming.Run();
         }
 
         void OnChangeCamera(int value)
