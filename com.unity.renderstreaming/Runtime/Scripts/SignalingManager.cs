@@ -209,6 +209,7 @@ namespace Unity.RenderStreaming
             )
         {
             var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
+#if !UNITY_EDITOR
             var arguments = Environment.GetCommandLineArgs();
             if (evaluateCommandlineArguments && arguments.Length > 1)
             {
@@ -217,6 +218,7 @@ namespace Unity.RenderStreaming
                     Debug.LogError("Command line arguments are invalid.");
                 }
             }
+#endif
             RTCIceServer[] iceServers = settings.iceServers.OfType<RTCIceServer>().ToArray();
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
