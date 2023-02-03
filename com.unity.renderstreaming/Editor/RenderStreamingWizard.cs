@@ -447,10 +447,15 @@ namespace Editor
 
         private void BindCheckBox()
         {
-            var wizardCheckbox = rootVisualElement.Q<Toggle>("wizardCheckbox");
+            var wizardCheckboxContainer = rootVisualElement.Q("wizardCheckboxContainer");
+            var wizardCheckbox = new Toggle("Show on start")
+            {
+                name = "wizardCheckbox"
+            };
             wizardCheckbox.SetValueWithoutNotify(RenderStreamingProjectSettings.wizardIsStartPopup);
             wizardCheckbox.RegisterValueChangedCallback(evt
                 => RenderStreamingProjectSettings.wizardIsStartPopup = evt.newValue);
+            wizardCheckboxContainer.Add(wizardCheckbox);
         }
     }
 }
