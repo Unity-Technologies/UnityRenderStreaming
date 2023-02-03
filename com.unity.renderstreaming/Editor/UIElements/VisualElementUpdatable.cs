@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming.Editor.UI
             m_HaveFixer = haveFixer;
         }
 
-        public virtual void CheckUpdate()
+        public void CheckUpdate()
         {
             bool wellConfigured = m_Tester();
             if (wellConfigured ^ currentStatus)

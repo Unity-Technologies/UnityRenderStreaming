@@ -66,30 +66,16 @@ namespace Unity.RenderStreaming.Editor.UI
 
         protected override void UpdateDisplay(bool statusOK, bool haveFixer)
         {
-            // if (!((hierarchy.parent as HiddableUpdatableContainer)?.currentStatus ?? true))
-            // {
-            //     if (m_VisibleStatus)
-            //     {
-            //         this.Q(name: "StatusOK").style.display = DisplayStyle.None;
-            //         this.Q(name: "StatusError").style.display = DisplayStyle.None;
-            //     }
-            //
-            //     this.Q(name: "Resolver").style.display = DisplayStyle.None;
-            //     this.Q(className: "HelpBox").style.display = DisplayStyle.None;
-            // }
-            // else
+            if (m_VisibleStatus)
             {
-                if (m_VisibleStatus)
-                {
-                    this.Q(name: "StatusOK").style.display = statusOK ? DisplayStyle.Flex : DisplayStyle.None;
-                    this.Q(name: "StatusError").style.display = !statusOK
-                        ? (m_SkipErrorIcon ? DisplayStyle.None : DisplayStyle.Flex)
-                        : DisplayStyle.None;
-                }
-
-                this.Q(name: "Resolver").style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
-                this.Q(className: HelpBox.ussClassName).style.display = statusOK ? DisplayStyle.None : DisplayStyle.Flex;
+                this.Q(name: "StatusOK").style.display = statusOK ? DisplayStyle.Flex : DisplayStyle.None;
+                this.Q(name: "StatusError").style.display = !statusOK
+                    ? (m_SkipErrorIcon ? DisplayStyle.None : DisplayStyle.Flex)
+                    : DisplayStyle.None;
             }
+
+            this.Q(name: "Resolver").style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
+            this.Q(className: HelpBox.ussClassName).style.display = statusOK ? DisplayStyle.None : DisplayStyle.Flex;
         }
     }
 }
