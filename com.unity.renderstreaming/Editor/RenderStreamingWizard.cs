@@ -232,7 +232,6 @@ namespace Editor
 
         const string kTemplatePath = "Packages/com.unity.renderstreaming/Editor/UXML/RenderStreamingWizard.uxml";
         const string kStylePath = "Packages/com.unity.renderstreaming/Editor/Styles/RenderStreamingWizard.uss";
-        const string kFormatStylePath = "Packages/com.unity.renderstreaming/Editor/Styles/Formatting.uss";
 
         [MenuItem("Window/Render Streaming/Render Streaming Wizard", priority = 10000)]
         static void OpenWindow()
@@ -293,14 +292,12 @@ namespace Editor
         private void OnEnable()
         {
             var styleSheet = EditorGUIUtility.Load(kStylePath) as StyleSheet;
-            var formatStyleSheet = EditorGUIUtility.Load(kFormatStylePath) as StyleSheet;
 
             var uiAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kTemplatePath);
             var newVisualElement = new VisualElement();
             uiAsset.CloneTree(newVisualElement);
             rootVisualElement.Add(newVisualElement);
             rootVisualElement.styleSheets.Add(styleSheet);
-            rootVisualElement.styleSheets.Add(formatStyleSheet);
 
             BindCheckVersion();
             BindChecker();
