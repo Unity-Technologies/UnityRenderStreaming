@@ -81,3 +81,13 @@
   padding-bottom: 3px;
   padding-left: 3px;
 }
+
+.RightAnchoredButton
+{
+  position: absolute;
+  right: 0px;
+  width: 114px;
+  margin-top: 0px;
+  margin-right: 10px;
+}
+

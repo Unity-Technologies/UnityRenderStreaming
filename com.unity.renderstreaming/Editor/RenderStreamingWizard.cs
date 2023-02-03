@@ -14,8 +14,6 @@ namespace Editor
     internal class RenderStreamingWizard : EditorWindow
     {
         const string resolve = "Fix";
-        const string resolveAll = "Fix All";
-        const string resolveAllBuildTarget = "Fix All Platforms";
 
         struct ConfigStyle
         {
@@ -345,23 +343,33 @@ namespace Editor
 
         private void BindCheckVersion()
         {
-            // todo : detect current version
-            const string version = "3.1.0-exp.6";
-            var versionCheckContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
-            var versionLabel = new Label($"Current Install :{version}");
-            var checkUpdateButton = new Button {text = "Check update"};
-            versionCheckContainer.Add(versionLabel);
-            versionCheckContainer.Add(checkUpdateButton);
-            versionCheckContainer.style.paddingLeft = versionCheckContainer.style.paddingLeft.value.value + 15;
+            const string packageName = "com.unity.renderstreaming";
+            var label = new TextElement { text = "Current Render Streaming version: checking..." };
+            checkUpdateContainer.Add(label);
 
-            checkUpdateContainer.Add(versionCheckContainer);
+            var button = new Button(() =>
+                UnityEditor.PackageManager.UI.Window.Open(packageName)) {text = "Check update"};
+            button.AddToClassList("RightAnchoredButton");
+            checkUpdateContainer.Add(button);
+
+            RequestJobManager.CreateListRequest(true, true, (req) =>
+            {
+                var packageInfo = req.FindPackage(packageName);
+                if (null == packageInfo)
+                {
+                    Debug.LogError($"Not found package \"{packageName}\"");
+                    return;
+                }
+
+                label.text = $"Current Render Streaming version: {packageInfo.version}";
+            }, null);
         }
 
         private void BindChecker()
         {
             fixAllButton.clickable.clicked += () =>
             {
-                foreach (var entry in Entries)
+                foreach (var entry in Entries.Where(x => !x.check()))
                 {
                     entry.fix();
                 }
