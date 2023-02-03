@@ -74,6 +74,15 @@
   -unity-text-align: middle-center;
 }
 
+.RightAnchoredButton
+{
+  position: absolute;
+  right: 0px;
+  width: 114px;
+  margin-top: 0px;
+  margin-right: 10px;
+}
+
 #checkUpdateContainer {
   flex-direction: row;
   margin-top: 10px;
@@ -82,12 +91,7 @@
   padding-left: 3px;
 }
 
-.RightAnchoredButton
-{
-  position: absolute;
-  right: 0px;
-  width: 114px;
-  margin-top: 0px;
-  margin-right: 10px;
+#wizardCheckbox {
+  margin-top: 15px;
 }
 

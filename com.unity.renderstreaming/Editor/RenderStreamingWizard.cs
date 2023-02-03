@@ -13,7 +13,7 @@ namespace Editor
 {
     internal class RenderStreamingWizard : EditorWindow
     {
-        const string resolve = "Fix";
+        private const string packageName = "com.unity.renderstreaming";
 
         struct ConfigStyle
         {
@@ -22,7 +22,7 @@ namespace Editor
             public readonly string button;
             public readonly MessageType messageType;
 
-            public ConfigStyle(string label, string error, string button = resolve,
+            public ConfigStyle(string label, string error, string button = "Fix",
                 MessageType messageType = MessageType.Error)
             {
                 this.label = label;
@@ -343,7 +343,6 @@ namespace Editor
 
         private void BindCheckVersion()
         {
-            const string packageName = "com.unity.renderstreaming";
             var label = new TextElement { text = "Current Render Streaming version: checking..." };
             checkUpdateContainer.Add(label);
 
@@ -407,19 +406,26 @@ namespace Editor
         {
             var webappContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
             var webappLabel = new Label("Download Latest WebApp");
-            var webappButton = new Button {text = "Download"};
+            var webappButton = new Button(() =>
+            {
+                WebAppDownloader.GetPackageVersion(packageName, (version) =>
+                {
+                    var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
+                    WebAppDownloader.DownloadWebApp(version, dstPath, null);
+                });
+            }) {text = "Download"};
+            webappButton.AddToClassList("RightAnchoredButton");
+
             webappContainer.Add(webappLabel);
             webappContainer.Add(webappButton);
-            webappContainer.style.paddingLeft = webappContainer.style.paddingLeft.value.value + 15;
             otherCheckingContainer.Add(webappContainer);
 
             var toggle = new Toggle("Show on start")
             {
-                value = RenderStreamingProjectSettings.wizardIsStartPopup, name = "WizardCheckbox"
+                value = RenderStreamingProjectSettings.wizardIsStartPopup, name = "wizardCheckbox"
             };
             toggle.RegisterValueChangedCallback(evt
                 => RenderStreamingProjectSettings.wizardIsStartPopup = evt.newValue);
-            toggle.style.paddingLeft = toggle.style.paddingLeft.value.value + 15;
             otherCheckingContainer.Add(toggle);
         }
     }

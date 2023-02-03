@@ -12,7 +12,7 @@
             <ui:Label class="h2" name="Title" text="Build Settings"/>
             <ui:VisualElement class="InnerBox" name="buildSettingsCheckButtons"/>
         </ui:VisualElement>
-        <ui:VisualElement class="ScopeBox" name="otherCheckingContainer">
+        <ui:VisualElement class="ScopeBox normal" name="otherCheckingContainer">
             <ui:Label class="h1" text="Others"/>
         </ui:VisualElement>
     </ui:ScrollView>
