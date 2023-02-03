@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4f5b5e9819c4eafb84bd87d1c2f266f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WizardPopupAtStart: 1
+  m_WizardPopupAtStart: 0
   m_WizardPopupAlreadyShownOnce: 1
