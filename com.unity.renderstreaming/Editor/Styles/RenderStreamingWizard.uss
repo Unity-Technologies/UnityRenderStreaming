@@ -48,7 +48,7 @@
 }
 
 .FixAll {
-  margin: 10px;
+  margin: 10px 20px;
 }
 
 .InnerBox {
@@ -74,13 +74,17 @@
   -unity-text-align: middle-center;
 }
 
-.RightAnchoredButton
-{
+.RightAnchoredButton {
   position: absolute;
   right: 0px;
   width: 114px;
   margin-top: 0px;
   margin-right: 10px;
+}
+
+.LargeButton {
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 #checkUpdateContainer {
@@ -93,5 +97,6 @@
 
 #wizardCheckbox {
   margin-top: 15px;
+  margin-left: 20px;
 }
 

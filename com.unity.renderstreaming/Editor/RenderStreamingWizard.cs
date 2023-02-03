@@ -257,7 +257,8 @@ namespace Editor
             {
                 EditorApplication.update -= WizardBehaviourDelayed;
 
-                if (RenderStreamingProjectSettings.wizardIsStartPopup && !RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce)
+                if (RenderStreamingProjectSettings.wizardIsStartPopup &&
+                    !RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce)
                 {
                     //Application.isPlaying cannot be called in constructor. Do it here
                     if (Application.isPlaying)
@@ -276,7 +277,8 @@ namespace Editor
             EditorApplication.delayCall += () =>
             {
                 if (RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce)
-                    EditorApplication.quitting += () => RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce = false;
+                    EditorApplication.quitting +=
+                        () => RenderStreamingProjectSettings.wizardPopupAlreadyShownOnce = false;
             };
         }
 
@@ -287,16 +289,6 @@ namespace Editor
             frameToWait = 10;
             EditorApplication.update += WizardBehaviourDelayed;
         }
-
-        private VisualElement checkUpdateContainer => cache.Get<VisualElement>("checkUpdateContainer");
-        private Button fixAllButton => cache.Get<Button>("fixAllButton");
-        private VisualElement playmodeCheckingButtons => cache.Get<VisualElement>("configurationCheckButtons");
-
-        private VisualElement buildSettingsCheckingButton =>
-            cache.Get<VisualElement>("buildSettingsCheckButtons");
-
-        private VisualElement otherCheckingContainer => cache.Get<VisualElement>("otherCheckingContainer");
-        private VisualElementCache cache;
 
         private void OnEnable()
         {
@@ -309,14 +301,17 @@ namespace Editor
             rootVisualElement.Add(newVisualElement);
             rootVisualElement.styleSheets.Add(styleSheet);
             rootVisualElement.styleSheets.Add(formatStyleSheet);
-            cache = new VisualElementCache(newVisualElement);
 
             BindCheckVersion();
             BindChecker();
-            BindOthers();
+            BindWebApp();
+            BindCheckBox();
         }
 
         private int inspectorCounter = 0;
+        private Button fixAllButton;
+        private VisualElement playmodeCheckButtons;
+        private VisualElement buildSettingsCheckButtons;
 
         private void OnInspectorUpdate()
         {
@@ -328,14 +323,17 @@ namespace Editor
             }
 
 
-            fixAllButton.SetEnabled(entries.Any(x => !x.check()));
+            fixAllButton?.SetEnabled(entries.Any(x => !x.check()));
 
-            foreach (var visualElement in playmodeCheckingButtons.Children()
-                         .Concat(buildSettingsCheckingButton.Children())
-                         .Select(c => c as VisualElementUpdatable)
-                         .Where(c => c != null))
+            if (playmodeCheckButtons != null && buildSettingsCheckButtons != null)
             {
-                visualElement.CheckUpdate();
+                foreach (var visualElement in playmodeCheckButtons.Children()
+                             .Concat(buildSettingsCheckButtons.Children())
+                             .Select(c => c as VisualElementUpdatable)
+                             .Where(c => c != null))
+                {
+                    visualElement.CheckUpdate();
+                }
             }
 
             inspectorCounter = 0;
@@ -343,7 +341,9 @@ namespace Editor
 
         private void BindCheckVersion()
         {
-            var label = new TextElement { text = "Current Render Streaming version: checking..." };
+            var checkUpdateContainer = rootVisualElement.Q("checkUpdateContainer");
+
+            var label = new TextElement {text = "Current Render Streaming version: checking..."};
             checkUpdateContainer.Add(label);
 
             var button = new Button(() =>
@@ -366,6 +366,10 @@ namespace Editor
 
         private void BindChecker()
         {
+            fixAllButton = rootVisualElement.Q<Button>("fixAllButton");
+            playmodeCheckButtons = rootVisualElement.Q("playmodeCheckButtons");
+            buildSettingsCheckButtons = rootVisualElement.Q("buildSettingsCheckButtons");
+
             fixAllButton.clickable.clicked += () =>
             {
                 foreach (var entry in Entries.Where(x => !x.check()))
@@ -377,7 +381,7 @@ namespace Editor
 
             foreach (var entry in Entries.Where(x => x.scope == Scope.Configuration))
             {
-                playmodeCheckingButtons.Add(new ConfigInfoLine(
+                playmodeCheckButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
                     entry.configStyle.error,
                     entry.configStyle.messageType,
@@ -390,7 +394,7 @@ namespace Editor
 
             foreach (var entry in Entries.Where(x => x.scope == Scope.Build))
             {
-                buildSettingsCheckingButton.Add(new ConfigInfoLine(
+                buildSettingsCheckButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
                     entry.configStyle.error,
                     entry.configStyle.messageType,
@@ -402,10 +406,10 @@ namespace Editor
             }
         }
 
-        private void BindOthers()
+        private void BindWebApp()
         {
-            var webappContainer = new VisualElement {style = {flexDirection = FlexDirection.Row}};
-            var webappLabel = new Label("Download Latest WebApp");
+            var webappContainer = rootVisualElement.Q("webappContainer");
+
             var webappButton = new Button(() =>
             {
                 WebAppDownloader.GetPackageVersion(packageName, (version) =>
@@ -413,20 +417,40 @@ namespace Editor
                     var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
                     WebAppDownloader.DownloadWebApp(version, dstPath, null);
                 });
-            }) {text = "Download"};
-            webappButton.AddToClassList("RightAnchoredButton");
+            }) {text = "Download latest version web app."};
+            webappButton.AddToClassList("LargeButton");
 
-            webappContainer.Add(webappLabel);
-            webappContainer.Add(webappButton);
-            otherCheckingContainer.Add(webappContainer);
-
-            var toggle = new Toggle("Show on start")
+            var showWebAppDocButton = new Button(() =>
             {
-                value = RenderStreamingProjectSettings.wizardIsStartPopup, name = "wizardCheckbox"
-            };
-            toggle.RegisterValueChangedCallback(evt
+                WebAppDownloader.GetPackageVersion(packageName, (version) =>
+                {
+                    var url = WebAppDownloader.GetURLDocumentation(version);
+                    Application.OpenURL(url);
+                });
+            }) {text = "Show web app documentation."};
+            showWebAppDocButton.AddToClassList("LargeButton");
+
+            var showWebAppSourceButton = new Button(() =>
+            {
+                WebAppDownloader.GetPackageVersion(packageName, (version) =>
+                {
+                    var url = WebAppDownloader.GetURLSourceCode(version);
+                    Application.OpenURL(url);
+                });
+            }) {text = "Show web app source code."};
+            showWebAppSourceButton.AddToClassList("LargeButton");
+
+            webappContainer.Add(webappButton);
+            webappContainer.Add(showWebAppDocButton);
+            webappContainer.Add(showWebAppSourceButton);
+        }
+
+        private void BindCheckBox()
+        {
+            var wizardCheckbox = rootVisualElement.Q<Toggle>("wizardCheckbox");
+            wizardCheckbox.SetValueWithoutNotify(RenderStreamingProjectSettings.wizardIsStartPopup);
+            wizardCheckbox.RegisterValueChangedCallback(evt
                 => RenderStreamingProjectSettings.wizardIsStartPopup = evt.newValue);
-            otherCheckingContainer.Add(toggle);
         }
     }
 }
