@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Unity.RenderStreaming;
 using Unity.RenderStreaming.Editor;
-using Unity.RenderStreaming.Editor.UI;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -47,14 +46,6 @@ namespace Editor
         static readonly ConfigStyle inputSystemPlayModeInputBehavior = new ConfigStyle(
             label: "InputSystem PlayMode Input Behavior",
             error: "InputSystem PlayMode Input Behavior needs AllDeviceInputAlwaysGoesToGameView.");
-
-        static readonly ConfigStyle buildTargetWindows64 = new ConfigStyle(
-            label: "Build Target Windows64",
-            error: "Require build target architecture x64 on Windows.");
-
-        static readonly ConfigStyle buildTargetLinux64 = new ConfigStyle(
-            label: "Build Target Linux",
-            error: "Require build target architecture x86_x64 on Linux.");
 
         static readonly ConfigStyle macCameraUsageDescription = new ConfigStyle(
             label: "macOS Camera Usage Description",
@@ -326,7 +317,7 @@ namespace Editor
             {
                 foreach (var visualElement in playmodeCheckButtons.Children()
                              .Concat(buildSettingsCheckButtons.Children())
-                             .Select(c => c as VisualElementUpdatable)
+                             .Select(c => c as ConfigInfoLine)
                              .Where(c => c != null))
                 {
                     visualElement.CheckUpdate();

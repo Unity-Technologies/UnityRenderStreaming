@@ -3,9 +3,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.RenderStreaming.Editor.UI
+namespace Unity.RenderStreaming.Editor
 {
-    internal class ConfigInfoLine : VisualElementUpdatable
+    internal class ConfigInfoLine : VisualElement
     {
         static class Style
         {
@@ -15,20 +15,33 @@ namespace Unity.RenderStreaming.Editor.UI
             public const int k_IndentStepSize = 15;
         }
 
-        readonly bool m_VisibleStatus;
-        readonly bool m_SkipErrorIcon;
+        private readonly bool m_visibleStatus;
+        private readonly bool m_skipErrorIcon;
+        private Func<bool> m_tester;
+        private bool m_haveFixer;
+        private bool m_currentStatus;
 
-        public ConfigInfoLine(string label, string error, MessageType messageType, string resolverButtonLabel,
-            Func<bool> tester, Action resolver, bool visibleStatus = true, bool skipErrorIcon = false)
-            : base(tester, resolver != null)
+        public ConfigInfoLine(
+            string label,
+            string error,
+            MessageType messageType,
+            string resolverButtonLabel,
+            Func<bool> tester,
+            Action resolver,
+            bool visibleStatus = true,
+            bool skipErrorIcon = false
+            )
         {
-            m_VisibleStatus = visibleStatus;
-            m_SkipErrorIcon = skipErrorIcon;
+            m_visibleStatus = visibleStatus;
+            m_skipErrorIcon = skipErrorIcon;
+            m_tester = tester;
+            m_haveFixer = resolver != null;
+
             var testLabel = new Label(label) {name = "TestLabel"};
             var fixer = new Button(resolver) {text = resolverButtonLabel, name = "Resolver"};
             var testRow = new VisualElement() {name = "TestRow"};
             testRow.Add(testLabel);
-            if (m_VisibleStatus)
+            if (m_visibleStatus)
             {
                 var statusOk = new Image {image = Style.ok, name = "StatusOK"};
                 var statusError = new Image {image = Style.error, name = "StatusError"};
@@ -61,16 +74,26 @@ namespace Unity.RenderStreaming.Editor.UI
 
             testLabel.style.paddingLeft = style.paddingLeft.value.value + 1 * Style.k_IndentStepSize;
 
-            Init();
+            UpdateDisplay(m_currentStatus, m_haveFixer);
         }
 
-        protected override void UpdateDisplay(bool statusOK, bool haveFixer)
+        public void CheckUpdate()
         {
-            if (m_VisibleStatus)
+            bool wellConfigured = m_tester();
+            if (wellConfigured ^ m_currentStatus)
+            {
+                UpdateDisplay(wellConfigured, m_haveFixer);
+                m_currentStatus = wellConfigured;
+            }
+        }
+
+        private void UpdateDisplay(bool statusOK, bool haveFixer)
+        {
+            if (m_visibleStatus)
             {
                 this.Q(name: "StatusOK").style.display = statusOK ? DisplayStyle.Flex : DisplayStyle.None;
                 this.Q(name: "StatusError").style.display = !statusOK
-                    ? (m_SkipErrorIcon ? DisplayStyle.None : DisplayStyle.Flex)
+                    ? (m_skipErrorIcon ? DisplayStyle.None : DisplayStyle.Flex)
                     : DisplayStyle.None;
             }
 

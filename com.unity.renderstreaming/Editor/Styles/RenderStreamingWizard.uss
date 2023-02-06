@@ -98,6 +98,7 @@
 #wizardCheckbox {
   margin-top: 15px;
   margin-left: 20px;
+  margin-bottom: 20px;
 }
 
 .h1 {
