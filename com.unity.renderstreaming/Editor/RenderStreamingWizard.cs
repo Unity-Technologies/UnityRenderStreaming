@@ -37,15 +37,15 @@ namespace Editor
 
         static readonly ConfigStyle runInBackground = new ConfigStyle(
             label: "Run In Background",
-            error: "Run In Background is currently false.");
+            error: "Run In Background must be True for Render Streaming to work in Background.");
 
         static readonly ConfigStyle inputSystemBackgroundBehavior = new ConfigStyle(
             label: "InputSystem Background Behavior",
-            error: "InputSystem Background Behavior needs Ignore Focus.");
+            error: "InputSystem Background Behavior must be Ignore Focus for Input System to work in Background.");
 
         static readonly ConfigStyle inputSystemPlayModeInputBehavior = new ConfigStyle(
             label: "InputSystem PlayMode Input Behavior",
-            error: "InputSystem PlayMode Input Behavior needs AllDeviceInputAlwaysGoesToGameView.");
+            error: "InputSystem PlayMode Input behavior must be AllDeviceInputAlwaysGoesToGameView for InputSystem to work in background PlayMode.");
 
         static readonly ConfigStyle macCameraUsageDescription = new ConfigStyle(
             label: "macOS Camera Usage Description",
@@ -65,15 +65,15 @@ namespace Editor
 
         static readonly ConfigStyle androidMinimumAPILevel = new ConfigStyle(
             label: "Android Minimum API Level",
-            error: "Require Minimum API Level is 24 or higher.");
+            error: "The minimum Android SDK level required for ARFoundation is 24 or higher.");
 
         static readonly ConfigStyle androidScriptBackend = new ConfigStyle(
             label: "Android Script Backend",
-            error: "Require Script Backend is IL2CPP.");
+            error: "Render Streaming only supports IL2CPP as a scripting backend.");
 
         static readonly ConfigStyle androidTargetArchitecture = new ConfigStyle(
             label: "Android Target Architecture",
-            error: "Android Target Architecture only supported ARM64.");
+            error: "Render Streaming only supported ARM64 as a Android Target Architecture.");
 
         static readonly ConfigStyle androidInternetAccess = new ConfigStyle(
             label: "Android Internet Access",
