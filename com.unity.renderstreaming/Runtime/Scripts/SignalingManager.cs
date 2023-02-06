@@ -157,34 +157,6 @@ namespace Unity.RenderStreaming
             _Run(conf, signaling, handlers);
         }
 
-//        void OnValidate()
-//        {
-//#if UNITY_EDITOR
-//            if (Application.isPlaying)
-//                return;
-
-//            if (!m_useDefault)
-//            {
-//                if (!IsValidSignalingSettingsObject(signalingSettingsObject))
-//                {
-//                    // Create Default SignalingSettings in Assets folder when the useDefault flag is turned off first time.
-//                    SignalingSettingsObject obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
-//                    if (obj == null)
-//                    {
-//                        if (!AssetDatabase.CopyAsset(DefaultSignalingSettingsLoadPath, DefaultSignalingSettingsSavePath))
-//                        {
-//                            Debug.LogError("CopyAssets is failed.");
-//                            return;
-//                        }
-//                        obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
-//                    }
-//                    signalingSettingsObject = obj;
-//                    signalingSettings = signalingSettingsObject.settings;
-//                }
-//            }
-//#endif
-//        }
-
 #if UNITY_EDITOR
         bool IsValidSignalingSettingsObject(SignalingSettingsObject asset)
         {
