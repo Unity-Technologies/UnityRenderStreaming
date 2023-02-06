@@ -46,12 +46,12 @@ namespace Unity.RenderStreaming.RuntimeTest
             string signalingType = "websocket";
             string[] arguments = { "-signalingType", signalingType };
             Assert.That(CommandLineParser.TryParse(arguments), Is.True);
-            Assert.That((string)CommandLineParser.SignalingType, Is.EqualTo(typeof(WebSocketSignaling).FullName));
+            Assert.That((string)CommandLineParser.SignalingType, Is.EqualTo(signalingType));
 
             signalingType = "dummy";
             arguments = new[] { "-signalingType", signalingType };
-            Assert.That(CommandLineParser.TryParse(arguments), Is.False);
-            Assert.That((string)CommandLineParser.SignalingType, Is.Null);
+            Assert.That(CommandLineParser.TryParse(arguments), Is.True);
+            Assert.That((string)CommandLineParser.SignalingType, Is.EqualTo(signalingType));
         }
 
         [Test]
