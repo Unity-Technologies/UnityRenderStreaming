@@ -47,7 +47,7 @@
   margin-right: 32px;
 }
 
-.FixAll {
+.FixAll, .OpenProjectSettings {
   margin: 10px 20px;
 }
 

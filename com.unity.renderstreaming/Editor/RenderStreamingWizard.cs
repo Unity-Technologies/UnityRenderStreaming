@@ -143,8 +143,6 @@ namespace Editor
                 if (entries == null)
                     entries = new[]
                     {
-                        new Entry(Scope.PlayMode, renderStreamingSettings, IsRenderStreamingSettingsCorrect,
-                            FixRenderStreamingSettingsCorrect),
                         new Entry(Scope.PlayMode, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
                         new Entry(Scope.PlayMode, inputSystemBackgroundBehavior,
                             IsInputSystemBackgroundBehaviorCorrect,
@@ -172,11 +170,6 @@ namespace Editor
                 return entries;
             }
         }
-
-        private static bool IsRenderStreamingSettingsCorrect() => RenderStreaming.Settings != null;
-
-        private static void FixRenderStreamingSettingsCorrect() => RenderStreaming.Settings =
-            AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
 
         private static bool IsRunInBackgroundCorrect() => PlayerSettings.runInBackground;
         private static void FixRunInBackground() => PlayerSettings.runInBackground = true;
@@ -366,12 +359,15 @@ namespace Editor
             rootVisualElement.styleSheets.Add(styleSheet);
 
             BindCheckVersion();
+            BindCurrentSettings();
             BindChecker();
             BindWebApp();
             BindCheckBox();
         }
 
         private int inspectorCounter = 0;
+        private Label currentSettingsLabel;
+        private HelpBox currentSettingsHelpBox;
         private Button fixAllButton;
         private VisualElement playmodeCheckButtons;
         private VisualElement buildSettingsCheckButtons;
@@ -383,6 +379,17 @@ namespace Editor
             if (inspectorCounter % 10 != 0)
             {
                 return;
+            }
+
+
+            if (currentSettingsLabel != null)
+            {
+                currentSettingsLabel.text = $"Current Render Streaming Settings: {GetSettingsAssetName()}";
+            }
+
+            if (currentSettingsHelpBox != null)
+            {
+                currentSettingsHelpBox.style.display = IsDefaultSetting() ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
 
@@ -425,6 +432,40 @@ namespace Editor
 
                 label.text = $"Current Render Streaming version: {packageInfo.version}";
             }, null);
+        }
+
+        private void BindCurrentSettings()
+        {
+            var checkUpdateContainer = rootVisualElement.Q("currentSettingsContainer");
+
+            currentSettingsLabel = new Label {text = $"Current Render Streaming Settings: {GetSettingsAssetName()}"};
+            currentSettingsLabel.AddToClassList("normal");
+            checkUpdateContainer.Add(currentSettingsLabel);
+
+            var button = new Button(() => SettingsService.OpenProjectSettings("Project/Render Streaming"))
+            {
+                text = "Open Project Settings"
+            };
+            button.AddToClassList(("OpenProjectSettings"));
+            checkUpdateContainer.Add(button);
+
+            currentSettingsHelpBox = new HelpBox("Current selected settings is default. If you want to change settings, open the Project Window and create or select another Settings.", HelpBoxMessageType.Info)
+            {
+                style = {display = IsDefaultSetting() ? DisplayStyle.Flex : DisplayStyle.None}
+            };
+            checkUpdateContainer.Add(currentSettingsHelpBox);
+        }
+
+        private static string GetSettingsAssetName()
+        {
+            var path = AssetDatabase.GetAssetPath(RenderStreaming.Settings);
+            var assetName = path == RenderStreaming.DefaultRenderStreamingSettingsPath ? "Default" : path.Split('/').Last();
+            return assetName;
+        }
+
+        private static bool IsDefaultSetting()
+        {
+            return AssetDatabase.GetAssetPath(RenderStreaming.Settings) == RenderStreaming.DefaultRenderStreamingSettingsPath;
         }
 
         private void BindChecker()

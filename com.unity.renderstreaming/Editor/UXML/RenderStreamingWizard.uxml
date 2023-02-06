@@ -4,6 +4,9 @@
          noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:ScrollView name="renderStreamingWizardContainer">
         <ui:VisualElement class="normal" name="checkUpdateContainer"/>
+        <ui:VisualElement class="ScopeBox" name="currentSettingsContainer">
+            <ui:Label class="h1" text="Project Settings"/>
+        </ui:VisualElement>
         <ui:VisualElement class="ScopeBox" name="configurationCheckingContainer">
             <ui:Label class="h1" text="Configuration Checking"/>
             <ui:Button class="FixAll" name="fixAllButton" text="Fix All"/>
