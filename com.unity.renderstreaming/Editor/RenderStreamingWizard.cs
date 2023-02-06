@@ -81,8 +81,8 @@ namespace Editor
 
         enum Scope
         {
-            Configuration,
-            Build
+            PlayMode,
+            BuildSettings
         }
 
         struct Entry
@@ -97,7 +97,6 @@ namespace Editor
             public readonly Fixer fix;
             public readonly bool forceDisplayCheck;
             public readonly bool skipErrorIcon;
-            public readonly bool displayAssetName;
 
             public Entry(
                 Scope scope,
@@ -105,8 +104,7 @@ namespace Editor
                 Checker check,
                 Fixer fix,
                 bool forceDisplayCheck = false,
-                bool skipErrorIcon = false,
-                bool displayAssetName = false
+                bool skipErrorIcon = false
             )
             {
                 this.scope = scope;
@@ -115,8 +113,6 @@ namespace Editor
                 this.fix = fix;
                 this.forceDisplayCheck = forceDisplayCheck;
                 this.skipErrorIcon = skipErrorIcon;
-                this.displayAssetName = displayAssetName;
-                this.displayAssetName = false;
             }
         }
 
@@ -130,28 +126,28 @@ namespace Editor
                 if (entries == null)
                     entries = new[]
                     {
-                        new Entry(Scope.Configuration, renderStreamingSettings, IsRenderStreamingSettingsCorrect,
+                        new Entry(Scope.PlayMode, renderStreamingSettings, IsRenderStreamingSettingsCorrect,
                             FixRenderStreamingSettingsCorrect),
-                        new Entry(Scope.Configuration, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
-                        new Entry(Scope.Configuration, inputSystemBackgroundBehavior,
+                        new Entry(Scope.PlayMode, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
+                        new Entry(Scope.PlayMode, inputSystemBackgroundBehavior,
                             IsInputSystemBackgroundBehaviorCorrect,
                             FixInputSystemBackgroundBehavior),
-                        new Entry(Scope.Configuration, inputSystemPlayModeInputBehavior,
+                        new Entry(Scope.PlayMode, inputSystemPlayModeInputBehavior,
                             IsInputSystemPlayModeInputBehaviorCorrect,
                             FixInputSystemPlayModeInputBehavior),
-                        new Entry(Scope.Build, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
-                        new Entry(Scope.Build, macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect,
+                        new Entry(Scope.BuildSettings, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
+                        new Entry(Scope.BuildSettings, macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect,
                             FixMacMicrophoneUsage),
-                        new Entry(Scope.Build, iOSCameraUsageDescription, IsIOSCameraUsageCorrect, FixIOSCameraUsage),
-                        new Entry(Scope.Build, iOSMicrophoneUsageDescription, IsIOSMicrophoneUsageCorrect,
+                        new Entry(Scope.BuildSettings, iOSCameraUsageDescription, IsIOSCameraUsageCorrect, FixIOSCameraUsage),
+                        new Entry(Scope.BuildSettings, iOSMicrophoneUsageDescription, IsIOSMicrophoneUsageCorrect,
                             FixIOSMicrophoneUsage),
-                        new Entry(Scope.Build, androidMinimumAPILevel, IsAndroidMinimumAPILevelCorrect,
+                        new Entry(Scope.BuildSettings, androidMinimumAPILevel, IsAndroidMinimumAPILevelCorrect,
                             FixAndroidMinimumAPILevel),
-                        new Entry(Scope.Build, androidScriptBackend, IsAndroidScriptBackendCorrect,
+                        new Entry(Scope.BuildSettings, androidScriptBackend, IsAndroidScriptBackendCorrect,
                             FixAndroidScriptBackend),
-                        new Entry(Scope.Build, androidTargetArchitecture, IsAndroidTargetArchitectureCorrect,
+                        new Entry(Scope.BuildSettings, androidTargetArchitecture, IsAndroidTargetArchitectureCorrect,
                             FixAndroidTargetArchitecture),
-                        new Entry(Scope.Build, androidInternetAccess, IsAndroidInternetAccessCorrect,
+                        new Entry(Scope.BuildSettings, androidInternetAccess, IsAndroidInternetAccessCorrect,
                             FixAndroidInternetAccess),
                     };
                 return entries;
@@ -367,7 +363,7 @@ namespace Editor
             };
 
 
-            foreach (var entry in Entries.Where(x => x.scope == Scope.Configuration))
+            foreach (var entry in Entries.Where(x => x.scope == Scope.PlayMode))
             {
                 playmodeCheckButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
@@ -380,7 +376,7 @@ namespace Editor
                     entry.skipErrorIcon));
             }
 
-            foreach (var entry in Entries.Where(x => x.scope == Scope.Build))
+            foreach (var entry in Entries.Where(x => x.scope == Scope.BuildSettings))
             {
                 buildSettingsCheckButtons.Add(new ConfigInfoLine(
                     entry.configStyle.label,
