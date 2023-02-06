@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace Editor
@@ -14,7 +15,15 @@ namespace Editor
     {
         private const string packageName = "com.unity.renderstreaming";
 
-        struct ConfigStyle
+        private static readonly BuildTarget[] supportedBuildTarget = {
+            BuildTarget.StandaloneWindows64,
+            BuildTarget.StandaloneOSX,
+            BuildTarget.StandaloneLinux64,
+            BuildTarget.iOS,
+            BuildTarget.Android
+        };
+
+        private struct ConfigStyle
         {
             public readonly string label;
             public readonly string error;
@@ -46,6 +55,14 @@ namespace Editor
         static readonly ConfigStyle inputSystemPlayModeInputBehavior = new ConfigStyle(
             label: "InputSystem PlayMode Input Behavior",
             error: "InputSystem PlayMode Input behavior must be AllDeviceInputAlwaysGoesToGameView for InputSystem to work in background PlayMode.");
+
+        static readonly ConfigStyle currentBuildTarget = new ConfigStyle(
+            label: "Current BuildTarget platform",
+            error: "Current BuildTarget platform not supported.");
+
+        static readonly ConfigStyle currentGraphicsApi = new ConfigStyle(
+            label: "Current Graphics API",
+            error: "Current Graphics APi not supported.");
 
         static readonly ConfigStyle macCameraUsageDescription = new ConfigStyle(
             label: "macOS Camera Usage Description",
@@ -135,6 +152,8 @@ namespace Editor
                         new Entry(Scope.PlayMode, inputSystemPlayModeInputBehavior,
                             IsInputSystemPlayModeInputBehaviorCorrect,
                             FixInputSystemPlayModeInputBehavior),
+                        new Entry(Scope.BuildSettings, currentBuildTarget, IsSupportedBuildTarget, FixSupportedBuildTarget),
+                        new Entry(Scope.BuildSettings, currentGraphicsApi, IsSupportedGraphics, FixSupportedGraphics),
                         new Entry(Scope.BuildSettings, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
                         new Entry(Scope.BuildSettings, macMicrophoneUsageDescription, IsMacMicrophoneUsageCorrect,
                             FixMacMicrophoneUsage),
@@ -175,6 +194,66 @@ namespace Editor
         private static void FixInputSystemPlayModeInputBehavior() =>
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+
+        private static bool IsSupportedBuildTarget() => supportedBuildTarget.Contains(EditorUserBuildSettings.activeBuildTarget);
+
+        private static void FixSupportedBuildTarget()
+        {
+            BuildTarget target = default;
+#if UNITY_EDITOR_WIN
+            target = BuildTarget.StandaloneWindows64;
+#elif UNITY_EDITOR_OSX
+            target = BuildTarget.StandaloneOSX;
+#elif UNITY_EDITOR_LINUX
+            target = BuildTarget.StandaloneLinux64;
+#else
+            throw new NotSupportedException();
+#endif
+            EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target), target);
+        }
+
+        private static bool IsSupportedGraphics()
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            var targetGraphics = PlayerSettings.GetGraphicsAPIs(target);
+            switch (target)
+            {
+                case BuildTarget.StandaloneOSX:
+                case BuildTarget.iOS:
+                    return targetGraphics.All(x => x == GraphicsDeviceType.Metal);
+                case BuildTarget.Android:
+                    return targetGraphics.All(x => x == GraphicsDeviceType.OpenGLES3 || x == GraphicsDeviceType.Vulkan);
+                case BuildTarget.StandaloneWindows64:
+                    return targetGraphics.All(x => x == GraphicsDeviceType.Direct3D11 || x == GraphicsDeviceType.Direct3D12 || x == GraphicsDeviceType.Vulkan);
+                case BuildTarget.StandaloneLinux64:
+                    return targetGraphics.All(x => x == GraphicsDeviceType.OpenGLCore || x == GraphicsDeviceType.Vulkan);
+                default:
+                    return false;
+            }
+        }
+
+        private static void FixSupportedGraphics()
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            switch (target)
+            {
+                case BuildTarget.StandaloneOSX:
+                case BuildTarget.iOS:
+                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Metal});
+                    break;
+                case BuildTarget.Android:
+                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLES3, GraphicsDeviceType.Vulkan});
+                    break;
+                case BuildTarget.StandaloneWindows64:
+                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Direct3D11, GraphicsDeviceType.Direct3D12, GraphicsDeviceType.Vulkan});
+                    break;
+                case BuildTarget.StandaloneLinux64:
+                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLCore, GraphicsDeviceType.Vulkan});
+                    break;
+                default:
+                    throw new NotSupportedException($"{nameof(target)} is not supported.");
+            }
+        }
 
         private static bool IsMacCameraUsageCorrect() =>
             !string.IsNullOrEmpty(PlayerSettings.macOS.cameraUsageDescription);
