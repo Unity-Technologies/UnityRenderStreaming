@@ -190,7 +190,14 @@ namespace Editor
             InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
-        private static bool IsSupportedBuildTarget() => supportedBuildTarget.Contains(EditorUserBuildSettings.activeBuildTarget);
+        private static bool IsSupportedBuildTarget()
+        {
+            var correctBuildTarget = supportedBuildTarget.Contains(EditorUserBuildSettings.activeBuildTarget);
+#if UNITY_2021_1_OR_NEWER
+            correctBuildTarget = correctBuildTarget && EditorUserBuildSettings.standaloneBuildSubtarget == StandaloneBuildSubtarget.Player;
+#endif
+            return correctBuildTarget;
+        }
 
         private static void FixSupportedBuildTarget()
         {
@@ -205,6 +212,9 @@ namespace Editor
             throw new NotSupportedException();
 #endif
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target), target);
+#if UNITY_2021_1_OR_NEWER
+            EditorUserBuildSettings.standaloneBuildSubtarget = StandaloneBuildSubtarget.Player;
+#endif
         }
 
         private static bool IsSupportedGraphics()
