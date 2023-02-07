@@ -1,0 +1,118 @@
+#checkUpdateContainer {
+  flex-direction: row;
+  margin-top: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 3px;
+}
+
+#wizardCheckbox {
+  margin-top: 15px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#statusOK, #statusError {
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  right: 10px;
+}
+
+#testLabel {
+  width: 425px;
+  padding-left: 15px;
+}
+
+#testRow {
+  flex-direction: row;
+  margin-top: 5px;
+}
+
+#resolver {
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  margin-top: -4px;
+}
+
+.unity-help-box {
+  margin: 10px;
+  margin-top: 5px;
+  padding: 10px;
+  border-width: 1px;
+  border-radius: 3px;
+  flex-direction: row;
+  flex-shrink: 1;
+}
+
+.unity-help-box > Image {
+  margin-top: -7px;
+  margin-bottom: -7px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  align-self: center;
+}
+
+.unity-help-box > Label {
+  -unity-text-align: middle-left;
+  white-space: normal;
+  margin-right: 32px;
+}
+
+.fix-all, .open-project-settings {
+  margin: 10px 20px;
+}
+
+.inner-box {
+  padding: 10px;
+  padding-top: 5px;
+  border-radius: 3px;
+  border-width: 1px;
+}
+
+.scope-box {
+  border-width: 1px;
+  border-radius: 3px;
+  margin: 0px;
+  margin-top: 12px;
+  padding: 7px;
+}
+
+.scope-box > #title {
+  align-self: center;
+  width: 200px;
+  font-size: 14px;
+  -unity-font-style: bold;
+  -unity-text-align: middle-center;
+}
+
+.right-anchored-button {
+  position: absolute;
+  right: 0px;
+  width: 114px;
+  margin-top: 0px;
+  margin-right: 10px;
+}
+
+.large-button {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.h1 {
+  -unity-font-style: bold;
+  font-size: 16px;
+  margin: 2px 5px 8px 9px;
+}
+
+.h2 {
+  -unity-font-style: bold;
+  margin-left: 7px;
+}
+
+.normal {
+  margin-left: 10px;
+}

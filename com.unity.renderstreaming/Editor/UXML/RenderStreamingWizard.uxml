@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+         xmlns:urs="Unity.RenderStreaming.Editor.UI"
+         xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements"
+         noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:ScrollView name="renderStreamingWizardContainer">
+        <ui:VisualElement class="normal" name="checkUpdateContainer"/>
+        <ui:VisualElement class="scope-box" name="currentSettingsContainer">
+            <ui:Label class="h1" text="Project Settings"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="scope-box" name="configurationCheckingContainer">
+            <ui:Label class="h1" text="Configuration Checking"/>
+            <ui:Button class="fix-all" name="fixAllButton" text="Fix All"/>
+            <ui:Label class="h2" name="title" text="Playmode Settings"/>
+            <ui:VisualElement class="inner-box" name="playmodeCheckButtons"/>
+            <ui:Label class="h2" name="title" text="Build Settings"/>
+            <ui:VisualElement class="inner-box" name="buildSettingsCheckButtons"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="scope-box normal" name="webappContainer">
+            <ui:Label class="h1" text="WebApp"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="wizardCheckboxContainer" />
+    </ui:ScrollView>
+</ui:UXML>
