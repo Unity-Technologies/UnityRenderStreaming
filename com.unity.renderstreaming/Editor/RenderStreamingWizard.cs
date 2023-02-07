@@ -23,6 +23,12 @@ namespace Editor
             BuildTarget.Android
         };
 
+#if UNITY_2021_1_OR_NEWER
+        const AndroidSdkVersions RequiredAndroidSdkVersion = AndroidSdkVersions.AndroidApiLevel22;
+#else
+        const AndroidSdkVersions RequiredAndroidSdkVersion = AndroidSdkVersions.AndroidApiLevel21;
+#endif
+
         private struct ConfigStyle
         {
             public readonly string label;
@@ -78,7 +84,7 @@ namespace Editor
 
         static readonly ConfigStyle androidMinimumAPILevel = new ConfigStyle(
             label: "Android Minimum API Level",
-            error: "The minimum Android SDK level required for ARFoundation is 24 or higher.");
+            error: $"The minimum Android SDK level required is {(int)RequiredAndroidSdkVersion} or higher.");
 
         static readonly ConfigStyle androidScriptBackend = new ConfigStyle(
             label: "Android Script Backend",
@@ -265,10 +271,10 @@ namespace Editor
         private static void FixIOSMicrophoneUsage() => PlayerSettings.iOS.microphoneUsageDescription = "For Microphone";
 
         private static bool IsAndroidMinimumAPILevelCorrect() =>
-            PlayerSettings.Android.minSdkVersion >= AndroidSdkVersions.AndroidApiLevel24;
+            PlayerSettings.Android.minSdkVersion >= RequiredAndroidSdkVersion;
 
         private static void FixAndroidMinimumAPILevel() =>
-            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel24;
+            PlayerSettings.Android.minSdkVersion = RequiredAndroidSdkVersion;
 
         private static bool IsAndroidScriptBackendCorrect() =>
             PlayerSettings.GetScriptingBackend(BuildTargetGroup.Android) == ScriptingImplementation.IL2CPP;
