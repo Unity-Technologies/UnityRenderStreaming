@@ -30,21 +30,21 @@ namespace Unity.RenderStreaming.Editor
             Action resolver,
             bool visibleStatus = true,
             bool skipErrorIcon = false
-            )
+        )
         {
             m_visibleStatus = visibleStatus;
             m_skipErrorIcon = skipErrorIcon;
             m_tester = tester;
             m_haveFixer = resolver != null;
 
-            var testLabel = new Label(label) {name = "TestLabel"};
-            var fixer = new Button(resolver) {text = resolverButtonLabel, name = "Resolver"};
-            var testRow = new VisualElement() {name = "TestRow"};
+            var testLabel = new Label(label) {name = "testLabel"};
+            var fixer = new Button(resolver) {text = resolverButtonLabel, name = "resolver"};
+            var testRow = new VisualElement() {name = "testRow"};
             testRow.Add(testLabel);
             if (m_visibleStatus)
             {
-                var statusOk = new Image {image = Style.ok, name = "StatusOK"};
-                var statusError = new Image {image = Style.error, name = "StatusError"};
+                var statusOk = new Image {image = Style.ok, name = "statusOK"};
+                var statusError = new Image {image = Style.error, name = "statusError"};
                 testRow.Add(statusOk);
                 testRow.Add(statusError);
             }
@@ -91,13 +91,13 @@ namespace Unity.RenderStreaming.Editor
         {
             if (m_visibleStatus)
             {
-                this.Q(name: "StatusOK").style.display = statusOK ? DisplayStyle.Flex : DisplayStyle.None;
-                this.Q(name: "StatusError").style.display = !statusOK
+                this.Q(name: "statusOK").style.display = statusOK ? DisplayStyle.Flex : DisplayStyle.None;
+                this.Q(name: "statusError").style.display = !statusOK
                     ? (m_skipErrorIcon ? DisplayStyle.None : DisplayStyle.Flex)
                     : DisplayStyle.None;
             }
 
-            this.Q(name: "Resolver").style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
+            this.Q(name: "resolver").style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
             this.Q(className: HelpBox.ussClassName).style.display = statusOK ? DisplayStyle.None : DisplayStyle.Flex;
         }
     }

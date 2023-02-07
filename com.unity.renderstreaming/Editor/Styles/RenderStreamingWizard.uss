@@ -1,20 +1,34 @@
-#StatusOK, #StatusError {
+#checkUpdateContainer {
+  flex-direction: row;
+  margin-top: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 3px;
+}
+
+#wizardCheckbox {
+  margin-top: 15px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#statusOK, #statusError {
   width: 12px;
   height: 12px;
   position: absolute;
   right: 10px;
 }
 
-#TestLabel {
+#testLabel {
   width: 425px;
 }
 
-#TestRow {
+#testRow {
   flex-direction: row;
   margin-top: 5px;
 }
 
-#Resolver {
+#resolver {
   position: absolute;
   right: 0px;
   width: 100px;
@@ -47,18 +61,18 @@
   margin-right: 32px;
 }
 
-.FixAll, .OpenProjectSettings {
+.fix-all, .open-project-settings {
   margin: 10px 20px;
 }
 
-.InnerBox {
+.inner-box {
   padding: 10px;
   padding-top: 5px;
   border-radius: 3px;
   border-width: 1px;
 }
 
-.ScopeBox {
+.scope-box {
   border-width: 1px;
   border-radius: 3px;
   margin: 0px;
@@ -66,7 +80,7 @@
   padding: 7px;
 }
 
-.ScopeBox > #Title {
+.scope-box > #title {
   align-self: center;
   width: 200px;
   font-size: 14px;
@@ -74,7 +88,7 @@
   -unity-text-align: middle-center;
 }
 
-.RightAnchoredButton {
+.right-anchored-button {
   position: absolute;
   right: 0px;
   width: 114px;
@@ -82,23 +96,9 @@
   margin-right: 10px;
 }
 
-.LargeButton {
+.large-button {
   margin-left: 20px;
   margin-right: 20px;
-}
-
-#checkUpdateContainer {
-  flex-direction: row;
-  margin-top: 10px;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  padding-left: 3px;
-}
-
-#wizardCheckbox {
-  margin-top: 15px;
-  margin-left: 20px;
-  margin-bottom: 20px;
 }
 
 .h1 {

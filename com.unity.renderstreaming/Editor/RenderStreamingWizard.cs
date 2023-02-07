@@ -40,10 +40,6 @@ namespace Editor
             }
         }
 
-        static readonly ConfigStyle renderStreamingSettings = new ConfigStyle(
-            label: "Render Streaming Setting",
-            error: "Render Streaming Setting not set");
-
         static readonly ConfigStyle runInBackground = new ConfigStyle(
             label: "Run In Background",
             error: "Run In Background must be True for Render Streaming to work in Background.");
@@ -418,7 +414,7 @@ namespace Editor
 
             var button = new Button(() =>
                 UnityEditor.PackageManager.UI.Window.Open(packageName)) {text = "Check update"};
-            button.AddToClassList("RightAnchoredButton");
+            button.AddToClassList("right-anchored-button");
             checkUpdateContainer.Add(button);
 
             RequestJobManager.CreateListRequest(true, true, (req) =>
@@ -446,7 +442,7 @@ namespace Editor
             {
                 text = "Open Project Settings"
             };
-            button.AddToClassList(("OpenProjectSettings"));
+            button.AddToClassList(("open-project-settings"));
             checkUpdateContainer.Add(button);
 
             currentSettingsHelpBox = new HelpBox("Current selected settings is default. If you want to change settings, open the Project Window and create or select another Settings.", HelpBoxMessageType.Info)
@@ -522,7 +518,7 @@ namespace Editor
                     WebAppDownloader.DownloadWebApp(version, dstPath, null);
                 });
             }) {text = "Download latest version web app."};
-            webappButton.AddToClassList("LargeButton");
+            webappButton.AddToClassList("large-button");
 
             var showWebAppDocButton = new Button(() =>
             {
@@ -532,7 +528,7 @@ namespace Editor
                     Application.OpenURL(url);
                 });
             }) {text = "Show web app documentation."};
-            showWebAppDocButton.AddToClassList("LargeButton");
+            showWebAppDocButton.AddToClassList("large-button");
 
             var showWebAppSourceButton = new Button(() =>
             {
@@ -542,7 +538,7 @@ namespace Editor
                     Application.OpenURL(url);
                 });
             }) {text = "Show web app source code."};
-            showWebAppSourceButton.AddToClassList("LargeButton");
+            showWebAppSourceButton.AddToClassList("large-button");
 
             webappContainer.Add(webappButton);
             webappContainer.Add(showWebAppDocButton);
