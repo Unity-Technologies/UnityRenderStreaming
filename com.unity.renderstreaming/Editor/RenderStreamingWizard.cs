@@ -64,7 +64,7 @@ namespace Editor
 
         static readonly ConfigStyle currentGraphicsApi = new ConfigStyle(
             label: "Current Graphics API",
-            error: "Current Graphics APi not supported.");
+            error: "Current settings contains not support Graphics API.");
 
         static readonly ConfigStyle macCameraUsageDescription = new ConfigStyle(
             label: "macOS Camera Usage Description",
@@ -217,9 +217,10 @@ namespace Editor
 #endif
         }
 
-        private static bool IsSupportedGraphics()
+        private static bool IsSupportedGraphics() => supportedBuildTarget.All(CheckGraphicsApi);
+
+        private static bool CheckGraphicsApi(BuildTarget target)
         {
-            var target = EditorUserBuildSettings.activeBuildTarget;
             var targetGraphics = PlayerSettings.GetGraphicsAPIs(target);
             switch (target)
             {
@@ -239,24 +240,26 @@ namespace Editor
 
         private static void FixSupportedGraphics()
         {
-            var target = EditorUserBuildSettings.activeBuildTarget;
-            switch (target)
+            foreach (var target in supportedBuildTarget.Where(x => !CheckGraphicsApi(x)))
             {
-                case BuildTarget.StandaloneOSX:
-                case BuildTarget.iOS:
-                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Metal});
-                    break;
-                case BuildTarget.Android:
-                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLES3, GraphicsDeviceType.Vulkan});
-                    break;
-                case BuildTarget.StandaloneWindows64:
-                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Direct3D11, GraphicsDeviceType.Direct3D12, GraphicsDeviceType.Vulkan});
-                    break;
-                case BuildTarget.StandaloneLinux64:
-                    PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLCore, GraphicsDeviceType.Vulkan});
-                    break;
-                default:
-                    throw new NotSupportedException($"{nameof(target)} is not supported.");
+                switch (target)
+                {
+                    case BuildTarget.StandaloneOSX:
+                    case BuildTarget.iOS:
+                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Metal});
+                        break;
+                    case BuildTarget.Android:
+                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLES3, GraphicsDeviceType.Vulkan});
+                        break;
+                    case BuildTarget.StandaloneWindows64:
+                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Direct3D11, GraphicsDeviceType.Direct3D12, GraphicsDeviceType.Vulkan});
+                        break;
+                    case BuildTarget.StandaloneLinux64:
+                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLCore, GraphicsDeviceType.Vulkan});
+                        break;
+                    default:
+                        throw new NotSupportedException($"{nameof(target)} is not supported.");
+                }
             }
         }
 
