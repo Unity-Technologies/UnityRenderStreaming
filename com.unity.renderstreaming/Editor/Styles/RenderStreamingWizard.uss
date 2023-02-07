@@ -21,6 +21,7 @@
 
 #testLabel {
   width: 425px;
+  padding-left: 15px;
 }
 
 #testRow {

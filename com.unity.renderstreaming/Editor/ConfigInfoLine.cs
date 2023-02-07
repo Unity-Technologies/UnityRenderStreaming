@@ -12,7 +12,6 @@ namespace Unity.RenderStreaming.Editor
             const string k_IconFolder = "Packages/com.unity.renderstreaming/Editor/Icon/";
             public static readonly Texture ok = EditorGUIUtility.Load(k_IconFolder + "OK.png") as Texture;
             public static readonly Texture error = EditorGUIUtility.Load(k_IconFolder + "Error.png") as Texture;
-            public const int k_IndentStepSize = 15;
         }
 
         private readonly bool m_visibleStatus;
@@ -71,8 +70,6 @@ namespace Unity.RenderStreaming.Editor
             }
 
             Add(new HelpBox(error, kind));
-
-            testLabel.style.paddingLeft = style.paddingLeft.value.value + 1 * Style.k_IndentStepSize;
 
             UpdateDisplay(m_currentStatus, m_haveFixer);
         }
