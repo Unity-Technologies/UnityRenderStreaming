@@ -7,7 +7,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.RenderStreaming
+namespace Unity.RenderStreaming.Editor
 {
     internal class RenderStreamingProjectSettingsProvider : SettingsProvider
     {

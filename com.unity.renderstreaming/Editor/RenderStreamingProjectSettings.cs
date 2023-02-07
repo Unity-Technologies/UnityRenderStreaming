@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Editor
+namespace Unity.RenderStreaming.Editor
 {
     internal class RenderStreamingProjectSettings : ScriptableObject
     {
