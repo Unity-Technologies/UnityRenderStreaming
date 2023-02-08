@@ -131,6 +131,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.Android, RuntimePlatform.IPhonePlayer })]
         public void EvaluateCommandlineArguments()
         {
             // Change signaling type.
