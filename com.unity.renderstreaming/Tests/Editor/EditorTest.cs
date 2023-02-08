@@ -3,9 +3,56 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.TestTools;
+using UnityEngine.TestRunner;
+using NUnit.Framework.Interfaces;
+
+[assembly: TestPlayerBuildModifier(typeof(Unity.RenderStreaming.EditorTest.BuildModifier))]
+[assembly: TestRunCallback(typeof(Unity.RenderStreaming.EditorTest.TestListener))]
+
 
 namespace Unity.RenderStreaming.EditorTest
 {
+    class BuildModifier : ITestPlayerBuildModifier
+    {
+        const string path = "Packages/com.unity.renderstreaming/Editor/RenderStreamingSettings.asset";
+
+        public BuildPlayerOptions ModifyOptions(BuildPlayerOptions playerOptions)
+        {
+            var settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(path);
+            RenderStreaming.Settings = settings;
+            return playerOptions;
+        }
+    }
+
+    class TestListener : ITestRunCallback
+    {
+        const string path = "Packages/com.unity.renderstreaming/Editor/RenderStreamingSettings.asset";
+
+        RenderStreamingSettings temp = null;
+
+        public void RunStarted(ITest testsToRun)
+        {
+            var settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(path);
+            temp = RenderStreaming.Settings;
+            RenderStreaming.Settings = settings;
+        }
+
+        public void RunFinished(ITestResult testResults)
+        {
+            if(temp != null)
+                RenderStreaming.Settings = temp;
+        }
+
+        public void TestStarted(ITest test)
+        {
+        }
+
+        public void TestFinished(ITestResult result)
+        {
+        }
+    }
+
 
     class VideoCodecInfoTest
     {
@@ -117,6 +164,21 @@ namespace Unity.RenderStreaming.EditorTest
             var codecs = AudioStreamReceiver.GetAvailableCodecs();
             Assert.That(codecs, Is.Not.Null.Or.Empty);
             Assert.That(codecs, Is.Not.Contains(null));
+        }
+    }
+
+    class RenderStreamingSettingsTest
+    {
+        [Test]
+        public void CheckDefaultSettings()
+        {
+            RenderStreamingSettings defaultSettings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
+            Assert.That(defaultSettings.automaticStreaming, Is.True);
+            var defaultSignalingSettings = defaultSettings.signalingSettings as WebSocketSignalingSettings;
+            Assert.That(defaultSignalingSettings, Is.Not.Null);
+            Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(Signaling.WebSocketSignaling)));
+            Assert.That(defaultSignalingSettings.url, Is.EqualTo("ws://127.0.0.1:80"));
+            Assert.That(defaultSignalingSettings.iceServers.ElementAt(0).urls, Is.EquivalentTo(new string[] { "stun:stun.l.google.com:19302" }));
         }
     }
 

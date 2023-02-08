@@ -1,4 +1,7 @@
 using System.Collections;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -125,6 +128,45 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(component.Running, Is.True);
 
             Assert.That(() => component.SetSignalingSettings(new MockSignalingSettings()), Throws.InvalidOperationException);
+        }
+
+        [Test]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.Android, RuntimePlatform.IPhonePlayer })]
+        public void EvaluateCommandlineArguments()
+        {
+            // Change signaling type.
+            SignalingSettings settings = new WebSocketSignalingSettings();
+            string[] arguments = { "-signalingType", "http" };
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
+
+            // Change signaling url.
+            string url = "http://192.168.10.10";
+            arguments = new[] { "-signalingUrl", url };
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
+            Assert.That((settings as HttpSignalingSettings).url, Is.EqualTo(url));
+
+            // Import json for ice server settings.
+            string json = "{\"iceServers\":[{\"credential\":\"pass\",\"username\":\"user\",\"credentialType\":\"password\"," +
+                          "\"urls\":[\"turn:192.168.10.10:3478?transport=udp\"]}]}";
+            string filepath = "dummy.json";
+            File.WriteAllText(filepath, json);
+            arguments = new[] { "-importJson", filepath };
+            var info = JsonUtility.FromJson<CommandLineInfo>(json);
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
+            Assert.That(settings.iceServers.Count, Is.EqualTo(1));
+            Assert.That(settings.iceServers.ElementAt(0).credential, Is.EqualTo(info.iceServers[0].credential));
+            Assert.That(settings.iceServers.ElementAt(0).credentialType, Is.EqualTo((IceCredentialType)info.iceServers[0].credentialType));
+            File.Delete(filepath);
+
+            // Import json to change signaling type.
+            json = "{\"signalingType\":\"websocket\"}";
+            File.WriteAllText(filepath, json);
+            arguments = new[] { "-importJson", filepath };
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
         }
     }
 }

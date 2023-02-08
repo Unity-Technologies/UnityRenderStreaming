@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
-    [Serializable]
+    [Serializable, SignalingType("http")]
     public class HttpSignalingSettings : SignalingSettings
     {
         /// <summary>
@@ -25,7 +25,7 @@ namespace Unity.RenderStreaming
         public string url => m_url;
 
         /// <summary>
-        /// 
+        /// Polling interval
         /// </summary>
         public float interval => m_interval;
 
@@ -65,6 +65,51 @@ namespace Unity.RenderStreaming
                 new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
             m_interval = 5f;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="argumetns"></param>
+        /// <returns></returns>
+        public override bool ParseArguments(string[] arguments)
+        {
+            if (arguments == null)
+                throw new ArgumentNullException("arguments");
+            if (arguments.Length == 0)
+                throw new ArgumentException("arguments is empty");
+            if (!CommandLineParser.TryParse(arguments))
+                return false;
+
+            if (CommandLineParser.ImportJson.Value != null)
+            {
+                CommandLineInfo info = CommandLineParser.ImportJson.Value.Value;
+
+                if (info.signalingUrl != null)
+                    m_url = info.signalingUrl;
+                if (info.iceServers != null && info.iceServers.Length != 0)
+                    m_iceServers = info.iceServers.Select(v => new IceServer(v)).ToArray();
+            }
+            if (CommandLineParser.SignalingUrl.Value != null)
+                m_url = CommandLineParser.SignalingUrl.Value;
+
+            var username = CommandLineParser.IceServerUsername != null
+                ? CommandLineParser.IceServerUsername.Value
+                : null;
+            var credential = CommandLineParser.IceServerCredential != null
+                ? CommandLineParser.IceServerCredential.Value
+                : null;
+            var credentialType = CommandLineParser.IceServerCredentialType != null
+                ? CommandLineParser.IceServerCredentialType.Value
+                : null;
+            var urls = CommandLineParser.IceServerUrls != null
+                ? CommandLineParser.IceServerUrls.Value
+                : null;
+            m_iceServers[0] = m_iceServers[0].Clone(username: username, credential: credential, credentialType: credentialType, urls: urls);
+
+            if (CommandLineParser.PollingInterval.Value != null)
+                m_interval = (float)CommandLineParser.PollingInterval.Value * 0.001f;
+            return true;
         }
     }
 }

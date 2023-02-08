@@ -59,25 +59,6 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
         [Test]
-        public void CheckDefaultSettings()
-        {
-            RenderStreamingSettings defaultSettings = null;
-#if UNITY_EDITOR
-            defaultSettings =
-                AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(RenderStreaming.DefaultRenderStreamingSettingsPath);
-#else
-            defaultSettings = Resources.FindObjectsOfTypeAll<RenderStreamingSettings>().FirstOrDefault() ??
-                                       ScriptableObject.CreateInstance<RenderStreamingSettings>();
-#endif
-            Assert.That(defaultSettings.automaticStreaming, Is.True);
-            var defaultSignalingSettings = defaultSettings.signalingSettings as WebSocketSignalingSettings;
-            Assert.That(defaultSignalingSettings, Is.Not.Null);
-            Assert.That(defaultSignalingSettings.signalingClass, Is.EqualTo(typeof(WebSocketSignaling)));
-            Assert.That(defaultSignalingSettings.url, Is.EqualTo("ws://127.0.0.1:80"));
-            Assert.That(defaultSignalingSettings.iceServers.ElementAt(0).urls, Is.EquivalentTo(new string[] {"stun:stun.l.google.com:19302"}));
-        }
-
-        [Test]
         public void Settings()
         {
             Assert.That(() => RenderStreaming.Settings = null, Throws.ArgumentNullException);

@@ -9,7 +9,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// 
     /// </summary>
-    [Serializable]
+    [Serializable, SignalingType("websocket")]
     public class WebSocketSignalingSettings : SignalingSettings
     {
         /// <summary>
@@ -58,6 +58,44 @@ namespace Unity.RenderStreaming
             {
                 new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
+        }
+
+        public override bool ParseArguments(string[] arguments)
+        {
+            if (arguments == null)
+                throw new ArgumentNullException("arguments");
+            if (arguments.Length == 0)
+                throw new ArgumentException("arguments is empty");
+
+            if (!CommandLineParser.TryParse(arguments))
+                return false;
+
+            if (CommandLineParser.ImportJson.Value != null)
+            {
+                CommandLineInfo info = CommandLineParser.ImportJson.Value.Value;
+
+                if(info.signalingUrl != null)
+                    m_url = info.signalingUrl;
+                if(info.iceServers != null && info.iceServers.Length != 0)
+                    m_iceServers = info.iceServers.Select(v => new IceServer(v)).ToArray();
+            }
+            if (CommandLineParser.SignalingUrl.Value != null)
+                m_url = CommandLineParser.SignalingUrl.Value;
+
+            var username = CommandLineParser.IceServerUsername != null
+                ? CommandLineParser.IceServerUsername.Value
+                : null;
+            var credential = CommandLineParser.IceServerCredential != null
+                ? CommandLineParser.IceServerCredential.Value
+                : null;
+            var credentialType = CommandLineParser.IceServerCredentialType != null
+                ? CommandLineParser.IceServerCredentialType.Value
+                : null;
+            var urls = CommandLineParser.IceServerUrls != null
+                ? CommandLineParser.IceServerUrls.Value
+                : null;
+            m_iceServers[0] = m_iceServers[0].Clone(username:username, credential:credential, credentialType: credentialType, urls:urls);
+            return true;
         }
     }
 }

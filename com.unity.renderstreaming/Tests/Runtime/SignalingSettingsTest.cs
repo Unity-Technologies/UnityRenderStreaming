@@ -1,14 +1,38 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.RenderStreaming.Signaling;
-using Unity.WebRTC;
-using UnityEngine;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
+    class IceServerTest
+    {
+        [Test]
+        public void Clone()
+        {
+            var iceServer = new IceServer(
+                urls: new[]{"stun:stun.l.google.com:19302"},
+                username:"username",
+                credentialType:IceCredentialType.Password,
+                credential:"password");
+
+            var copied = iceServer.Clone();
+            Assert.That(copied.urls, Is.EqualTo(iceServer.urls));
+            Assert.That(copied.username, Is.EqualTo(iceServer.username));
+            Assert.That(copied.credentialType, Is.EqualTo(iceServer.credentialType));
+            Assert.That(copied.credential, Is.EqualTo(iceServer.credential));
+
+            copied = iceServer.Clone(
+                username: "username2",
+                credential: "password2");
+            Assert.That(copied.urls, Is.EqualTo(iceServer.urls));
+            Assert.That(copied.username, Is.Not.EqualTo(iceServer.username));
+            Assert.That(copied.credentialType, Is.EqualTo(iceServer.credentialType));
+            Assert.That(copied.credential, Is.Not.EqualTo(iceServer.credential));
+        }
+    }
+
+
     class SignalingSettingsTest
     {
         [Test]

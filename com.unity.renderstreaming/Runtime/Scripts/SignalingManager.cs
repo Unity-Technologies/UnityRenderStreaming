@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using UnityEngine;
 using Unity.WebRTC;
@@ -33,6 +34,13 @@ namespace Unity.RenderStreaming
         /// </summary>
         [SerializeField, Tooltip("Automatically started when called Awake method.")]
         public bool runOnAwake = true;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [SerializeField, Tooltip("Evaluate commandline arguments if launching runtime on the command line.")]
+        public bool evaluateCommandlineArguments = true;
+
 #pragma warning restore 0649
 
         private SignalingManagerInternal m_instance;
@@ -149,34 +157,6 @@ namespace Unity.RenderStreaming
             _Run(conf, signaling, handlers);
         }
 
-//        void OnValidate()
-//        {
-//#if UNITY_EDITOR
-//            if (Application.isPlaying)
-//                return;
-
-//            if (!m_useDefault)
-//            {
-//                if (!IsValidSignalingSettingsObject(signalingSettingsObject))
-//                {
-//                    // Create Default SignalingSettings in Assets folder when the useDefault flag is turned off first time.
-//                    SignalingSettingsObject obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
-//                    if (obj == null)
-//                    {
-//                        if (!AssetDatabase.CopyAsset(DefaultSignalingSettingsLoadPath, DefaultSignalingSettingsSavePath))
-//                        {
-//                            Debug.LogError("CopyAssets is failed.");
-//                            return;
-//                        }
-//                        obj = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
-//                    }
-//                    signalingSettingsObject = obj;
-//                    signalingSettings = signalingSettingsObject.settings;
-//                }
-//            }
-//#endif
-//        }
-
 #if UNITY_EDITOR
         bool IsValidSignalingSettingsObject(SignalingSettingsObject asset)
         {
@@ -201,6 +181,16 @@ namespace Unity.RenderStreaming
             )
         {
             var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
+#if !UNITY_EDITOR
+            var arguments = Environment.GetCommandLineArgs();
+            if (evaluateCommandlineArguments && arguments.Length > 1)
+            {
+                if (!EvaluateCommandlineArguments(ref settings, arguments))
+                {
+                    Debug.LogError("Command line arguments are invalid.");
+                }
+            }
+#endif
             RTCIceServer[] iceServers = settings.iceServers.OfType<RTCIceServer>().ToArray();
             RTCConfiguration _conf =
                 conf.GetValueOrDefault(new RTCConfiguration { iceServers = iceServers });
@@ -227,6 +217,36 @@ namespace Unity.RenderStreaming
                 m_provider.Subscribe(handler);
             }
             m_running = true;
+        }
+
+        internal static bool EvaluateCommandlineArguments(ref SignalingSettings settings, string[] arguments)
+        {
+            if (!CommandLineParser.TryParse(arguments))
+                return false;
+
+            string signalingTypeName = null;
+            if (CommandLineParser.SignalingType.Value != null)
+            {
+                signalingTypeName = CommandLineParser.SignalingType;
+            }
+            else if (CommandLineParser.ImportJson.Value != null)
+            {
+                signalingTypeName = CommandLineParser.ImportJson.Value.Value.signalingType;
+            }
+            if (signalingTypeName != null)
+            {
+                Type[] types = RuntimeTypeCache<SignalingSettings>.GetTypesDerivedFrom();
+                Dictionary<string, Type> map =
+                    types.Where(type => type.GetCustomAttribute<SignalingTypeAttribute>() != null)
+                        .ToDictionary(type => type.GetCustomAttribute<SignalingTypeAttribute>().typename, type => type);
+
+                if (map.ContainsKey(signalingTypeName))
+                {
+                    var type = map[signalingTypeName];
+                    settings = (SignalingSettings)Activator.CreateInstance(type);
+                }
+            }
+            return settings.ParseArguments(arguments);
         }
 
         /// <summary>
