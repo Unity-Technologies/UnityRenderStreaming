@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
-using Unity.RenderStreaming.Signaling;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -143,6 +141,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private Button buttonWebBrowserInput;
         [SerializeField] private Button buttonAR;
         [SerializeField] private Button buttonMultiplay;
+        [SerializeField] private Toggle automaticStreamingToggle;
 
         [SerializeField]
         private List<Vector2Int> streamSizeList = new List<Vector2Int>
@@ -240,6 +239,7 @@ namespace Unity.RenderStreaming.Samples
             buttonWebBrowserInput.onClick.AddListener(OnPressedWebBrowserInput);
             buttonAR.onClick.AddListener(OnPressedAR);
             buttonMultiplay.onClick.AddListener(OnPressedMultiplay);
+            automaticStreamingToggle.onValueChanged.AddListener(isOn => RenderStreaming.AutomaticStreaming = isOn);
 
 #if UNITY_EDITOR
             buttonGyro.interactable = false;
@@ -276,6 +276,14 @@ namespace Unity.RenderStreaming.Samples
             callback?.Invoke(ARSession.state == ARSessionState.Ready);
         }
 #endif
+
+        private void Update()
+        {
+            if (automaticStreamingToggle != null)
+            {
+                automaticStreamingToggle.SetIsOnWithoutNotify(RenderStreaming.AutomaticStreaming);
+            }
+        }
 
         private void OnChangeSignalingType(int value)
         {
