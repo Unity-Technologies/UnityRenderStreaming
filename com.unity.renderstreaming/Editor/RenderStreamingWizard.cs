@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using Unity.RenderStreaming;
-using Unity.RenderStreaming.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -9,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-namespace Editor
+namespace Unity.RenderStreaming.Editor
 {
     internal class RenderStreamingWizard : EditorWindow
     {
@@ -177,17 +175,17 @@ namespace Editor
         private static void FixRunInBackground() => PlayerSettings.runInBackground = true;
 
         private static bool IsInputSystemBackgroundBehaviorCorrect() =>
-            InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
+            UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
 
         private static void FixInputSystemBackgroundBehavior() =>
-            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
 
         private static bool IsInputSystemPlayModeInputBehaviorCorrect() =>
-            InputSystem.settings.editorInputBehaviorInPlayMode ==
+            UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode ==
             InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
         private static void FixInputSystemPlayModeInputBehavior() =>
-            InputSystem.settings.editorInputBehaviorInPlayMode =
+            UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode =
                 InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
         private static bool IsSupportedBuildTarget()
