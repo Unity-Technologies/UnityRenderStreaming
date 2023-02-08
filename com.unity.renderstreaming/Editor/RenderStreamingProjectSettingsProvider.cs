@@ -115,7 +115,9 @@ namespace Unity.RenderStreaming.Editor
         private static string[] FindRenderStreamingSettingsPathInProject()
         {
             var guids = AssetDatabase.FindAssets("t:RenderStreamingSettings");
-            return guids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            return guids.Select(AssetDatabase.GUIDToAssetPath)
+                .Where(path => !path.StartsWith("Packages") || path.StartsWith(RenderStreaming.DefaultRenderStreamingSettingsPath))
+                .ToArray();
         }
 
         private static void CreateNewSettingsAsset()
