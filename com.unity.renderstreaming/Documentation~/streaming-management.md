@@ -10,7 +10,7 @@ Unity Render Streaming automatically creates and destroys streams as needed. It 
 - Streaming input from cameras
 - Associating browser input with events
 
-![Render Streaming Inspector](images/renderstreaming_inspector.png)
+![Render Streaming Inspector](images/signalingmanager_inspector.png)
 
 ### Properties
 
