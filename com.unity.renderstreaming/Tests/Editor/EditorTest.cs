@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming.EditorTest
 {
     class BuildModifier : ITestPlayerBuildModifier
     {
-        const string path = "Packages/com.unity.renderstreaming/Editor/RenderStreamingSettings.asset";
+        const string path = "Packages/com.unity.renderstreaming/Tests/Editor/RenderStreamingSettings.asset";
 
         public BuildPlayerOptions ModifyOptions(BuildPlayerOptions playerOptions)
         {
@@ -27,7 +27,7 @@ namespace Unity.RenderStreaming.EditorTest
 
     class TestListener : ITestRunCallback
     {
-        const string path = "Packages/com.unity.renderstreaming/Editor/RenderStreamingSettings.asset";
+        const string path = "Packages/com.unity.renderstreaming/Tests/Editor/RenderStreamingSettings.asset";
 
         RenderStreamingSettings temp = null;
 
