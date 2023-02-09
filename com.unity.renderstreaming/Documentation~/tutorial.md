@@ -107,10 +107,4 @@ You can see the game view on the mobile browser.
 
 ## Next Step
 
-このチュートリアルでは、テンプレートから作成した Unity プロジェクトをブラウザから操作する例を取り上げました。
-別の例として、開発者がシーン上にコンポーネントを設定することで、同様のことを行うことができます。
-[ストリーミングアプリケーションの開発]() を確認してください。
-
-また、個々のサンプルはマニュアルでストリーミングコンポーネントの設定を行っています。
-コンポーネントの設定方法の参考にしてください。
-サンプル | Unity Render Streaming | 3.1.0-exp.3
+This tutorial explained an example using the Unity Project created from a template, and manipulating the character in 3D game from web browsers. An another example, developers can do the same by setting up some components on the scene. Please see [this page](dev-streaming-app-intro.md). This method allows for more detailed customization.
