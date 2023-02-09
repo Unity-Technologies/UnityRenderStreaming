@@ -23,7 +23,7 @@ This package enables streaming sounds generated on Unity. And it can cast to mul
 
 ### Remote control
 
-It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Using with Input System](use-inputsystem.md) page.
+It's possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser.
 
 ## Requirements
 

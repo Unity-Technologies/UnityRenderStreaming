@@ -4,7 +4,7 @@ To control the camera on the remote PC,  we need to link the input events on web
 
 ## Check settings of Input System
 
-First, please check [the settings](use-inputsystem.md) for using Input System.
+First, please check the [Wizard window](wizard.md) about the Input System settings.
 
 ## Adding components for input processing
 
@@ -84,7 +84,7 @@ Once you have copied the script and saved the file, assign `PlayerController.Loo
 
 ## Checking on browsers
 
-The mouse operation in the browser should be reflected in the rotation of the camera. If the camera is not moved, please check [the settings](use-inputsystem.md).
+The mouse operation in the browser should be reflected in the rotation of the camera. If the camera is not moved, please check the settings on the [Wizard](wizard.md) window.
 
 ## Next step
 

@@ -16,7 +16,6 @@
     * [Video Streaming Component](video-streaming.md)
     * [Audio Streaming Component](audio-streaming.md)
     * [Data Streaming Component](data-streaming.md)
-* [Using with Input System](use-inputsystem.md)
 * [Command-line option](commandline-option.md)
 * [Samples](samples.md)
     * [Receiver](sample-receiver.md)
