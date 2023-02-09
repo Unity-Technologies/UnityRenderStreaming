@@ -79,8 +79,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         }
 
 
-        [UnityTest]
-        public IEnumerator RunAgain()
+        [Test]
+        public void RunAgain()
         {
             var handler = component.gameObject.AddComponent<SingleConnection>();
             var handlers = new SignalingHandlerBase[] { handler };
@@ -88,9 +88,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
             component.Run(signaling:mock, handlers:handlers);
-            yield return 0;
             component.Stop();
-            yield return 0;
             component.Run(signaling:mock, handlers:handlers);
         }
 
