@@ -2,6 +2,12 @@
 
 This tutorial explains how to edit an empty scene in Unity Editor and display the image rendered from the camera to the browser.
 
+## Changing Project Settings
+
+Disable Automatic Rendering
+
+ここで説明する手順は [Automatic Streaming](settings.md##general-settings) の機能を使用しないことを前提にしています。Project Settings ウィンドウを開いて、設定をオフにしてください。
+
 ## Setting component
 
 If Unity version is 2020 or later, Create a new empty scene. Select **File > New Scene** from the menu to open the dialog and select **Basic (Built-in)**.
