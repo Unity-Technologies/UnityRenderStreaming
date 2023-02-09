@@ -27,6 +27,7 @@ namespace Unity.RenderStreaming.Editor
         void OnGUIHandler()
         {
             reorderable.DoLayoutList();
+            reorderable.serializedProperty.serializedObject.ApplyModifiedProperties();
         }
     }
 }
