@@ -11,6 +11,22 @@ namespace Unity.RenderStreaming.Samples
     class SampleSetup
     {
         private const string kSavePath = "Library/RenderStreamingSampleSettings.json";
+        private static string cacheGuid = "";
+
+        class DeleteSampleSettings : UnityEditor.AssetModificationProcessor
+        {
+            // When SampleSetup script is deleted, also delete RenderStreamingSampleSettings.json.
+            private static AssetDeleteResult OnWillDeleteAsset(string assetPath, RemoveAssetOptions options)
+            {
+                var existPath = AssetDatabase.GUIDToAssetPath(cacheGuid);
+                if (existPath.StartsWith(assetPath))
+                {
+                    File.Delete(kSavePath);
+                }
+
+                return AssetDeleteResult.DidNotDelete;
+            }
+        }
 
         static SampleSetup()
         {
@@ -19,25 +35,24 @@ namespace Unity.RenderStreaming.Samples
                 return;
             }
 
+            cacheGuid = AssetDatabase.FindAssets($"t:Script {nameof(SampleSetup)}")[0];
+
             Load();
             if (s_Settings.dialogAlreadyShowOnStartup || !RenderStreaming.AutomaticStreaming)
             {
                 return;
             }
 
-            const string dialogText = "It is recommended to use the sample scene with Automatic Streaming turn off. Please change Project settings.";
+            const string dialogText =
+                "It is recommended to use the sample scene with Automatic Streaming turn off. Please change Render Streaming Settings on Project settings.";
             if (EditorUtility.DisplayDialog("Warning", dialogText, "Open Project settings.", "Ignore"))
             {
                 //We need to wait at least one frame or the popup will not show up
                 frameToWait = 10;
                 EditorApplication.update += OpenSettingsDelayed;
-                s_Settings.dialogAlreadyShowOnStartup = true;
-            }
-            else
-            {
-                s_Settings.dialogAlreadyShowOnStartup = false;
             }
 
+            s_Settings.dialogAlreadyShowOnStartup = true;
             Save();
         }
 
