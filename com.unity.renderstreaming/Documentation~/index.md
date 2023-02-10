@@ -16,7 +16,7 @@ This package provides the main features below.
 
 We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported.
 
-![feature-multicamera](images/feature_multicamera.png)
+![Render Streaming Wizard](images/feature_multicamera.png)
 
 ### Audio streaming
 This package enables streaming sounds generated on Unity. And it can cast to multi-browsers simultaneously.

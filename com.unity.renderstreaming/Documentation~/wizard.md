@@ -4,7 +4,7 @@ Unity Render Streaming includes the **Render Streaming Wizard** to help you conf
 
 To open **Render Streaming Wizard**, go to **Window > Render Streaming** and select **Render Streaming Wizard**.
 
-![feature-multicamera](images/renderstreaming_wizard.png)
+![Render Streaming Wizard](images/renderstreaming_wizard.png)
 
 ## Unity Render Streaming Version
 
@@ -37,7 +37,7 @@ Your Unity Project must adhere to all the configuration tests in this section fo
 | **Android Target Architecture** | Check **Target Architecture** for Android platform in Player Settings. Unity Render Streaming only supports **ARM64** for Android platform. <br/> Press the **Fix** button to set **Target Architecture** to **ARM64**. |
 | **Android Internet Access** | Check **Internet Access** for Android platform in Player Settings. Unity Render Streaming only supports **Required** for Android platform. <br/> Press the **Fix** button to set **Internet Access** to **Required**. |
 
-## Others
+## WebApp
 
 - **Download latest version web app**: Download web application to the specified folder.
 - **Show web app documentation**: Open the web page places documentation for web application.
