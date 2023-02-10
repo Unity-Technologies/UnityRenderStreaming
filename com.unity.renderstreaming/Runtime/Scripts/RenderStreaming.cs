@@ -67,19 +67,6 @@ namespace Unity.RenderStreaming
             return s_settings.signalingSettings as T;
         }
 
-#if UNITY_EDITOR
-        public static void SetSignalingSettings(SignalingSettings settings)
-        {
-            if (m_running)
-            {
-                throw new InvalidOperationException("Signaling settings can't overwrite on playing.");
-            }
-
-            s_settings.signalingSettings = settings;
-            ApplySettings();
-        }
-#endif
-
         static RenderStreaming()
         {
 #if UNITY_EDITOR
