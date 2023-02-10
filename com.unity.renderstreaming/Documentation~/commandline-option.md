@@ -5,7 +5,7 @@ Unity Render Streaming supports configuration changes via command line arguments
 > [!WARNING]
 > **-batchmode** and **-nographics** options don't work with Unity Render Streaming.
 
-Command line arguments are evaluated when initializing the [**StreamingManager**](streaming-management.md) component. When command line arguments are evaluated in the **StreamingManager** component, it overrides the settings specified in the [Settings Window](settings.md). If you wish to ignore the command line options, specify **Evaluate command line arguments** off in the SignalingManager inspector. If a command line arguments contain invalid values, the contents of the configuration window are evaluated, instead of the arguments of the command line.
+Command line arguments are evaluated when initializing the [**SignalingManager**](streaming-management.md) component. When command line arguments are evaluated in the **SignalingManager** component, it overrides the settings specified in the [Settings Window](settings.md). If you wish to ignore the command line options, specify **Evaluate command line arguments** off in the SignalingManager inspector. If a command line arguments contain invalid values, the contents of the configuration window are evaluated, instead of the arguments of the command line.
 
 Use a command line with the following arguments to start your standalone app.
 
