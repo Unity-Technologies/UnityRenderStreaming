@@ -7222,27 +7222,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045786cf504bd7347842d6948241cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_useDefault: 0
-  signalingSettingsObject: {fileID: 11400000, guid: adbc7ae144474634eb2d9b191c517ee5,
-    type: 2}
-  signalingSettings:
-    id: 0
+  urlSignaling: ws://localhost
+  signalingType: Unity.RenderStreaming.Signaling.WebSocketSignaling
+  iceServers:
+  - credential: 
+    credentialType: 0
+    urls:
+    - stun:stun.l.google.com:19302
+    username: 
+  interval: 5
   handlers:
   - {fileID: 1623734774}
   runOnAwake: 0
-  references:
-    version: 1
-    00000000:
-      type: {class: HttpSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
-      data:
-        m_interval: 5000
-        m_url: http://127.0.0.1
-        m_iceServers:
-        - m_urls:
-          - stun:stun.l.google.com:19302
-          m_username: 
-          m_credentialType: 0
-          m_credential: 
 --- !u!114 &1623734777
 MonoBehaviour:
   m_ObjectHideFlags: 0
