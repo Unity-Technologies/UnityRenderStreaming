@@ -2,7 +2,7 @@
 
 Data streaming is using [`RTCDataChannel`](https://docs.unity3d.com/Packages/com.unity.webrtc@2.4/manual/datachannel.html) of the WebRTC package internally.
 
-Using the data streaming feature, we provide a component to send messages of [Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@latest). For more details, please check the section on [Using with Input System](use-inputsystem.md).
+Using the data streaming feature, Unity Render Streaming provides a component to send messages of [Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@latest).
 
 ## [`InputSender`](../api/Unity.RenderStreaming.InputSender.html) component reference
 

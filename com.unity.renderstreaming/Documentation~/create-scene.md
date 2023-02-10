@@ -2,22 +2,31 @@
 
 This tutorial explains how to edit an empty scene in Unity Editor and display the image rendered from the camera to the browser.
 
+## Changing Project Settings
+
+The procedure described in this page assumes that the [**Automatic Streaming**](settings.md##general-settings) feature is not used. Please turn the flag off following steps.
+
+1: Open the **Project Settings** window.
+
+2: Select **Render Streaming** tab.
+
+3: Select **Create New Settings Asset**.
+
+4: Save the asset with any name.
+
+5: Disable **Automatic Streaming**.
+
+![Disable Automatic Streaming](images/disable_automaticstreaming.png)
+
 ## Setting component
 
 If Unity version is 2020 or later, Create a new empty scene. Select **File > New Scene** from the menu to open the dialog and select **Basic (Built-in)**.
 
 ![Create new scene](images/create_new_scene.png)
 
-Select the **Main Camera** object in the Hierarchy window, and add the **Render Streaming** component in the Inspector window.
+Select the **Main Camera** object in the Hierarchy window, and add the **Signaling Manager** component in the Inspector window.
 
-![Add RenderStreaming component](images/add_renderstreaming_component.png)
-
-Update properties in the inspector.
-
-- **Signaling Type** : `WebSocketSignaling`
-- **Signaling URL** : `ws://localhost`
-
-![Create scene 03](images/change_properties_websocket.png)
+![Add SignalingManager component](images/add_signalingmanager_component.png)
 
 Next, we will add the **Broadcast** component to the **Main Camera** object. this component deliver the stream to multiple peers.
 

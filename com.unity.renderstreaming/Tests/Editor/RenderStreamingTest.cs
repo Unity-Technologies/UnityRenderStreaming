@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.RenderStreaming.EditorTest
 {
-    public class RenderStreamingTest
+    class RenderStreamingTest
     {
         private RenderStreamingSettings temp;
 

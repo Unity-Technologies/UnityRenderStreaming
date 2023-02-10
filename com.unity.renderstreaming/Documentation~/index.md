@@ -16,14 +16,14 @@ This package provides the main features below.
 
 We can broadcast video rendered on Unity to browsers via network. For example, It can show the video rendered with HDRP on the browser on the iPad. In addition, broadcasting from multiple cameras is supported.
 
-![feature-multicamera](images/feature_multicamera.png)
+![Render Streaming Wizard](images/feature_multicamera.png)
 
 ### Audio streaming
 This package enables streaming sounds generated on Unity. And it can cast to multi-browsers simultaneously.
 
 ### Remote control
 
-It is possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser. For more information, please see the [Using with Input System](use-inputsystem.md) page.
+It's possible to send input messages to Unity from the browser, and sending inputs from multiple browsers is supported. Mouse, keyboard, touch, and gamepad are supported as input devices on the browser.
 
 ## Requirements
 

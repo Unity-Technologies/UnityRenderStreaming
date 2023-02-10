@@ -10,7 +10,7 @@ namespace Unity.RenderStreaming.Signaling
     public class HttpSignaling : ISignaling
     {
         private string m_url;
-        private float m_timeout;
+        private int m_timeout;
         private SynchronizationContext m_mainThreadContext;
         private bool m_running;
         private Thread m_signalingThread;
@@ -127,7 +127,7 @@ namespace Unity.RenderStreaming.Signaling
                 HTTPCreate();
                 try
                 {
-                    Thread.Sleep((int)(m_timeout * 1000));
+                    Thread.Sleep(m_timeout);
                 }
                 catch (ThreadAbortException)
                 {
@@ -141,7 +141,7 @@ namespace Unity.RenderStreaming.Signaling
                 try
                 {
                     HTTPGetAll();
-                    Thread.Sleep((int)(m_timeout * 1000));
+                    Thread.Sleep(m_timeout);
                 }
                 catch (ThreadAbortException)
                 {

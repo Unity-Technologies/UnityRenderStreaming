@@ -120,7 +120,7 @@ namespace Unity.RenderStreaming.Editor
         {
             VisualElement root = new VisualElement();
             root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("m_interval"), "Polling Interval"));
+            root.Add(new PropertyField(property.FindPropertyRelative("m_interval"), "Polling Interval (msec)"));
             root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
             return root;
         }

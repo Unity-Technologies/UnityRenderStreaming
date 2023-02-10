@@ -27,10 +27,10 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// Polling interval
         /// </summary>
-        public float interval => m_interval;
+        public int interval => m_interval;
 
         [SerializeField]
-        private float m_interval;
+        private int m_interval;
         [SerializeField]
         protected string m_url;
         [SerializeField]
@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming
         /// <param name="url"></param>
         /// <param name="iceServers"></param>
         /// <param name="interval"></param>
-        public HttpSignalingSettings(string url, IceServer[] iceServers = null, float interval = 5.0f)
+        public HttpSignalingSettings(string url, IceServer[] iceServers = null, int interval = 5000)
         {
             if (url == null)
                 throw new ArgumentNullException("url");
@@ -64,7 +64,7 @@ namespace Unity.RenderStreaming
             {
                 new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
             };
-            m_interval = 5f;
+            m_interval = 5000;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Unity.RenderStreaming
             m_iceServers[0] = m_iceServers[0].Clone(username: username, credential: credential, credentialType: credentialType, urls: urls);
 
             if (CommandLineParser.PollingInterval.Value != null)
-                m_interval = (float)CommandLineParser.PollingInterval.Value * 0.001f;
+                m_interval = CommandLineParser.PollingInterval.Value.Value;
             return true;
         }
     }

@@ -5,25 +5,27 @@ The **Web application**
 - handles signaling between Unity and the Web browser
 - is the location of the Web page
 
-## The Web Client
-
-The **Render Streaming** web application uses WebRTC technologies, which means that your browser must also support WebRTC. You can see a table of supported browsers [here](index.md#web-browsers-support).
+The web application uses WebRTC technologies, which means that your browser must also support WebRTC. You can see a table of supported browsers [here](index.md#web-browsers-support).
 
 > [!NOTE]
 > See [this page](https://caniuse.com/#search=webrtc) for details on which browsers support WebRTC.
 
 
-## The Web Server
+## Lanching The Server
 
-Click on **Edit > Render Streaming > Download web app** menu item to download our web server on [this site](https://github.com/Unity-Technologies/UnityRenderStreaming/releases).
+You can get a executable file of web server from the **Wizard Window**.
 
-![Download webapp](images/download_webapp.png)
+1. Select **Window > Render Streaming > Render Streaming Wizard** in the menu bar.
 
-After downloading, run it from the command line.
+2. Select **Download latest version web app**.
+
+![Download webapp](images/wizard_download_webapp.png)
+
+3. Run it from the command line.
 
 ![Launch webserver explorer](images/launch_webserver_explorer.png)
 
-### Command Options
+## Command Options
 
 | Option | Details | Default |
 | ------ | ------- | ------- |
@@ -36,7 +38,7 @@ After downloading, run it from the command line.
 | `-m` `—-mode \<type\>` | Choose Communication mode public or private | `public` |
 | `-l` `—logging \<type\>` | Choose http logging type (use [morgan](https://www.npmjs.com/package/morgan) library) | `dev` |
 
-### Command Examples
+## Command Examples
 
 Use the following command to start the server as http. Port `80` will be used.
 
