@@ -18,7 +18,6 @@ Your Unity Project must adhere to all the configuration tests in this section fo
 
 | Configuration Option | Description |
 | --- | ---- |
-| **Render Streaming Setting** | Check to make sure **Render Streaming Settings** is set to a valid asset. <br/> Press the **Fix** button to create a new asset. |
 | **Run In Background** | Check to make sure **Run In Background** is enabled in the Player Settings. This value is needed to continue processing user input even when losting the focus from the Unity application. (menu: **Edit > Project Settings > Player**) <br/> Press the **Fix** button to enable **Run In Background**. |
 | **InputSystem Background Behavior** | Check to make sure **Background Bahavior** is set to a **Ignore Focus** in Input System. This value is needed to continue processing user input even when losting the focus from the Unity application. (menu: **Edit > Project Settings > Input System**) <br/> Press the **Fix** button to set **Background  Bahavior** to **Ignore Focus**. |
 | **InputSystem PlayMode Input Behavior** | Check to make sure **PlayMode Input Bahavior** is set to a **All Device Input Always Goes To Game View** in Input System. This value is needed to continue processing user input even when losting the focus from the Unity Editor. (menu: **Edit > Project Settings > Input System**) <br/> Press the **Fix** button to set **PlayMode Input Bahavior** to **All Device Input Always Goes To Game View**. |
@@ -27,7 +26,8 @@ Your Unity Project must adhere to all the configuration tests in this section fo
 
 | Configuration Option | Description |
 | --- | ---- |
-| **Check Build Target** | Checks the platform of the **Build Target** is supported by Unity Render Streaming. <br/> Press the **Fix** button to change the **Build Target** to the supported platform. |
+| **Current Build Target Platform** | Checks the platform of the **Build Target** is supported by Unity Render Streaming. <br/> Press the **Fix** button to change the **Build Target** to the supported platform. |
+| **Current Graphics API** | Checks the **Graphics API** is supported by Unity Render Streaming. <br/> Press the **Fix** button to change the **Graphics API** to the supported graphics APIs. |
 | **macOS Camera Usage Description** | Check **Camera Usage Description** for macOS platform in the Player Settings. This value is needed to use Web Camera as a video source in the [Video Stream Sender component](). <br/> Press the **Fix** button to set **Camera Usage Description** to `For using WebCam`. |
 | **macOS Microphone Usage Description** | Check **Microphone Usage Description** for macOS platform in the Player Settings. This value is needed to use Microphone as a audio source in the [Audio Stream Sender component](). <br/> Press the **Fix** button to set **Microphone Usage Description** to `For using Microphone`. |
 | **iOS Camera Usage Description** | Check **Camera Usage Description** for iOS platform in the Player Settings. This value is needed to use Web Camera as a video source in the [Video Stream Sender component](). <br/> Press the **Fix** button to set **Camera Usage Description** to `For using WebCam`. |

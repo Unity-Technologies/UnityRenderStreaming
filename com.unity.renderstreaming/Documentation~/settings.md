@@ -20,7 +20,6 @@ Streaming continues even when moving between scenes. If you want to stop streami
 
 | Parameter | Description | Default |
 | ---- | ---- | ---- |
-| **Run on Awake** |  Automatically started when called `Awake` method. | Enabled |
 | **Signaling Type** | Choose the signaling type (See [About Signaling Type](signaling-type.md)). | websocket |
 | **Signaling Server URL** | Set the signaling server URL. <br>If you use WebSocket as a signaling protocol, you should specify a URL starting with **ws** or **wss**. | ws://127.0.0.1 |
 | **ICE Server** | Set a list of STUN/TURN servers. (See [TURN Server](turnserver.md)) | |
