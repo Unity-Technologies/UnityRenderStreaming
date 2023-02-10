@@ -4,11 +4,21 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.1.0-exp.6] -2023-2-24
+
+### Added
+
+- Support Automatic Streaming.
+- Support Render Streaming Wizard.
+- Support Command line arguments.
+- Add Render Streaming Settings in the Project Settings window.
 
 ### Changed
 
+- Rename classes.
+  - `RenderStreaming` > `SignalingManager`
 - Websocket is in default for signaling protocol instead of HTTP polling.
+- Changed a unit of the HTTP polling interval, second to millisecond.
 
 ## [3.1.0-exp.5] - 2023-1-16
 
