@@ -31,11 +31,6 @@ namespace Unity.RenderStreaming.Samples
 
         static SampleSetup()
         {
-            if (Application.isBatchMode)
-            {
-                return;
-            }
-
             cacheGuid = AssetDatabase.FindAssets($"t:Script {nameof(SampleSetup)}")[0];
 
             Load();
