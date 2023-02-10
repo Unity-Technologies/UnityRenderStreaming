@@ -6,15 +6,15 @@ This tutorial explains how to edit an empty scene in Unity Editor and display th
 
 The procedure described in this page assumes that the [**Automatic Streaming**](settings.md##general-settings) feature is not used. Please turn the flag off following steps.
 
-1. Open the **Project Settings** window.
+1: Open the **Project Settings** window.
 
-2. Select **Render Streaming** tab.
+2: Select **Render Streaming** tab.
 
-3. Select **Create New Settings Asset**.
+3: Select **Create New Settings Asset**.
 
-4. Save the asset with any name.
+4: Save the asset with any name.
 
-5. Disable **Automatic Streaming**.
+5: Disable **Automatic Streaming**.
 
 ![Disable Automatic Streaming](images/disable_automaticstreaming.png)
 
