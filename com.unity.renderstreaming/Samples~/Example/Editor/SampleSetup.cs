@@ -1,6 +1,7 @@
-#if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
+using Unity.RenderStreaming.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,31 +45,24 @@ namespace Unity.RenderStreaming.Samples
             }
 
             const string dialogText =
-                "It is recommended to use the sample scene with Automatic Streaming turn off. Please change Render Streaming Settings on Project settings.";
-            if (EditorUtility.DisplayDialog("Warning", dialogText, "Open Project settings.", "Ignore"))
+                "It is recommended to turn off AutomaticStreaming in the scenes included in the sample. Do you want to change the config assets for Sample?";
+            if (EditorUtility.DisplayDialog("Warning", dialogText, "Change Settings", "Ignore"))
             {
-                //We need to wait at least one frame or the popup will not show up
-                frameToWait = 10;
-                EditorApplication.update += OpenSettingsDelayed;
+                var guids = AssetDatabase.FindAssets("t:RenderStreamingSettings");
+                var path = guids.Select(AssetDatabase.GUIDToAssetPath).First(x => x.EndsWith("RenderStreamingSample.asset"));
+                var asset = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(path);
+                if (asset != null)
+                {
+                    RenderStreamingEditor.SetRenderStreamingSettings(asset);
+                }
+                else
+                {
+                    Debug.LogError("RenderStreamingSample.asset not found.");
+                }
             }
 
             s_Settings.dialogAlreadyShowOnStartup = true;
             Save();
-        }
-
-        private static int frameToWait;
-
-        private static void OpenSettingsDelayed()
-        {
-            if (frameToWait > 0)
-            {
-                --frameToWait;
-            }
-            else
-            {
-                EditorApplication.update -= OpenSettingsDelayed;
-                SettingsService.OpenProjectSettings("Project/Render Streaming");
-            }
         }
 
         [Serializable]
@@ -103,4 +97,3 @@ namespace Unity.RenderStreaming.Samples
         }
     }
 }
-#endif
