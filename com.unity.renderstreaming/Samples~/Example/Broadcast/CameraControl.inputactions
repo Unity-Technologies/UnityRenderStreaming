@@ -291,7 +291,7 @@
                 {
                     "name": "",
                     "id": "d9fcd8cb-28b5-4414-b98d-f48b3e6a0e79",
-                    "path": "<Touchscreen>/touch*/position",
+                    "path": "<Touchscreen>/touch0/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "Touchscreen",
