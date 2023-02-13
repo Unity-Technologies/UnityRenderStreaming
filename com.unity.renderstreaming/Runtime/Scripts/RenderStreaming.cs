@@ -57,6 +57,11 @@ namespace Unity.RenderStreaming
             get => s_settings.automaticStreaming;
             set
             {
+                if (s_settings.automaticStreaming == value)
+                {
+                    return;
+                }
+
                 s_settings.automaticStreaming = value;
                 ApplySettings();
             }
@@ -124,6 +129,10 @@ namespace Unity.RenderStreaming
 
         internal static void ApplySettings()
         {
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(s_settings);
+#endif
+
             if (!m_running)
             {
                 return;

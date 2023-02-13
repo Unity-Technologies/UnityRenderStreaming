@@ -177,14 +177,10 @@ namespace Unity.RenderStreaming.Editor
         private static bool IsInputSystemBackgroundBehaviorCorrect() =>
             UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
 
-
-        // workaround: Update using SerializedProperty because settings are not persisted via InputSystem API.
         private static void FixInputSystemBackgroundBehavior()
         {
-            var settingsObject = new SerializedObject(UnityEngine.InputSystem.InputSystem.settings);
-            var property = settingsObject.FindProperty("m_BackgroundBehavior");
-            property.enumValueIndex = (int)InputSettings.BackgroundBehavior.IgnoreFocus;
-            settingsObject.ApplyModifiedProperties();
+            UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            EditorUtility.SetDirty(UnityEngine.InputSystem.InputSystem.settings);
         }
 
         private static bool IsInputSystemPlayModeInputBehaviorCorrect() =>
@@ -193,10 +189,8 @@ namespace Unity.RenderStreaming.Editor
 
         private static void FixInputSystemPlayModeInputBehavior()
         {
-            var settingsObject = new SerializedObject(UnityEngine.InputSystem.InputSystem.settings);
-            var property = settingsObject.FindProperty("m_EditorInputBehaviorInPlayMode");
-            property.enumValueIndex = (int)InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
-            settingsObject.ApplyModifiedProperties();
+            UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            EditorUtility.SetDirty(UnityEngine.InputSystem.InputSystem.settings);
         }
 
         private static bool IsSupportedBuildTarget()
