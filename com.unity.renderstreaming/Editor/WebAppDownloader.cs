@@ -50,9 +50,7 @@ namespace Unity.RenderStreaming.Editor
 
         public static string GetURLSourceCode(string version)
         {
-            var pattern = @"\d+.\d+.\d+";
-            var result = System.Text.RegularExpressions.Regex.Match(version, pattern);
-            return System.IO.Path.Combine(URLRoot, string.Format(PathWebAppSourceCode, result.Value));
+            return System.IO.Path.Combine(URLRoot, string.Format(PathWebAppSourceCode, version));
         }
 
         public static void DownloadCurrentVersionWebApp(string dstPath, System.Action<bool> callback) {
