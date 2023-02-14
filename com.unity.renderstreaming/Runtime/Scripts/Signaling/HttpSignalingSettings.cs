@@ -105,7 +105,22 @@ namespace Unity.RenderStreaming
             var urls = CommandLineParser.IceServerUrls != null
                 ? CommandLineParser.IceServerUrls.Value
                 : null;
-            m_iceServers[0] = m_iceServers[0].Clone(username: username, credential: credential, credentialType: credentialType, urls: urls);
+
+            if (m_iceServers.Length > 0)
+                m_iceServers[0] = m_iceServers[0].Clone(
+                    username: username,
+                    credential: credential,
+                    credentialType: credentialType,
+                    urls: urls);
+            else
+                m_iceServers = new IceServer[]
+                    {
+                    new IceServer(
+                        username: username,
+                        credential: credential,
+                        credentialType: credentialType.Value,
+                        urls: urls)
+                    };
 
             if (CommandLineParser.PollingInterval.Value != null)
                 m_interval = CommandLineParser.PollingInterval.Value.Value;
