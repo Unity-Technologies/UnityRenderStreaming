@@ -118,7 +118,7 @@ namespace Unity.RenderStreaming
                     new IceServer(
                         username: username,
                         credential: credential,
-                        credentialType: credentialType.Value,
+                        credentialType: credentialType.GetValueOrDefault(),
                         urls: urls)
                     };
 
