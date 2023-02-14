@@ -31,7 +31,7 @@ This version of Render Streaming is compatible with the following versions of th
 
 - **Unity 2020.3**
 - **Unity 2021.3**
-- **Unity 2022.1**
+- **Unity 2022.2**
 
 ### Platform
 

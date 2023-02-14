@@ -2,7 +2,7 @@
 
 <img src="https://img.shields.io/badge/unity-2020.3-green.svg?style=flat-square" alt="unity 2020.3">
 <img src="https://img.shields.io/badge/unity-2021.3-green.svg?style=flat-square" alt="unity 2021.3">
-<img src="https://img.shields.io/badge/unity-2022.1-green.svg?style=flat-square" alt="unity 2022.1">
+<img src="https://img.shields.io/badge/unity-2022.2-green.svg?style=flat-square" alt="unity 2022.2">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) to create their own unique solutions.
