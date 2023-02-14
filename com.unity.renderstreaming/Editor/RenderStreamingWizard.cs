@@ -177,16 +177,21 @@ namespace Unity.RenderStreaming.Editor
         private static bool IsInputSystemBackgroundBehaviorCorrect() =>
             UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
 
-        private static void FixInputSystemBackgroundBehavior() =>
+        private static void FixInputSystemBackgroundBehavior()
+        {
             UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            EditorUtility.SetDirty(UnityEngine.InputSystem.InputSystem.settings);
+        }
 
         private static bool IsInputSystemPlayModeInputBehaviorCorrect() =>
             UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode ==
             InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 
-        private static void FixInputSystemPlayModeInputBehavior() =>
-            UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode =
-                InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        private static void FixInputSystemPlayModeInputBehavior()
+        {
+            UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            EditorUtility.SetDirty(UnityEngine.InputSystem.InputSystem.settings);
+        }
 
         private static bool IsSupportedBuildTarget()
         {
