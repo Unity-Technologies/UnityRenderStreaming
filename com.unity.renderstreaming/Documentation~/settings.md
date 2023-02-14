@@ -8,13 +8,13 @@ Unity Render Streaming saves configuration assets to the project. The configurat
 
 | Parameter | Description | Default |
 | ---- | ---- | ---- |
-| **Automatic** | Automatically performs the necessary setup for streaming and starts streaming. | Enabled |
+| **Automatic Streaming** | Automatically performs the necessary setup for streaming and starts streaming. | Enabled |
 
-### Behaviour of the Automatic flag
+### Behaviour of the Automatic Streaming flag
 
-If the **Automatic** flag is turned on, the application will automatically set up for streaming when it's started. This initialization process takes place before calling the **MonoBehaviour.Start** method on the scene. When streaming starts, the screen on the game view and the audio played by the **AudioListener** are delivered. It also receives mouse and keyboard input from the client and is configured to work with the Input System.
+If the **Automatic Streaming** flag is turned on, the application will automatically set up for streaming when it's started. This initialization process takes place before calling the **MonoBehaviour.Start** method on the scene. When streaming starts, the screen on the game view and the audio played by the **AudioListener** are delivered. It also receives mouse and keyboard input from the client and is configured to work with the Input System.
 
-Streaming continues even when moving between scenes. If you want to stop streaming, turn the **Automatic** flag off. 
+Streaming continues even when moving between scenes. If you want to stop streaming, turn the **Automatic Streaming** flag off.
 
 ## Signaling Settings
 

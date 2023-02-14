@@ -5,7 +5,7 @@ This page describes how to create a scene that uses Unity Render Streaming, and 
 ## Before you begin
 
 - Please read the [Requirements](index.md#requirements) to understand the limitation.
-- This tutorial uses **localhost** and port **80** for the signaling server. Please read [Signaling Settings](settings.md) page if you want to change the address and port number.
+- This tutorial uses **localhost** and port **80** for the signaling server. Please read [Signaling Settings](settings.md#signaling-settings) page if you want to change the address and port number.
 
 ## Creating a Unity project from the Template
 
@@ -35,7 +35,7 @@ This template is designed to work on many platforms, so it is an good starting p
 
 ![Install Package Manager from menu bar](images/install_select_packman_menu.png)
 
-2: Check Package Manager window, Click **+** button and select **Add package from git by name**. If you use Unity 2020.3, select **Add package from git URL**.
+2: Check Package Manager window, Click **+** button and select **Add package by name**. If you use Unity 2020.3, select **Add package from git URL**.
 
 ![Select add package from git url](images/install_select_add_package_by_name.png)
 
@@ -89,7 +89,7 @@ You can see the gamepad in Game View.
 
 2: When connecting from a mobile browser, the SSL certificate must be enabled on the signaling server. Please see [this page](https.md).
 
-3: Start the signaling server using the created certificate.
+3: Start the signaling server using the created certificate. Please see the options of web server [here](webapp.md)
 
 4: Set the new **URL** of the web server to Signaling Settings in Project Settings window.
 
