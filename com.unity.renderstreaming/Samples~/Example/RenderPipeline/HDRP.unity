@@ -4647,15 +4647,14 @@ MonoBehaviour:
   m_useDefault: 1
   signalingSettingsObject: {fileID: 0}
   signalingSettings:
-    rid: 0
+    id: 0
   handlers:
   - {fileID: 1131364784}
   runOnAwake: 0
   evaluateCommandlineArguments: 1
   references:
-    version: 2
-    RefIds:
-    - rid: 0
+    version: 1
+    00000000:
       type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
       data:
         m_url: ws://127.0.0.1
