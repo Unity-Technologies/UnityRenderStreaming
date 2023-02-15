@@ -1,7 +1,5 @@
-using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -133,19 +131,39 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void EvaluateCommandlineArguments()
         {
             // Change signaling type.
-            SignalingSettings settings = new WebSocketSignalingSettings();
+            SignalingSettings settings = new WebSocketSignalingSettings("ws://127.0.0.1");
+            Assert.That(settings.iceServers, Is.Empty);
+
             string[] arguments = { "-signalingType", "http" };
             Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
             Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
+            Assert.That(settings.iceServers, Is.Not.Empty);
+
+            settings = new HttpSignalingSettings("http://127.0.0.1");
+            Assert.That(settings.iceServers, Is.Empty);
+
+            arguments = new string[]{ "-signalingType", "websocket" };
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
+            Assert.That(settings.iceServers, Is.Not.Empty);
 
             // Change signaling url.
-            string url = "http://192.168.10.10";
+            settings = new WebSocketSignalingSettings("ws://127.0.0.1");
+            string url = "ws://192.168.10.10";
+            arguments = new[] { "-signalingUrl", url };
+            Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
+            Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
+            Assert.That((settings as WebSocketSignalingSettings).url, Is.EqualTo(url));
+
+            settings = new HttpSignalingSettings("http://127.0.0.1");
+            url = "http://192.168.10.10";
             arguments = new[] { "-signalingUrl", url };
             Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
             Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
             Assert.That((settings as HttpSignalingSettings).url, Is.EqualTo(url));
 
             // Import json for ice server settings.
+            settings = new WebSocketSignalingSettings("ws://127.0.0.1");
             string json = "{\"iceServers\":[{\"credential\":\"pass\",\"username\":\"user\",\"credentialType\":\"password\"," +
                           "\"urls\":[\"turn:192.168.10.10:3478?transport=udp\"]}]}";
             string filepath = "dummy.json";
@@ -153,18 +171,21 @@ namespace Unity.RenderStreaming.RuntimeTest
             arguments = new[] { "-importJson", filepath };
             var info = JsonUtility.FromJson<CommandLineInfo>(json);
             Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
-            Assert.That(settings, Is.TypeOf<HttpSignalingSettings>());
+            Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
             Assert.That(settings.iceServers.Count, Is.EqualTo(1));
             Assert.That(settings.iceServers.ElementAt(0).credential, Is.EqualTo(info.iceServers[0].credential));
             Assert.That(settings.iceServers.ElementAt(0).credentialType, Is.EqualTo((IceCredentialType)info.iceServers[0].credentialType));
             File.Delete(filepath);
 
             // Import json to change signaling type.
+            settings = new WebSocketSignalingSettings("ws://127.0.0.1");
             json = "{\"signalingType\":\"websocket\"}";
             File.WriteAllText(filepath, json);
             arguments = new[] { "-importJson", filepath };
             Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
             Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
+
+
         }
     }
 }
