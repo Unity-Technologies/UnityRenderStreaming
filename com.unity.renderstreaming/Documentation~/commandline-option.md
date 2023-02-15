@@ -28,13 +28,13 @@ You can change the configuration via the JSON file when using **-importJson** op
 {
     "signalingType": "websocket",
     "signalingUrl":  "ws://192.168.11.11",
-    "iceServer": [{
+    "iceServers": [{
         "urls": [
             "stun:stun.l.google.com:19302"
         ],
         "username": "user",
         "credential": "pass",
-        "credentialType": "password",
+        "credentialType": "password"
     }],
     "pollingInterval": "5000"
 }
