@@ -16,13 +16,13 @@ export class RenderStreaming {
       if (Array.isArray(argv)) {
         program
           .usage('[options] <apps...>')
-          .option('-p, --port <n>', 'Port to start the server on', process.env.PORT || `80`)
-          .option('-s, --secure', 'Enable HTTPS (you need server.key and server.cert)', process.env.SECURE || false)
-          .option('-k, --keyfile <path>', 'https key file (default server.key)', process.env.KEYFILE || 'server.key')
-          .option('-c, --certfile <path>', 'https cert file (default server.cert)', process.env.CERTFILE || 'server.cert')
-          .option('-t, --type <type>', 'Type of signaling protocol, Choose websocket or http (default websocket)', process.env.TYPE || 'websocket')
-          .option('-m, --mode <type>', 'Choose Communication mode public or private (default public)', process.env.MODE || 'public')
-          .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.(default dev)', process.env.LOGGING || 'dev')
+          .option('-p, --port <n>', 'Port to start the server on.', process.env.PORT || `80`)
+          .option('-s, --secure', 'Enable HTTPS (you need server.key and server.cert).', process.env.SECURE || false)
+          .option('-k, --keyfile <path>', 'https key file.', process.env.KEYFILE || 'server.key')
+          .option('-c, --certfile <path>', 'https cert file.', process.env.CERTFILE || 'server.cert')
+          .option('-t, --type <type>', 'Type of signaling protocol, Choose websocket or http.', process.env.TYPE || 'websocket')
+          .option('-m, --mode <type>', 'Choose Communication mode public or private.', process.env.MODE || 'public')
+          .option('-l, --logging <type>', 'Choose http logging type combined, dev, short, tiny or none.', process.env.LOGGING || 'dev')
           .parse(argv);
         const option = program.opts();
         return {
