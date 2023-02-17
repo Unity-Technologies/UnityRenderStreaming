@@ -12,18 +12,7 @@ namespace Unity.RenderStreaming
         /// 
         /// </summary>
         [SerializeField]
-        protected bool local = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField]
         protected string label;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool IsLocal => local;
 
         /// <summary>
         /// 
@@ -68,7 +57,7 @@ namespace Unity.RenderStreaming
             Channel.OnClose += () => { OnClose(connectionId); };
             Channel.OnMessage += OnMessage;
 
-            if (Channel.ReadyState == RTCDataChannelState.Open && !IsLocal)
+            if (Channel.ReadyState == RTCDataChannelState.Open)
             {
                 OnStartedChannel?.Invoke(connectionId);
             }

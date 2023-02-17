@@ -235,11 +235,8 @@ namespace Unity.RenderStreaming
         /// <param name="channel"></param>
         public virtual void AddChannel(string connectionId, IDataChannel channel)
         {
-            if (channel.IsLocal)
-            {
-                var _channel = m_handler.CreateChannel(connectionId, channel.Label);
-                channel.SetChannel(connectionId, _channel);
-            }
+            var _channel = m_handler.CreateChannel(connectionId, channel.Label);
+            channel.SetChannel(connectionId, _channel);
         }
 
         /// <summary>
@@ -357,11 +354,6 @@ namespace Unity.RenderStreaming
     /// </summary>
     public interface IDataChannel
     {
-        /// <summary>
-        ///
-        /// </summary>
-        bool IsLocal { get; }
-
         /// <summary>
         ///
         /// </summary>

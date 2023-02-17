@@ -93,18 +93,15 @@ namespace Unity.RenderStreaming.Samples
             streams.Add(multiplayChannel);
 
             AddSender(data.connectionId, sender);
-            AddChannel(data.connectionId, inputChannel);
             AddChannel(data.connectionId, multiplayChannel);
 
             SendAnswer(data.connectionId);
         }
 
-        /// todo(kazuki)::
         public void OnAddChannel(SignalingEventData data)
         {
-            var obj = dictObj[data.connectionId];
-            var channels = obj.GetComponentsInChildren<IDataChannel>();
-            var channel = channels.FirstOrDefault(_ => !_.IsLocal && !_.IsConnected);
+            // todo: Identify the channel from the stream list.
+            var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected);
             channel?.SetChannel(data);
         }
     }

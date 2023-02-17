@@ -48,9 +48,9 @@ namespace Unity.RenderStreaming
             {
                 AddSender(data.connectionId, sender);
             }
-            foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
+            foreach (var channel in streams.OfType<IDataChannel>())
             {
-                AddChannel(connectionId, channel);
+                AddChannel(data.connectionId, channel);
             }
         }
 
@@ -84,6 +84,10 @@ namespace Unity.RenderStreaming
         {
             if (data.connectionId != connectionId)
                 return;
+            foreach (var sender in streams.OfType<IStreamSender>())
+            {
+                AddSender(data.connectionId, sender);
+            }
             SendAnswer(data.connectionId);
         }
 
@@ -99,10 +103,11 @@ namespace Unity.RenderStreaming
 
         public void OnAddChannel(SignalingEventData data)
         {
+            // todo: Identify the channel from the stream list.
             if (data.connectionId != connectionId)
                 return;
-            var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
-            channel?.SetChannel(connectionId, data.channel);
+            var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected);
+            channel?.SetChannel(data);
         }
 
         IStreamReceiver GetReceiver(WebRTC.TrackKind kind)

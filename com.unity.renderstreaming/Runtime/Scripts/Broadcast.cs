@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     public class Broadcast : SignalingHandlerBase,
-        IOfferHandler, IAddChannelHandler, IDisconnectHandler, IDeletedConnectionHandler,
+        IOfferHandler, IAddChannelHandler, IDisconnectHandler, ICreatedConnectionHandler, IDeletedConnectionHandler,
         IAddReceiverHandler
     {
         [SerializeField] private List<Component> streams = new List<Component>();
@@ -27,6 +27,23 @@ namespace Unity.RenderStreaming
         public void OnDeletedConnection(SignalingEventData eventData)
         {
             Disconnect(eventData.connectionId);
+        }
+
+        public void OnCreatedConnection(SignalingEventData data)
+        {
+            if (connectionIds.Contains(data.connectionId))
+            {
+                Debug.Log($"Already answered this connectionId : {data.connectionId}");
+                return;
+            }
+            foreach (var source in streams.OfType<IStreamSender>())
+            {
+                AddSender(data.connectionId, source);
+            }
+            foreach (var channel in streams.OfType<IDataChannel>().Where(c => !c.IsConnected))
+            {
+                AddChannel(data.connectionId, channel);
+            }
         }
 
         public void OnDisconnect(SignalingEventData eventData)
@@ -74,17 +91,13 @@ namespace Unity.RenderStreaming
             {
                 AddSender(data.connectionId, source);
             }
-            foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
-            {
-                AddChannel(data.connectionId, channel);
-            }
             SendAnswer(data.connectionId);
         }
 
         public void OnAddChannel(SignalingEventData data)
         {
-            var channel = streams.OfType<IDataChannel>().
-                FirstOrDefault(r => !r.IsConnected && !r.IsLocal);
+            // todo: Identify the channel from the stream list.
+            var channel = streams.OfType<IDataChannel>().FirstOrDefault(r => !r.IsConnected);
             channel?.SetChannel(data.connectionId, data.channel);
         }
 

@@ -29,7 +29,6 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         {
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("local"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("label"));
 
             // Action config section.
