@@ -20,7 +20,7 @@ namespace Unity.RenderStreaming.Editor
         private Func<bool> m_dependTester;
         private bool m_haveFixer;
         private bool m_currentStatus;
-        private bool m_dependStats;
+        private bool m_dependStatus;
 
         public ConfigInfoLine(
             string label,
@@ -75,7 +75,7 @@ namespace Unity.RenderStreaming.Editor
 
             Add(new HelpBox(error, kind));
 
-            UpdateDisplay(m_currentStatus, m_haveFixer, m_dependStats);
+            UpdateDisplay(m_currentStatus, m_haveFixer, m_dependStatus);
         }
 
         public void CheckUpdate()
@@ -83,12 +83,12 @@ namespace Unity.RenderStreaming.Editor
             bool wellConfigured = m_tester();
             bool wellDependConfigured = m_dependTester == null || m_dependTester();
             bool changeConfigured = wellConfigured ^ m_currentStatus;
-            bool changeDependConfigured = wellDependConfigured ^ m_dependStats;
+            bool changeDependConfigured = wellDependConfigured ^ m_dependStatus;
             if (changeConfigured || changeDependConfigured)
             {
                 UpdateDisplay(wellConfigured, m_haveFixer, wellDependConfigured);
                 m_currentStatus = wellConfigured;
-                m_dependStats = wellDependConfigured;
+                m_dependStatus = wellDependConfigured;
             }
         }
 
