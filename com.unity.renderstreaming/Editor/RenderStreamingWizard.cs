@@ -48,6 +48,10 @@ namespace Unity.RenderStreaming.Editor
             label: "Run In Background",
             error: "Run In Background must be True for Render Streaming to work in Background.");
 
+        static readonly ConfigStyle inputSystemSettingsAssets = new ConfigStyle(
+            label: "Input System Settings Assets",
+            error: "Input System Settings asset must exist under the Assets folder for changes.");
+
         static readonly ConfigStyle inputSystemBackgroundBehavior = new ConfigStyle(
             label: "InputSystem Background Behavior",
             error: "InputSystem Background Behavior must be Ignore Focus for Input System to work in Background.");
@@ -144,6 +148,7 @@ namespace Unity.RenderStreaming.Editor
                     entries = new[]
                     {
                         new Entry(Scope.PlayMode, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
+                        new Entry(Scope.PlayMode, inputSystemSettingsAssets, IsInputSettingsAssetsExists, FixInputSettingsAssets),
                         new Entry(Scope.PlayMode, inputSystemBackgroundBehavior,
                             IsInputSystemBackgroundBehaviorCorrect,
                             FixInputSystemBackgroundBehavior),
@@ -173,6 +178,19 @@ namespace Unity.RenderStreaming.Editor
 
         private static bool IsRunInBackgroundCorrect() => PlayerSettings.runInBackground;
         private static void FixRunInBackground() => PlayerSettings.runInBackground = true;
+
+        private static bool IsInputSettingsAssetsExists()
+        {
+            var path = AssetDatabase.GetAssetPath(UnityEngine.InputSystem.InputSystem.settings);
+            return !string.IsNullOrEmpty(path) && path.StartsWith("Assets/");
+        }
+
+        private static void FixInputSettingsAssets()
+        {
+            var inputSettings = CreateInstance<InputSettings>();
+            AssetDatabase.CreateAsset(inputSettings, $"Assets/{PlayerSettings.productName}.inputsettings.asset");
+            UnityEngine.InputSystem.InputSystem.settings = inputSettings;
+        }
 
         private static bool IsInputSystemBackgroundBehaviorCorrect() =>
             UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
