@@ -377,6 +377,7 @@ namespace Unity.RenderStreaming
             int m_frequency;
             string m_deviceName;
             AudioSource m_audioSource;
+            GameObject m_audioSourceObj;
             AudioStreamSender m_parent;
 
             public AudioStreamSourceMicrophone(AudioStreamSender parent) : base(parent)
@@ -414,7 +415,10 @@ namespace Unity.RenderStreaming
                 // set the latency to “0” samples before the audio starts to play.
                 yield return new WaitUntil(() => Microphone.GetPosition(m_deviceName) > 0);
 
-                m_audioSource = m_parent.gameObject.AddComponent<AudioSource>();
+                m_audioSourceObj = new GameObject("Audio");
+                m_audioSourceObj.hideFlags = HideFlags.HideInHierarchy;
+                DontDestroyOnLoad(m_audioSourceObj);
+                m_audioSource = m_audioSourceObj.AddComponent<AudioSource>();
                 m_audioSource.clip = micClip;
                 m_audioSource.loop = true;
                 m_audioSource.Play();
@@ -424,7 +428,7 @@ namespace Unity.RenderStreaming
 
             public override void Dispose()
             {
-                if (m_audioSource != null)
+                if (m_audioSourceObj != null)
                 {
                     m_audioSource.Stop();
                     var clip = m_audioSource.clip;
@@ -434,7 +438,8 @@ namespace Unity.RenderStreaming
                     }
                     m_audioSource.clip = null;
 
-                    Destroy(m_audioSource);
+                    Destroy(m_audioSourceObj);
+                    m_audioSourceObj = null;
                     m_audioSource = null;
                 }
                 if (Microphone.IsRecording(m_deviceName))
