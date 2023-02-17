@@ -48,6 +48,10 @@ namespace Unity.RenderStreaming.Editor
             label: "Run In Background",
             error: "Run In Background must be True for Render Streaming to work in Background.");
 
+        static readonly ConfigStyle inputSystemSettingsAssets = new ConfigStyle(
+            label: "Input System Settings Assets",
+            error: "Input System Settings asset must exist under the Assets folder for changes.");
+
         static readonly ConfigStyle inputSystemBackgroundBehavior = new ConfigStyle(
             label: "InputSystem Background Behavior",
             error: "InputSystem Background Behavior must be Ignore Focus for Input System to work in Background.");
@@ -105,13 +109,14 @@ namespace Unity.RenderStreaming.Editor
         struct Entry
         {
             public delegate bool Checker();
-
             public delegate void Fixer();
+            public delegate bool DependChecker();
 
             public readonly Scope scope;
             public readonly ConfigStyle configStyle;
             public readonly Checker check;
             public readonly Fixer fix;
+            public readonly DependChecker dependChecker;
             public readonly bool forceDisplayCheck;
             public readonly bool skipErrorIcon;
 
@@ -120,6 +125,7 @@ namespace Unity.RenderStreaming.Editor
                 ConfigStyle configStyle,
                 Checker check,
                 Fixer fix,
+                DependChecker dependChecker = null,
                 bool forceDisplayCheck = false,
                 bool skipErrorIcon = false
             )
@@ -128,6 +134,7 @@ namespace Unity.RenderStreaming.Editor
                 this.configStyle = configStyle;
                 this.check = check;
                 this.fix = fix;
+                this.dependChecker = dependChecker;
                 this.forceDisplayCheck = forceDisplayCheck;
                 this.skipErrorIcon = skipErrorIcon;
             }
@@ -144,12 +151,15 @@ namespace Unity.RenderStreaming.Editor
                     entries = new[]
                     {
                         new Entry(Scope.PlayMode, runInBackground, IsRunInBackgroundCorrect, FixRunInBackground),
+                        new Entry(Scope.PlayMode, inputSystemSettingsAssets, IsInputSettingsAssetsExists, FixInputSettingsAssets),
                         new Entry(Scope.PlayMode, inputSystemBackgroundBehavior,
                             IsInputSystemBackgroundBehaviorCorrect,
-                            FixInputSystemBackgroundBehavior),
+                            FixInputSystemBackgroundBehavior,
+                            IsInputSettingsAssetsExists),
                         new Entry(Scope.PlayMode, inputSystemPlayModeInputBehavior,
                             IsInputSystemPlayModeInputBehaviorCorrect,
-                            FixInputSystemPlayModeInputBehavior),
+                            FixInputSystemPlayModeInputBehavior,
+                            IsInputSettingsAssetsExists),
                         new Entry(Scope.BuildSettings, currentBuildTarget, IsSupportedBuildTarget, FixSupportedBuildTarget),
                         new Entry(Scope.BuildSettings, currentGraphicsApi, IsSupportedGraphics, FixSupportedGraphics),
                         new Entry(Scope.BuildSettings, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
@@ -173,6 +183,19 @@ namespace Unity.RenderStreaming.Editor
 
         private static bool IsRunInBackgroundCorrect() => PlayerSettings.runInBackground;
         private static void FixRunInBackground() => PlayerSettings.runInBackground = true;
+
+        private static bool IsInputSettingsAssetsExists()
+        {
+            var path = AssetDatabase.GetAssetPath(UnityEngine.InputSystem.InputSystem.settings);
+            return !string.IsNullOrEmpty(path) && path.StartsWith("Assets/");
+        }
+
+        private static void FixInputSettingsAssets()
+        {
+            var inputSettings = CreateInstance<InputSettings>();
+            AssetDatabase.CreateAsset(inputSettings, $"Assets/{PlayerSettings.productName}.inputsettings.asset");
+            UnityEngine.InputSystem.InputSystem.settings = inputSettings;
+        }
 
         private static bool IsInputSystemBackgroundBehaviorCorrect() =>
             UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior == InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -510,6 +533,7 @@ namespace Unity.RenderStreaming.Editor
                     entry.configStyle.button,
                     () => entry.check(),
                     entry.fix == null ? (Action)null : () => entry.fix(),
+                    entry.dependChecker == null ? (Func<bool>)null : () => entry.dependChecker(),
                     entry.configStyle.messageType == MessageType.Error || entry.forceDisplayCheck,
                     entry.skipErrorIcon));
             }
@@ -523,6 +547,7 @@ namespace Unity.RenderStreaming.Editor
                     entry.configStyle.button,
                     () => entry.check(),
                     entry.fix == null ? (Action)null : () => entry.fix(),
+                    entry.dependChecker == null ? (Func<bool>)null : () => entry.dependChecker(),
                     entry.configStyle.messageType == MessageType.Error || entry.forceDisplayCheck,
                     entry.skipErrorIcon));
             }
