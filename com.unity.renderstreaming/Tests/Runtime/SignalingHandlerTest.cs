@@ -65,14 +65,6 @@ namespace Unity.RenderStreaming.RuntimeTest
     {
         public Action<string> OnReceiveMessage;
 
-        public void SetLocal(bool isLocal)
-        {
-            Type myClass = typeof(DataChannelBase);
-            FieldInfo fieldLocal = myClass.GetField("local",
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            fieldLocal.SetValue(this, true);
-        }
-
         public void SetLabel(string label)
         {
             Type myClass = typeof(DataChannelBase);
@@ -160,8 +152,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
             var channel = container.test.gameObject.AddComponent<DataChannelTest>();
             channel.SetLabel("test");
-            channel.SetLocal(true);
-
             Assert.That(channel.Label, Is.EqualTo("test"));
             Assert.That(channel.IsConnected, Is.False);
 
@@ -396,7 +386,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var handler = container.test.component;
             var channel = container.test.gameObject.AddComponent<DataChannelTest>();
-            channel.SetLocal(true);
             channel.SetLabel("test");
 
             handler.AddComponent(channel);
@@ -418,7 +407,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var container = TestContainer<SingleConnectionBehaviourTest>.Create("test");
             var channel = container.test.gameObject.AddComponent<DataChannelTest>();
 
-            channel.SetLocal(true);
             channel.SetLabel("test");
 
             Assert.That(channel.IsConnected, Is.False);
@@ -514,8 +502,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             bool isStoppedChannel2 = false;
             channel2.OnStartedChannel += _ => isStartedChannel2 = true;
             channel2.OnStoppedChannel += _ => isStoppedChannel2 = true;
-
-            channel2.SetLocal(true);
             channel2.SetLabel("test");
 
             Assert.That(channel2.IsConnected, Is.False);
