@@ -17,8 +17,10 @@ namespace Unity.RenderStreaming.Editor
         private readonly bool m_visibleStatus;
         private readonly bool m_skipErrorIcon;
         private Func<bool> m_tester;
+        private Func<bool> m_dependTester;
         private bool m_haveFixer;
         private bool m_currentStatus;
+        private bool m_dependStats;
 
         public ConfigInfoLine(
             string label,
@@ -27,6 +29,7 @@ namespace Unity.RenderStreaming.Editor
             string resolverButtonLabel,
             Func<bool> tester,
             Action resolver,
+            Func<bool> dependTester = null,
             bool visibleStatus = true,
             bool skipErrorIcon = false
         )
@@ -35,6 +38,7 @@ namespace Unity.RenderStreaming.Editor
             m_skipErrorIcon = skipErrorIcon;
             m_tester = tester;
             m_haveFixer = resolver != null;
+            m_dependTester = dependTester;
 
             var testLabel = new Label(label) {name = "testLabel"};
             var fixer = new Button(resolver) {text = resolverButtonLabel, name = "resolver"};
@@ -71,20 +75,24 @@ namespace Unity.RenderStreaming.Editor
 
             Add(new HelpBox(error, kind));
 
-            UpdateDisplay(m_currentStatus, m_haveFixer);
+            UpdateDisplay(m_currentStatus, m_haveFixer, m_dependStats);
         }
 
         public void CheckUpdate()
         {
             bool wellConfigured = m_tester();
-            if (wellConfigured ^ m_currentStatus)
+            bool wellDependConfigured = m_dependTester == null || m_dependTester();
+            bool changeConfigured = wellConfigured ^ m_currentStatus;
+            bool changeDependConfigured = wellDependConfigured ^ m_dependStats;
+            if (changeConfigured || changeDependConfigured)
             {
-                UpdateDisplay(wellConfigured, m_haveFixer);
+                UpdateDisplay(wellConfigured, m_haveFixer, wellDependConfigured);
                 m_currentStatus = wellConfigured;
+                m_dependStats = wellDependConfigured;
             }
         }
 
-        private void UpdateDisplay(bool statusOK, bool haveFixer)
+        private void UpdateDisplay(bool statusOK, bool haveFixer, bool dependStatusOK)
         {
             if (m_visibleStatus)
             {
@@ -94,7 +102,9 @@ namespace Unity.RenderStreaming.Editor
                     : DisplayStyle.None;
             }
 
-            this.Q(name: "resolver").style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
+            var resolver = this.Q<Button>(name: "resolver");
+            resolver.style.display = statusOK || !haveFixer ? DisplayStyle.None : DisplayStyle.Flex;
+            resolver.SetEnabled(dependStatusOK);
             this.Q(className: HelpBox.ussClassName).style.display = statusOK ? DisplayStyle.None : DisplayStyle.Flex;
         }
     }

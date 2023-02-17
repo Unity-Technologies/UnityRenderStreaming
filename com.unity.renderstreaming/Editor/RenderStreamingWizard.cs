@@ -109,13 +109,14 @@ namespace Unity.RenderStreaming.Editor
         struct Entry
         {
             public delegate bool Checker();
-
             public delegate void Fixer();
+            public delegate bool DependChecker();
 
             public readonly Scope scope;
             public readonly ConfigStyle configStyle;
             public readonly Checker check;
             public readonly Fixer fix;
+            public readonly DependChecker dependChecker;
             public readonly bool forceDisplayCheck;
             public readonly bool skipErrorIcon;
 
@@ -124,6 +125,7 @@ namespace Unity.RenderStreaming.Editor
                 ConfigStyle configStyle,
                 Checker check,
                 Fixer fix,
+                DependChecker dependChecker = null,
                 bool forceDisplayCheck = false,
                 bool skipErrorIcon = false
             )
@@ -132,6 +134,7 @@ namespace Unity.RenderStreaming.Editor
                 this.configStyle = configStyle;
                 this.check = check;
                 this.fix = fix;
+                this.dependChecker = dependChecker;
                 this.forceDisplayCheck = forceDisplayCheck;
                 this.skipErrorIcon = skipErrorIcon;
             }
@@ -151,10 +154,12 @@ namespace Unity.RenderStreaming.Editor
                         new Entry(Scope.PlayMode, inputSystemSettingsAssets, IsInputSettingsAssetsExists, FixInputSettingsAssets),
                         new Entry(Scope.PlayMode, inputSystemBackgroundBehavior,
                             IsInputSystemBackgroundBehaviorCorrect,
-                            FixInputSystemBackgroundBehavior),
+                            FixInputSystemBackgroundBehavior,
+                            IsInputSettingsAssetsExists),
                         new Entry(Scope.PlayMode, inputSystemPlayModeInputBehavior,
                             IsInputSystemPlayModeInputBehaviorCorrect,
-                            FixInputSystemPlayModeInputBehavior),
+                            FixInputSystemPlayModeInputBehavior,
+                            IsInputSettingsAssetsExists),
                         new Entry(Scope.BuildSettings, currentBuildTarget, IsSupportedBuildTarget, FixSupportedBuildTarget),
                         new Entry(Scope.BuildSettings, currentGraphicsApi, IsSupportedGraphics, FixSupportedGraphics),
                         new Entry(Scope.BuildSettings, macCameraUsageDescription, IsMacCameraUsageCorrect, FixMacCameraUsage),
@@ -528,6 +533,7 @@ namespace Unity.RenderStreaming.Editor
                     entry.configStyle.button,
                     () => entry.check(),
                     entry.fix == null ? (Action)null : () => entry.fix(),
+                    entry.dependChecker == null ? (Func<bool>)null : () => entry.dependChecker(),
                     entry.configStyle.messageType == MessageType.Error || entry.forceDisplayCheck,
                     entry.skipErrorIcon));
             }
@@ -541,6 +547,7 @@ namespace Unity.RenderStreaming.Editor
                     entry.configStyle.button,
                     () => entry.check(),
                     entry.fix == null ? (Action)null : () => entry.fix(),
+                    entry.dependChecker == null ? (Func<bool>)null : () => entry.dependChecker(),
                     entry.configStyle.messageType == MessageType.Error || entry.forceDisplayCheck,
                     entry.skipErrorIcon));
             }
