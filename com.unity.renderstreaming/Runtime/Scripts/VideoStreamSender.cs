@@ -423,8 +423,6 @@ namespace Unity.RenderStreaming
         /// <param name="size"></param>
         public void SetTextureSize(Vector2Int size)
         {
-            if (m_Source == VideoStreamSource.Texture)
-                throw new InvalidOperationException("Video source is set Texture.");
             m_TextureSize = size;
 
             if (!isPlaying)

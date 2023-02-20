@@ -173,11 +173,8 @@ namespace Unity.RenderStreaming.Samples
         {
             var resolution = resolutionOptions.Values.ElementAt(index);
 
-            if (videoStreamSender.source != VideoStreamSource.Texture)
-            {
-                videoStreamSender.SetTextureSize(resolution);
-                CalculateInputRegion();
-            }
+            videoStreamSender.SetTextureSize(resolution);
+            CalculateInputRegion();
         }
 
         private void Start()
