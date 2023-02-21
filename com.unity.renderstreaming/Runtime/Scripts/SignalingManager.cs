@@ -181,6 +181,16 @@ namespace Unity.RenderStreaming
             )
         {
             var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
+
+            if (m_useDefault && RenderStreaming.AutomaticStreaming)
+            {
+                const string warn =
+                    "SignalingManager start signaling using the default settings on AutomaticStreaming enabled." +
+                    "Signaling settings for AutomaticStreaming and SignalingManager conflict." +
+                    "Disabling AutomaticStreaming is recommended.";
+                Debug.LogWarning(warn);
+            }
+
 #if !UNITY_EDITOR
             var arguments = Environment.GetCommandLineArgs();
             if (evaluateCommandlineArguments && arguments.Length > 1)
