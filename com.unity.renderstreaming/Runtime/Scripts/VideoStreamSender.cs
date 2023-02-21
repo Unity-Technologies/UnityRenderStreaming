@@ -579,7 +579,7 @@ namespace Unity.RenderStreaming
 
                 GraphicsFormat format =
                     WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
-                if (m_texture.graphicsFormat == format)
+                if (m_texture.graphicsFormat == format && m_texture.width == width && m_texture.height == height)
                 {
                     instruction.Done(new VideoStreamTrack(m_texture));
                     return instruction;

@@ -121,6 +121,7 @@ namespace Unity.RenderStreaming.Editor
 
             if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.Texture].faded))
                 EditorGUILayout.PropertyField(m_texture);
+                EditorGUILayout.PropertyField(m_textureSize);
             EditorGUILayout.EndFadeGroup();
 
             if (EditorGUILayout.BeginFadeGroup(m_sourceFade[(int)VideoStreamSource.WebCamera].faded))
