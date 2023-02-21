@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Unity.WebRTC;
@@ -9,9 +11,11 @@ namespace Unity.RenderStreaming.Signaling
 {
     public class HttpSignaling : ISignaling
     {
-        private string m_url;
-        private int m_timeout;
-        private SynchronizationContext m_mainThreadContext;
+        private static HashSet<HttpSignaling> instances = new HashSet<HttpSignaling>();
+
+        private readonly string m_url;
+        private readonly int m_timeout;
+        private readonly SynchronizationContext m_mainThreadContext;
         private bool m_running;
         private Thread m_signalingThread;
 
@@ -35,11 +39,19 @@ namespace Unity.RenderStreaming.Signaling
                 ServicePointManager.ServerCertificateValidationCallback =
                     (sender, certificate, chain, errors) => true;
             }
+
+            if (instances.Any(x => x.Url == m_url))
+            {
+                Debug.LogWarning($"Other {nameof(HttpSignaling)} exists with same URL:{m_url}. Signaling process may be in conflict.");
+            }
+
+            instances.Add(this);
         }
 
         ~HttpSignaling()
         {
             Stop();
+            instances.Remove(this);
         }
 
         public void Start()
