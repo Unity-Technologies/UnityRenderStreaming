@@ -113,8 +113,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(sender.sourceTexture, Is.Not.Null);
             Assert.That(sender.width, Is.EqualTo(width));
             Assert.That(sender.height, Is.EqualTo(height));
-            Assert.That(() => sender.width = 1280, Throws.Exception.TypeOf<InvalidOperationException>());
-            Assert.That(() => sender.height = 720, Throws.Exception.TypeOf<InvalidOperationException>());
+            Assert.That(() => sender.width = 1280, Throws.Nothing);
+            Assert.That(() => sender.height = 720, Throws.Nothing);
             op = sender.CreateTrack();
             yield return op;
             track = op.Track;

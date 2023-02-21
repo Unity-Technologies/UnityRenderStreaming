@@ -423,8 +423,6 @@ namespace Unity.RenderStreaming
         /// <param name="size"></param>
         public void SetTextureSize(Vector2Int size)
         {
-            if (m_Source == VideoStreamSource.Texture)
-                throw new InvalidOperationException("Video source is set Texture.");
             m_TextureSize = size;
 
             if (!isPlaying)
@@ -581,7 +579,7 @@ namespace Unity.RenderStreaming
 
                 GraphicsFormat format =
                     WebRTC.WebRTC.GetSupportedGraphicsFormat(SystemInfo.graphicsDeviceType);
-                if (m_texture.graphicsFormat == format)
+                if (m_texture.graphicsFormat == format && m_texture.width == width && m_texture.height == height)
                 {
                     instruction.Done(new VideoStreamTrack(m_texture));
                     return instruction;
