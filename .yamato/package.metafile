@@ -46,7 +46,7 @@ platforms:
         platform: standalone
   - name: macos
     type: Unity::metal::macmini
-    image: package-ci/mac:v1.20.0-1079282
+    image: package-ci/macos-12:v4.10.0-1271191
     flavor: m1.mac
     architecture: x64
     packed_webapp_name: webserver_mac
@@ -66,7 +66,7 @@ platforms:
         platform: standalone
   - name: macos-m1
     type: Unity::metal::devkit
-    image: package-ci/mac:v1.20.0-1079282
+    image: package-ci/macos-12:v4.10.0-1271191
     flavor: m1.mac
     architecture: arm64
     packed_webapp_name: webserver_mac
