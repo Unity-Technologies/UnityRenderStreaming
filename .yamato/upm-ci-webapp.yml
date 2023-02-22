@@ -8,7 +8,7 @@ platforms:
     client_test_command: test_webapp_client.cmd
   - name: macos
     type: Unity::VM::osx
-    image: package-ci/mac:v1.20.0-1079282
+    image: package-ci/macos-12:v4.10.0-1271191
     flavor: m1.mac
     pack_command: ./pack_webapp.sh
     test_command: ./test_webapp.sh
