@@ -45,7 +45,8 @@ test_{{ packagename }}_{{ editor.version }}_ios:
   name: Test {{ package_displayname }} with {{ editor.version }} on ios device
   agent:
     type: Unity::mobile::iPhone
-    image: mobile/macos-10.15-testing:v0.0.7-909915
+    image: package-ci/macos-12:v4.10.0-1271191
+    model: SE
     flavor: b1.medium
   skip_checkout: true
   commands:
