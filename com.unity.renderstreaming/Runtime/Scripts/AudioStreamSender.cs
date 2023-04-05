@@ -466,7 +466,7 @@ namespace Unity.RenderStreaming
             {
                 var instruction = new WaitForCreateTrack();
                 m_audioTrack = new AudioStreamTrack();
-                instruction.Done(new AudioStreamTrack());
+                instruction.Done(m_audioTrack);
                 return instruction;
             }
 
