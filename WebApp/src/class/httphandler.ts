@@ -117,30 +117,25 @@ function _deleteSession(sessionId: string) {
   disconnections.delete(sessionId);
 }
 
-function _checkDeletedSession(sessionId: string): void {
-  const connectionIds = Array.from(clients.get(sessionId));
-  for (const connectionId of connectionIds) {
-    const pair = connectionPair.get(connectionId);
-    if (pair == null) {
+function _checkForTimedOutSessions(): void {
+  for (const sessionId of Array.from(clients.keys()))
+  {
+	if(!lastRequestedTime.has(sessionId))
       continue;
-    }
-	const otherSessionId = sessionId === pair[0] ? pair[1] : pair[0];
-	if(!lastRequestedTime.has(otherSessionId))
-      continue;
-    if(lastRequestedTime.get(otherSessionId) > Date.now() - TimeoutRequestedTime)
+    if(lastRequestedTime.get(sessionId) > Date.now() - TimeoutRequestedTime)
       continue;  
-    _deleteSession(otherSessionId);
+    _deleteSession(sessionId);
     console.log("deleted");
   }
 }
 
 function _getConnection(sessionId: string): string[] {
-  _checkDeletedSession(sessionId);
+  _checkForTimedOutSessions();
   return Array.from(clients.get(sessionId));
 }
 
 function _getDisconnection(sessionId: string, fromTime: number): Disconnection[] {
-  _checkDeletedSession(sessionId);
+  _checkForTimedOutSessions();
   let arrayDisconnections: Disconnection[] = [];
   if (disconnections.size != 0 && disconnections.has(sessionId)) {
     arrayDisconnections = disconnections.get(sessionId);
