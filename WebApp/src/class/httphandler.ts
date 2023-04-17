@@ -67,7 +67,7 @@ function checkSessionId(req: Request, res: Response, next): void {
   if (!clients.has(id)) {
     res.sendStatus(404);
     return;
-  } 
+  }
   lastRequestedTime.set(id, Date.now());
   next();
 }
@@ -119,11 +119,11 @@ function _deleteSession(sessionId: string) {
 
 function _checkForTimedOutSessions(): void {
   for (const sessionId of Array.from(clients.keys()))
-  {
-	if(!lastRequestedTime.has(sessionId))
+  {
+    if(!lastRequestedTime.has(sessionId))
       continue;
     if(lastRequestedTime.get(sessionId) > Date.now() - TimeoutRequestedTime)
-      continue;  
+      continue;
     _deleteSession(sessionId);
     console.log("deleted");
   }
@@ -341,7 +341,7 @@ function postOffer(req: Request, res: Response): void {
   {
     connectionPair.set(connectionId, [sessionId, null]);
   }
-  
+
   keySessionId = sessionId;
   const map = offers.get(keySessionId);
   map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
