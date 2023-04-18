@@ -31,6 +31,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task Add(MockSignaling signaling)
             {
                 await Task.Delay(MillisecondsDelay);
+                signalingToConnectionLookup[signaling] = new HashSet<string>();
+
                 signaling.OnStart?.Invoke(signaling);
             }
 
@@ -90,8 +92,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in signalingToConnectionLookup.Keys.Where(e => e != owner))
                 {
+                    addToLookups(signaling, data.connectionId);
                     signaling.OnAnswer?.Invoke(signaling, data);
-                    addToLookups(owner, data.connectionId);
                 }
             }
 
