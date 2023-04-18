@@ -24,8 +24,8 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         class MockPublicSignalingManager : IMockSignalingManager
         {
-            private Dictionary<MockSignaling, HashSet<string>> signalingToConnectionLookup = new ();
-            private Dictionary<string, HashSet<MockSignaling>> connectionToSignalingLookup = new();
+            private Dictionary<MockSignaling, HashSet<string>> signalingToConnectionLookup = new Dictionary<MockSignaling, HashSet<string>>();
+            private Dictionary<string, HashSet<MockSignaling>> connectionToSignalingLookup = new Dictionary<string, HashSet<MockSignaling>>();
             private const int MillisecondsDelay = 10;
 
             public async Task Add(MockSignaling signaling)
