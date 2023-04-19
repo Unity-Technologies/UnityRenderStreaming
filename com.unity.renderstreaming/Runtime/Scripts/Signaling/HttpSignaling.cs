@@ -50,6 +50,7 @@ namespace Unity.RenderStreaming.Signaling
                 throw new InvalidOperationException("This object is already started.");
             m_running = true;
             m_signalingThread = new Thread(HTTPPolling);
+            m_signalingThread.IsBackground = true;
             m_signalingThread.Start();
         }
 
@@ -59,14 +60,20 @@ namespace Unity.RenderStreaming.Signaling
 
             if (m_signalingThread != null)
             {
-                if (m_signalingThread.ThreadState == ThreadState.WaitSleepJoin)
+                try
                 {
-                    m_signalingThread.Abort();
+                    // Note: Allow for twice the configured m_timeout duration when joining to account for the polling sleep
+                    //       and the time it takes to send a disconnect to the signaling server.
+                    if (!m_signalingThread.Join((int)(m_timeout * 1000) * 2))
+                    {
+                        m_signalingThread.Abort();
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    m_signalingThread.Join(1000);
+                    Debug.LogError("Signaling: HTTP stopping thread error : " + e);
                 }
+
                 m_signalingThread = null;
             }
         }
