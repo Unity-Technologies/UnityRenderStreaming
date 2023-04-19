@@ -92,7 +92,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
                 await Task.Delay(MillisecondsDelay);
                 foreach (var signaling in signalingToConnectionLookup.Keys.Where(e => e != owner))
                 {
-                    addToLookups(signaling, data.connectionId);
+                    addToLookups(owner, data.connectionId);
                     signaling.OnAnswer?.Invoke(signaling, data);
                 }
             }
