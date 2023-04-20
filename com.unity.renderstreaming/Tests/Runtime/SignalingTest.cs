@@ -341,5 +341,46 @@ namespace Unity.RenderStreaming.RuntimeTest
             signaling2.SendCandidate(connectionId1, m_candidate);
             yield return new WaitUntil(() => candidateRaised2);
         }
+
+        [UnityTest, Timeout(10000)]
+        public IEnumerator OnStop()
+        {
+            bool startRaised1 = false;
+            bool startRaised2 = false;
+            bool offerRaised = false;
+            bool answerRaised = false;
+            bool connectionClosed2 = false;
+            string connectionId1 = null;
+            string connectionId2 = null;
+
+            signaling1.OnStart += s => { startRaised1 = true; };
+            signaling2.OnStart += s => { startRaised2 = true; };
+            signaling1.Start();
+            signaling2.Start();
+            yield return new WaitUntil(() => startRaised1 && startRaised2);
+
+            signaling1.OnCreateConnection += (s, connectionId, polite) => {
+                connectionId1 = connectionId;
+            };
+            signaling1.OpenConnection(Guid.NewGuid().ToString());
+            signaling2.OnCreateConnection += (s, connectionId, polite) => {
+                connectionId2 = connectionId;
+            };
+            signaling2.OpenConnection(Guid.NewGuid().ToString());
+            yield return new WaitUntil(() =>
+                !string.IsNullOrEmpty(connectionId1) && !string.IsNullOrEmpty(connectionId2));
+
+            signaling2.OnOffer += (s, e) => { offerRaised = true; };
+            signaling1.SendOffer(connectionId1, m_DescOffer);
+            yield return new WaitUntil(() => offerRaised);
+
+            signaling1.OnAnswer += (s, e) => { answerRaised = true; };
+            signaling2.SendAnswer(connectionId1, m_DescAnswer);
+            yield return new WaitUntil(() => answerRaised);
+
+            signaling2.OnDestroyConnection += (s, e) => { connectionClosed2 = true; };
+            signaling1.Stop();
+            yield return new WaitUntil(() => connectionClosed2);
+        }
     }
 }

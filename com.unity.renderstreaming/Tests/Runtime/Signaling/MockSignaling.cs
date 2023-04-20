@@ -24,34 +24,56 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
 
         class MockPublicSignalingManager : IMockSignalingManager
         {
-            private List<MockSignaling> list = new List<MockSignaling>();
+            private Dictionary<MockSignaling, HashSet<string>> signalingToConnectionLookup = new Dictionary<MockSignaling, HashSet<string>>();
+            private Dictionary<string, HashSet<MockSignaling>> connectionToSignalingLookup = new Dictionary<string, HashSet<MockSignaling>>();
             private const int MillisecondsDelay = 10;
 
             public async Task Add(MockSignaling signaling)
             {
                 await Task.Delay(MillisecondsDelay);
-                list.Add(signaling);
+                signalingToConnectionLookup[signaling] = new HashSet<string>();
+
                 signaling.OnStart?.Invoke(signaling);
             }
 
             public async Task Remove(MockSignaling signaling)
             {
                 await Task.Delay(MillisecondsDelay);
-                list.Remove(signaling);
+
+                if (signalingToConnectionLookup.ContainsKey(signaling))
+                {
+                    foreach (var connectionId in signalingToConnectionLookup[signaling])
+                    {
+                        foreach (var signalingToDisconnect in connectionToSignalingLookup[connectionId])
+                        {
+                            signalingToDisconnect.OnDestroyConnection?.Invoke(signaling, connectionId);
+                        }
+
+                        connectionToSignalingLookup.Remove(connectionId);
+                    }
+
+                    signalingToConnectionLookup.Remove(signaling);
+                }
             }
 
             public async Task OpenConnection(MockSignaling signaling, string connectionId)
             {
                 await Task.Delay(MillisecondsDelay);
+                addToLookups(signaling, connectionId);
+
                 signaling.OnCreateConnection?.Invoke(signaling, connectionId, true);
             }
 
             public async Task CloseConnection(MockSignaling signaling, string connectionId)
             {
                 await Task.Delay(MillisecondsDelay);
-                foreach (var element in list)
+
+                if (connectionToSignalingLookup.ContainsKey(connectionId))
                 {
-                    element.OnDestroyConnection?.Invoke(element, connectionId);
+                    foreach (var signalingToDisconnect in connectionToSignalingLookup[connectionId])
+                    {
+                        signalingToDisconnect.OnDestroyConnection?.Invoke(signalingToDisconnect, connectionId);
+                    }
                 }
             }
 
@@ -59,7 +81,7 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             {
                 await Task.Delay(MillisecondsDelay);
                 data.polite = false;
-                foreach (var signaling in list.Where(e => e != owner))
+                foreach (var signaling in signalingToConnectionLookup.Keys.Where(e => e != owner))
                 {
                     signaling.OnOffer?.Invoke(signaling, data);
                 }
@@ -68,8 +90,9 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task Answer(MockSignaling owner, DescData data)
             {
                 await Task.Delay(MillisecondsDelay);
-                foreach (var signaling in list.Where(e => e != owner))
+                foreach (var signaling in signalingToConnectionLookup.Keys.Where(e => e != owner))
                 {
+                    addToLookups(owner, data.connectionId);
                     signaling.OnAnswer?.Invoke(signaling, data);
                 }
             }
@@ -77,10 +100,27 @@ namespace Unity.RenderStreaming.RuntimeTest.Signaling
             public async Task Candidate(MockSignaling owner, CandidateData data)
             {
                 await Task.Delay(MillisecondsDelay);
-                foreach (var signaling in list.Where(e => e != owner))
+                foreach (var signaling in signalingToConnectionLookup.Keys.Where(e => e != owner))
                 {
                     signaling.OnIceCandidate?.Invoke(signaling, data);
                 }
+            }
+
+            private void addToLookups(MockSignaling signaling, string connectionId)
+            {
+                if (!connectionToSignalingLookup.TryGetValue(connectionId, out var signalingSet))
+                {
+                    signalingSet = new HashSet<MockSignaling>();
+                    connectionToSignalingLookup[connectionId] = signalingSet;
+                }
+                signalingSet.Add(signaling);
+
+                if (!signalingToConnectionLookup.TryGetValue(signaling, out var connectionSet))
+                {
+                    connectionSet = new HashSet<string>();
+                    signalingToConnectionLookup[signaling] = connectionSet;
+                }
+                connectionSet.Add(connectionId);
             }
         }
 
