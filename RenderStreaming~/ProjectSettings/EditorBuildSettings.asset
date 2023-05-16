@@ -44,5 +44,7 @@ EditorBuildSettings:
       type: 2}
     com.unity.renderstreaming.settings: {fileID: 11400000, guid: 039337c008e9a5c44a60f957eae3e450,
       type: 2}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 0ec671069889a6541b317d5976884498,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 66105b57eda77e74db55e7eb2b532054,
       type: 2}

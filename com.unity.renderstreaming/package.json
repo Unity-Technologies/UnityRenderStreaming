@@ -5,8 +5,8 @@
   "unity": "2020.3",
   "description": "This is a package for using Unity Render Streaming technology.",
   "dependencies": {
-    "com.unity.webrtc": "3.0.0-pre.4",
-    "com.unity.inputsystem": "1.4.4",
+    "com.unity.webrtc": "3.0.0-pre.5",
+    "com.unity.inputsystem": "1.5.1",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.screencapture": "1.0.0"
   },
