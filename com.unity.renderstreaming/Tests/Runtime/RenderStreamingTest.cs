@@ -28,6 +28,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             {
                 RenderStreaming.Settings = temp;
             }
+
+            RenderStreaming.Logger = Debug.unityLogger;
         }
 
         void IPrebuildSetup.Setup()
@@ -90,6 +92,21 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(automaticStreaming, Is.Null);
 
             Object.DestroyImmediate(settings);
+        }
+
+        [Test]
+        public void Logger()
+        {
+            Assert.NotNull(RenderStreaming.Logger);
+            Assert.AreEqual(RenderStreaming.Logger, Debug.unityLogger);
+
+            Assert.That(() => RenderStreaming.Logger = null, Throws.ArgumentNullException);
+
+            MockLogger logger = new MockLogger();
+            Assert.That(() => RenderStreaming.Logger = logger, Throws.Nothing);
+            Assert.AreEqual(logger, RenderStreaming.Logger);
+
+            Assert.That(() => RenderStreaming.Logger = Debug.unityLogger, Throws.Nothing);
         }
     }
 }

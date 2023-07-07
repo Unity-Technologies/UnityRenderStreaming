@@ -133,7 +133,7 @@ namespace Unity.RenderStreaming.Editor
             var dataPath = Application.dataPath + "/";
             if (!path.StartsWith(dataPath, StringComparison.CurrentCultureIgnoreCase))
             {
-                Debug.LogError($"Render Streaming settings must be stored in Assets folder of the project (got: '{path}')");
+                RenderStreaming.Logger.Log(LogType.Error, $"Render Streaming settings must be stored in Assets folder of the project (got: '{path}')");
                 return;
             }
 

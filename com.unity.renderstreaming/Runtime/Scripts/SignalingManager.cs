@@ -85,7 +85,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public SignalingSettings GetSignalingSettings()
@@ -187,7 +187,7 @@ namespace Unity.RenderStreaming
             {
                 if (!EvaluateCommandlineArguments(ref settings, arguments))
                 {
-                    Debug.LogError("Command line arguments are invalid.");
+                    RenderStreaming.Logger.Log(LogType.Error, "Command line arguments are invalid.");
                 }
             }
 #endif

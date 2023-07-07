@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (instances.Any(x => x.Url == m_url))
             {
-                Debug.LogWarning($"Other {nameof(HttpSignaling)} exists with same URL:{m_url}. Signaling process may be in conflict.");
+                RenderStreaming.Logger.Log(LogType.Warning, $"Other {nameof(HttpSignaling)} exists with same URL:{m_url}. Signaling process may be in conflict.");
             }
 
             instances.Add(this);
@@ -81,7 +81,7 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Signaling: HTTP stopping thread error : " + e);
+                    RenderStreaming.Logger.Log(LogType.Error, "Signaling: HTTP stopping thread error : " + e);
                 }
 
                 m_signalingThread = null;
@@ -169,12 +169,12 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Signaling: HTTP polling error : " + e);
+                    RenderStreaming.Logger.Log(LogType.Error, "Signaling: HTTP polling error : " + e);
                 }
             }
             HTTPDelete();
 
-            Debug.Log("Signaling: HTTP polling thread ended");
+            RenderStreaming.Logger.Log("Signaling: HTTP polling thread ended");
         }
 
         private static HttpWebResponse HTTPGetResponse(HttpWebRequest request)
@@ -189,7 +189,7 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 else
                 {
-                    Debug.LogError($"Signaling: {response.ResponseUri} HTTP request failed ({response.StatusCode})");
+                    RenderStreaming.Logger.Log(LogType.Error, $"Signaling: {response.ResponseUri} HTTP request failed ({response.StatusCode})");
                     response.Close();
                 }
             }
@@ -199,7 +199,7 @@ namespace Unity.RenderStreaming.Signaling
             }
             catch (Exception e)
             {
-                Debug.LogError($"Signaling: HTTP request error. url:{request.RequestUri} exception:{e}");
+                RenderStreaming.Logger.Log(LogType.Error, $"Signaling: HTTP request error. url:{request.RequestUri} exception:{e}");
             }
 
             return null;
@@ -250,14 +250,14 @@ namespace Unity.RenderStreaming.Signaling
             request.KeepAlive = false;
             request.ContentLength = 0;
 
-            Debug.Log($"Signaling: Connecting HTTP {m_url}");
+            RenderStreaming.Logger.Log($"Signaling: Connecting HTTP {m_url}");
 
             OpenSessionData resp = HTTPParseJsonResponse<OpenSessionData>(HTTPGetResponse(request));
 
             if (resp != null)
             {
                 m_sessionId = resp.sessionId;
-                Debug.Log("Signaling: HTTP connected, sessionId : " + m_sessionId);
+                RenderStreaming.Logger.Log("Signaling: HTTP connected, sessionId : " + m_sessionId);
 
                 m_mainThreadContext.Post(d => OnStart?.Invoke(this), null);
                 return true;
@@ -276,7 +276,7 @@ namespace Unity.RenderStreaming.Signaling
             request.KeepAlive = false;
             request.Headers.Add("Session-Id", m_sessionId);
 
-            Debug.Log($"Signaling: Removing HTTP connection from {m_url}");
+            RenderStreaming.Logger.Log($"Signaling: Removing HTTP connection from {m_url}");
 
             return (HTTPParseTextResponse(HTTPGetResponse(request)) != null);
         }
@@ -286,7 +286,7 @@ namespace Unity.RenderStreaming.Signaling
             string str = JsonUtility.ToJson(data);
             byte[] bytes = new System.Text.UTF8Encoding().GetBytes(str);
 
-            Debug.Log("Signaling: Posting HTTP data: " + str);
+            RenderStreaming.Logger.Log("Signaling: Posting HTTP data: " + str);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{m_url}/{path}");
             request.Method = "POST";
@@ -324,7 +324,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (data == null) return false;
 
-            Debug.Log($"Signaling: HTTP create connection, connectionId: {connectionId}, polite:{data.polite}");
+            RenderStreaming.Logger.Log($"Signaling: HTTP create connection, connectionId: {connectionId}, polite:{data.polite}");
             m_mainThreadContext.Post(d => OnCreateConnection?.Invoke(this, data.connectionId, data.polite), null);
             return true;
         }
@@ -349,7 +349,7 @@ namespace Unity.RenderStreaming.Signaling
 
             if (data == null) return false;
 
-            Debug.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
+            RenderStreaming.Logger.Log("Signaling: HTTP delete connection, connectionId : " + connectionId);
             m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, connectionId), null);
             return true;
         }
