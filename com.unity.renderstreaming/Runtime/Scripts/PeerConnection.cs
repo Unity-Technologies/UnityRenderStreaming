@@ -165,7 +165,7 @@ namespace Unity.RenderStreaming
         {
             if (_processingSetDescription)
             {
-                Debug.LogWarning($"{this} already processing other set description");
+                RenderStreaming.Logger.Log(LogType.Warning, $"{this} already processing other set description");
                 return;
             }
 
@@ -203,7 +203,7 @@ namespace Unity.RenderStreaming
 
             if (opLocalDesc.IsError)
             {
-                Debug.LogError($"{this} {opLocalDesc.Error.message}");
+                RenderStreaming.Logger.Log(LogType.Error, $"{this} {opLocalDesc.Error.message}");
                 _processingSetDescription = false;
                 yield break;
             }
@@ -220,7 +220,7 @@ namespace Unity.RenderStreaming
         {
             if (_processingSetDescription)
             {
-                Debug.LogWarning($"{this} already processing other set description");
+                RenderStreaming.Logger.Log(LogType.Warning, $"{this} already processing other set description");
                 return;
             }
 
@@ -239,7 +239,7 @@ namespace Unity.RenderStreaming
 
             if (opLocalDesc.IsError)
             {
-                Debug.LogError($"{this} {opLocalDesc.Error.message}");
+                RenderStreaming.Logger.Log(LogType.Error, $"{this} {opLocalDesc.Error.message}");
                 _processingSetDescription = false;
                 yield break;
             }
@@ -260,7 +260,7 @@ namespace Unity.RenderStreaming
 
             if (_ignoreOffer)
             {
-                Debug.LogWarning($"{this} glare - ignoreOffer.");
+                RenderStreaming.Logger.Log(LogType.Warning, $"{this} glare - ignoreOffer.");
                 yield break;
             }
 
@@ -272,7 +272,7 @@ namespace Unity.RenderStreaming
             yield return remoteDescOp;
             if (remoteDescOp.IsError)
             {
-                Debug.LogError($"{this} {remoteDescOp.Error.message}");
+                RenderStreaming.Logger.Log(LogType.Error, $"{this} {remoteDescOp.Error.message}");
                 _srdAnswerPending = false;
                 _processingSetDescription = false;
                 yield break;
@@ -288,7 +288,7 @@ namespace Unity.RenderStreaming
             if (!_peer.AddIceCandidate(candidate))
             {
                 if (!_ignoreOffer)
-                    Debug.LogWarning($"{this} this candidate can't accept on state.");
+                    RenderStreaming.Logger.Log(LogType.Warning, $"{this} this candidate can't accept on state.");
 
                 return false;
             }

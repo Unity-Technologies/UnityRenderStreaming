@@ -65,7 +65,7 @@ namespace Unity.RenderStreaming
         {
             if (connectionIds.Contains(data.connectionId))
             {
-                Debug.Log($"Already answered this connectionId : {data.connectionId}");
+                RenderStreaming.Logger.Log($"Already answered this connectionId : {data.connectionId}");
                 return;
             }
             connectionIds.Add(data.connectionId);

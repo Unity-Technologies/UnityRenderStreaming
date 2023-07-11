@@ -30,7 +30,7 @@ namespace Unity.RenderStreaming
 
             if (Microphone.devices.Length == 0)
             {
-                Debug.LogFormat("Microphone device not found");
+                RenderStreaming.Logger.Log("Microphone device not found");
                 return;
             }
 

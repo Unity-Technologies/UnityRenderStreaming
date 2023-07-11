@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming
             {
                 RTCError error = transceiver.Sender.SetBitrate(m_bitrate.min, m_bitrate.max);
                 if (error.errorType != RTCErrorType.None)
-                    Debug.LogError(error.message);
+                    RenderStreaming.Logger.Log(LogType.Error, error.message);
             }
         }
 

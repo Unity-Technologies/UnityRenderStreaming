@@ -222,7 +222,7 @@ namespace Unity.RenderStreaming
                             ChangeEndStateUnusedTouches(touches);
                         }
                     }
-                    
+
                     break;
                 case EventType.ButtonClick:
                     var elementId = BitConverter.ToInt16(bytes, 1);
@@ -231,7 +231,7 @@ namespace Unity.RenderStreaming
                 case EventType.Gamepad:
                     {
                         GamepadEventType gamepadEventType = (GamepadEventType)bytes[1];
-                        
+
                         switch (gamepadEventType)
                         {
                             case GamepadEventType.ButtonDown:
@@ -308,10 +308,10 @@ namespace Unity.RenderStreaming
                     break;
                 case GamepadKeyCode.Axis1Button:
                     buttonToUpdate = GamepadButton.RightStick;
-                    break;    
+                    break;
                 default:
-                    UE.Debug.Log("Unmapped button code: " + buttonIndex);
-                    break;                   
+                    RenderStreaming.Logger.Log("Unmapped button code: " + buttonIndex);
+                    break;
             }
             m_gamepadState = gamepadState.WithButton(buttonToUpdate, GamepadEventType.ButtonDown == state || GamepadEventType.ButtonPressed == state);
         }

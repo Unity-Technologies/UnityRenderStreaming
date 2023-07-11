@@ -26,7 +26,7 @@ namespace Unity.RenderStreaming
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public InputActionAsset actions
         {
@@ -63,22 +63,22 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool inputIsActive => m_InputActive;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public InputUser user => m_InputUser;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public ReadOnlyArray<InputDevice> devices => m_InputUser.pairedDevices;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public InputActionMap currentActionMap
         {
@@ -92,7 +92,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string defaultActionMap
         {
@@ -101,7 +101,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected virtual void OnEnable()
         {
@@ -115,7 +115,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected virtual void OnDisable()
         {
@@ -128,7 +128,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void ActivateInput()
         {
@@ -143,7 +143,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void DeactivateInput()
         {
@@ -153,7 +153,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mapNameOrId"></param>
         public void SwitchCurrentActionMap(string mapNameOrId)
@@ -161,14 +161,14 @@ namespace Unity.RenderStreaming
             // Must be enabled.
             if (!m_Enabled)
             {
-                Debug.LogError($"Cannot switch to actions '{mapNameOrId}'; input is not enabled", this);
+                RenderStreaming.Logger.Log(LogType.Error, (object)$"Cannot switch to actions '{mapNameOrId}'; input is not enabled", this);
                 return;
             }
 
             // Must have actions.
             if (m_Actions == null)
             {
-                Debug.LogError($"Cannot switch to actions '{mapNameOrId}'; no actions set on PlayerInput", this);
+                RenderStreaming.Logger.Log(LogType.Error, (object)$"Cannot switch to actions '{mapNameOrId}'; no actions set on PlayerInput", this);
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace Unity.RenderStreaming
             var actionMap = m_Actions.FindActionMap(mapNameOrId);
             if (actionMap == null)
             {
-                Debug.LogError($"Cannot find action map '{mapNameOrId}' in actions '{m_Actions}'", this);
+                RenderStreaming.Logger.Log(LogType.Error, (object)$"Cannot find action map '{mapNameOrId}' in actions '{m_Actions}'", this);
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="device"></param>
         public void PerformPairingWithDevice(InputDevice device)
@@ -193,7 +193,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void PerformPairingWithAllLocalDevices()
         {
@@ -204,7 +204,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="device"></param>
         public void UnpairDevices(InputDevice device)
@@ -236,7 +236,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="size">Texture Size.</param>
         /// <param name="region">Region of the texture in world coordinate system.</param>
@@ -246,7 +246,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="enabled"></param>
         public void SetEnableInputPositionCorrection(bool enabled)
@@ -256,7 +256,7 @@ namespace Unity.RenderStreaming
 
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected virtual void OnDestroy()
         {
@@ -340,15 +340,15 @@ namespace Unity.RenderStreaming
                         if (!string.IsNullOrEmpty(actionEvent.actionName))
                         {
                             // We have an action name. Show in message.
-                            Debug.LogError(
-                                $"Cannot find action '{actionEvent.actionName}' with ID '{actionEvent.actionId}' in '{m_Actions}",
+                            RenderStreaming.Logger.Log(LogType.Error,
+                                (object)$"Cannot find action '{actionEvent.actionName}' with ID '{actionEvent.actionId}' in '{m_Actions}",
                                 this);
                         }
                         else
                         {
                             // We have no action name. Best we have is ID.
-                            Debug.LogError(
-                                $"Cannot find action with ID '{actionEvent.actionId}' in '{m_Actions}",
+                            RenderStreaming.Logger.Log(LogType.Error,
+                                (object)$"Cannot find action with ID '{actionEvent.actionId}' in '{m_Actions}",
                                 this);
                         }
                     }

@@ -20,6 +20,7 @@ namespace Unity.RenderStreaming
 
         [SerializeField, Tooltip("Type of signaling.")]
         private string signalingType = typeof(HttpSignaling).FullName;
+        private static ILogger s_logger;
 
         [SerializeField, Tooltip("Array to set your own STUN/TURN servers.")]
         private RTCIceServer[] iceServers = new RTCIceServer[]
@@ -75,6 +76,28 @@ namespace Unity.RenderStreaming
             Application.quitting += RenderStreamingInternal.DomainUnload;
         }
 #endif
+
+        /// <summary>
+        /// Get & set the logger to use when logging debug messages inside the RenderStreaming package.
+        /// By default will use Debug.unityLogger.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Throws if setting a null logger.</exception>
+        public static ILogger Logger
+        {
+            get
+            {
+                if (s_logger == null)
+                {
+                    return Debug.unityLogger;
+                }
+
+                return s_logger;
+            }
+            set
+            {
+                s_logger = value ?? throw new ArgumentNullException(nameof(value));
+            }
+        }
 
         static Type GetType(string typeName)
         {

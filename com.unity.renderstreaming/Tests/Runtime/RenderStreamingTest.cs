@@ -24,6 +24,8 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void TearDown()
         {
             Object.DestroyImmediate(component.gameObject);
+
+            RenderStreaming.Logger = Debug.unityLogger;
         }
 
         [Test]
@@ -70,6 +72,21 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.Stop();
             yield return 0;
             component.Run(signaling:mock, handlers:handlers);
+        }
+
+        [Test]
+        public void Logger()
+        {
+            Assert.NotNull(RenderStreaming.Logger);
+            Assert.AreEqual(RenderStreaming.Logger, Debug.unityLogger);
+
+            Assert.That(() => RenderStreaming.Logger = null, Throws.ArgumentNullException);
+
+            MockLogger logger = new MockLogger();
+            Assert.That(() => RenderStreaming.Logger = logger, Throws.Nothing);
+            Assert.AreEqual(logger, RenderStreaming.Logger);
+
+            Assert.That(() => RenderStreaming.Logger = Debug.unityLogger, Throws.Nothing);
         }
     }
 }

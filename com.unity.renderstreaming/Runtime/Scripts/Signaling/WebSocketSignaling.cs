@@ -150,7 +150,7 @@ namespace Unity.RenderStreaming.Signaling
                 }
             }
 
-            Debug.Log("Signaling: WS managing thread ended");
+            RenderStreaming.Logger.Log("Signaling: WS managing thread ended");
         }
 
         private void WSCreate()
@@ -169,14 +169,14 @@ namespace Unity.RenderStreaming.Signaling
 
             Monitor.Enter(m_webSocket);
 
-            Debug.Log($"Signaling: Connecting WS {m_url}");
+            RenderStreaming.Logger.Log($"Signaling: Connecting WS {m_url}");
             m_webSocket.ConnectAsync();
         }
 
         private void WSProcessMessage(object sender, MessageEventArgs e)
         {
             var content = Encoding.UTF8.GetString(e.RawData);
-            Debug.Log($"Signaling: Receiving message: {content}");
+            RenderStreaming.Logger.Log($"Signaling: Receiving message: {content}");
 
             try
             {
@@ -235,31 +235,31 @@ namespace Unity.RenderStreaming.Signaling
                     else if (routedMessage.type == "error")
                     {
                         msg = JsonUtility.FromJson<SignalingMessage>(content);
-                        Debug.LogError(msg.message);
+                        RenderStreaming.Logger.Log(LogType.Error, msg.message);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError("Signaling: Failed to parse message: " + ex);
+                RenderStreaming.Logger.Log(LogType.Error, "Signaling: Failed to parse message: " + ex);
             }
         }
 
         private void WSConnected(object sender, EventArgs e)
         {
-            Debug.Log("Signaling: WS connected.");
+            RenderStreaming.Logger.Log("Signaling: WS connected.");
             m_mainThreadContext.Post(d => OnStart?.Invoke(this), null);
         }
 
 
         private void WSError(object sender, ErrorEventArgs e)
         {
-            Debug.LogError($"Signaling: WS connection error: {e.Message}");
+            RenderStreaming.Logger.Log(LogType.Error, $"Signaling: WS connection error: {e.Message}");
         }
 
         private void WSClosed(object sender, CloseEventArgs e)
         {
-            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
+            RenderStreaming.Logger.Log($"Signaling: WS connection closed, code: {e.Code}");
 
             m_wsCloseEvent.Set();
             m_webSocket = null;
@@ -269,19 +269,19 @@ namespace Unity.RenderStreaming.Signaling
         {
             if (m_webSocket == null || m_webSocket.ReadyState != WebSocketState.Open)
             {
-                Debug.LogError("Signaling: WS is not connected. Unable to send message");
+                RenderStreaming.Logger.Log(LogType.Error, "Signaling: WS is not connected. Unable to send message");
                 return;
             }
 
             if (data is string s)
             {
-                Debug.Log("Signaling: Sending WS data: " + s);
+                RenderStreaming.Logger.Log("Signaling: Sending WS data: " + s);
                 m_webSocket.Send(s);
             }
             else
             {
                 string str = JsonUtility.ToJson(data);
-                Debug.Log("Signaling: Sending WS data: " + str);
+                RenderStreaming.Logger.Log("Signaling: Sending WS data: " + str);
                 m_webSocket.Send(str);
             }
         }
