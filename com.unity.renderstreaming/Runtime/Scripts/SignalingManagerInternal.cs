@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
+using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
@@ -154,7 +154,7 @@ namespace Unity.RenderStreaming
             _signaling.OnAnswer -= OnAnswer;
             _signaling.OnIceCandidate -= OnIceCandidate;
 
-            foreach(var pair in _mapConnectionIdAndPeer)
+            foreach (var pair in _mapConnectionIdAndPeer)
                 pair.Value.Dispose();
 
             this._disposed = true;
@@ -312,7 +312,7 @@ namespace Unity.RenderStreaming
                     {
                         failedConnections.Add(peer.Key);
                     }
-                    else if(peer.Value.waitingAnswer)
+                    else if (peer.Value.waitingAnswer)
                     {
                         peer.Value.SendOffer();
                     }
@@ -366,7 +366,7 @@ namespace Unity.RenderStreaming
 
             peer.OnConnectHandler += () => onConnect?.Invoke(connectionId);
             peer.OnDisconnectHandler += () => onDisconnect?.Invoke(connectionId);
-            peer.OnDataChannelHandler += channel => onAddChannel?.Invoke(connectionId, channel);;
+            peer.OnDataChannelHandler += channel => onAddChannel?.Invoke(connectionId, channel); ;
             peer.OnTrackEventHandler += e => onAddTransceiver?.Invoke(connectionId, e.Transceiver);
             peer.SendOfferHandler += desc => _signaling?.SendOffer(connectionId, desc);
             peer.SendAnswerHandler += desc => _signaling?.SendAnswer(connectionId, desc);
@@ -393,7 +393,7 @@ namespace Unity.RenderStreaming
                 return;
             }
 
-            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Answer, sdp = e.sdp};
+            RTCSessionDescription description = new RTCSessionDescription { type = RTCSdpType.Answer, sdp = e.sdp };
             _startCoroutine(pc.OnGotDescription(description, () => onGotAnswer?.Invoke(e.connectionId, e.sdp)));
         }
 
@@ -406,7 +406,9 @@ namespace Unity.RenderStreaming
 
             RTCIceCandidateInit option = new RTCIceCandidateInit
             {
-                candidate = e.candidate, sdpMLineIndex = e.sdpMLineIndex, sdpMid = e.sdpMid
+                candidate = e.candidate,
+                sdpMLineIndex = e.sdpMLineIndex,
+                sdpMid = e.sdpMid
             };
             pc.OnGotIceCandidate(new RTCIceCandidate(option));
         }
@@ -419,7 +421,7 @@ namespace Unity.RenderStreaming
                 pc = CreatePeerConnection(connectionId, e.polite);
             }
 
-            RTCSessionDescription description = new RTCSessionDescription {type = RTCSdpType.Offer, sdp = e.sdp};
+            RTCSessionDescription description = new RTCSessionDescription { type = RTCSdpType.Offer, sdp = e.sdp };
             _startCoroutine(pc.OnGotDescription(description, () => onGotOffer?.Invoke(connectionId, e.sdp)));
         }
     }

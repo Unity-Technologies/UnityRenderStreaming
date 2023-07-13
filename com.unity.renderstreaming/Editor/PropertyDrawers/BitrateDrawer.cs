@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {

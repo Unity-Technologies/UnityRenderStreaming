@@ -72,30 +72,30 @@ namespace Unity.RenderStreaming.Samples
                 switch (signalingType)
                 {
                     case SignalingType.Furioos:
-                    {
-                        var schema = signalingSecured ? "https" : "http";
-                        return new FurioosSignalingSettings
-                        (
-                            url: $"{schema}://{signalingAddress}"
-                        );
-                    }
+                        {
+                            var schema = signalingSecured ? "https" : "http";
+                            return new FurioosSignalingSettings
+                            (
+                                url: $"{schema}://{signalingAddress}"
+                            );
+                        }
                     case SignalingType.WebSocket:
-                    {
-                        var schema = signalingSecured ? "wss" : "ws";
-                        return new WebSocketSignalingSettings
-                        (
-                            url: $"{schema}://{signalingAddress}"
-                        );
-                    }
+                        {
+                            var schema = signalingSecured ? "wss" : "ws";
+                            return new WebSocketSignalingSettings
+                            (
+                                url: $"{schema}://{signalingAddress}"
+                            );
+                        }
                     case SignalingType.Http:
-                    {
-                        var schema = signalingSecured ? "https" : "http";
-                        return new HttpSignalingSettings
-                        (
-                            url: $"{schema}://{signalingAddress}",
-                            interval: signalingInterval
-                        );
-                    }
+                        {
+                            var schema = signalingSecured ? "https" : "http";
+                            return new HttpSignalingSettings
+                            (
+                                url: $"{schema}://{signalingAddress}",
+                                interval: signalingInterval
+                            );
+                        }
                 }
                 throw new InvalidOperationException();
             }
@@ -178,7 +178,7 @@ namespace Unity.RenderStreaming.Samples
         void Start()
         {
             SampleManager.Instance.Initialize();
-            settings  = SampleManager.Instance.Settings;
+            settings = SampleManager.Instance.Settings;
 
             toggleUseDefaultSettings.isOn = settings.UseDefaultSettings;
             dropdownSignalingType.value = (int)settings.SignalingType;

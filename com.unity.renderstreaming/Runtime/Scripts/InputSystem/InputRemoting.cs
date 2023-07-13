@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
-using UnityEngine.InputSystem;
 
 ////TODO: show remote device IDs in the debugger
 
@@ -653,7 +653,7 @@ namespace Unity.RenderStreaming.InputSystem
                 var deviceFlagsRemote = 1 << 3;
                 device.SetDeviceFlags(device.GetDeviceFlags() | deviceFlagsRemote);
 
-                if(data.usages != null)
+                if (data.usages != null)
                     foreach (var usage in data.usages)
                         Receiver.m_LocalManager.AddDeviceUsage(device, usage);
 

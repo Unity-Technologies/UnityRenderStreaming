@@ -14,7 +14,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (followPosition)
                 transform.localPosition = target.localPosition + offset;
-            if(followRotation)
+            if (followRotation)
                 transform.localRotation = target.localRotation;
         }
     }

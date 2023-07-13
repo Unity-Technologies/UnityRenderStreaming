@@ -20,7 +20,7 @@ namespace Unity.RenderStreaming.Samples
     /// 
     /// </summary>
     [Serializable]
-    class ChangeLabelEvent : UnityEvent<string> {};
+    class ChangeLabelEvent : UnityEvent<string> { };
 
     /// <summary>
     ///
@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming.Samples
         {
             string str = System.Text.Encoding.UTF8.GetString(bytes);
             var message = JsonUtility.FromJson<Message>(str);
-            switch(message.type)
+            switch (message.type)
             {
                 case ActionType.ChangeLabel:
                     OnChangeLabel?.Invoke(message.argument);

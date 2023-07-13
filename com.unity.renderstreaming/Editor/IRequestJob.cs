@@ -1,11 +1,13 @@
-﻿using UnityEditor.PackageManager;           //StatusCode
+using UnityEditor.PackageManager;           //StatusCode
 
-namespace Unity.RenderStreaming.Editor {
+namespace Unity.RenderStreaming.Editor
+{
 
-internal interface IRequestJob {
-    StatusCode Update();
+    internal interface IRequestJob
+    {
+        StatusCode Update();
 
-}
+    }
 
 
 } //namespace Unity.RenderStreaming.Editor

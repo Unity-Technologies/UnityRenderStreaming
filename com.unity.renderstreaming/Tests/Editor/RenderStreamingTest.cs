@@ -48,7 +48,7 @@ namespace Unity.RenderStreaming.EditorTest
             Assert.That(() => RenderStreamingEditor.SetSignalingSettings(null), Throws.ArgumentNullException);
 
             var url = "wss://127.0.0.1:8081";
-            var iceServers = new IceServer[] {new IceServer(new string[] {"stun:stun.l.google.com:19302"})};
+            var iceServers = new IceServer[] { new IceServer(new string[] { "stun:stun.l.google.com:19302" }) };
             var signalingSettings = new WebSocketSignalingSettings(url, iceServers);
 
             Assert.That(() => RenderStreamingEditor.SetSignalingSettings(signalingSettings), Throws.Nothing);

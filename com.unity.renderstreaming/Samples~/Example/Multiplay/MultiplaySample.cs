@@ -91,7 +91,7 @@ namespace Unity.RenderStreaming.Samples
                 renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
             if (settings?.SignalingSettings != null)
                 renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-            renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});
+            renderStreaming.Run(handlers: new SignalingHandlerBase[] { handler });
         }
 
         IEnumerator SetUpGuest(string username, string connectionId)
@@ -104,7 +104,7 @@ namespace Unity.RenderStreaming.Samples
                 renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
             if (settings?.SignalingSettings != null)
                 renderStreaming.SetSignalingSettings(settings.SignalingSettings);
-            renderStreaming.Run(handlers: new SignalingHandlerBase[] {handler});
+            renderStreaming.Run(handlers: new SignalingHandlerBase[] { handler });
 
             videoImage.gameObject.SetActive(true);
             var receiveVideoViewer = guestPlayer.GetComponent<VideoStreamReceiver>();
@@ -113,7 +113,7 @@ namespace Unity.RenderStreaming.Samples
             var channel = guestPlayer.GetComponent<MultiplayChannel>();
             channel.OnStartedChannel += _ => { StartCoroutine(ChangeLabel(channel, username)); };
 
-            if(settings != null)
+            if (settings != null)
                 receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
 
             // todo(kazuki):

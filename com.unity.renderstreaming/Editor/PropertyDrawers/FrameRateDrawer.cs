@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -67,7 +67,7 @@ namespace Unity.RenderStreaming.Editor
             }
             if (!Mathf.Approximately(value, newValue))
             {
-                if(Application.isPlaying)
+                if (Application.isPlaying)
                 {
                     var objectReferenceValue = property.serializedObject.targetObject;
                     var type = objectReferenceValue.GetType();

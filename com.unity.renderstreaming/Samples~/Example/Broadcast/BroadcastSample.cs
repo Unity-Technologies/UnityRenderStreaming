@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -120,27 +120,27 @@ namespace Unity.RenderStreaming.Samples
             videoSourceTypeSelector.onValueChanged.AddListener(ChangeVideoSourceType);
 
             bandwidthSelector.options = bandwidthOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
-            bandwidthSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
+            bandwidthSelector.options.Add(new Dropdown.OptionData { text = "Custom" });
             bandwidthSelector.onValueChanged.AddListener(ChangeBandwidth);
 
             scaleResolutionDownSelector.options = scaleResolutionDownOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
-            scaleResolutionDownSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
+            scaleResolutionDownSelector.options.Add(new Dropdown.OptionData { text = "Custom" });
             scaleResolutionDownSelector.onValueChanged.AddListener(ChangeScaleResolutionDown);
 
             framerateSelector.options = framerateOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
-            framerateSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
+            framerateSelector.options.Add(new Dropdown.OptionData { text = "Custom" });
             framerateSelector.onValueChanged.AddListener(ChangeFramerate);
 
             resolutionSelector.options = resolutionOptions
-                .Select(pair => new Dropdown.OptionData {text = pair.Key})
+                .Select(pair => new Dropdown.OptionData { text = pair.Key })
                 .ToList();
-            resolutionSelector.options.Add(new Dropdown.OptionData {text = "Custom"});
+            resolutionSelector.options.Add(new Dropdown.OptionData { text = "Custom" });
             resolutionSelector.onValueChanged.AddListener(ChangeResolution);
         }
 
@@ -183,7 +183,7 @@ namespace Unity.RenderStreaming.Samples
 
             if (renderStreaming.runOnAwake)
                 return;
-            if(settings != null)
+            if (settings != null)
                 renderStreaming.useDefaultSettings = settings.UseDefaultSettings;
             if (settings?.SignalingSettings != null)
                 renderStreaming.SetSignalingSettings(settings.SignalingSettings);
@@ -272,7 +272,7 @@ namespace Unity.RenderStreaming.Samples
                 framerateSelector.SetValueWithoutNotify(framerateIndex);
             }
 
-            var target = new Vector2Int((int) videoStreamSender.width, (int) videoStreamSender.height);
+            var target = new Vector2Int((int)videoStreamSender.width, (int)videoStreamSender.height);
             var resolutionIndex = Array.IndexOf(resolutionOptions.Values.ToArray(), target);
             if (resolutionIndex < 0)
             {

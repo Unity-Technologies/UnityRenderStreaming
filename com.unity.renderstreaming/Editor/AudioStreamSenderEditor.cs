@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 using System;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
+using UnityEngine;
 
 namespace Unity.RenderStreaming.Editor
 {

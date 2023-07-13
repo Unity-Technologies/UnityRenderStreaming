@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
-using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
 
 namespace Unity.RenderStreaming.InputSystem
 {

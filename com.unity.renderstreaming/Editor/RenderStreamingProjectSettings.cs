@@ -70,7 +70,7 @@ namespace Unity.RenderStreaming.Editor
                 Directory.CreateDirectory(folderPath);
             }
 
-            InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] {s_Instance}, filePath,
+            InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] { s_Instance }, filePath,
                 allowTextSerialization: true);
         }
     }

@@ -1,10 +1,10 @@
 using System.Collections;
 using NUnit.Framework;
-using UnityEngine.InputSystem;
 using Unity.RenderStreaming.InputSystem;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 using Assert = NUnit.Framework.Assert;
 

@@ -272,16 +272,16 @@ namespace Unity.RenderStreaming.Editor
                 {
                     case BuildTarget.StandaloneOSX:
                     case BuildTarget.iOS:
-                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Metal});
+                        PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.Metal });
                         break;
                     case BuildTarget.Android:
-                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLES3, GraphicsDeviceType.Vulkan});
+                        PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.OpenGLES3, GraphicsDeviceType.Vulkan });
                         break;
                     case BuildTarget.StandaloneWindows64:
-                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.Direct3D11, GraphicsDeviceType.Direct3D12, GraphicsDeviceType.Vulkan});
+                        PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.Direct3D11, GraphicsDeviceType.Direct3D12, GraphicsDeviceType.Vulkan });
                         break;
                     case BuildTarget.StandaloneLinux64:
-                        PlayerSettings.SetGraphicsAPIs(target, new[] {GraphicsDeviceType.OpenGLCore, GraphicsDeviceType.Vulkan});
+                        PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.OpenGLCore, GraphicsDeviceType.Vulkan });
                         break;
                     default:
                         throw new NotSupportedException($"{nameof(target)} is not supported.");
@@ -454,11 +454,12 @@ namespace Unity.RenderStreaming.Editor
         {
             var checkUpdateContainer = rootVisualElement.Q("checkUpdateContainer");
 
-            var label = new TextElement {text = "Current Render Streaming version: checking..."};
+            var label = new TextElement { text = "Current Render Streaming version: checking..." };
             checkUpdateContainer.Add(label);
 
             var button = new Button(() =>
-                UnityEditor.PackageManager.UI.Window.Open(packageName)) {text = "Check update"};
+                UnityEditor.PackageManager.UI.Window.Open(packageName))
+            { text = "Check update" };
             button.AddToClassList("right-anchored-button");
             checkUpdateContainer.Add(button);
 
@@ -479,7 +480,7 @@ namespace Unity.RenderStreaming.Editor
         {
             var checkUpdateContainer = rootVisualElement.Q("currentSettingsContainer");
 
-            currentSettingsLabel = new Label {text = $"Current Render Streaming Settings: {GetSettingsAssetName()}"};
+            currentSettingsLabel = new Label { text = $"Current Render Streaming Settings: {GetSettingsAssetName()}" };
             currentSettingsLabel.AddToClassList("normal");
             checkUpdateContainer.Add(currentSettingsLabel);
 
@@ -492,7 +493,7 @@ namespace Unity.RenderStreaming.Editor
 
             currentSettingsHelpBox = new HelpBox("Current selected settings is default. If you want to change settings, open the Project Window and create or select another Settings.", HelpBoxMessageType.Info)
             {
-                style = {display = IsDefaultSetting() ? DisplayStyle.Flex : DisplayStyle.None}
+                style = { display = IsDefaultSetting() ? DisplayStyle.Flex : DisplayStyle.None }
             };
             checkUpdateContainer.Add(currentSettingsHelpBox);
         }
@@ -564,7 +565,8 @@ namespace Unity.RenderStreaming.Editor
                     var dstPath = EditorUtility.OpenFolderPanel("Select download folder", "", "");
                     WebAppDownloader.DownloadWebApp(version, dstPath, null);
                 });
-            }) {text = "Download latest version web app."};
+            })
+            { text = "Download latest version web app." };
             webappButton.AddToClassList("large-button");
 
             var showWebAppDocButton = new Button(() =>
@@ -574,7 +576,8 @@ namespace Unity.RenderStreaming.Editor
                     var url = WebAppDownloader.GetURLDocumentation(version);
                     Application.OpenURL(url);
                 });
-            }) {text = "Show web app documentation."};
+            })
+            { text = "Show web app documentation." };
             showWebAppDocButton.AddToClassList("large-button");
 
             var showWebAppSourceButton = new Button(() =>
@@ -584,7 +587,8 @@ namespace Unity.RenderStreaming.Editor
                     var url = WebAppDownloader.GetURLSourceCode(version);
                     Application.OpenURL(url);
                 });
-            }) {text = "Show web app source code."};
+            })
+            { text = "Show web app source code." };
             showWebAppSourceButton.AddToClassList("large-button");
 
             webappContainer.Add(webappButton);

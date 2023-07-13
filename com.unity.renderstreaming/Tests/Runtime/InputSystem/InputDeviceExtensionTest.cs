@@ -1,8 +1,7 @@
 using NUnit.Framework;
+using Unity.RenderStreaming.InputSystem;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Layouts;
-using Unity.RenderStreaming.InputSystem;
-
 using Assert = NUnit.Framework.Assert;
 
 namespace Unity.RenderStreaming.RuntimeTest

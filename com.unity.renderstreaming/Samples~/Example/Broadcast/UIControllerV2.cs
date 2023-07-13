@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -11,7 +11,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] CanvasGroup canvasGroup;
         [SerializeField] Image pointer;
         [SerializeField] GameObject noticeTouchControl;
-        [SerializeField] private AnimationCurve transitionCurve =
+        [SerializeField]
+        private AnimationCurve transitionCurve =
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
                 new Keyframe(1f, 0f, 0f, 0f));
@@ -45,7 +46,7 @@ namespace Unity.RenderStreaming.Samples
         {
             var keyboard = context.control.device as Keyboard;
 
-            if(!isSubscribing)
+            if (!isSubscribing)
             {
                 keyboard.onTextInput += OnTextInput;
                 isSubscribing = true;
@@ -61,7 +62,7 @@ namespace Unity.RenderStreaming.Samples
 
         public void OnPoint(InputAction.CallbackContext context)
         {
-            if(m_rectTransform == null)
+            if (m_rectTransform == null)
                 return;
             var position = context.ReadValue<Vector2>();
             var screenSize = new Vector2Int(Screen.width, Screen.height);

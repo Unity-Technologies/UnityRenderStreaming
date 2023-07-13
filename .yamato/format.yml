@@ -1,0 +1,15 @@
+# Check formatting using dotnet-format tool.
+check_formatting_dotnet-format:
+  name: Checking codes formatting using dotnet-format tool
+  agent:
+    type: Unity::VM::osx
+    image: package-ci/macos-12:v4
+    flavor: b1.large
+  commands:
+    - dotnet tool install --tool-path tools dotnet-format || echo dotnet format already installed
+    - tools/dotnet-format --check --exclude RenderStreaming~ -f . 1>formatting.log 2>formatting_errors.log
+  artifacts:
+    logs:
+      paths:
+        - formatting.log
+        - formatting_errors.log

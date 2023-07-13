@@ -77,7 +77,7 @@ namespace Unity.RenderStreaming.Editor
             });
             selectorContainer.Add(selectPopup);
 
-            var createSettingsButton = new Button {text = "Create New Settings Asset"};
+            var createSettingsButton = new Button { text = "Create New Settings Asset" };
             createSettingsButton.clicked += () =>
             {
                 CreateNewSettingsAsset();
@@ -87,7 +87,7 @@ namespace Unity.RenderStreaming.Editor
 
             var createAssetHelpBox = new HelpBox("Settings for the Render Streaming are not stored in an asset. Click the button above to create a settings asset you can edit.", HelpBoxMessageType.Info)
             {
-                style = {display = noSettingsInAssets ? DisplayStyle.Flex : DisplayStyle.None}
+                style = { display = noSettingsInAssets ? DisplayStyle.Flex : DisplayStyle.None }
             };
             selectorContainer.Add(createAssetHelpBox);
 
@@ -95,7 +95,7 @@ namespace Unity.RenderStreaming.Editor
 
             // Disable UI when running in Playmode
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            if(EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying)
                 rootVisualElement.SetEnabled(false);
         }
 

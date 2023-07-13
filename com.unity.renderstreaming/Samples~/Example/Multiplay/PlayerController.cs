@@ -1,6 +1,6 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Linq;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming.Samples
         Vector2 inputLook;
         Vector3 initialPosition;
         bool inputJump;
-        float cooldownJumpDelta = CooldownJump; 
+        float cooldownJumpDelta = CooldownJump;
 
         protected void Awake()
         {
@@ -36,17 +36,17 @@ namespace Unity.RenderStreaming.Samples
             switch (change)
             {
                 case InputDeviceChange.Added:
-                {
-                    playerInput.PerformPairingWithDevice(device);
-                    CheckPairedDevices();
-                    return;
-                }
+                    {
+                        playerInput.PerformPairingWithDevice(device);
+                        CheckPairedDevices();
+                        return;
+                    }
                 case InputDeviceChange.Removed:
-                {
-                    playerInput.UnpairDevices(device);
-                    CheckPairedDevices();
-                    return;
-                }
+                    {
+                        playerInput.UnpairDevices(device);
+                        CheckPairedDevices();
+                        return;
+                    }
             }
         }
 

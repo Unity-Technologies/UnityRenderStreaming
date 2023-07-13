@@ -100,15 +100,15 @@ namespace Unity.RenderStreaming.Samples
             switch (change)
             {
                 case InputDeviceChange.Added:
-                {
-                    playerInput.PerformPairingWithDevice(device);
-                    return;
-                }
+                    {
+                        playerInput.PerformPairingWithDevice(device);
+                        return;
+                    }
                 case InputDeviceChange.Removed:
-                {
-                    playerInput.UnpairDevices(device);
-                    return;
-                }
+                    {
+                        playerInput.UnpairDevices(device);
+                        return;
+                    }
             }
         }
 
@@ -121,7 +121,7 @@ namespace Unity.RenderStreaming.Samples
         private void FixedUpdate()
         {
             // Tracked Device
-            if(inputPosition.HasValue && inputRotation.HasValue)
+            if (inputPosition.HasValue && inputRotation.HasValue)
             {
                 transform.position = inputPosition.Value;
                 transform.rotation = inputRotation.Value;

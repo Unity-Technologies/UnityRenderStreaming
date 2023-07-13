@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -61,7 +61,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 property.floatValue = newValue;
 
-                if(Application.isPlaying)
+                if (Application.isPlaying)
                 {
                     var objectReferenceValue = property.serializedObject.targetObject;
                     var type = objectReferenceValue.GetType();

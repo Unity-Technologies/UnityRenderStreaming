@@ -11,10 +11,10 @@ namespace Unity.RenderStreaming.RuntimeTest
         public void Clone()
         {
             var iceServer = new IceServer(
-                urls: new[]{"stun:stun.l.google.com:19302"},
-                username:"username",
-                credentialType:IceCredentialType.Password,
-                credential:"password");
+                urls: new[] { "stun:stun.l.google.com:19302" },
+                username: "username",
+                credentialType: IceCredentialType.Password,
+                credential: "password");
 
             var copied = iceServer.Clone();
             Assert.That(copied.urls, Is.EqualTo(iceServer.urls));
@@ -46,13 +46,13 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(() => new WebSocketSignalingSettings(url: null), Throws.Exception.TypeOf<ArgumentNullException>());
 
             var url = "ws://localhost";
-            settings = new WebSocketSignalingSettings(url:url);
+            settings = new WebSocketSignalingSettings(url: url);
             Assert.That(settings.url, Is.EqualTo(url));
             Assert.That(settings.iceServers, Is.Empty);
 
             var iceUrl = "stun:stun.l.google.com:19302";
             var iceServers = new[] { new IceServer(urls: new[] { iceUrl }) };
-            settings = new WebSocketSignalingSettings(url: url, iceServers:iceServers);
+            settings = new WebSocketSignalingSettings(url: url, iceServers: iceServers);
             Assert.That(settings.iceServers.Count, Is.EqualTo(1));
             Assert.That(settings.iceServers.ElementAt(0).username, Is.Null);
             Assert.That(settings.iceServers.ElementAt(0).credential, Is.Null);

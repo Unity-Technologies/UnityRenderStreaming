@@ -16,7 +16,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         [Test]
         public void Invoke()
         {
-            System.Action< InputEventPtr, InputDevice> onEvent = OnEvent;
+            System.Action<InputEventPtr, InputDevice> onEvent = OnEvent;
             var corrector = new InputPositionCorrector(onEvent);
             Assert.That(corrector.inputRegion, Is.EqualTo(Rect.zero));
             Assert.That(corrector.outputRegion, Is.EqualTo(Rect.zero));

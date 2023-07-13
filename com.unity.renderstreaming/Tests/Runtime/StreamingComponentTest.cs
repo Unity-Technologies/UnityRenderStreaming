@@ -1,14 +1,14 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Unity.Collections;
-using UnityEngine;
 using Unity.WebRTC;
-using UnityEngine.TestTools;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
+using UnityEngine.TestTools;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
@@ -23,7 +23,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(codecs.Any(codec => codec.name == "VP9"));
             Assert.That(codecs.Any(codec => codec.name == "AV1"));
 
-            foreach(var codec in codecs)
+            foreach (var codec in codecs)
             {
                 Assert.That(codec.name, Is.Not.Empty);
                 Assert.That(codec.mimeType, Is.Not.Empty);
@@ -298,7 +298,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             IEnumerable<AudioCodecInfo> codecs = AudioStreamSender.GetAvailableCodecs();
             Assert.That(codecs, Is.Not.Empty);
-            foreach(var codec in codecs)
+            foreach (var codec in codecs)
             {
                 Assert.That(codec.name, Is.Not.Empty);
                 Assert.That(codec.mimeType, Is.Not.Empty);
@@ -569,7 +569,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(receiver.currentActionMap, Is.Null);
             receiver.currentActionMap = new InputActionMap();
             Assert.That(receiver.actionEvents, Is.Not.Null);
-            receiver.actionEvents = new PlayerInput.ActionEvent[]{};
+            receiver.actionEvents = new PlayerInput.ActionEvent[] { };
 
             receiver.SwitchCurrentActionMap(mapName);
 

@@ -1,11 +1,11 @@
 using System;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
-using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.InputSystem.EnhancedTouch;
-using UE = UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.InputSystem.Users;
+using UE = UnityEngine;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -26,14 +26,16 @@ namespace Unity.RenderStreaming.Samples
         Gamepad = 5,
     }
 
-    enum GamepadEventType {
-      ButtonUp = 0,
-      ButtonDown = 1,
-      ButtonPressed = 2,
-      Axis = 3
+    enum GamepadEventType
+    {
+        ButtonUp = 0,
+        ButtonDown = 1,
+        ButtonPressed = 2,
+        Axis = 3
     }
 
-    enum GamepadKeyCode {
+    enum GamepadKeyCode
+    {
         Button0 = 0,
         Button1,
         Button2,
@@ -161,13 +163,13 @@ namespace Unity.RenderStreaming.Samples
             GC.SuppressFinalize(this);
         }
 
-//---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
 
         public void ProcessInput(byte[] bytes)
         {
             if (bytes == null)
                 throw new ArgumentNullException();
-            if(bytes.Length == 0)
+            if (bytes.Length == 0)
                 throw new ArgumentException("byte length is zero");
 
             switch ((EventType)bytes[0])
@@ -222,7 +224,7 @@ namespace Unity.RenderStreaming.Samples
                             ChangeEndStateUnusedTouches(touches);
                         }
                     }
-                    
+
                     break;
                 case EventType.ButtonClick:
                     var elementId = BitConverter.ToInt16(bytes, 1);
@@ -231,7 +233,7 @@ namespace Unity.RenderStreaming.Samples
                 case EventType.Gamepad:
                     {
                         GamepadEventType gamepadEventType = (GamepadEventType)bytes[1];
-                        
+
                         switch (gamepadEventType)
                         {
                             case GamepadEventType.ButtonDown:
@@ -240,7 +242,7 @@ namespace Unity.RenderStreaming.Samples
                                 {
                                     var buttonIndex = bytes[2];
                                     var value = BitConverter.ToDouble(bytes, 3);
-                                    ProcessGamepadButtonEvent(gamepadEventType, (GamepadKeyCode) buttonIndex, value);
+                                    ProcessGamepadButtonEvent(gamepadEventType, (GamepadKeyCode)buttonIndex, value);
                                 }
                                 break;
                             case GamepadEventType.Axis:
@@ -248,7 +250,7 @@ namespace Unity.RenderStreaming.Samples
                                     var buttonIndex = bytes[2];
                                     var x = BitConverter.ToDouble(bytes, 3);
                                     var y = BitConverter.ToDouble(bytes, 11);
-                                    ProcessGamepadAxisEvent(x, y, (GamepadKeyCode) buttonIndex);
+                                    ProcessGamepadAxisEvent(x, y, (GamepadKeyCode)buttonIndex);
                                 }
                                 break;
                         }
@@ -263,7 +265,7 @@ namespace Unity.RenderStreaming.Samples
         {
             GamepadButton buttonToUpdate = GamepadButton.DpadUp;
             GamepadState gamepadState = m_gamepadState;
-            switch(buttonIndex)
+            switch (buttonIndex)
             {
                 case GamepadKeyCode.DpadUp:
                     buttonToUpdate = GamepadButton.DpadUp;
@@ -301,17 +303,17 @@ namespace Unity.RenderStreaming.Samples
                     break;
                 case GamepadKeyCode.Button7:
                     buttonToUpdate = GamepadButton.RightTrigger;
-                    gamepadState.rightTrigger = (float) value;
+                    gamepadState.rightTrigger = (float)value;
                     break;
                 case GamepadKeyCode.Axis0Button:
                     buttonToUpdate = GamepadButton.LeftStick;
                     break;
                 case GamepadKeyCode.Axis1Button:
                     buttonToUpdate = GamepadButton.RightStick;
-                    break;    
+                    break;
                 default:
                     UE.Debug.Log("Unmapped button code: " + buttonIndex);
-                    break;                   
+                    break;
             }
             m_gamepadState = gamepadState.WithButton(buttonToUpdate, GamepadEventType.ButtonDown == state || GamepadEventType.ButtonPressed == state);
         }
@@ -319,17 +321,17 @@ namespace Unity.RenderStreaming.Samples
         void ProcessGamepadAxisEvent(double x, double y, GamepadKeyCode axisKeyCode)
         {
             GamepadState gamepadState = m_gamepadState;
-            if(axisKeyCode == GamepadKeyCode.Axis0)
+            if (axisKeyCode == GamepadKeyCode.Axis0)
                 gamepadState.leftStick = new UE.Vector2((float)x, (float)y);
-            if(axisKeyCode == GamepadKeyCode.Axis1)
+            if (axisKeyCode == GamepadKeyCode.Axis1)
                 gamepadState.rightStick = new UE.Vector2((float)x, (float)y);
 
             m_gamepadState = gamepadState;
         }
-#endregion
+        #endregion
         void ProcessKeyEvent(KeyboardEventType state, bool repeat, byte keyCode, char character)
         {
-            switch(state)
+            switch (state)
             {
                 case KeyboardEventType.KeyDown:
                     if (!repeat)
@@ -337,7 +339,7 @@ namespace Unity.RenderStreaming.Samples
                         m_keyboardState.Set((Key)keyCode, true);
                         UnityInputSystem.QueueStateEvent(RemoteKeyboard, m_keyboardState);
                     }
-                    if(character != 0)
+                    if (character != 0)
                     {
                         UnityInputSystem.QueueTextEvent(RemoteKeyboard, character);
                     }
@@ -353,7 +355,8 @@ namespace Unity.RenderStreaming.Samples
         {
             UnityEngine.Vector2Int pos = new UnityEngine.Vector2Int(x, y);
             UnityEngine.Vector2Int delta = pos - m_prevMousePos;
-            UnityInputSystem.QueueStateEvent(RemoteMouse, new MouseState {
+            UnityInputSystem.QueueStateEvent(RemoteMouse, new MouseState
+            {
                 position = pos,
                 delta = delta,
                 buttons = button

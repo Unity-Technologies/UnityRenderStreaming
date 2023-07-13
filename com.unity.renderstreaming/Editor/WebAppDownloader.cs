@@ -1,6 +1,6 @@
+using System.Net;
 using UnityEditor;
 using UnityEngine;
-using System.Net;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -53,8 +53,10 @@ namespace Unity.RenderStreaming.Editor
             return System.IO.Path.Combine(URLRoot, string.Format(PathWebAppSourceCode, version));
         }
 
-        public static void DownloadCurrentVersionWebApp(string dstPath, System.Action<bool> callback) {
-            GetPackageVersion("com.unity.renderstreaming", (version) => {
+        public static void DownloadCurrentVersionWebApp(string dstPath, System.Action<bool> callback)
+        {
+            GetPackageVersion("com.unity.renderstreaming", (version) =>
+            {
                 DownloadWebApp(version, dstPath, callback);
             });
         }
@@ -75,11 +77,15 @@ namespace Unity.RenderStreaming.Editor
             client.DownloadFileCompleted += (sender, e) =>
             {
                 EditorUtility.ClearProgressBar();
-                if (e.Error != null) {
+                if (e.Error != null)
+                {
                     //Try downloading using the latest known version to work.
-                    if (version != LatestKnownVersion) {
+                    if (version != LatestKnownVersion)
+                    {
                         DownloadWebApp(LatestKnownVersion, dstPath, callback);
-                    } else {
+                    }
+                    else
+                    {
                         Debug.LogError($"Failed downloading web server from:{url}. Error: {e.Error}");
                     }
                     callback?.Invoke(false);
@@ -105,7 +111,7 @@ namespace Unity.RenderStreaming.Editor
             client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
             {
                 var progress = e.ProgressPercentage / 100f;
-                if(EditorUtility.DisplayCancelableProgressBar("Downloading", url, progress))
+                if (EditorUtility.DisplayCancelableProgressBar("Downloading", url, progress))
                 {
                     client.CancelAsync();
                 }

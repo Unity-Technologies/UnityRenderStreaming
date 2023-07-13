@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.WebRTC;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -160,7 +160,7 @@ namespace Unity.RenderStreaming.InputSystem
 
         public override void RemoveLayout(string name)
         {
-            if(_registeredRemoteLayout.Contains(name))
+            if (_registeredRemoteLayout.Contains(name))
             {
                 base.RemoveLayout(name);
                 _registeredRemoteLayout.Remove(name);

@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Unity.RenderStreaming.Samples
 {
@@ -12,7 +12,8 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] CanvasGroup canvasGroup;
         [SerializeField] Image pointer;
         [SerializeField] GameObject noticeTouchControl;
-        [SerializeField] private AnimationCurve transitionCurve =
+        [SerializeField]
+        private AnimationCurve transitionCurve =
             new AnimationCurve(
                 new Keyframe(0.75f, 1f, 0f, 0f),
                 new Keyframe(1f, 0f, 0f, 0f));
@@ -94,7 +95,7 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-//----------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------------------------
         bool HighlightPointerFromMouse(Mouse mouse, Vector2Int screenSize)
         {
             if (mouse == null)

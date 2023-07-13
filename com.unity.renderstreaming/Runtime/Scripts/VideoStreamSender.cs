@@ -1,11 +1,11 @@
-using Unity.WebRTC;
-using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Rendering;
+using Unity.WebRTC;
+using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.Rendering;
 
 namespace Unity.RenderStreaming
 {
@@ -246,7 +246,7 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                if(m_sourceImpl is VideoStreamSourceWebCam source)
+                if (m_sourceImpl is VideoStreamSourceWebCam source)
                 {
                     return source.webCamTexture;
                 }
@@ -793,7 +793,7 @@ namespace Unity.RenderStreaming
 
             public override void Dispose()
             {
-                if(m_coroutineConvertFrame != null)
+                if (m_coroutineConvertFrame != null)
                 {
                     m_parent.StopCoroutine(m_coroutineConvertFrame);
                     m_parent = null;
