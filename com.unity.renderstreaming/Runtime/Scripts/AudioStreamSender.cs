@@ -294,13 +294,13 @@ namespace Unity.RenderStreaming
             base.OnDisable();
         }
 
-        public void SetData(ref NativeArray<float> nativeArray, int channels)
+        public void SetData(NativeArray<float>.ReadOnly nativeArray, int channels)
         {
             if (m_Source != AudioStreamSource.APIOnly)
                 throw new InvalidOperationException("To use this method, please set AudioStreamSource.APIOnly to source property");
             if (!isPlaying)
                 return;
-            (m_sourceImpl as AudioStreamSourceAPIOnly)?.SetData(ref nativeArray, channels, m_sampleRate);
+            (m_sourceImpl as AudioStreamSourceAPIOnly)?.SetData(nativeArray, channels, m_sampleRate);
         }
 
         abstract class AudioStreamSourceImpl : IDisposable
@@ -470,9 +470,9 @@ namespace Unity.RenderStreaming
                 return instruction;
             }
 
-            public void SetData(ref NativeArray<float> nativeArray, int channels, int sampleRate)
+            public void SetData(NativeArray<float>.ReadOnly nativeArray, int channels, int sampleRate)
             {
-                m_audioTrack?.SetData(ref nativeArray, channels, sampleRate);
+                m_audioTrack?.SetData(nativeArray, channels, sampleRate);
             }
 
             public override void Dispose()

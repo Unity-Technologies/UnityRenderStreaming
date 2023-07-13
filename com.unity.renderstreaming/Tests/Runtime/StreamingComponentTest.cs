@@ -464,10 +464,10 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sender = go.AddComponent<AudioStreamSender>();
 
             NativeArray<float> nativeArray = new NativeArray<float>(256, Allocator.Temp);
-            Assert.That(() => sender.SetData(ref nativeArray, 2), Throws.Exception.TypeOf<InvalidOperationException>());
+            Assert.That(() => sender.SetData(nativeArray.AsReadOnly(), 2), Throws.Exception.TypeOf<InvalidOperationException>());
 
             sender.source = AudioStreamSource.APIOnly;
-            Assert.That(() => sender.SetData(ref nativeArray, 2), Throws.Nothing);
+            Assert.That(() => sender.SetData(nativeArray.AsReadOnly(), 2), Throws.Nothing);
 
             nativeArray.Dispose();
         }

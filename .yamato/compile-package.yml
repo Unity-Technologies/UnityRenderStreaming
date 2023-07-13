@@ -5,7 +5,7 @@ compile_test_for_package_version:
     flavor: b1.large
     image: package-ci/win10:v4
   variables:
-    VERSION: 3.1.0-exp.6
+    VERSION: 3.1.0-exp.7
   commands:
     # When unity-config will be part of the image, this will turn into a no-op
     - |
