@@ -389,6 +389,29 @@ namespace Unity.RenderStreaming.RuntimeTest
             UnityEngine.Object.DestroyImmediate(go);
         }
 
+        [UnityTest]
+        public IEnumerator AudioLoopback()
+        {
+            var go = new GameObject();
+            var sender = go.AddComponent<AudioStreamSender>();
+
+            sender.source = AudioStreamSource.AudioListener;
+            var audioListener = go.AddComponent<AudioListener>();
+            sender.audioListener = audioListener;
+            var op = sender.CreateTrack();
+            yield return op;
+            var track = op.Track as AudioStreamTrack;
+            Assert.That(track, Is.Not.Null);
+            sender.SetTrack(track);
+
+            sender.loopback = true;
+            Assert.That(track.Loopback, Is.True);
+            sender.loopback = false;
+            Assert.That(track.Loopback, Is.False);
+
+            UnityEngine.Object.DestroyImmediate(go);
+        }
+
         [Test]
         public void SelectCodecCapabilities()
         {
@@ -396,7 +419,6 @@ namespace Unity.RenderStreaming.RuntimeTest
             var caps = RTCRtpSender.GetCapabilities(TrackKind.Audio).SelectCodecCapabilities(codecs);
             Assert.That(codecs.Count(), Is.EqualTo(caps.Count()));
         }
-
 
         [Test]
         public void SetEnabled()
