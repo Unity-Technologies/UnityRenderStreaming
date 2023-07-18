@@ -26,6 +26,7 @@ namespace Unity.RenderStreaming.Editor
         SerializedProperty m_audioListener;
         SerializedProperty m_microphoneDeviceIndex;
         SerializedProperty m_autoRequestUserAuthorization;
+        SerializedProperty m_loopback;
         SerializedProperty m_bitrate;
 
         static AnimBool[] m_sourceFade;
@@ -39,6 +40,7 @@ namespace Unity.RenderStreaming.Editor
             m_autoRequestUserAuthorization = serializedObject.FindProperty("m_AutoRequestUserAuthorization");
             m_codec = serializedObject.FindProperty("m_Codec");
             m_bitrate = serializedObject.FindProperty("m_Bitrate");
+            m_loopback = serializedObject.FindProperty("m_Loopback");
 
             if (m_sourceFade == null)
             {
@@ -72,6 +74,13 @@ namespace Unity.RenderStreaming.Editor
 
                 EditorGUILayout.Space();
                 EditorGUILayout.PropertyField(m_codec);
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(m_loopback);
+            if (target is AudioStreamSender sender && sender.isPlaying)
+            {
+                sender.loopback = m_loopback.boolValue;
             }
 
             EditorGUILayout.Space();
