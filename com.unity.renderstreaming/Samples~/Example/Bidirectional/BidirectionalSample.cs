@@ -10,6 +10,7 @@ namespace Unity.RenderStreaming.Samples
         [SerializeField] private SignalingManager renderStreaming;
         [SerializeField] private Dropdown webcamSelectDropdown;
         [SerializeField] private Dropdown microphoneSelectDropdown;
+        [SerializeField] private Toggle audioLoopbackToggle;
         [SerializeField] private Button startButton;
         [SerializeField] private Button setUpButton;
         [SerializeField] private Button hangUpButton;
@@ -52,6 +53,12 @@ namespace Unity.RenderStreaming.Samples
             webCamStreamer.OnStartedStream += id => receiveVideoViewer.enabled = true;
             webCamStreamer.OnStartedStream += _ => localVideoImage.texture = webCamStreamer.sourceWebCamTexture;
 
+            audioLoopbackToggle.onValueChanged.AddListener(isOn =>
+            {
+                microphoneStreamer.loopback = isOn;
+            });
+            microphoneStreamer.OnStartedStream += id => microphoneStreamer.loopback = audioLoopbackToggle.isOn;
+
             settings = SampleManager.Instance.Settings;
             if (settings != null)
             {
@@ -88,7 +95,8 @@ namespace Unity.RenderStreaming.Samples
             setUpButton.interactable = false;
             hangUpButton.interactable = true;
             connectionIdInput.interactable = false;
-            if(settings != null)
+
+            if (settings != null)
             {
                 receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
                 webCamStreamer.SetCodec(settings.SenderVideoCodec);

@@ -112,7 +112,30 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// The index of WebCamTexture.devices.
+        /// Play or not sending to remote audio in local.
+        /// </summary>
+        public bool loopback
+        {
+            get
+            {
+                if (Track is AudioStreamTrack audioTrack)
+                {
+                    return audioTrack.Loopback;
+                }
+
+                return false;
+            }
+            set
+            {
+                if (Track is AudioStreamTrack audioTrack)
+                {
+                    audioTrack.Loopback = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The index of Microphone.devices.
         /// </summary>
         public int sourceDeviceIndex
         {
