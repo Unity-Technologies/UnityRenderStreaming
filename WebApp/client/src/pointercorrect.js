@@ -7,10 +7,10 @@ export class PointerCorrector {
   /**
    * @param {Number} videoWidth
    * @param {Number} videoHeight
-   * @param {DOMRect} rect
+   * @param {HTMLVideoElement} videoElem
    */
-  constructor(videoWidth, videoHeight, rect) {
-    this.reset(videoWidth, videoHeight, rect);
+  constructor(videoWidth, videoHeight, videoElem) {
+    this.reset(videoWidth, videoHeight, videoElem);
   }
 
   /**
@@ -18,14 +18,15 @@ export class PointerCorrector {
    * @returns {Number[]}
    */
    map(position) {
+    var rect = this._videoElem.getBoundingClientRect();
     const _position = new Array(2);
 
     // (1) set origin point to zero
-    _position[0] = position[0] - this._rect.left;
-    _position[1] = position[1] - this._rect.top;
+    _position[0] = position[0] - rect.left;
+    _position[1] = position[1] - rect.top;
 
     // (2) translate Unity coordinate system (reverse y-axis)
-    _position[1] = this._rect.height - _position[1];
+    _position[1] = rect.height - _position[1];
 
     // (3) add offset of letterbox
     _position[0] -= this._contentRect.x;
@@ -55,42 +56,44 @@ export class PointerCorrector {
   }
 
   /**
-   * @param {DOMRect} rect
+   * @param {HTMLVideoElement} videoElem
    */
-  setRect(rect) {
-    this._rect = rect;
+  setRect(videoElem) {
+    this._videoElem = videoElem;
     this._reset();
   }
 
   /**
    * @param {Number} videoWidth
    * @param {Number} videoHeight
-   * @param {DOMRect} rect
+   * @param {HTMLVideoElement} videoElem
    */
-  reset(videoWidth, videoHeight, rect) {
+  reset(videoWidth, videoHeight, videoElem) {
     this._videoWidth = videoWidth;
     this._videoHeight = videoHeight;
-    this._rect = rect;
+    this._videoElem = videoElem;
     this._reset();
   }
 
   get letterBoxType() {
     const videoRatio = this._videoHeight / this._videoWidth;
-    const rectRatio = this._rect.height / this._rect.width;
+    var rect = this._videoElem.getBoundingClientRect();
+    const rectRatio = rect.height / rect.width;
     return videoRatio > rectRatio ? LetterBoxType.Vertical : LetterBoxType.Horizontal;
   }
 
   get letterBoxSize() {
+    var rect = this._videoElem.getBoundingClientRect();
     switch(this.letterBoxType) {
       case LetterBoxType.Horizontal: {
-        const ratioWidth = this._rect.width / this._videoWidth;
+        const ratioWidth = rect.width / this._videoWidth;
         const height = this._videoHeight * ratioWidth;
-        return (this._rect.height - height) * 0.5;
+        return (rect.height - height) * 0.5;
       }
       case LetterBoxType.Vertical: {
-        const ratioHeight = this._rect.height / this._videoHeight;
+        const ratioHeight = rect.height / this._videoHeight;
         const width = this._videoWidth * ratioHeight;
-        return (this._rect.width - width) * 0.5;
+        return (rect.width - width) * 0.5;
       }
     }
     throw 'invalid status';
@@ -105,10 +108,12 @@ export class PointerCorrector {
     const letterBoxType = this.letterBoxType;
     const letterBoxSize = this.letterBoxSize;
 
+    var rect = this._videoElem.getBoundingClientRect();
+
     const x = letterBoxType == LetterBoxType.Vertical ? letterBoxSize : 0;
     const y = letterBoxType == LetterBoxType.Horizontal ? letterBoxSize : 0;
-    const width = letterBoxType == LetterBoxType.Vertical ? this._rect.width - letterBoxSize * 2 : this._rect.width;
-    const height = letterBoxType == LetterBoxType.Horizontal ? this._rect.height - letterBoxSize * 2 : this._rect.height;
+    const width = letterBoxType == LetterBoxType.Vertical ? rect.width - letterBoxSize * 2 : rect.width;
+    const height = letterBoxType == LetterBoxType.Horizontal ? rect.height - letterBoxSize * 2 : rect.height;
 
     return {x: x, y: y, width: width, height: height};
   }

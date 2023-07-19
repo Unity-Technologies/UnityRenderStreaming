@@ -19,7 +19,7 @@ export class Sender extends LocalInputManager {
     this._corrector = new PointerCorrector(
       this._elem.videoWidth,
       this._elem.videoHeight,
-      this._elem.getBoundingClientRect()
+      this._elem
       );
 
     //since line 27 cannot complete resize initialization but can only monitor div dimension changes, line 26 needs to be reserved
@@ -115,7 +115,7 @@ export class Sender extends LocalInputManager {
     this._corrector.reset(
       this._elem.videoWidth,
       this._elem.videoHeight,
-      this._elem.getBoundingClientRect()
+      this._elem
     );
   }
   _onMouseEvent(event) {
