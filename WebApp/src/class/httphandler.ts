@@ -253,7 +253,7 @@ function getAll(req: Request, res: Response): void {
   array = array.concat(disconnections.map((v) => ({ connectionId: v.id, type: "disconnect", datetime: v.datetime })));
 
   array.sort((a, b) => a.datetime - b.datetime);
-  res.json({ messages: array });
+  res.json({ messages: array, datetime: Date.now() });
 }
 
 function createSession(sessionId: string, res: Response): void;

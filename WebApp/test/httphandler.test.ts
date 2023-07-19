@@ -9,7 +9,6 @@ describe('http signaling test in public mode', () => {
   const sessionId3 = "abcd9101112";
   const connectionId = "12345";
   const connectionId2 = "67890";
-  const connectionId3 = "9101112";
   const testsdp = "test sdp";
 
   const { res, next, mockClear } = getMockRes();
@@ -66,7 +65,7 @@ describe('http signaling test in public mode', () => {
   test('get all from session1', async () => {
     await httpHandler.getAll(req, res);
     const connect = { connectionId: connectionId, datetime: expect.anything(), type: "connect" };
-    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([connect]) });
+    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([connect]), datetime: expect.anything() });
   });
 
   test('post offer from session1', async () => {
@@ -130,7 +129,7 @@ describe('http signaling test in public mode', () => {
   test('disconnection get from session1', async () => {
     await httpHandler.getAll(req, res);
     const disconnect = { connectionId: connectionId, datetime: expect.anything(), type: "disconnect" };
-    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([disconnect]) });
+    expect(res.json).toHaveBeenCalledWith({ messages: expect.arrayContaining([disconnect]), datetime: expect.anything() });
   });
 
   test('delete connection from session1', async () => {
@@ -159,7 +158,7 @@ describe('http signaling test in public mode', () => {
     await httpHandler.createSession(sessionId2, res);
 
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [], datetime: expect.anything() });
 
     const connectBody = { connectionId: connectionId };
     req.body = connectBody;
@@ -171,9 +170,9 @@ describe('http signaling test in public mode', () => {
 
     const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: false };
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]), datetime: expect.anything() });
     await httpHandler.getAll(req2, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]), datetime: expect.anything() });
 
     const deleteBody = { connectionId: connectionId };
     req2.body = deleteBody;
@@ -187,7 +186,7 @@ describe('http signaling test in public mode', () => {
 
     const disconnect = { connectionId: connectionId, type: "disconnect", datetime: expect.anything() };
     await httpHandler.getAll(req2, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]), datetime: expect.anything() });
 
     await httpHandler.deleteSession(req2, res);
   });
@@ -204,7 +203,7 @@ describe('http signaling test in public mode', () => {
     await httpHandler.checkSessionId(req2, res, next);
 
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [], datetime: expect.anything() });
 
     const connectBody = { connectionId: connectionId };
     req.body = connectBody;
@@ -216,9 +215,9 @@ describe('http signaling test in public mode', () => {
 
     const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: false };
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]), datetime: expect.anything() });
     await httpHandler.getAll(req2, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]), datetime: expect.anything() });
 
     const answerBody = { connectionId: connectionId, sdp: testsdp };
     req2.body = answerBody;
@@ -264,7 +263,7 @@ test('Timed out sessions are deleted when other sessions check', async () => {
   await httpHandler.checkSessionId(req3, res, next);
 
   await httpHandler.getAll(req, res);
-  expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+  expect(res.json).toHaveBeenLastCalledWith({ messages: [], datetime: expect.anything() });
 
   const connectBody = { connectionId: connectionId };
   req.body = connectBody;
@@ -276,9 +275,9 @@ test('Timed out sessions are deleted when other sessions check', async () => {
 
   const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: false };
   await httpHandler.getAll(req, res);
-  expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+  expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]), datetime: expect.anything() });
   await httpHandler.getAll(req2, res);
-  expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+  expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]), datetime: expect.anything() });
 
   const answerBody = { connectionId: connectionId, sdp: testsdp };
   req2.body = answerBody;
@@ -473,7 +472,7 @@ describe('http signaling test in private mode', () => {
     await httpHandler.createSession(sessionId2, res);
 
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: [] });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: [], datetime: expect.anything() });
 
     const connectBody = { connectionId: connectionId };
     req.body = connectBody;
@@ -487,9 +486,9 @@ describe('http signaling test in private mode', () => {
 
     const offer = { connectionId: connectionId, sdp: testsdp, datetime: expect.anything(), type: "offer", polite: true };
     await httpHandler.getAll(req, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.not.arrayContaining([offer]), datetime: expect.anything() });
     await httpHandler.getAll(req2, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([offer]), datetime: expect.anything() });
 
     const deleteBody = { connectionId: connectionId };
     req2.body = deleteBody;
@@ -503,7 +502,7 @@ describe('http signaling test in private mode', () => {
 
     const disconnect = { connectionId: connectionId, type: "disconnect", datetime: expect.anything() };
     await httpHandler.getAll(req2, res);
-    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]) });
+    expect(res.json).toHaveBeenLastCalledWith({ messages: expect.arrayContaining([disconnect]), datetime: expect.anything() });
 
     await httpHandler.deleteSession(req2, res);
   });
