@@ -22,7 +22,7 @@ namespace Unity.RenderStreaming.Signaling
         private string m_sessionId;
         private long m_lastTimeGetAllRequest;
 
-	    public string Url { get { return m_url; } }
+        public string Url { get { return m_url; } }
 
         public HttpSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
@@ -376,7 +376,7 @@ namespace Unity.RenderStreaming.Signaling
                 if (string.IsNullOrEmpty(msg.type))
                     continue;
 
-                if(msg.type == "disconnect")
+                if (msg.type == "disconnect")
                 {
                     m_mainThreadContext.Post(d => OnDestroyConnection?.Invoke(this, msg.connectionId), null);
                 }

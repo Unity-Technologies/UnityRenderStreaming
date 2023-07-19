@@ -158,7 +158,7 @@ namespace Unity.RenderStreaming.InputSystem
 
         public virtual void RegisterControlLayout(string json, string name = null, bool isOverride = false)
         {
-            if(isOverride)
+            if (isOverride)
                 InputSystem.RegisterLayoutOverride(json, name);
             else
                 InputSystem.RegisterLayout(json, name);

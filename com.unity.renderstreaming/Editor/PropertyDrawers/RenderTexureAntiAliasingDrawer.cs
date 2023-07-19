@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 
 namespace Unity.RenderStreaming.Editor
 {

@@ -67,7 +67,7 @@ namespace Unity.RenderStreaming.Editor
 
         void OnPopupFieldValueChange(ChangeEvent<string> e, SerializedProperty property)
         {
-            if(!(fieldInfo.GetValue(property.serializedObject.targetObject) is SignalingSettings settings))
+            if (!(fieldInfo.GetValue(property.serializedObject.targetObject) is SignalingSettings settings))
                 return;
 
             // cache current settings.

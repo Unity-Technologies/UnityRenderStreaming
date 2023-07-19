@@ -1,7 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
 using Gyroscope = UnityEngine.InputSystem.Gyroscope;
 
 namespace Unity.RenderStreaming.Samples
@@ -11,21 +11,21 @@ namespace Unity.RenderStreaming.Samples
     class GyroSample : MonoBehaviour
     {
 #pragma warning disable 0649
-            [SerializeField] private SignalingManager renderStreaming;
-            [SerializeField] private Button sendOfferButton;
-            [SerializeField] private RawImage remoteVideoImage;
-            [SerializeField] private VideoStreamReceiver receiveVideoViewer;
-            [SerializeField] private SingleConnection connection;
-            [SerializeField] private Text textVelocityX;
-            [SerializeField] private Text textVelocityY;
-            [SerializeField] private Text textVelocityZ;
-            [SerializeField] private InputAction vector3Action;
+        [SerializeField] private SignalingManager renderStreaming;
+        [SerializeField] private Button sendOfferButton;
+        [SerializeField] private RawImage remoteVideoImage;
+        [SerializeField] private VideoStreamReceiver receiveVideoViewer;
+        [SerializeField] private SingleConnection connection;
+        [SerializeField] private Text textVelocityX;
+        [SerializeField] private Text textVelocityY;
+        [SerializeField] private Text textVelocityZ;
+        [SerializeField] private InputAction vector3Action;
 #pragma warning restore 0649
         private RenderStreamingSettings settings;
 
         void Awake()
         {
-            if(Gyroscope.current != null)
+            if (Gyroscope.current != null)
                 InputSystem.EnableDevice(Gyroscope.current);
             else
                 Debug.LogError("Gyroscope is not supported on this device.");
@@ -82,7 +82,7 @@ namespace Unity.RenderStreaming.Samples
 
         void SendOffer()
         {
-            if(settings != null)
+            if (settings != null)
                 receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
 
             var connectionId = System.Guid.NewGuid().ToString("N");

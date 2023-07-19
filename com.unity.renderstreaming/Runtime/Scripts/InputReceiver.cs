@@ -1,14 +1,13 @@
 using System;
 using System.Linq;
+using Unity.RenderStreaming.InputSystem;
 using Unity.WebRTC;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Utilities;
 using UnityEngine.InputSystem.Users;
-using Unity.RenderStreaming.InputSystem;
-
-using Inputs = UnityEngine.InputSystem.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
+using Inputs = UnityEngine.InputSystem.InputSystem;
 
 namespace Unity.RenderStreaming
 {

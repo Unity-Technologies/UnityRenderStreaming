@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using Unity.WebRTC;
+using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
@@ -144,7 +144,7 @@ namespace Unity.RenderStreaming
         {
             m_texture = null;
             OnUpdateReceiveTexture?.Invoke(m_texture);
-            if(m_coroutine != null)
+            if (m_coroutine != null)
             {
                 StopCoroutine(m_coroutine);
                 m_coroutine = null;

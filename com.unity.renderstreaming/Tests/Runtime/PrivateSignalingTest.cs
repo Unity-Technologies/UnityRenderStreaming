@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.Threading;
 using System.Diagnostics;
+using System.Threading;
 using NUnit.Framework;
 using Unity.RenderStreaming.RuntimeTest.Signaling;
 using Unity.RenderStreaming.Signaling;
@@ -15,7 +15,7 @@ namespace Unity.RenderStreaming.RuntimeTest
     [TestFixture(typeof(WebSocketSignaling))]
     [TestFixture(typeof(HttpSignaling))]
     [TestFixture(typeof(MockSignaling))]
-    [UnityPlatform(exclude = new[] {RuntimePlatform.IPhonePlayer})]
+    [UnityPlatform(exclude = new[] { RuntimePlatform.IPhonePlayer })]
     [ConditionalIgnore(ConditionalIgnore.IL2CPP, "Process.Start does not implement in IL2CPP.")]
     class PrivateSignalingTest : IPrebuildSetup
     {
@@ -162,7 +162,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         {
             RTCConfiguration config = default;
             RTCIceCandidate candidate_ = null;
-            config.iceServers = new[] {new RTCIceServer {urls = new[] {"stun:stun.l.google.com:19302"}}};
+            config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
 
             var peer1 = new RTCPeerConnection(ref config);
             var peer2 = new RTCPeerConnection(ref config);

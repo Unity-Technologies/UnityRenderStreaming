@@ -50,7 +50,7 @@ namespace Unity.RenderStreaming.Samples
         {
             startButton.onClick.AddListener(OnStart);
             stopButton.onClick.AddListener(OnStop);
-            if(connectionIdInput != null)
+            if (connectionIdInput != null)
                 connectionIdInput.onValueChanged.AddListener(input => connectionId = input);
 
             receiveVideoViewer.OnUpdateReceiveTexture += OnUpdateReceiveTexture;
@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming.Samples
                 connectionIdInput.text = connectionId;
             }
             connectionIdInput.interactable = false;
-            if(settings != null)
+            if (settings != null)
                 receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
             receiveAudioViewer.targetAudioSource = remoteAudioSource;
 

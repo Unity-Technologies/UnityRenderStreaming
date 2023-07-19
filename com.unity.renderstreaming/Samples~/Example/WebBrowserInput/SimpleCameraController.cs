@@ -74,7 +74,7 @@ namespace Unity.RenderStreaming.Samples
 
         [Header("Movement Settings")]
         [Tooltip("Movement Sensitivity Factor."), Range(0.001f, 1f)]
-        [SerializeField] float       m_movementSensitivityFactor = 0.1f;
+        [SerializeField] float m_movementSensitivityFactor = 0.1f;
 
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
         [SerializeField]
@@ -140,7 +140,7 @@ namespace Unity.RenderStreaming.Samples
             }
         }
 
-        void SetDevice(InputDevice device, bool add=true)
+        void SetDevice(InputDevice device, bool add = true)
         {
             uiController?.SetDevice(device, add);
 
@@ -159,13 +159,13 @@ namespace Unity.RenderStreaming.Samples
                         listKeyboard.Remove(keyboard);
                     return;
                 case Touchscreen screen:
-                    if(add)
+                    if (add)
                         listScreen.Add(screen);
                     else
                         listScreen.Remove(screen);
                     return;
                 case Gamepad pad:
-                    if(add)
+                    if (add)
                         listGamepad.Add(pad);
                     else
                         listGamepad.Remove(pad);
@@ -199,9 +199,11 @@ namespace Unity.RenderStreaming.Samples
             m_InterpolatingCameraState.SetFromTransform(transform);
         }
 
-//---------------------------------------------------------------------------------------------------------------------
-        Vector3 GetTranslationFromInput(Vector2 input) {
-            if (!invertY) {
+        //---------------------------------------------------------------------------------------------------------------------
+        Vector3 GetTranslationFromInput(Vector2 input)
+        {
+            if (!invertY)
+            {
                 input.y *= -1;
             }
 
@@ -211,11 +213,12 @@ namespace Unity.RenderStreaming.Samples
             return dir;
         }
 
-//---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
 
         void UpdateTargetCameraStateFromInput(Vector2 input)
         {
-            if (!invertY) {
+            if (!invertY)
+            {
                 input.y *= -1;
             }
             float mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(input.magnitude);
@@ -224,7 +227,7 @@ namespace Unity.RenderStreaming.Samples
             m_TargetCameraState.pitch += input.y * mouseSensitivityFactor;
         }
 
-//---------------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------
 
         Vector3 GetInputTranslationDirection()
         {
@@ -392,14 +395,17 @@ namespace Unity.RenderStreaming.Samples
 
         }
 
-//---------------------------------------------------------------------------------------------------------------------
-        static bool IsMouseDragged(Mouse m, bool useLeftButton) {
+        //---------------------------------------------------------------------------------------------------------------------
+        static bool IsMouseDragged(Mouse m, bool useLeftButton)
+        {
             if (null == m)
                 return false;
 
-            if (Screen.safeArea.Contains(m.position.ReadValue())) {
+            if (Screen.safeArea.Contains(m.position.ReadValue()))
+            {
                 //check left/right click
-                if ((useLeftButton && m.leftButton.isPressed) || (!useLeftButton && m.rightButton.isPressed)) {
+                if ((useLeftButton && m.leftButton.isPressed) || (!useLeftButton && m.rightButton.isPressed))
+                {
                     return true;
                 }
             }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.WebRTC;
+using UnityEngine;
 
 namespace Unity.RenderStreaming
 {
@@ -122,7 +122,7 @@ namespace Unity.RenderStreaming
 
         static internal VideoCodecInfo Create(RTCRtpCodecCapability caps)
         {
-            switch(caps.mimeType)
+            switch (caps.mimeType)
             {
                 case "video/H264":
                     return new H264CodecInfo(caps);
@@ -149,7 +149,7 @@ namespace Unity.RenderStreaming
             m_SdpFmtpLine = caps.sdpFmtpLine;
 
             string[] subs = m_SdpFmtpLine.Split(';');
-            foreach(string sub in subs)
+            foreach (string sub in subs)
             {
                 string[] pair = sub.Split('=');
                 parameters.Add(pair[0], pair[1]);
@@ -194,7 +194,7 @@ namespace Unity.RenderStreaming
         {
             get
             {
-                if(parameters.TryGetValue(KeyProfileId, out var value))
+                if (parameters.TryGetValue(KeyProfileId, out var value))
                 {
                     return (VP9Profile)Enum.ToObject(typeof(VP9Profile), Convert.ToInt32(value));
                 }

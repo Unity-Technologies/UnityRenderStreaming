@@ -37,7 +37,7 @@ namespace Unity.RenderStreaming.Samples
             array = new Vector3[positionCount];
 
             // This line object is used as a template.
-            if(line.gameObject.activeInHierarchy)
+            if (line.gameObject.activeInHierarchy)
                 line.gameObject.SetActive(false);
 
             AudioSettings.OnAudioConfigurationChanged += OnAudioConfigurationChanged;
@@ -71,7 +71,7 @@ namespace Unity.RenderStreaming.Samples
         {
             if (target.clip == null)
             {
-                if(lines.Count > 0)
+                if (lines.Count > 0)
                     ResetLines(0);
                 clip = null;
                 return;

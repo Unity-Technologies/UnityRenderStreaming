@@ -1,4 +1,4 @@
-﻿#if URS_USE_HDRP_EDITOR
+#if URS_USE_HDRP_EDITOR
 using UnityEngine; //Debug
 using UnityEditor; //AssetPostProcessor
 using UnityEngine.Rendering; //GraphicsSettings

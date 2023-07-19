@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using UnityEngine;
+using NUnit.Framework.Interfaces;
 using UnityEditor;
 using UnityEditor.TestTools;
+using UnityEngine;
 using UnityEngine.TestRunner;
-using NUnit.Framework.Interfaces;
 
 [assembly: TestPlayerBuildModifier(typeof(Unity.RenderStreaming.EditorTest.BuildModifier))]
 [assembly: TestRunCallback(typeof(Unity.RenderStreaming.EditorTest.TestListener))]
@@ -40,7 +40,7 @@ namespace Unity.RenderStreaming.EditorTest
 
         public void RunFinished(ITestResult testResults)
         {
-            if(temp != null)
+            if (temp != null)
                 RenderStreaming.Settings = temp;
         }
 

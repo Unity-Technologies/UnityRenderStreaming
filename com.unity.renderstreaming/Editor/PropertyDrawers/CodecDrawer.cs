@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -56,7 +56,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 get
                 {
-                    switch(codec_)
+                    switch (codec_)
                     {
                         case H264CodecInfo h264Codec:
                             return $"{h264Codec.profile} Profile, Level {h264Codec.level.ToString().Insert(1, ".")}";
@@ -102,7 +102,7 @@ namespace Unity.RenderStreaming.Editor
 
         IEnumerable<Codec> codecs;
         string[] codecNames = new string[] { "Default" };
-        string[] codecOptions = new string[] {};
+        string[] codecOptions = new string[] { };
         IEnumerable<Codec> selectedCodecs;
         GUIContent codecLabel;
 
@@ -119,7 +119,7 @@ namespace Unity.RenderStreaming.Editor
 
         static IEnumerable<Codec> GetAvailableCodecs(UnityEngine.Object target)
         {
-            if(target is VideoStreamSender)
+            if (target is VideoStreamSender)
             {
                 return VideoStreamSender.GetAvailableCodecs().Select(codec => new VideoCodec(codec));
             }
@@ -202,7 +202,7 @@ namespace Unity.RenderStreaming.Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                if(0 < selectCodecIndex)
+                if (0 < selectCodecIndex)
                 {
                     string codecName = codecNames[selectCodecIndex];
                     selectedCodecs = codecs.Where(codec => codec.name == codecName).OrderBy(codec => codec.order);
@@ -211,7 +211,7 @@ namespace Unity.RenderStreaming.Editor
                     var codec = selectedCodecs.First();
                     propertyMimeType.stringValue = codec.mimeType;
                     propertySdpFmtpLine.stringValue = codec.sdpFmtpLine;
-                    if(propertyChannelCount != null)
+                    if (propertyChannelCount != null)
                         propertyChannelCount.intValue = codec.channelCount;
                     if (propertySampleRate != null)
                         propertySampleRate.intValue = codec.sampleRate;

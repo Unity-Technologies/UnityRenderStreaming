@@ -115,7 +115,7 @@ namespace Unity.RenderStreaming.Samples
                     var coroutine = StartCoroutine(UpdateStats(receiver));
                     coroutines.Add(coroutine);
                 }
-                foreach(var coroutine in coroutines)
+                foreach (var coroutine in coroutines)
                 {
                     yield return coroutine;
                 }
@@ -247,7 +247,7 @@ namespace Unity.RenderStreaming.Samples
 
             receiverBase.OnStartedStream += id =>
             {
-                if(activeReceiverList.TryGetValue(receiverBase, out var hashSet))
+                if (activeReceiverList.TryGetValue(receiverBase, out var hashSet))
                 {
                     hashSet.Add(receiverBase.Transceiver.Receiver);
                 }

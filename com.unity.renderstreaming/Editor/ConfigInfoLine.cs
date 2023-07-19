@@ -40,14 +40,14 @@ namespace Unity.RenderStreaming.Editor
             m_haveFixer = resolver != null;
             m_dependTester = dependTester;
 
-            var testLabel = new Label(label) {name = "testLabel"};
-            var fixer = new Button(resolver) {text = resolverButtonLabel, name = "resolver"};
-            var testRow = new VisualElement() {name = "testRow"};
+            var testLabel = new Label(label) { name = "testLabel" };
+            var fixer = new Button(resolver) { text = resolverButtonLabel, name = "resolver" };
+            var testRow = new VisualElement() { name = "testRow" };
             testRow.Add(testLabel);
             if (m_visibleStatus)
             {
-                var statusOk = new Image {image = Style.ok, name = "statusOK"};
-                var statusError = new Image {image = Style.error, name = "statusError"};
+                var statusOk = new Image { image = Style.ok, name = "statusOK" };
+                var statusError = new Image { image = Style.error, name = "statusError" };
                 testRow.Add(statusOk);
                 testRow.Add(statusError);
             }

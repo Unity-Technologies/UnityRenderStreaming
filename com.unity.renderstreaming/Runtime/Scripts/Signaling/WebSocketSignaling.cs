@@ -26,9 +26,9 @@ namespace Unity.RenderStreaming.Signaling
 
         public WebSocketSignaling(SignalingSettings signalingSettings, SynchronizationContext mainThreadContext)
         {
-            if(signalingSettings == null)
+            if (signalingSettings == null)
                 throw new ArgumentNullException(nameof(signalingSettings));
-            if(!(signalingSettings is WebSocketSignalingSettings settings))
+            if (!(signalingSettings is WebSocketSignalingSettings settings))
                 throw new ArgumentException("signalingSettings is not WebSocketSignalingSettings");
             m_url = settings.url;
             m_timeout = 5.0f;
@@ -84,10 +84,10 @@ namespace Unity.RenderStreaming.Signaling
         public event OnConnectHandler OnCreateConnection;
         public event OnDisconnectHandler OnDestroyConnection;
         public event OnOfferHandler OnOffer;
-        #pragma warning disable 0067
+#pragma warning disable 0067
         // this event is never used in this class
         public event OnAnswerHandler OnAnswer;
-        #pragma warning restore 0067
+#pragma warning restore 0067
         public event OnIceCandidateHandler OnIceCandidate;
 
         public void SendOffer(string connectionId, RTCSessionDescription offer)

@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 namespace Unity.RenderStreaming.Editor
 {
@@ -71,14 +71,14 @@ namespace Unity.RenderStreaming.Editor
             }
             else
             {
-                if(!IsCustomValue(value))
+                if (!IsCustomValue(value))
                 {
                     value = Vector2Int.zero;
                 }
                 cutomValueRect.height = EditorGUIUtility.singleLineHeight;
                 newValue = EditorGUI.Vector2IntField(cutomValueRect, s_customValueLabel, value);
             }
-            if(property.vector2IntValue != newValue)
+            if (property.vector2IntValue != newValue)
             {
                 if (Application.isPlaying)
                 {

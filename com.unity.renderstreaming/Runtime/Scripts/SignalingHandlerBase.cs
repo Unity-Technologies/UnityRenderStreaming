@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -160,10 +160,10 @@ namespace Unity.RenderStreaming
 
         private IEnumerator AddSenderCoroutine(string connectionId, IStreamSender sender)
         {
-            if(sender.Track == null && sender is StreamSenderBase senderBase)
+            if (sender.Track == null && sender is StreamSenderBase senderBase)
             {
                 var op = senderBase.CreateTrack();
-                if(op.Track == null)
+                if (op.Track == null)
                     yield return op;
                 senderBase.SetTrack(op.Track);
             }

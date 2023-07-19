@@ -1,9 +1,9 @@
 #if URS_USE_AR_FOUNDATION
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
 namespace Unity.RenderStreaming.Samples
@@ -55,7 +55,7 @@ namespace Unity.RenderStreaming.Samples
                 renderStreaming.Run();
             }
 
-            if ((ARSession.state == ARSessionState.None ) ||
+            if ((ARSession.state == ARSessionState.None) ||
                 (ARSession.state == ARSessionState.CheckingAvailability))
             {
                 yield return ARSession.CheckAvailability();
@@ -124,7 +124,7 @@ namespace Unity.RenderStreaming.Samples
 
         void CreateConnection()
         {
-            if(settings != null)
+            if (settings != null)
                 receiveVideoViewer.SetCodec(settings.ReceiverVideoCodec);
 
             _connectionId = System.Guid.NewGuid().ToString("N");

@@ -59,7 +59,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             ISignaling mock = new MockSignaling();
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
-            component.Run(handlers:handlers);
+            component.Run(handlers: handlers);
         }
 
 
@@ -71,8 +71,8 @@ namespace Unity.RenderStreaming.RuntimeTest
             component.gameObject.SetActive(true);
             Assert.That(() => component.Run(signaling: mock), Throws.InvalidOperationException);
 
-            var handlers = new SignalingHandlerBase[] {};
-            Assert.That(() => component.Run(signaling: mock, handlers:handlers),
+            var handlers = new SignalingHandlerBase[] { };
+            Assert.That(() => component.Run(signaling: mock, handlers: handlers),
                 Throws.InvalidOperationException);
         }
 
@@ -85,9 +85,9 @@ namespace Unity.RenderStreaming.RuntimeTest
             ISignaling mock = new MockSignaling();
             component.runOnAwake = false;
             component.gameObject.SetActive(true);
-            component.Run(signaling:mock, handlers:handlers);
+            component.Run(signaling: mock, handlers: handlers);
             component.Stop();
-            component.Run(signaling:mock, handlers:handlers);
+            component.Run(signaling: mock, handlers: handlers);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             settings = new HttpSignalingSettings("http://127.0.0.1");
             Assert.That(settings.iceServers, Is.Empty);
 
-            arguments = new string[]{ "-signalingType", "websocket" };
+            arguments = new string[] { "-signalingType", "websocket" };
             Assert.That(SignalingManager.EvaluateCommandlineArguments(ref settings, arguments), Is.True);
             Assert.That(settings, Is.TypeOf<WebSocketSignalingSettings>());
             Assert.That(settings.iceServers, Is.Not.Empty);
