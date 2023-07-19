@@ -860,6 +860,7 @@
 							"pm.test(\"The response has a valid JSON body\", function () {",
 							"    pm.response.to.be.json;",
 							"    pm.response.to.have.jsonBody(\"messages\");",
+							"    pm.response.to.have.jsonBody(\"datetime\");",
 							"    var jsonData = pm.response.json();",
 							"    console.log(jsonData);",
 							"    pm.expect(jsonData.messages.length).to.be.above(0);",
