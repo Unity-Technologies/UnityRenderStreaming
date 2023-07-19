@@ -53,9 +53,9 @@ export class Signaling extends EventTarget {
     let lastTimeRequest = Date.now() - 30000;
     while (this.running) {
       const res = await this.getAll(lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
       const data = await res.json();
+      lastTimeRequest = data.datetime ? data.datetime : Date.now();
+
       const messages = data.messages;
 
       for(const msg of messages) {

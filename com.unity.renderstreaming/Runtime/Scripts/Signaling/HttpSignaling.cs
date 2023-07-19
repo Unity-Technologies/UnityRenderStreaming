@@ -368,8 +368,8 @@ namespace Unity.RenderStreaming.Signaling
 
             if (data == null) return false;
 
-            m_lastTimeGetAllRequest = DateTimeExtension.ParseHttpDate(response.Headers[HttpResponseHeader.Date])
-                .ToJsMilliseconds();
+            m_lastTimeGetAllRequest =
+                long.TryParse(data.datetime, out var result) ? result : DateTime.Now.ToJsMilliseconds();
 
             foreach (var msg in data.messages)
             {
