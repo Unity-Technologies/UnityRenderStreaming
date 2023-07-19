@@ -60,7 +60,7 @@ namespace Unity.RenderStreaming.Editor
         {
             if (s_Instance == null)
             {
-                Debug.Log("Cannot save ScriptableSingleton: no instance!");
+                RenderStreaming.Logger.Log("Cannot save ScriptableSingleton: no instance!");
                 return;
             }
 

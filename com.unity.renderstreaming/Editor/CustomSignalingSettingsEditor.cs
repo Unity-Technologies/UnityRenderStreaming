@@ -18,14 +18,14 @@ namespace Unity.RenderStreaming.Editor
         private readonly string label;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="inspectedType"></param>
         /// <param name="label"></param>
         public CustomSignalingSettingsEditor(Type inspectedType, string label)
         {
             if (inspectedType == null)
-                Debug.LogError("Failed to load CustomEditor inspected type");
+                RenderStreaming.Logger.Log(LogType.Error, "Failed to load CustomEditor inspected type");
             this.inspectedType = inspectedType;
             this.label = label;
         }

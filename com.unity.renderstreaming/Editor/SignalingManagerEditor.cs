@@ -104,7 +104,7 @@ namespace Unity.RenderStreaming.Editor
             {
                 if (!AssetDatabase.CopyAsset(DefaultSignalingSettingsLoadPath, DefaultSignalingSettingsSavePath))
                 {
-                    Debug.LogError("CopyAssets is failed.");
+                    RenderStreaming.Logger.Log(LogType.Error, "CopyAssets is failed.");
                     return;
                 }
                 asset = AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(DefaultSignalingSettingsSavePath);
@@ -187,12 +187,12 @@ namespace Unity.RenderStreaming.Editor
             var asset = e.newValue;
             if (asset == null)
             {
-                Debug.LogError("Setting None is not allowed for this parameter. Reverted.");
+                RenderStreaming.Logger.Log(LogType.Error, "Setting None is not allowed for this parameter. Reverted.");
                 return;
             }
             if (AssetDatabase.GetAssetPath(asset).IndexOf("Assets", StringComparison.Ordinal) != 0)
             {
-                Debug.LogError("Setting an asset not placed under Assets folder is not allowed for this parameter. Reverted.");
+                RenderStreaming.Logger.Log(LogType.Error, "Setting an asset not placed under Assets folder is not allowed for this parameter. Reverted.");
                 return;
             }
             var property = serializedObject.FindProperty("signalingSettingsObject");

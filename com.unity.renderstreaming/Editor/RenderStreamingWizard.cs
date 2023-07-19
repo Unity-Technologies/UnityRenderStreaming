@@ -467,7 +467,7 @@ namespace Unity.RenderStreaming.Editor
                 var packageInfo = req.FindPackage(packageName);
                 if (null == packageInfo)
                 {
-                    Debug.LogError($"Not found package \"{packageName}\"");
+                    RenderStreaming.Logger.Log(LogType.Error, $"Not found package \"{packageName}\"");
                     return;
                 }
 
