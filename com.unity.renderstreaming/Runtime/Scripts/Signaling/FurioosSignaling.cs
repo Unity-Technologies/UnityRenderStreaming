@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.Signaling
                 Thread.Sleep((int)(m_timeout * 1000));
             }
 
-            Debug.Log("Signaling: WS managing thread ended");
+            RenderStreaming.Logger.Log("Signaling: WS managing thread ended");
         }
 
         private void WSCreate()
@@ -155,14 +155,14 @@ namespace Unity.RenderStreaming.Signaling
 
             Monitor.Enter(m_webSocket);
 
-            Debug.Log($"Signaling: Connecting to Furioos Server");
+            RenderStreaming.Logger.Log($"Signaling: Connecting to Furioos Server");
             m_webSocket.ConnectAsync();
         }
 
         private void WSProcessMessage(object sender, MessageEventArgs e)
         {
             var content = Encoding.UTF8.GetString(e.RawData);
-            Debug.Log($"Signaling: Receiving message: {content}");
+            RenderStreaming.Logger.Log($"Signaling: Receiving message: {content}");
 
             try
             {
@@ -184,25 +184,25 @@ namespace Unity.RenderStreaming.Signaling
                     {
                         if (msg.status == "SUCCESS")
                         {
-                            Debug.Log("Signaling: Slot signed in.");
+                            RenderStreaming.Logger.Log("Signaling: Slot signed in.");
                             this.WSSend("{\"type\":\"furioos\",\"task\":\"enableStreaming\",\"streamType\":\"RenderStreaming\",\"streamProtocols\":[\"WebRTC\"],\"controlsTypes\":[\"RenderStreaming\"]}");
 
                             OnSignedIn?.Invoke(this);
                         }
                         else
                         {
-                            Debug.LogError("Signaling: Sign-in error : " + msg.message);
+                            RenderStreaming.Logger.Log(LogType.Error, "Signaling: Sign-in error : " + msg.message);
                         }
                     }
                     else if (msg.type == "reconnect")
                     {
                         if (msg.status == "SUCCESS")
                         {
-                            Debug.Log("Signaling: Slot reconnected.");
+                            RenderStreaming.Logger.Log("Signaling: Slot reconnected.");
                         }
                         else
                         {
-                            Debug.LogError("Signaling: Reconnect error : " + msg.message);
+                            RenderStreaming.Logger.Log(LogType.Error, "Signaling: Reconnect error : " + msg.message);
                         }
                     }
 
@@ -219,7 +219,7 @@ namespace Unity.RenderStreaming.Signaling
                         }
                         else
                         {
-                            Debug.LogError("Signaling: Received message from unknown peer");
+                            RenderStreaming.Logger.Log(LogType.Error, "Signaling: Received message from unknown peer");
                         }
                     }
                 }
@@ -237,31 +237,31 @@ namespace Unity.RenderStreaming.Signaling
                     }
                     else
                     {
-                        Debug.LogError("Signaling: Received message from unknown peer");
+                        RenderStreaming.Logger.Log(LogType.Error, "Signaling: Received message from unknown peer");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError("Signaling: Failed to parse message: " + ex);
+                RenderStreaming.Logger.Log(LogType.Error, "Signaling: Failed to parse message: " + ex);
             }
         }
 
         private void WSConnected(object sender, EventArgs e)
         {
-            Debug.Log("Signaling: WS connected.");
+            RenderStreaming.Logger.Log("Signaling: WS connected.");
             this.WSSend("{\"type\" :\"signIn\",\"peerName\" :\"Unity Test App\"}");
         }
 
 
         private void WSError(object sender, ErrorEventArgs e)
         {
-            Debug.LogError($"Signaling: WS connection error: {e.Message}");
+            RenderStreaming.Logger.Log(LogType.Error, $"Signaling: WS connection error: {e.Message}");
         }
 
         private void WSClosed(object sender, CloseEventArgs e)
         {
-            Debug.Log($"Signaling: WS connection closed, code: {e.Code}");
+            RenderStreaming.Logger.Log($"Signaling: WS connection closed, code: {e.Code}");
 
             m_wsCloseEvent.Set();
             m_webSocket = null;
@@ -271,19 +271,19 @@ namespace Unity.RenderStreaming.Signaling
         {
             if (m_webSocket == null || m_webSocket.ReadyState != WebSocketState.Open)
             {
-                Debug.LogError("Signaling: WS is not connected. Unable to send message");
+                RenderStreaming.Logger.Log(LogType.Error, "Signaling: WS is not connected. Unable to send message");
                 return;
             }
 
             if (data is string s)
             {
-                Debug.Log("Signaling: Sending WS data: " + s);
+                RenderStreaming.Logger.Log("Signaling: Sending WS data: " + s);
                 m_webSocket.Send(s);
             }
             else
             {
                 string str = JsonUtility.ToJson(data);
-                Debug.Log("Signaling: Sending WS data: " + str);
+                RenderStreaming.Logger.Log("Signaling: Sending WS data: " + str);
                 m_webSocket.Send(str);
             }
         }

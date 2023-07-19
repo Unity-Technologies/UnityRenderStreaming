@@ -97,7 +97,7 @@ namespace Unity.RenderStreaming.InputSystem
         static InputRemoting()
         {
 #if UNITY_EDITOR
-            // 
+            //
             // note: This lines are for avoiding issues when running the editor
             // on background. When moved the focus from the editor, input events
             // from another process are ignored.
@@ -232,7 +232,7 @@ namespace Unity.RenderStreaming.InputSystem
         {
             // todo(kazuki)::
             // layputBuilders property is not published from InputSystem
-            // 
+            //
             //foreach (var entry in m_LocalManager.m_Layouts.layoutBuilders)
             //    SendLayout(entry.Key);
 
@@ -513,7 +513,7 @@ namespace Unity.RenderStreaming.InputSystem
                     layout = sender.m_LocalManager.LoadLayout(new InternedString(layoutName));
                     if (layout == null)
                     {
-                        Debug.Log(string.Format(
+                        RenderStreaming.Logger.Log(string.Format(
                             "Could not find layout '{0}' meant to be sent through remote connection; this should not happen",
                             layoutName));
                         return null;
@@ -521,7 +521,7 @@ namespace Unity.RenderStreaming.InputSystem
                 }
                 catch (Exception exception)
                 {
-                    Debug.Log(string.Format(
+                    RenderStreaming.Logger.Log(string.Format(
                         "Could not load layout '{0}'; not sending to remote listeners (exception: {1})", layoutName,
                         exception));
                     return null;
@@ -620,7 +620,7 @@ namespace Unity.RenderStreaming.InputSystem
                     foreach (var entry in devices)
                         if (entry.remoteId == data.deviceId)
                         {
-                            Debug.LogError(string.Format(
+                            RenderStreaming.Logger.Log(LogType.Error, string.Format(
                                 "Already received device with id {0} (layout '{1}', description '{3}) from remote {2}",
                                 data.deviceId,
                                 data.layout, msg.participantId, data.description));
@@ -637,7 +637,7 @@ namespace Unity.RenderStreaming.InputSystem
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogError(
+                    RenderStreaming.Logger.Log(LogType.Error,
                         $"Could not create remote device '{data.description}' with layout '{data.layout}' locally (exception: {exception})");
                     return;
                 }

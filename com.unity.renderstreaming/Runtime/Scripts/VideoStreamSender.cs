@@ -515,7 +515,7 @@ namespace Unity.RenderStreaming
 
                     if (m_renderTexture.graphicsFormat != format)
                     {
-                        Debug.LogWarning(
+                        RenderStreaming.Logger.Log(LogType.Warning,
                             $"This color format:{m_renderTexture.graphicsFormat} not support in unity.webrtc. Change to supported color format:{format}.");
                         m_renderTexture.Release();
                         m_renderTexture.graphicsFormat = format;

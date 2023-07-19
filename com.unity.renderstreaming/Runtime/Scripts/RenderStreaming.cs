@@ -20,6 +20,7 @@ namespace Unity.RenderStreaming
 
         private static RenderStreamingSettings s_settings;
         private static GameObject s_automaticStreamingObject;
+        private static ILogger s_logger;
 
         private static bool m_running;
 
@@ -44,7 +45,7 @@ namespace Unity.RenderStreaming
 
                 if (m_running && s_settings.signalingSettings != value.signalingSettings)
                 {
-                    Debug.LogWarning("Signaling settings doesn't change on already started signaling instance.");
+                    RenderStreaming.Logger.Log(LogType.Warning, "Signaling settings doesn't change on already started signaling instance.");
                 }
 
                 s_settings = value;
@@ -70,6 +71,28 @@ namespace Unity.RenderStreaming
         public static T GetSignalingSettings<T>() where T : SignalingSettings
         {
             return s_settings.signalingSettings as T;
+        }
+
+        /// <summary>
+        /// Get & set the logger to use when logging debug messages inside the RenderStreaming package.
+        /// By default will use Debug.unityLogger.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Throws if setting a null logger.</exception>
+        public static ILogger Logger
+        {
+            get
+            {
+                if (s_logger == null)
+                {
+                    return Debug.unityLogger;
+                }
+
+                return s_logger;
+            }
+            set
+            {
+                s_logger = value ?? throw new ArgumentNullException(nameof(value));
+            }
         }
 
         static RenderStreaming()
