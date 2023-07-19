@@ -61,6 +61,9 @@ namespace Unity.RenderStreaming
         [SerializeField, Bitrate(0, 1000)]
         private Range m_Bitrate = new Range(s_defaultMinBitrate, s_defaultMaxBitrate);
 
+        [SerializeField]
+        private bool m_Loopback = false;
+
         private int m_sampleRate = 0;
 
         private AudioStreamSourceImpl m_sourceImpl = null;
@@ -112,7 +115,32 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// The index of WebCamTexture.devices.
+        /// Play or not sending to remote audio in local.
+        /// </summary>
+        public bool loopback
+        {
+            get
+            {
+                return m_Loopback;
+            }
+            set
+            {
+                if (m_Loopback == value)
+                {
+                    return;
+                }
+
+                m_Loopback = value;
+
+                if (Track is AudioStreamTrack audioTrack)
+                {
+                    audioTrack.Loopback = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The index of Microphone.devices.
         /// </summary>
         public int sourceDeviceIndex
         {
