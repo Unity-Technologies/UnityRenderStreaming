@@ -25,15 +25,15 @@ describe(`MouseState`, () => {
     let event;
     beforeEach(() => {
       event = new MouseEvent('click', { buttons:1, clientX:0, clientY:0});
-    });  
+    });
     test('format', () => {
       const format = new MouseState(event).format;
       expect(format).toBe(0x4d4f5553);
-    });  
+    });
     test('buffer', () => {
       const state = new MouseState(event);
       expect(state.buffer.byteLength).toBeGreaterThan(0);
-    });  
+    });
   });
   describe(`with WheelEvent`, () => {
     let event;
@@ -43,11 +43,11 @@ describe(`MouseState`, () => {
     test('format', () => {
       const format = new MouseState(event).format;
       expect(format).toBe(0x4d4f5553);
-    });  
+    });
     test('buffer', () => {
       const state = new MouseState(event);
       expect(state.buffer.byteLength).toBeGreaterThan(0);
-    });  
+    });
   });
 });
 
@@ -59,7 +59,7 @@ describe(`KeyboardState`, () => {
   test('format', () => {
     const format = new KeyboardState(event).format;
     expect(format).toBe(0x4b455953);
-  });  
+  });
   test('buffer', () => {
     const state = new KeyboardState(event);
     expect(state.buffer.byteLength).toBeGreaterThan(0);
@@ -69,7 +69,7 @@ describe(`KeyboardState`, () => {
 describe(`TouchscreenState`, () => {
   let event;
   beforeEach(() => {
-    event = new TouchEvent("touchstart", { 
+    event = new TouchEvent("touchstart", {
       changedTouches: [{ // InputInit
         identifier: 0,
         target: null,
@@ -88,7 +88,7 @@ describe(`TouchscreenState`, () => {
         touchType: "direct"
       }]
     });
-  });  
+  });
   test('format', () => {
     const format = new TouchscreenState(event, null, Date.now()).format;
     expect(format).toBe(0x54534352);
@@ -113,7 +113,7 @@ describe(`GamepadState`, () => {
   test('format', () => {
     const format = new GamepadState(event).format;
     expect(format).toBe(0x47504144);
-  });  
+  });
   test('buffer', () => {
     const state = new GamepadState(event);
     expect(state.buffer.byteLength).toBeGreaterThan(0);
@@ -134,14 +134,15 @@ describe(`StateEvent`, () => {
 
 describe(`TextEvent`, () => {
   test('buffer', () => {
-    const character = 0x41;
-    const textEvent = TextEvent.create(0, character, Date.now());
+    const event = new KeyboardEvent('keydown', { code: 'KeyA', key: "a"});
+    const textEvent = TextEvent.create(0, event, Date.now());
     expect(new Int32Array(textEvent.buffer.slice(0, 4))[0]).toBe(TextEvent.format);
     const offset = InputEvent.size;
-    expect(new Uint32Array(textEvent.buffer.slice(offset, offset+4))[0]).toBe(character);
+    // 'a' is 97
+    expect(new Uint32Array(textEvent.buffer.slice(offset, offset+4))[0]).toBe(97);
   });
 });
- 
+
 describe(`Mouse`, () => {
   test('alignedSizeInBytes', () => {
     let device = new Mouse("Mouse", "Mouse", 1, null, null);
