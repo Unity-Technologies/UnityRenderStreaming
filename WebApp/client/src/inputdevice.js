@@ -2,6 +2,7 @@ import {
   MemoryHelper,
 } from "./memoryhelper.js";
 
+import { CharNumber } from "./charnumber.js";
 import { Keymap } from "./keymap.js";
 import { MouseButton } from "./mousebutton.js";
 import { GamepadButton } from "./gamepadbutton.js";
@@ -630,18 +631,18 @@ export class TextEvent {
   /**
    *
    * @param {Number} deviceId
-   * @param {Number} character
+   * @param {KeyboardEvent} event
    * @param {Number} time
    * @returns {TextEvent}
 
    */
-  static create(deviceId, character, time) {
+  static create(deviceId, event, time) {
     const eventSize = InputEvent.size + MemoryHelper.sizeOfInt;
 
-    let event = new TextEvent();
-    event.baseEvent = new InputEvent(TextEvent.format, eventSize, deviceId, time);
-    event.character = character;
-    return event;
+    let textEvent = new TextEvent();
+    textEvent.baseEvent = new InputEvent(TextEvent.format, eventSize, deviceId, time);
+    textEvent.character = CharNumber[event.key];
+    return textEvent;
   }
 
   /**

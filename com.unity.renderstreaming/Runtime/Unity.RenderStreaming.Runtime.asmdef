@@ -41,6 +41,11 @@
             "define": "URS_USE_AR_SUBSYSTEMS"
         },
         {
+            "name": "com.unity.textmeshpro",
+            "expression": "",
+            "define": "URS_USE_TEXTMESHPRO"
+        },
+        {
             "name": "com.unity.inputsystem",
             "expression": "1.1",
             "define": "INPUTSYSTEM_1_1_OR_NEWER"
