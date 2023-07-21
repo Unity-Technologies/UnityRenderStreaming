@@ -233,7 +233,7 @@ namespace Unity.RenderStreaming.InputSystem
 
         private void EmulateInputFieldEvent(InputEventPtr ptr)
         {
-            var obj = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+            var obj = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
             if (obj == null)
                 return;
 
