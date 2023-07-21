@@ -8,7 +8,7 @@ namespace Unity.RenderStreaming.Editor
 {
     [CustomEditor(typeof(VideoStreamReceiver))]
     [CanEditMultipleObjects]
-    internal class VideoStreamSenderReceiver : UnityEditor.Editor
+    internal class VideoStreamReceiverEditor : UnityEditor.Editor
     {
         SerializedProperty m_codec;
         SerializedProperty m_renderMode;
@@ -18,9 +18,9 @@ namespace Unity.RenderStreaming.Editor
 
         void OnEnable()
         {
-            m_codec = serializedObject.FindProperty("m_Codec");
-            m_renderMode = serializedObject.FindProperty("m_RenderMode");
-            m_targetTexture = serializedObject.FindProperty("m_TargetTexture");
+            m_codec = serializedObject.FindProperty(VideoStreamReceiver.CodecPropertyName);
+            m_renderMode = serializedObject.FindProperty(VideoStreamReceiver.RenderModePropertyName);
+            m_targetTexture = serializedObject.FindProperty(VideoStreamReceiver.TargetTexturePropertyName);
 
             if (m_renderModeFade == null)
             {

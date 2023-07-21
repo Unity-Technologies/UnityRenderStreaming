@@ -28,6 +28,10 @@ namespace Unity.RenderStreaming
     [AddComponentMenu("Render Streaming/Video Stream Receiver")]
     public class VideoStreamReceiver : StreamReceiverBase
     {
+        internal const string CodecPropertyName = nameof(m_Codec);
+        internal const string RenderModePropertyName = nameof(m_RenderMode);
+        internal const string TargetTexturePropertyName = nameof(m_TargetTexture);
+
         /// <summary>
         ///
         /// </summary>

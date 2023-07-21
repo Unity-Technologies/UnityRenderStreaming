@@ -16,9 +16,11 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         {
             InputUser.onChange += OnUserChange;
 
-            m_ActionsProperty = serializedObject.FindProperty("m_Actions");
-            m_ActionEventsProperty = serializedObject.FindProperty("m_ActionEvents");
-            m_DefaultActionMapProperty = serializedObject.FindProperty("m_DefaultActionMap");
+            m_Local = serializedObject.FindProperty(DataChannelBase.LocalPropertyName);
+            m_Label = serializedObject.FindProperty(DataChannelBase.LabelPropertyName);
+            m_Actions = serializedObject.FindProperty(InputReceiver.ActionsPropertyName);
+            m_ActionEvents = serializedObject.FindProperty(InputReceiver.ActionEventsPropertyName);
+            m_DefaultActionMap = serializedObject.FindProperty(InputReceiver.DefaultActionMapPropertyName);
         }
         private void OnUserChange(InputUser user, InputUserChange change, InputDevice device)
         {
@@ -29,12 +31,12 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         {
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("local"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("label"));
+            EditorGUILayout.PropertyField(m_Local);
+            EditorGUILayout.PropertyField(m_Label);
 
             // Action config section.
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(m_ActionsProperty);
+            EditorGUILayout.PropertyField(m_Actions);
             if (EditorGUI.EndChangeCheck() || !m_ActionAssetInitialized)
                 OnActionAssetChange();
             ++EditorGUI.indentLevel;
@@ -48,15 +50,15 @@ namespace Unity.RenderStreaming.InputSystem.Editor
                 {
                     if (selected == 0)
                     {
-                        m_DefaultActionMapProperty.stringValue = null;
+                        m_DefaultActionMap.stringValue = null;
                     }
                     else
                     {
                         // Use ID rather than name.
-                        var asset = (InputActionAsset)m_ActionsProperty.objectReferenceValue;
+                        var asset = (InputActionAsset)m_Actions.objectReferenceValue;
                         var actionMap = asset.FindActionMap(m_ActionMapOptions[selected].text);
                         if (actionMap != null)
-                            m_DefaultActionMapProperty.stringValue = actionMap.id.ToString();
+                            m_DefaultActionMap.stringValue = actionMap.id.ToString();
                     }
                     m_SelectedDefaultActionMap = selected;
                 }
@@ -85,7 +87,7 @@ namespace Unity.RenderStreaming.InputSystem.Editor
                                         if (m_ActionMapIndices[i] != n)
                                             continue;
 
-                                        EditorGUILayout.PropertyField(m_ActionEventsProperty.GetArrayElementAtIndex(i), m_ActionNames[i]);
+                                        EditorGUILayout.PropertyField(m_ActionEvents.GetArrayElementAtIndex(i), m_ActionNames[i]);
                                     }
                                 }
                             }
@@ -144,7 +146,7 @@ namespace Unity.RenderStreaming.InputSystem.Editor
             m_ActionAssetInitialized = true;
 
             var playerInput = (InputReceiver)target;
-            var asset = (InputActionAsset)m_ActionsProperty.objectReferenceValue;
+            var asset = (InputActionAsset)m_Actions.objectReferenceValue;
             if (asset == null)
             {
                 m_ActionMapOptions = null;
@@ -246,12 +248,14 @@ namespace Unity.RenderStreaming.InputSystem.Editor
         [NonSerialized] private int[] m_ActionMapIndices;
         [NonSerialized] private int m_NumActionMaps;
 
-        [NonSerialized] private SerializedProperty m_ActionEventsProperty;
+        [NonSerialized] private SerializedProperty m_ActionEvents;
         [NonSerialized] private int m_SelectedDefaultActionMap;
         [NonSerialized] private GUIContent[] m_ActionMapOptions;
 
-        [NonSerialized] private SerializedProperty m_ActionsProperty;
-        [NonSerialized] private SerializedProperty m_DefaultActionMapProperty;
+        [NonSerialized] private SerializedProperty m_Local;
+        [NonSerialized] private SerializedProperty m_Label;
+        [NonSerialized] private SerializedProperty m_Actions;
+        [NonSerialized] private SerializedProperty m_DefaultActionMap;
         [NonSerialized] private bool m_ActionAssetInitialized;
     }
 }

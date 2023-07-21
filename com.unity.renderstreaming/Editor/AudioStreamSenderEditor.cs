@@ -33,14 +33,14 @@ namespace Unity.RenderStreaming.Editor
 
         void OnEnable()
         {
-            m_source = serializedObject.FindProperty("m_Source");
-            m_audioSource = serializedObject.FindProperty("m_AudioSource");
-            m_audioListener = serializedObject.FindProperty("m_AudioListener");
-            m_microphoneDeviceIndex = serializedObject.FindProperty("m_MicrophoneDeviceIndex");
-            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_AutoRequestUserAuthorization");
-            m_codec = serializedObject.FindProperty("m_Codec");
-            m_bitrate = serializedObject.FindProperty("m_Bitrate");
-            m_loopback = serializedObject.FindProperty("m_Loopback");
+            m_source = serializedObject.FindProperty(AudioStreamSender.SourcePropertyName);
+            m_audioSource = serializedObject.FindProperty(AudioStreamSender.AudioSourcePropertyName);
+            m_audioListener = serializedObject.FindProperty(AudioStreamSender.AudioListenerPropertyName);
+            m_microphoneDeviceIndex = serializedObject.FindProperty(AudioStreamSender.MicrophoneDeviceIndexPropertyName);
+            m_autoRequestUserAuthorization = serializedObject.FindProperty(AudioStreamSender.AutoRequestUserAuthorizationPropertyName);
+            m_codec = serializedObject.FindProperty(AudioStreamSender.CodecPropertyName);
+            m_bitrate = serializedObject.FindProperty(AudioStreamSender.BitratePropertyName);
+            m_loopback = serializedObject.FindProperty(AudioStreamSender.LoopbackPropertyName);
 
             if (m_sourceFade == null)
             {

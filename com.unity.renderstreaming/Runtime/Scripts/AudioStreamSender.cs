@@ -40,6 +40,15 @@ namespace Unity.RenderStreaming
         static readonly uint s_defaultMinBitrate = 0;
         static readonly uint s_defaultMaxBitrate = 200;
 
+        internal const string SourcePropertyName = nameof(m_Source);
+        internal const string AudioSourcePropertyName = nameof(m_AudioSource);
+        internal const string AudioListenerPropertyName = nameof(m_AudioListener);
+        internal const string MicrophoneDeviceIndexPropertyName = nameof(m_MicrophoneDeviceIndex);
+        internal const string AutoRequestUserAuthorizationPropertyName = nameof(m_AutoRequestUserAuthorization);
+        internal const string CodecPropertyName = nameof(m_Codec);
+        internal const string BitratePropertyName = nameof(m_Bitrate);
+        internal const string LoopbackPropertyName = nameof(m_Loopback);
+
         [SerializeField]
         private AudioStreamSource m_Source;
 

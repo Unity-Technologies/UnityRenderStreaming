@@ -41,18 +41,18 @@ namespace Unity.RenderStreaming.Editor
 
         void OnEnable()
         {
-            m_source = serializedObject.FindProperty("m_Source");
-            m_camera = serializedObject.FindProperty("m_Camera");
-            m_texture = serializedObject.FindProperty("m_Texture");
-            m_webCamDeviceIndex = serializedObject.FindProperty("m_WebCamDeviceIndex");
-            m_codec = serializedObject.FindProperty("m_Codec");
-            m_textureSize = serializedObject.FindProperty("m_TextureSize");
-            m_frameRate = serializedObject.FindProperty("m_FrameRate");
-            m_bitrate = serializedObject.FindProperty("m_Bitrate");
-            m_scaleFactor = serializedObject.FindProperty("m_ScaleFactor");
-            m_depth = serializedObject.FindProperty("m_Depth");
-            m_antiAliasing = serializedObject.FindProperty("m_AntiAliasing");
-            m_autoRequestUserAuthorization = serializedObject.FindProperty("m_AutoRequestUserAuthorization");
+            m_source = serializedObject.FindProperty(VideoStreamSender.SourcePropertyName);
+            m_camera = serializedObject.FindProperty(VideoStreamSender.CameraPropertyName);
+            m_texture = serializedObject.FindProperty(VideoStreamSender.TexturePropertyName);
+            m_webCamDeviceIndex = serializedObject.FindProperty(VideoStreamSender.WebCamDeviceIndexPropertyName);
+            m_codec = serializedObject.FindProperty(VideoStreamSender.CodecPropertyName);
+            m_textureSize = serializedObject.FindProperty(VideoStreamSender.TextureSizePropertyName);
+            m_frameRate = serializedObject.FindProperty(VideoStreamSender.FrameRatePropertyName);
+            m_bitrate = serializedObject.FindProperty(VideoStreamSender.BitratePropertyName);
+            m_scaleFactor = serializedObject.FindProperty(VideoStreamSender.ScaleFactorPropertyName);
+            m_depth = serializedObject.FindProperty(VideoStreamSender.DepthPropertyName);
+            m_antiAliasing = serializedObject.FindProperty(VideoStreamSender.AntiAliasingPropertyName);
+            m_autoRequestUserAuthorization = serializedObject.FindProperty(VideoStreamSender.AutoRequestUserAuthorizationPropertyName);
 
             if (m_sourceFade == null)
             {
