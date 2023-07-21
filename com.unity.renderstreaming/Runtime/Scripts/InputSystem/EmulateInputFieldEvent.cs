@@ -1,12 +1,12 @@
 using System.Collections.Generic;
+#if URS_USE_TEXTMESHPRO
+using TMPro;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
-#if URS_USE_TEXTMESHPRO
-using TMPro;
-#endif
 
 namespace Unity.RenderStreaming.InputSystem
 {
@@ -168,7 +168,7 @@ namespace Unity.RenderStreaming.InputSystem
             KeyCode keyCode = KeyCode.None;
             foreach (var control in ptr.GetAllButtonPresses())
             {
-                if(control is KeyControl keyControl)
+                if (control is KeyControl keyControl)
                 {
                     var key = keyControl.keyCode;
                     if (key == Key.LeftShift || key == Key.RightShift)
@@ -191,7 +191,7 @@ namespace Unity.RenderStreaming.InputSystem
                     {
                         modifiers |= EventModifiers.CapsLock;
                     }
-                    else if(s_KeyMap.TryGetValue((int)key, out var value))
+                    else if (s_KeyMap.TryGetValue((int)key, out var value))
                     {
                         keyCode = value;
                     }
@@ -241,7 +241,7 @@ namespace Unity.RenderStreaming.InputSystem
             if (field == null)
                 return;
             Event e = CreateEvent(ptr);
-            if(e != null)
+            if (e != null)
             {
                 field.ProcessEvent(e);
                 field.ForceLabelUpdate();
