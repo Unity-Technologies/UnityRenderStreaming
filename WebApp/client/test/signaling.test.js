@@ -455,6 +455,7 @@ describe.each([
     signaling1.addEventListener('offer', (e) => offerRes1 = e.detail);
     signaling2.addEventListener('offer', (e) => offerRes2 = e.detail);
     await signaling1.sendOffer(connectionId, testsdp);
+    await waitFor(() => offerRes2 != null);
     await sleep(signaling1.interval * 2);
     expect(offerRes1).toBeUndefined();
     expect(offerRes2).not.toBeUndefined();
@@ -464,6 +465,7 @@ describe.each([
     signaling1.addEventListener('answer', (e) => answerRes1 = e.detail);
     signaling2.addEventListener('answer', (e) => answerRes2 = e.detail);
     await signaling2.sendAnswer(connectionId, testsdp);
+    await waitFor(() => answerRes1 != null);
     await sleep(signaling2.interval * 2);
     expect(answerRes1).not.toBeUndefined();
     expect(answerRes1.connectionId).toBe(connectionId);
