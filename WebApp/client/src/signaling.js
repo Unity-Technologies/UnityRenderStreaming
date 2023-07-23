@@ -2,9 +2,10 @@ import * as Logger from "./logger.js";
 
 export class Signaling extends EventTarget {
 
-  constructor() {
+  constructor(interval = 1000) {
     super();
     this.running = false;
+    this.interval = interval;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
 
@@ -15,10 +16,6 @@ export class Signaling extends EventTarget {
     else {
       return { 'Content-Type': 'application/json' };
     }
-  }
-
-  get interval() {
-    return 1000;
   }
 
   url(method, parameter='') {
@@ -136,8 +133,9 @@ export class Signaling extends EventTarget {
 
 export class WebSocketSignaling extends EventTarget {
 
-  constructor() {
+  constructor(interval = 1000) {
     super();
+    this.interval = interval;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
     let websocketUrl;
@@ -186,10 +184,6 @@ export class WebSocketSignaling extends EventTarget {
           break;
       }
     };
-  }
-
-  get interval() {
-    return 100;
   }
 
   async start() {

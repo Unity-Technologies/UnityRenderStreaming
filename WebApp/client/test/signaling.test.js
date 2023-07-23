@@ -23,8 +23,8 @@ describe.each([
   beforeAll(async () => {
     if (mode == "mock") {
       reset(false);
-      signaling1 = new MockSignaling();
-      signaling2 = new MockSignaling();
+      signaling1 = new MockSignaling(1);
+      signaling2 = new MockSignaling(1);
     } else {
       const path = Path.resolve(`../bin~/${serverExeName()}`);
       let cmd = `${path} -p ${portNumber}`;
@@ -35,13 +35,13 @@ describe.each([
       await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
       if (mode == "http") {
-        signaling1 = new Signaling();
-        signaling2 = new Signaling();
+        signaling1 = new Signaling(1);
+        signaling2 = new Signaling(1);
       }
 
       if (mode == "websocket") {
-        signaling1 = new WebSocketSignaling();
-        signaling2 = new WebSocketSignaling();
+        signaling1 = new WebSocketSignaling(1);
+        signaling2 = new WebSocketSignaling(1);
       }
     }
 
@@ -221,8 +221,8 @@ describe.each([
   beforeAll(async () => {
     if (mode == "mock") {
       reset(true);
-      signaling1 = new MockSignaling();
-      signaling2 = new MockSignaling();
+      signaling1 = new MockSignaling(1);
+      signaling2 = new MockSignaling(1);
       return;
     }
 
@@ -235,13 +235,13 @@ describe.each([
     await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
     if (mode == "http") {
-      signaling1 = new Signaling();
-      signaling2 = new Signaling();
+      signaling1 = new Signaling(1);
+      signaling2 = new Signaling(1);
     }
 
     if (mode == "websocket") {
-      signaling1 = new WebSocketSignaling();
-      signaling2 = new WebSocketSignaling();
+      signaling1 = new WebSocketSignaling(1);
+      signaling2 = new WebSocketSignaling(1);
     }
 
     await signaling1.start();
