@@ -7,6 +7,9 @@ namespace Unity.RenderStreaming
     /// </summary>
     public class RenderStreamingSettings : ScriptableObject
     {
+        internal const string AutomaticStreamingPropertyName = nameof(automaticStreaming);
+        internal const string SignalingSettingsPropertyName = nameof(signalingSettings);
+
         /// <summary>
         /// 
         /// </summary>

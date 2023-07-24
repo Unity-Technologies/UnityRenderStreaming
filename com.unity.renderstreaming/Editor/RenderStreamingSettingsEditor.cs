@@ -10,8 +10,8 @@ namespace Unity.RenderStreaming.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            root.Add(new PropertyField(serializedObject.FindProperty("automaticStreaming"), "Automatic Streaming"));
-            root.Add(new PropertyField(serializedObject.FindProperty("signalingSettings"), "Signaling Settings"));
+            root.Add(new PropertyField(serializedObject.FindProperty(RenderStreamingSettings.AutomaticStreamingPropertyName), "Automatic Streaming"));
+            root.Add(new PropertyField(serializedObject.FindProperty(RenderStreamingSettings.SignalingSettingsPropertyName), "Signaling Settings"));
             return root;
         }
     }

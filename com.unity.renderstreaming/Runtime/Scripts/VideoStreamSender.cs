@@ -114,11 +114,22 @@ namespace Unity.RenderStreaming
     public class VideoStreamSender : StreamSenderBase
     {
         static readonly float s_defaultFrameRate = 30;
-
         static readonly uint s_defaultMinBitrate = 0;
         static readonly uint s_defaultMaxBitrate = 1000;
-
         static readonly int s_defaultDepth = 16;
+
+        internal const string SourcePropertyName = nameof(m_Source);
+        internal const string CameraPropertyName = nameof(m_Camera);
+        internal const string TexturePropertyName = nameof(m_Texture);
+        internal const string WebCamDeviceIndexPropertyName = nameof(m_WebCamDeviceIndex);
+        internal const string CodecPropertyName = nameof(m_Codec);
+        internal const string TextureSizePropertyName = nameof(m_TextureSize);
+        internal const string FrameRatePropertyName = nameof(m_FrameRate);
+        internal const string BitratePropertyName = nameof(m_Bitrate);
+        internal const string ScaleFactorPropertyName = nameof(m_ScaleFactor);
+        internal const string DepthPropertyName = nameof(m_Depth);
+        internal const string AntiAliasingPropertyName = nameof(m_AntiAliasing);
+        internal const string AutoRequestUserAuthorizationPropertyName = nameof(m_AutoRequestUserAuthorization);
 
         //todo(kazuki): remove this value.
         [SerializeField, StreamingSize]

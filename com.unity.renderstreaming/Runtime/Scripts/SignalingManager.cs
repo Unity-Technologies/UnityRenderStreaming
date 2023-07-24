@@ -16,6 +16,13 @@ namespace Unity.RenderStreaming
     [AddComponentMenu("Render Streaming/Signaling Manager")]
     public sealed class SignalingManager : MonoBehaviour
     {
+        internal const string UseDefaultPropertyName = nameof(m_useDefault);
+        internal const string SignalingSettingsObjectPropertyName = nameof(signalingSettingsObject);
+        internal const string SignalingSettingsPropertyName = nameof(signalingSettings);
+        internal const string HandlersPropertyName = nameof(handlers);
+        internal const string RunOnAwakePropertyName = nameof(runOnAwake);
+        internal const string EvaluateCommandlineArgumentsPropertyName = nameof(evaluateCommandlineArguments);
+
 #pragma warning disable 0649
         [SerializeField]
         private bool m_useDefault = true;

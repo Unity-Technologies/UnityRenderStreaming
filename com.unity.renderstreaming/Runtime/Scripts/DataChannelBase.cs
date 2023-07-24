@@ -8,6 +8,9 @@ namespace Unity.RenderStreaming
     /// </summary>
     public abstract class DataChannelBase : MonoBehaviour, IDataChannel
     {
+        internal const string LocalPropertyName = nameof(local);
+        internal const string LabelPropertyName = nameof(label);
+
         /// <summary>
         /// 
         /// </summary>

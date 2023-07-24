@@ -19,6 +19,10 @@ namespace Unity.RenderStreaming
     [AddComponentMenu("Render Streaming/Input Receiver")]
     public class InputReceiver : InputChannelReceiverBase
     {
+        internal const string ActionsPropertyName = nameof(m_Actions);
+        internal const string ActionEventsPropertyName = nameof(m_ActionEvents);
+        internal const string DefaultActionMapPropertyName = nameof(m_DefaultActionMap);
+
         /// <summary>
         ///
         /// </summary>

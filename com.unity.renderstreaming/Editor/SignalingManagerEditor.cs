@@ -19,23 +19,40 @@ namespace Unity.RenderStreaming.Editor
         const string DefaultSignalingSettingsLoadPath =
             "Packages/com.unity.renderstreaming/Runtime/SignalingSettings.asset";
 
+        SerializedProperty m_UseDefault;
+        SerializedProperty m_SignalingSettingsObject;
+        SerializedProperty m_SignalingSettings;
+        SerializedProperty m_Handlers;
+        SerializedProperty m_RunOnAwake;
+        SerializedProperty m_EvaluateCommandlineArguments;
+
         VisualElement root;
         Button openProjectSettingsButton;
         PopupField<SignalingSettingsObject> signalingSettingsPopupField;
         PropertyField signalingSettingsField;
 
+        private void OnEnable()
+        {
+            m_UseDefault = serializedObject.FindProperty(SignalingManager.UseDefaultPropertyName);
+            m_SignalingSettingsObject = serializedObject.FindProperty(SignalingManager.SignalingSettingsObjectPropertyName);
+            m_SignalingSettings = serializedObject.FindProperty(SignalingManager.SignalingSettingsPropertyName);
+            m_Handlers = serializedObject.FindProperty(SignalingManager.HandlersPropertyName);
+            m_RunOnAwake = serializedObject.FindProperty(SignalingManager.RunOnAwakePropertyName);
+            m_EvaluateCommandlineArguments = serializedObject.FindProperty(SignalingManager.EvaluateCommandlineArgumentsPropertyName);
+        }
+
         public override VisualElement CreateInspectorGUI()
         {
             root = new VisualElement();
-            bool useDefault = serializedObject.FindProperty("m_useDefault").boolValue;
+            bool useDefault = m_UseDefault.boolValue;
 
-            var useDefaultField = new PropertyField(serializedObject.FindProperty("m_useDefault"), "Use Default Settings in Project Settings");
+            var useDefaultField = new PropertyField(m_UseDefault, "Use Default Settings in Project Settings");
             useDefaultField.RegisterValueChangeCallback(OnChangeUseDefault);
             openProjectSettingsButton = new Button { text = "Open Project Setings" };
             openProjectSettingsButton.clicked += OnClickedOpenProjectSettingsButton;
-            signalingSettingsPopupField = CreatePopUpSignalingType(serializedObject.FindProperty("signalingSettingsObject"), "Signaling Settings Asset");
+            signalingSettingsPopupField = CreatePopUpSignalingType(m_SignalingSettingsObject, "Signaling Settings Asset");
             signalingSettingsPopupField.RegisterValueChangedCallback(OnValueChangeSignalingSettingsObject);
-            signalingSettingsField = new PropertyField(serializedObject.FindProperty("signalingSettings"), "Signaling Settings");
+            signalingSettingsField = new PropertyField(m_SignalingSettings, "Signaling Settings");
             signalingSettingsField.RegisterValueChangeCallback(OnValueChangeSignalingSettings);
 
             root.Add(useDefaultField);
@@ -51,9 +68,9 @@ namespace Unity.RenderStreaming.Editor
             {
                 openProjectSettingsButton.style.display = DisplayStyle.None;
             }
-            root.Add(new ReorderableListField(serializedObject.FindProperty("handlers"), "Signaling Handler List"));
-            root.Add(new PropertyField(serializedObject.FindProperty("runOnAwake"), "Run On Awake"));
-            root.Add(new PropertyField(serializedObject.FindProperty("evaluateCommandlineArguments"), "Evaluate Commandline Arguments"));
+            root.Add(new ReorderableListField(m_Handlers, "Signaling Handler List"));
+            root.Add(new PropertyField(m_RunOnAwake, "Run On Awake"));
+            root.Add(new PropertyField(m_EvaluateCommandlineArguments, "Evaluate Commandline Arguments"));
 
             EditorApplication.projectChanged += OnProjectChanged;
 
@@ -134,12 +151,12 @@ namespace Unity.RenderStreaming.Editor
             // Force to use default settings if there are no available settings in project folder.
             if (paths.Length == 0)
             {
-                serializedObject.FindProperty("m_useDefault").boolValue = true;
+                m_UseDefault.boolValue = true;
                 serializedObject.ApplyModifiedProperties();
                 return;
             }
 
-            var asset = serializedObject.FindProperty("signalingSettingsObject").objectReferenceValue;
+            var asset = m_SignalingSettingsObject.objectReferenceValue;
             var availableObjects = paths.Select(path => AssetDatabase.LoadAssetAtPath<SignalingSettingsObject>(path)).ToArray();
             var defaultIndex = ArrayHelpers.IndexOf(availableObjects, asset);
             if (defaultIndex < 0)
@@ -174,8 +191,7 @@ namespace Unity.RenderStreaming.Editor
                 signalingSettingsField.style.display = DisplayStyle.Flex;
                 openProjectSettingsButton.style.display = DisplayStyle.None;
 
-                var property = serializedObject.FindProperty("signalingSettingsObject");
-                if (!IsValidSignalingSettingsObject(property.objectReferenceValue as SignalingSettingsObject))
+                if (!IsValidSignalingSettingsObject(m_SignalingSettingsObject.objectReferenceValue as SignalingSettingsObject))
                 {
                     CreateDefaultSignalingSettings();
                 }
@@ -195,8 +211,7 @@ namespace Unity.RenderStreaming.Editor
                 RenderStreaming.Logger.Log(LogType.Error, "Setting an asset not placed under Assets folder is not allowed for this parameter. Reverted.");
                 return;
             }
-            var property = serializedObject.FindProperty("signalingSettingsObject");
-            property.objectReferenceValue = asset;
+            m_SignalingSettingsObject.objectReferenceValue = asset;
 
             serializedObject.ApplyModifiedProperties();
 
@@ -205,7 +220,7 @@ namespace Unity.RenderStreaming.Editor
 
             // Send event to repaint SignalingSettingsDrawer.
             using SerializedPropertyChangeEvent changeEvent = SerializedPropertyChangeEvent.GetPooled();
-            changeEvent.changedProperty = property;
+            changeEvent.changedProperty = m_SignalingSettingsObject;
             changeEvent.target = signalingSettingsField.Children().First();
             root.SendEvent(changeEvent);
         }
