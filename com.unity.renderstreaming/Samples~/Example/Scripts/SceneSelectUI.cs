@@ -26,7 +26,7 @@ namespace Unity.RenderStreaming.Samples
         public const int DefaultStreamWidth = 1280;
         public const int DefaultStreamHeight = 720;
 
-        private bool useDefaultSettings = false;
+        private bool useDefaultSettings = true;
         private SignalingType signalingType = SignalingType.WebSocket;
         private string signalingAddress = "localhost";
         private int signalingInterval = 5000;
