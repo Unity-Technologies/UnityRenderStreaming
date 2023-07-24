@@ -72,8 +72,7 @@ function checkSessionId(req: Request, res: Response, next): void {
   next();
 }
 
-function _deleteConnection(sessionId:string, connectionId:string) {
-  const datetime = lastRequestedTime.get(sessionId);
+function _deleteConnection(sessionId:string, connectionId:string, datetime:number) {
   clients.get(sessionId).delete(connectionId);
 
   if(isPrivate) {
@@ -108,7 +107,7 @@ function _deleteConnection(sessionId:string, connectionId:string) {
 function _deleteSession(sessionId: string) {
   if(clients.has(sessionId)) {
     for(const connectionId of Array.from(clients.get(sessionId))) {
-      _deleteConnection(sessionId, connectionId);
+      _deleteConnection(sessionId, connectionId, Date.now());
     }
   }
   offers.delete(sessionId);
@@ -315,8 +314,9 @@ function createConnection(req: Request, res: Response): void {
 function deleteConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
 
-  _deleteConnection(sessionId, connectionId);
+  _deleteConnection(sessionId, connectionId, datetime);
 
   res.json({ connectionId: connectionId });
 }
