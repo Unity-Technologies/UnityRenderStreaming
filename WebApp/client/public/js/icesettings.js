@@ -1,6 +1,7 @@
 // This code is referenced from webrtc sample.
 // https://github.com/webrtc/samples/blob/gh-pages/src/content/peerconnection/trickle-ice/js/main.js
 
+const servers = document.querySelector('select#servers');
 const urlInput = document.querySelector('input#url');
 const usernameInput = document.querySelector('input#username');
 const passwordInput = document.querySelector('input#password');
@@ -48,7 +49,7 @@ export function reset() {
   document.querySelectorAll('select#servers option').forEach(option => option.remove());
   const serversSelect = document.querySelector('select#servers');
   setDefaultServer(serversSelect);
-};
+}
 
 function selectServer(event) {
   const option = event.target;
@@ -80,7 +81,7 @@ export function readServersFromLocalStorage() {
   if (storedServers === null || storedServers === '') {
     setDefaultServer(serversSelect);
   } else {
-    JSON.parse(storedServers).forEach((server, key) => {
+    JSON.parse(storedServers).forEach((server) => {
       const o = document.createElement('option');
       o.value = JSON.stringify(server);
       o.text = server.urls[0];

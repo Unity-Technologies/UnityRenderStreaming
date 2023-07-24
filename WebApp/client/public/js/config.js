@@ -1,4 +1,4 @@
-import {getServers} from "./icesettings.js"
+import {getServers} from "./icesettings.js";
 
 export async function getServerConfig() {
   const protocolEndPoint = location.origin + '/config';

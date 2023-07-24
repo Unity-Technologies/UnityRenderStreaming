@@ -1,5 +1,5 @@
 import * as Config from "./config.js";
-import {addServer, removeServer, reset, readServersFromLocalStorage} from "./icesettings.js"
+import {addServer, removeServer, reset, readServersFromLocalStorage} from "./icesettings.js";
 
 const addButton = document.querySelector('button#add');
 const removeButton = document.querySelector('button#remove');
