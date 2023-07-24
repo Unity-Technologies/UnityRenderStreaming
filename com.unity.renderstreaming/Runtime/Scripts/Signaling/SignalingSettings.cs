@@ -85,7 +85,7 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         /// <param name="server"></param>
-        public static implicit operator RTCIceServer(IceServer server)
+        public static explicit operator RTCIceServer(IceServer server)
         {
             var iceServer = new RTCIceServer
             {
