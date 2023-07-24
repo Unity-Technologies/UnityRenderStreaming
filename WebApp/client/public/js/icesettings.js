@@ -98,16 +98,5 @@ export function getServers() {
   }
   else {
     return JSON.parse(storedServers);
-    // let arr = [];
-    // JSON.parse(storedServers).forEach((server, key) => {
-    //   // const server = { urls: [server.urls], };
-    //   // const o = document.createElement('option');
-    //   // o.value = JSON.stringify(server);
-    //   // o.text = server.urls[0];
-    //   // o.ondblclick = selectServer;
-    //   // serversSelect.add(o);
-    //   arr.push(server);
-    // });
-    // return
   }
 }
