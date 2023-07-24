@@ -100,6 +100,7 @@ namespace Unity.RenderStreaming
     class AllResData
     {
         public SignalingMessage[] messages;
+        public string datetime;
     }
 
 #pragma warning restore 0649

@@ -23,8 +23,8 @@ describe.each([
   beforeAll(async () => {
     if (mode == "mock") {
       reset(false);
-      signaling1 = new MockSignaling();
-      signaling2 = new MockSignaling();
+      signaling1 = new MockSignaling(1);
+      signaling2 = new MockSignaling(1);
     } else {
       const path = Path.resolve(`../bin~/${serverExeName()}`);
       let cmd = `${path} -p ${portNumber}`;
@@ -35,13 +35,13 @@ describe.each([
       await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
       if (mode == "http") {
-        signaling1 = new Signaling();
-        signaling2 = new Signaling();
+        signaling1 = new Signaling(1);
+        signaling2 = new Signaling(1);
       }
 
       if (mode == "websocket") {
-        signaling1 = new WebSocketSignaling();
-        signaling2 = new WebSocketSignaling();
+        signaling1 = new WebSocketSignaling(1);
+        signaling2 = new WebSocketSignaling(1);
       }
     }
 
@@ -221,8 +221,8 @@ describe.each([
   beforeAll(async () => {
     if (mode == "mock") {
       reset(true);
-      signaling1 = new MockSignaling();
-      signaling2 = new MockSignaling();
+      signaling1 = new MockSignaling(1);
+      signaling2 = new MockSignaling(1);
       return;
     }
 
@@ -235,13 +235,13 @@ describe.each([
     await setup({ command: cmd, port: portNumber, usedPortAction: 'error' });
 
     if (mode == "http") {
-      signaling1 = new Signaling();
-      signaling2 = new Signaling();
+      signaling1 = new Signaling(1);
+      signaling2 = new Signaling(1);
     }
 
     if (mode == "websocket") {
-      signaling1 = new WebSocketSignaling();
-      signaling2 = new WebSocketSignaling();
+      signaling1 = new WebSocketSignaling(1);
+      signaling2 = new WebSocketSignaling(1);
     }
 
     await signaling1.start();
@@ -455,6 +455,7 @@ describe.each([
     signaling1.addEventListener('offer', (e) => offerRes1 = e.detail);
     signaling2.addEventListener('offer', (e) => offerRes2 = e.detail);
     await signaling1.sendOffer(connectionId, testsdp);
+    await waitFor(() => offerRes2 != null);
     await sleep(signaling1.interval * 2);
     expect(offerRes1).toBeUndefined();
     expect(offerRes2).not.toBeUndefined();
@@ -464,6 +465,7 @@ describe.each([
     signaling1.addEventListener('answer', (e) => answerRes1 = e.detail);
     signaling2.addEventListener('answer', (e) => answerRes2 = e.detail);
     await signaling2.sendAnswer(connectionId, testsdp);
+    await waitFor(() => answerRes1 != null);
     await sleep(signaling2.interval * 2);
     expect(answerRes1).not.toBeUndefined();
     expect(answerRes1.connectionId).toBe(connectionId);

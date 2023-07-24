@@ -2,9 +2,10 @@ import * as Logger from "./logger.js";
 
 export class Signaling extends EventTarget {
 
-  constructor() {
+  constructor(interval = 1000) {
     super();
     this.running = false;
+    this.interval = interval;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
   }
 
@@ -15,10 +16,6 @@ export class Signaling extends EventTarget {
     else {
       return { 'Content-Type': 'application/json' };
     }
-  }
-
-  get interval() {
-    return 1000;
   }
 
   url(method, parameter='') {
@@ -53,9 +50,9 @@ export class Signaling extends EventTarget {
     let lastTimeRequest = Date.now() - 30000;
     while (this.running) {
       const res = await this.getAll(lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
       const data = await res.json();
+      lastTimeRequest = data.datetime ? data.datetime : Date.now();
+
       const messages = data.messages;
 
       for(const msg of messages) {
@@ -78,92 +75,6 @@ export class Signaling extends EventTarget {
             break;
         }
       }
-      await this.sleep(this.interval);
-    }
-  }
-
-  async loopGetConnection() {
-    let currentConnections = new Set();
-    while (this.running) {
-      const res = await this.getConnection();
-      const data = await res.json();
-      const connections = data.connections;
-      Logger.log('get connections:', connections);
-
-      const newSet = new Set();
-      connections.forEach(e => newSet.add(e.connectionId));
-      const deleteConnection = new Set([...currentConnections].filter(e => (!newSet.has(e))));
-
-      deleteConnection.forEach(connection => {
-        this.dispatchEvent(new CustomEvent('disconnect', { detail: { connectionId: connection } }));
-        currentConnections.delete(connection);
-      });
-
-      newSet.forEach(e => currentConnections.add(e));
-
-      await this.sleep(this.interval);
-    }
-  }
-
-  async loopGetOffer() {
-    let lastTimeRequest = Date.now() - 30000;
-
-    while (this.running) {
-      const res = await this.getOffer(lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const offers = data.offers;
-      Logger.log('get offers:', offers);
-
-      offers.forEach(offer => {
-        this.dispatchEvent(new CustomEvent('offer', { detail: offer }));
-      });
-
-      await this.sleep(this.interval);
-    }
-  }
-
-  async loopGetAnswer() {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while (this.running) {
-      const res = await this.getAnswer(lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const answers = data.answers;
-      Logger.log('get answers:', answers);
-
-      answers.forEach(answer => {
-        this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
-      });
-
-      await this.sleep(this.interval);
-    }
-  }
-
-  async loopGetCandidate() {
-    // receive answer message from 30secs ago
-    let lastTimeRequest = Date.now() - 30000;
-
-    while (this.running) {
-      const res = await this.getCandidate(lastTimeRequest);
-      lastTimeRequest = Date.parse(res.headers.get('Date'));
-
-      const data = await res.json();
-      const candidates = data.candidates;
-      Logger.log('get candidates:', candidates);
-
-      if (candidates.length > 0) {
-        const connectionId = candidates[0].connectionId;
-        for (let candidate of candidates[0].candidates) {
-          const dispatch = { connectionId: connectionId, candidate: candidate.candidate, sdpMLineIndex: candidate.sdpMLineIndex, sdpMid: candidate.sdpMid };
-          this.dispatchEvent(new CustomEvent('candidate', { detail: dispatch }));
-        }
-      }
-
       await this.sleep(this.interval);
     }
   }
@@ -215,22 +126,6 @@ export class Signaling extends EventTarget {
     await fetch(this.url('candidate'), { method: 'POST', headers: this.headers(), body: JSON.stringify(data) });
   }
 
-  async getConnection() {
-    return await fetch(this.url(`connection`), { method: 'GET', headers: this.headers() });
-  }
-
-  async getOffer(fromTime = 0) {
-    return await fetch(this.url(`offer`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  }
-
-  async getAnswer(fromTime = 0) {
-    return await fetch(this.url(`answer`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  }
-
-  async getCandidate(fromTime = 0) {
-    return await fetch(this.url(`candidate`, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
-  }
-
   async getAll(fromTime = 0) {
     return await fetch(this.url(``, `fromtime=${fromTime}`), { method: 'GET', headers: this.headers() });
   }
@@ -238,8 +133,9 @@ export class Signaling extends EventTarget {
 
 export class WebSocketSignaling extends EventTarget {
 
-  constructor() {
+  constructor(interval = 1000) {
     super();
+    this.interval = interval;
     this.sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
     let websocketUrl;
@@ -288,10 +184,6 @@ export class WebSocketSignaling extends EventTarget {
           break;
       }
     };
-  }
-
-  get interval() {
-    return 100;
   }
 
   async start() {

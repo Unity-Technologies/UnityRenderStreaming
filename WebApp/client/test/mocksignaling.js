@@ -9,8 +9,9 @@ export function reset(isPrivate) {
 
 export class MockSignaling extends EventTarget {
 
-  get interval() {
-    return 100;
+  constructor(interval = 1000) {
+    super();
+    this.interval = interval;
   }
 
   async start() {
@@ -115,7 +116,7 @@ class MockPrivateSignalingManager {
   constructor() {
     // structure Map<string:connectionId, Set<MockSignaling>> connectionIds
     this.connectionIds = new Map();
-    this.delay = () => new Promise(resolve => setTimeout(resolve, 10));
+    this.delay = async () => await sleep(10);
   }
 
   async add(signaling) {

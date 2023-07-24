@@ -72,7 +72,7 @@ function checkSessionId(req: Request, res: Response, next): void {
   next();
 }
 
-function _deleteConnection(sessionId:string, connectionId:string) {
+function _deleteConnection(sessionId:string, connectionId:string, datetime:number) {
   clients.get(sessionId).delete(connectionId);
 
   if(isPrivate) {
@@ -83,7 +83,7 @@ function _deleteConnection(sessionId:string, connectionId:string) {
         if (clients.has(otherSessionId)) {
           clients.get(otherSessionId).delete(connectionId);
           const array1 = disconnections.get(otherSessionId);
-          array1.push(new Disconnection(connectionId, Date.now()));
+          array1.push(new Disconnection(connectionId, datetime));
         }
       }
     }
@@ -91,7 +91,7 @@ function _deleteConnection(sessionId:string, connectionId:string) {
     disconnections.forEach((array, id) => {
       if (id == sessionId)
         return;
-      array.push(new Disconnection(connectionId, Date.now()));
+      array.push(new Disconnection(connectionId, datetime));
     });
   }
 
@@ -101,13 +101,13 @@ function _deleteConnection(sessionId:string, connectionId:string) {
   candidates.get(sessionId).delete(connectionId);
 
   const array2 = disconnections.get(sessionId);
-  array2.push(new Disconnection(connectionId, Date.now()));
+  array2.push(new Disconnection(connectionId, datetime));
 }
 
 function _deleteSession(sessionId: string) {
   if(clients.has(sessionId)) {
     for(const connectionId of Array.from(clients.get(sessionId))) {
-      _deleteConnection(sessionId, connectionId);
+      _deleteConnection(sessionId, connectionId, Date.now());
     }
   }
   offers.delete(sessionId);
@@ -125,7 +125,7 @@ function _checkForTimedOutSessions(): void {
     if(lastRequestedTime.get(sessionId) > Date.now() - TimeoutRequestedTime)
       continue;
     _deleteSession(sessionId);
-    console.log("deleted");
+    console.log(`deleted sessionId:${sessionId} by timeout.`);
   }
 }
 
@@ -142,7 +142,7 @@ function _getDisconnection(sessionId: string, fromTime: number): Disconnection[]
   }
 
   if (fromTime > 0) {
-    arrayDisconnections = arrayDisconnections.filter((v) => v.datetime > fromTime);
+    arrayDisconnections = arrayDisconnections.filter((v) => v.datetime >= fromTime);
   }
   return arrayDisconnections;
 }
@@ -162,7 +162,7 @@ function _getOffer(sessionId: string, fromTime: number): [string, Offer][] {
   }
 
   if (fromTime > 0) {
-    arrayOffers = arrayOffers.filter((v) => v[1].datetime > fromTime);
+    arrayOffers = arrayOffers.filter((v) => v[1].datetime >= fromTime);
   }
   return arrayOffers;
 }
@@ -175,7 +175,7 @@ function _getAnswer(sessionId: string, fromTime: number): [string, Answer][] {
   }
 
   if (fromTime > 0) {
-    arrayAnswers = arrayAnswers.filter((v) => v[1].datetime > fromTime);
+    arrayAnswers = arrayAnswers.filter((v) => v[1].datetime >= fromTime);
   }
   return arrayAnswers;
 }
@@ -193,7 +193,7 @@ function _getCandidate(sessionId: string, fromTime: number): [string, Candidate]
       continue;
     }
     const arrayCandidates = candidates.get(otherSessionId).get(connectionId)
-      .filter((v) => v.datetime > fromTime);
+      .filter((v) => v.datetime >= fromTime);
     if (arrayCandidates.length === 0) {
       continue;
     }
@@ -243,17 +243,18 @@ function getAll(req: Request, res: Response): void {
   const answers: [string, Answer][] = _getAnswer(sessionId, fromTime);
   const candidates: [string, Candidate][] = _getCandidate(sessionId, fromTime);
   const disconnections: Disconnection[] = _getDisconnection(sessionId, fromTime);
+  const datetime = lastRequestedTime.get(sessionId);
 
   let array: any[] = [];
 
-  array = array.concat(connections.map((v) => ({ connectionId: v, type: "connect", datetime: Date.now() })));
+  array = array.concat(connections.map((v) => ({ connectionId: v, type: "connect", datetime: datetime })));
   array = array.concat(offers.map((v) => ({ connectionId: v[0], sdp: v[1].sdp, polite: v[1].polite, type: "offer", datetime: v[1].datetime })));
   array = array.concat(answers.map((v) => ({ connectionId: v[0], sdp: v[1].sdp, type: "answer", datetime: v[1].datetime })));
   array = array.concat(candidates.map((v) => ({ connectionId: v[0], candidate: v[1].candidate, sdpMLineIndex: v[1].sdpMLineIndex, sdpMid: v[1].sdpMid, type: "candidate", datetime: v[1].datetime })));
   array = array.concat(disconnections.map((v) => ({ connectionId: v.id, type: "disconnect", datetime: v.datetime })));
 
   array.sort((a, b) => a.datetime - b.datetime);
-  res.json({ messages: array });
+  res.json({ messages: array, datetime: datetime });
 }
 
 function createSession(sessionId: string, res: Response): void;
@@ -278,6 +279,8 @@ function deleteSession(req: Request, res: Response): void {
 function createConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
+
   if (connectionId == null) {
     res.status(400).send({ error: new Error(`connectionId is required`) });
     return;
@@ -305,14 +308,15 @@ function createConnection(req: Request, res: Response): void {
 
   const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
-  res.json({ connectionId: connectionId, polite: polite, type: "connect", datetime: Date.now() });
+  res.json({ connectionId: connectionId, polite: polite, type: "connect", datetime: datetime });
 }
 
 function deleteConnection(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
 
-  _deleteConnection(sessionId, connectionId);
+  _deleteConnection(sessionId, connectionId, datetime);
 
   res.json({ connectionId: connectionId });
 }
@@ -320,6 +324,7 @@ function deleteConnection(req: Request, res: Response): void {
 function postOffer(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
   let keySessionId = null;
   let polite = false;
 
@@ -330,7 +335,7 @@ function postOffer(req: Request, res: Response): void {
       if (keySessionId != null) {
         polite = true;
         const map = offers.get(keySessionId);
-        map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
+        map.set(connectionId, new Offer(req.body.sdp, datetime, polite));
       }
     }
     res.sendStatus(200);
@@ -344,7 +349,7 @@ function postOffer(req: Request, res: Response): void {
 
   keySessionId = sessionId;
   const map = offers.get(keySessionId);
-  map.set(connectionId, new Offer(req.body.sdp, Date.now(), polite));
+  map.set(connectionId, new Offer(req.body.sdp, datetime, polite));
 
   res.sendStatus(200);
 }
@@ -352,6 +357,7 @@ function postOffer(req: Request, res: Response): void {
 function postAnswer(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
   const connectionIds = getOrCreateConnectionIds(sessionId);
   connectionIds.add(connectionId);
 
@@ -374,7 +380,7 @@ function postAnswer(req: Request, res: Response): void {
   }
 
   const map = answers.get(otherSessionId);
-  map.set(connectionId, new Answer(req.body.sdp, Date.now()));
+  map.set(connectionId, new Answer(req.body.sdp, datetime));
 
   // update datetime for candidates
   const mapCandidates = candidates.get(otherSessionId);
@@ -382,7 +388,7 @@ function postAnswer(req: Request, res: Response): void {
     const arrayCandidates = mapCandidates.get(connectionId);
     if (arrayCandidates) {
       for (const candidate of arrayCandidates) {
-        candidate.datetime = Date.now();
+        candidate.datetime = datetime;
       }
     }
   }
@@ -392,13 +398,14 @@ function postAnswer(req: Request, res: Response): void {
 function postCandidate(req: Request, res: Response): void {
   const sessionId: string = req.header('session-id');
   const { connectionId } = req.body;
+  const datetime = lastRequestedTime.get(sessionId);
 
   const map = candidates.get(sessionId);
   if (!map.has(connectionId)) {
     map.set(connectionId, []);
   }
   const arr = map.get(connectionId);
-  const candidate = new Candidate(req.body.candidate, req.body.sdpMLineIndex, req.body.sdpMid, Date.now());
+  const candidate = new Candidate(req.body.candidate, req.body.sdpMLineIndex, req.body.sdpMid, datetime);
   arr.push(candidate);
   res.sendStatus(200);
 }
