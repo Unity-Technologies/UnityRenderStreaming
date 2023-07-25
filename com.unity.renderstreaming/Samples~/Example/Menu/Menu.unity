@@ -1590,8 +1590,6 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Http
       m_Image: {fileID: 0}
-    - m_Text: Furioos
-      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

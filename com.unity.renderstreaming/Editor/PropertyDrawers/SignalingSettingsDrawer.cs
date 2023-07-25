@@ -137,16 +137,4 @@ namespace Unity.RenderStreaming.Editor
             return root;
         }
     }
-
-    [CustomSignalingSettingsEditor(typeof(FurioosSignalingSettings), "Furioos")]
-    internal class FurioosSignalingSettingsEditor : ISignalingSettingEditor
-    {
-        public VisualElement CreateInspectorGUI(SerializedProperty property)
-        {
-            VisualElement root = new VisualElement();
-            root.Add(new PropertyField(property.FindPropertyRelative("m_url"), "URL"));
-            root.Add(new PropertyField(property.FindPropertyRelative("m_iceServers"), "ICE Servers"));
-            return root;
-        }
-    }
 }

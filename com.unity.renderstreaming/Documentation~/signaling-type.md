@@ -4,7 +4,6 @@
 
 - `Http Signaling`
 - `WebSocket Signaling`
-- `Furioos Signaling`
 
 In the example, the schema given to `URL Signaling` is used to determine which type to use.
 
@@ -32,7 +31,3 @@ When the signaling server receives the Offer or Candidate, the server distribute
 > [!WARNING]
 > WebSocket does not work in iOS Safari on servers that use self-signed certificates.
 > If you want to verify the behavior of WebSocket signaling in iOS Safari, use a certificate issued by a trusted certification authority. Or try signaling with HTTP.
-
-## `Furioos Signaling`
-
-Please see [this page](deploy-to-furioos.md).

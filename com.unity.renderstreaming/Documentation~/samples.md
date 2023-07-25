@@ -40,7 +40,7 @@ You can change signaling settings below during runtime.
 | Parameter | Description |
 | --- | --- |
 | **Use Default Settings** | Refer to settings of [Project Settings](settings.md). |
-| [**Signaling Type**](signaling-type.md) | *Http*, *WebSocket* or *Furioos*. |
+| [**Signaling Type**](signaling-type.md) | *Http* or *WebSocket*. |
 | **Enable/Disable SSL** | Use **https** if set enable. |
 | **Host Address** | Set IP address or URL of your signaling server. |
 | **Interval (msec)** | Polling interval for communication of signaling. <br/> This parameter effects Http signaling. |

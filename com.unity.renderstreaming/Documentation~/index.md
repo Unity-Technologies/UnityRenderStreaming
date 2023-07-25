@@ -64,9 +64,3 @@ Unity Render Streaming supports almost all browsers that can use WebRTC.
 ## Samples
 
 Please check [this page](samples.md).
-
-## Furioos compatibility
-
-Unity provides **[Furioos](https://www.furioos.com)** which is a web service to stream any 3D contents on any devices in real-time.
-
-This version of Unity Render Streaming doesn't support Furioos integration.
