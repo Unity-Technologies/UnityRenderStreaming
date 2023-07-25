@@ -15,8 +15,32 @@
     </section>
 
     <section>
+      <h2>Server Configuration</h2>
       <div id="startup"></div>
     </section>
+
+    <section id="iceServers">
+      <h2>ICE servers</h2>
+      <select id="servers" size="4">
+      </select>
+      <div>
+          <label for="url">STUN or TURN URI:</label>
+          <input id="url">
+      </div>
+      <div>
+          <label for="username">TURN username:</label>
+          <input id="username">
+      </div>
+      <div>
+          <label for="password">TURN password:</label>
+          <input id="password">
+      </div>
+      <div>
+          <button id="add">Add Server</button>
+          <button id="remove">Remove Server</button>
+          <button id="reset">Reset to defaults</button>
+      </div>
+  </section>
 
     <section>
       <h2 id="receiver"><a href="receiver/index.html">Receiver Sample</a></h2>
