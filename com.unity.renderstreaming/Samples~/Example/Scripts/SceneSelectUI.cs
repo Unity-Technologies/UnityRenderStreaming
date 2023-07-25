@@ -18,7 +18,6 @@ namespace Unity.RenderStreaming.Samples
     {
         WebSocket,
         Http,
-        Furioos
     }
 
     internal class RenderStreamingSettings
@@ -71,14 +70,6 @@ namespace Unity.RenderStreaming.Samples
             {
                 switch (signalingType)
                 {
-                    case SignalingType.Furioos:
-                        {
-                            var schema = signalingSecured ? "https" : "http";
-                            return new FurioosSignalingSettings
-                            (
-                                url: $"{schema}://{signalingAddress}"
-                            );
-                        }
                     case SignalingType.WebSocket:
                         {
                             var schema = signalingSecured ? "wss" : "ws";

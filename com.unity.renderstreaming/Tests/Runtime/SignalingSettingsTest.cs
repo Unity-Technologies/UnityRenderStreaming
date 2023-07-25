@@ -76,21 +76,5 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(settings.url, Is.EqualTo(url));
             Assert.That(settings.iceServers, Is.Empty);
         }
-
-        [Test]
-        public void FurioosSignalingSettings()
-        {
-            var settings = new FurioosSignalingSettings();
-            Assert.That(settings.signalingClass, Is.EqualTo(typeof(FurioosSignaling)));
-            Assert.That(settings.url, Is.Not.Empty);
-            Assert.That(settings.iceServers, Is.Not.Empty);
-
-            Assert.That(() => new HttpSignalingSettings(url: null), Throws.Exception.TypeOf<ArgumentNullException>());
-
-            var url = "http://localhost";
-            settings = new FurioosSignalingSettings(url: url);
-            Assert.That(settings.url, Is.EqualTo(url));
-            Assert.That(settings.iceServers, Is.Empty);
-        }
     }
 }
