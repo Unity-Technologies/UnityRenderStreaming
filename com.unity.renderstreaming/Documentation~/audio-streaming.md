@@ -15,9 +15,10 @@ This component streams the audio rendering results from [`AudioListener`](https:
 | **Audio Source Type** | Choose the type of source for your audio streaming.  <br/> - *Audio Listener* <br/> - *Audio Source* <br/> - *Microphone* | *Audio Listener* |
 | *Audio Listener* | [`Audio Listener`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | |
 | *Audio Source* | [`Audio Source`](https://docs.unity3d.com/ScriptReference/AudioSource.html) instance for sending audio | |
-| *Microphone Device Index* | The index of the video input device to be used. See [Microphone.devices](https://docs.unity3d.com/ScriptReference/Microphone-devices.html). | 0 |
+| *Microphone Device Index* | The index of the microphone input device to be used. See [Microphone.devices](https://docs.unity3d.com/ScriptReference/Microphone-devices.html). | 0 |
 | *Auto Request User Authorization* | Whether request permission to use microphone. You don't need to enable it if you call [Application.RequestUserAuthorization](https://docs.unity3d.com/ScriptReference/Application.RequestUserAuthorization.html) yourself. | Enabled |
 | **Audio Codec** | *Default* option means trying to use all available codecs for negotiating other peers. | Default |
+| *Loopback* | The sending audio is also played on sender side. | Disabled |
 | **Bitrate (kbits/sec)** | The bitrate of the audio streaming. | |
 | *Min* | The minimum value of the bitrate. | 0 |
 | *Max* | The maximum value of the bitrate. | 1000 |
