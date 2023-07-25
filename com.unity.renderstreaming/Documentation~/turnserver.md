@@ -9,7 +9,7 @@ This document covers the process of linking Unity Render Streaming to a TURN ser
 
 ## Instance settings
 
-[coturn](https://github.com/coturn/coturn) software is an open source implementation for TURN servers. 
+[coturn](https://github.com/coturn/coturn) software is an open source implementation for TURN servers.
 The following is an explanation for running coturn on a GCP instance.
 
 **ubuntu-minimal-1604-xenial-v20190628** is used in the instance image so that the `apt` command can be used to install coturn. If the distribution is supported by coturn, there shouldn't be any issues. See the [coturn documentation](https://github.com/coturn/coturn) for details on coturn.
@@ -27,15 +27,15 @@ The port used by the TURN server needs to be public, so add the following settin
 
 ### Installing coturn
 
-Log into the GCP instance with `ssh`. 
+Log into the GCP instance with `ssh`.
 Install `coturn`.
 
 ```shell
 sudo apt install coturn
 ```
 
-Change the settings for booting with a daemon to use coturn as a TURN server. 
-Edit the following file. 
+Change the settings for booting with a daemon to use coturn as a TURN server.
+Edit the following file.
 
 ```shell
 sudo vim /etc/default/coturn
@@ -72,7 +72,7 @@ realm=yourcompany.com
 log-file=/var/tmp/turn.log
 ```
 
-When finished, restart the coturn service. 
+When finished, restart the coturn service.
 
 ```shell
 sudo systemctl restart coturn
@@ -96,25 +96,16 @@ Use the [webrtc sample](https://webrtc.github.io/samples/src/content/peerconnect
 
 ![TURN connection testing](images/turn-connection-testing.png)
 
-Click `Gather candidates` to show a list of potential communication paths. Verify that a log is also printed on the TURN server side. 
+Click `Gather candidates` to show a list of potential communication paths. Verify that a log is also printed on the TURN server side.
 
 ### Browser side changes
 
-Change the `config.iceServers` settings under `video-player.js` on the browser side.
+Start the web server, access the site, and add the TURN server settings to each of the ICE servers as follows:
 
-```javascript
-config.iceServers = [{
-  	urls: ['stun:stun.l.google.com:19302']
-	}, {
-    urls: ['turn:xx.xx.xx.xx:3478?transport=tcp'], 
-   	username: 'username', 
-   	credential: 'password'
-  }
-];
-```
+![Set ICE Servers Configuration On Browser](images/ice-server-configuration-browser.png)
 
-### Unity side changes 
+### Unity side changes
 
-Add the TURN server settings to `Ice Server` in the `Render Streaming` inspector.
+Open the Project Settings window and add the URL of the TURN server to the Render Streaming settings as shown below.
 
-![TURN Render Streaming inspector](images/turn-renderstreaming-inspector.png)
+![TURN Server Settings](images/turn-server-settings.png)
