@@ -303,6 +303,152 @@ namespace Unity.RenderStreaming.RuntimeTest
             container1.Dispose();
             container2.Dispose();
         }
+
+        //todo:: crash in dispose process on standalone linux
+        [UnityTest, Timeout(10000)]
+        [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer, RuntimePlatform.Android })]
+        public IEnumerator DataChannelDisconnectWithMultipleConnections()
+        {
+            // Ignore signaling log errors due to multiple connections
+            LogAssert.ignoreFailingMessages = true;
+
+            string connectionId = "12345";
+            string connectionId2 = "54321";
+            var container1 = TestContainer<BroadcastBehaviourTest>.Create("test1");
+            var container2 = TestContainer<SingleConnectionBehaviourTest>.Create("test2");
+            var container4 = TestContainer<SingleConnectionBehaviourTest>.Create("test4");
+
+            var channel1 = container1.test.gameObject.AddComponent<DataChannelTest>();
+            bool isStartedChannel1 = false;
+            bool isStoppedChannel1 = false;
+            channel1.OnStartedChannel += _ => isStartedChannel1 = true;
+            channel1.OnStoppedChannel += _ => isStoppedChannel1 = true;
+            container1.test.component.AddComponent(channel1);
+
+            container1.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId));
+
+            var channel2 = container2.test.gameObject.AddComponent<DataChannelTest>();
+            bool isStartedChannel2 = false;
+            bool isStoppedChannel2 = false;
+            channel2.OnStartedChannel += _ => isStartedChannel2 = true;
+            channel2.OnStoppedChannel += _ => isStoppedChannel2 = true;
+
+            channel2.SetLocal(true);
+            channel2.SetLabel("test");
+
+            Assert.That(channel2.IsConnected, Is.False);
+            Assert.That(channel2.IsLocal, Is.True);
+            Assert.That(channel2.Label, Is.EqualTo("test"));
+
+            container2.test.component.AddComponent(channel2);
+            container2.test.component.CreateConnection(connectionId);
+            yield return new WaitUntil(() => container2.test.component.ExistConnection(connectionId));
+            yield return new WaitUntil(() => isStartedChannel1 && isStartedChannel2);
+            Assert.That(isStartedChannel1, Is.True);
+            Assert.That(isStartedChannel2, Is.True);
+
+            Assert.That(channel1.IsLocal, Is.False);
+            Assert.That(channel1.Label, Is.EqualTo("test"));
+            Assert.That(channel1.IsConnected, Is.True);
+            Assert.That(channel1.Channel, Is.Not.Null);
+            Assert.That(channel1.ConnectionId, Is.EqualTo(connectionId));
+
+            Assert.That(channel2.IsConnected, Is.True);
+            Assert.That(channel2.Channel, Is.Not.Null);
+            Assert.That(channel2.ConnectionId, Is.EqualTo(connectionId));
+
+            var channel3 = container1.test.gameObject.AddComponent<DataChannelTest>();
+            bool isStartedChannel3 = false;
+            bool isStoppedChannel3 = false;
+            channel3.OnStartedChannel += _ => isStartedChannel3 = true;
+            channel3.OnStoppedChannel += _ => isStoppedChannel3 = true;
+            container1.test.component.AddComponent(channel3);
+
+            container1.test.component.CreateConnection(connectionId2);
+            yield return new WaitUntil(() => container1.test.component.ExistConnection(connectionId2));
+
+            var channel4 = container4.test.gameObject.AddComponent<DataChannelTest>();
+            bool isStartedChannel4 = false;
+            bool isStoppedChannel4 = false;
+            channel4.OnStartedChannel += _ => isStartedChannel4 = true;
+            channel4.OnStoppedChannel += _ => isStoppedChannel4 = true;
+
+            channel4.SetLocal(true);
+            channel4.SetLabel("test2");
+
+            Assert.That(channel4.IsConnected, Is.False);
+            Assert.That(channel4.IsLocal, Is.True);
+            Assert.That(channel4.Label, Is.EqualTo("test2"));
+
+            container4.test.component.AddComponent(channel4);
+            container4.test.component.CreateConnection(connectionId2);
+            yield return new WaitUntil(() => container4.test.component.ExistConnection(connectionId2));
+            yield return new WaitUntil(() => isStartedChannel3 && isStartedChannel4);
+            Assert.That(isStartedChannel3, Is.True);
+            Assert.That(isStartedChannel4, Is.True);
+
+            Assert.That(channel3.IsLocal, Is.False);
+            Assert.That(channel3.Label, Is.EqualTo("test2"));
+            Assert.That(channel3.IsConnected, Is.True);
+            Assert.That(channel3.Channel, Is.Not.Null);
+            Assert.That(channel3.ConnectionId, Is.EqualTo(connectionId2));
+
+            Assert.That(channel4.IsConnected, Is.True);
+            Assert.That(channel4.Channel, Is.Not.Null);
+            Assert.That(channel4.ConnectionId, Is.EqualTo(connectionId2));
+
+            // send message from channel1 to channel2
+            string sendMessage = "hello";
+            string receivedMessage = null;
+            channel2.OnReceiveMessage = message => { receivedMessage = message; };
+            channel1.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
+
+            // send message from channel2 to channel1
+            receivedMessage = null;
+            channel1.OnReceiveMessage = message => { receivedMessage = message; };
+            channel2.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
+
+            // send message from channel3 to channel4
+            receivedMessage = null;
+            channel4.OnReceiveMessage = message => { receivedMessage = message; };
+            channel3.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
+
+            // send message from channel4 to channel3
+            receivedMessage = null;
+            channel3.OnReceiveMessage = message => { receivedMessage = message; };
+            channel4.Send(sendMessage);
+            yield return new WaitUntil(() => !string.IsNullOrEmpty(receivedMessage));
+            Assert.That(receivedMessage, Is.EqualTo(sendMessage));
+
+            container1.test.component.DeleteConnection(connectionId);
+            container2.test.component.DeleteConnection(connectionId);
+
+            yield return new WaitUntil(() => isStoppedChannel1 && isStoppedChannel2);
+            Assert.That(isStoppedChannel1, Is.True);
+            Assert.That(isStoppedChannel2, Is.True);
+            Assert.That(isStoppedChannel3, Is.False);
+            Assert.That(isStoppedChannel4, Is.False);
+
+            container1.test.component.DeleteConnection(connectionId2);
+            container4.test.component.DeleteConnection(connectionId2);
+
+            yield return new WaitUntil(() => isStoppedChannel3 && isStoppedChannel4);
+            Assert.That(isStoppedChannel3, Is.True);
+            Assert.That(isStoppedChannel4, Is.True);
+
+            container1.Dispose();
+            container2.Dispose();
+            container4.Dispose();
+
+            LogAssert.ignoreFailingMessages = false;
+        }
     }
 
     class SingleConnectionTest
