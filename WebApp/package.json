@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@jest-mock/express": "^2.0.1",
-    "@types/jest": "^29.0.0",
+    "@types/jest": "^29.0.2",
     "@types/morgan": "^1.9.3",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
@@ -35,7 +35,7 @@
     "mock-socket": "^9.1.5",
     "newman": "^5.3.2",
     "pkg": "^5.8.0",
-    "ts-jest": "^28.0.8",
+    "ts-jest": "^29.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.2"
   },
