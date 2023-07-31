@@ -10,7 +10,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace Unity.RenderStreaming.RuntimeTest
 {
-    using InputRemoting = Unity.RenderStreaming.InputSystem.InputRemoting;
+    using InputRemoting = InputSystem.InputRemoting;
 
     class MessageSerializerTest
     {
@@ -156,6 +156,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var sender = new Sender();
             Assert.That(sender.layouts, Is.Not.Empty);
             Assert.That(sender.devices, Is.Not.Empty);
+            Assert.That(sender.GetDeviceById(0), Is.Null);
             var senderInput = new InputRemoting(sender);
             var senderDisposer = senderInput.Subscribe(new Observer(_channel1));
             senderInput.StartSending();
@@ -170,6 +171,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             var receiver = new Receiver(_channel1);
             Assert.That(receiver.remoteDevices, Is.Empty);
             Assert.That(receiver.remoteLayouts, Is.Empty);
+            Assert.That(receiver.GetDeviceById(0), Is.Null);
             var receiverInput = new InputRemoting(receiver);
             var receiverDisposer = receiverInput.Subscribe(receiverInput);
             receiverInput.StartSending();
