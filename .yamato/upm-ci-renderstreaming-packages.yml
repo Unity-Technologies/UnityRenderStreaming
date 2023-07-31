@@ -343,10 +343,7 @@ test_{{ packagename }}_{{ editor.version }}:
 {% endfor %}
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}_ios
 {% for target in test_targets_android %}
-# todo: Exclude tests for Unity 2022.2 on Android platform because it is instable.
-{% if editor.version != "2022.2" %}
     - .yamato/upm-ci-renderstreaming-packages.yml#test_{{ packagename }}_{{ editor.version }}_android_{{ target.name }}
-{% endif %}
 {% endfor %}
 
 test_renderpipeline_{{ packagename }}_{{ editor.version }}:
