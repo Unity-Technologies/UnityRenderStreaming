@@ -142,7 +142,7 @@ namespace Unity.RenderStreaming.RuntimeTest
         //todo:: crash in dispose process on standalone linux
         [Test]
         [UnityPlatform(exclude = new[] { RuntimePlatform.LinuxPlayer })]
-        public void AddStreamSource()
+        public void AddAndRemoveStreamSource()
         {
             var container = TestContainer<BroadcastBehaviourTest>.Create("test");
             var streamer = container.test.gameObject.AddComponent<VideoStreamSenderTester>();
@@ -150,7 +150,11 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(streamer.Track, Is.Null);
             Assert.That(streamer.Transceivers, Is.Empty);
 
+            Assert.That(container.test.component.Streams, Is.Empty);
             container.test.component.AddComponent(streamer);
+            Assert.That(container.test.component.Streams, Has.Count.EqualTo(1));
+            container.test.component.RemoveComponent(streamer);
+            Assert.That(container.test.component.Streams, Is.Empty);
             container.Dispose();
         }
 

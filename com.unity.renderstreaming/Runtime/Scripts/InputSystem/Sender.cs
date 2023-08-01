@@ -44,29 +44,6 @@ namespace Unity.RenderStreaming.InputSystem
         /// <summary>
         /// 
         /// </summary>
-        public override ReadOnlyArray<InputDevice> devices
-        {
-            get
-            {
-                return InputSystem.devices;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public override IEnumerable<string> layouts
-        {
-            get
-            {
-                // todo(kazuki):: filter layout
-                return InputSystem.ListLayouts();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public bool EnableInputPositionCorrection { set; get; }
 
         /// <summary>

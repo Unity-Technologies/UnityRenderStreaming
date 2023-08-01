@@ -2,7 +2,7 @@
 
 <img src="https://img.shields.io/badge/unity-2020.3-green.svg?style=flat-square" alt="unity 2020.3">
 <img src="https://img.shields.io/badge/unity-2021.3-green.svg?style=flat-square" alt="unity 2021.3">
-<img src="https://img.shields.io/badge/unity-2022.2-green.svg?style=flat-square" alt="unity 2022.2">
+<img src="https://img.shields.io/badge/unity-2022.2-green.svg?style=flat-square" alt="unity 2022.3">
 
 **Unity Render Streaming** is a solution that provides Unity's high quality rendering abilities via browser. It's designed to meet the needs of tasks like viewing car configurators or architectural models on mobile devices.
 This solution's streaming technology takes advantage of [WebRTC](https://webrtc.org/), and developers can even use the [WebRTC package](https://docs.unity3d.com/Packages/com.unity.webrtc@latest) to create their own unique solutions.
@@ -12,13 +12,6 @@ This solution's streaming technology takes advantage of [WebRTC](https://webrtc.
 ## Requirements
 
 Please see [Requirements](com.unity.renderstreaming/Documentation~/index.md#requirements) section.
-
-### Furioos compatibility
-
-**Unity Render Streaming** is also supported natively by **Furioos** platform https://www.furioos.com/ .
-That means that you can easily build a Unity application, upload it on **Furioos** and enjoy all the features of **Unity Render Streaming** without worrying about the deployment and scalability issues of your project.
-
-Please see [Furioos Tutorial](com.unity.renderstreaming/Documentation~/deploy-to-furioos) section to find out how it works.
 
 ### License
 
