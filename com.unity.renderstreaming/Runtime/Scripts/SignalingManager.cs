@@ -278,7 +278,13 @@ namespace Unity.RenderStreaming
                 return;
 
             var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
-            RTCIceServer[] iceServers = settings.iceServers.OfType<RTCIceServer>().ToArray();
+            int i = 0;
+            RTCIceServer[] iceServers = new RTCIceServer[settings.iceServers.Count()];
+            foreach (var iceServer in settings.iceServers)
+            {
+                iceServers[i] = (RTCIceServer)iceServer;
+                i++;
+            }
             RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
             ISignaling signaling = CreateSignaling(settings, SynchronizationContext.Current);
             _Run(conf, signaling, handlers.ToArray());
