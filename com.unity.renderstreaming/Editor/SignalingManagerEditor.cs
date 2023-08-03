@@ -151,7 +151,7 @@ namespace Unity.RenderStreaming.Editor
 
         private void OnProjectChanged()
         {
-            if(root == null)
+            if (root == null)
                 return;
             var paths = GetAvailableSignalingSettingsPath();
 
