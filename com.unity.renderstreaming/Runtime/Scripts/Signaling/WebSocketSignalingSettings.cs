@@ -27,9 +27,10 @@ namespace Unity.RenderStreaming
         /// </summary>
         public string url => m_url;
 
-        [SerializeField]
+        [SerializeField, Tooltip("Set the signaling server URL. you should specify a URL starting with \"ws\" or \"wss\".")]
         protected string m_url;
-        [SerializeField]
+
+        [SerializeField, Tooltip("Set a list of STUN/TURN servers.")]
         protected IceServer[] m_iceServers;
 
         /// <summary>

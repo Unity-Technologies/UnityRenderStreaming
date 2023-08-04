@@ -92,6 +92,7 @@ namespace Unity.RenderStreaming.Editor
             var paths = GetAvailableSignalingSettingsPath();
 
             var field = new PopupField<SignalingSettingsObject>(label: label);
+            field.tooltip = "Choose the signaling settings.";
             field.formatSelectedValueCallback = v => AssetDatabase.GetAssetPath(v);
             field.formatListItemCallback = v => AssetDatabase.GetAssetPath(v);
             if (paths.Length == 0)
