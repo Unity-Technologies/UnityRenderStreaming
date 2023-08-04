@@ -24,7 +24,7 @@ namespace Unity.RenderStreaming
         internal const string EvaluateCommandlineArgumentsPropertyName = nameof(evaluateCommandlineArguments);
 
 #pragma warning disable 0649
-        [SerializeField]
+        [SerializeField, Tooltip("Use settings in Project Settings Window.")]
         private bool m_useDefault = true;
 
         [SerializeField]
@@ -54,6 +54,9 @@ namespace Unity.RenderStreaming
         private SignalingEventProvider m_provider;
         private bool m_running;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Running => m_running;
 
         static ISignaling CreateSignaling(SignalingSettings settings, SynchronizationContext context)

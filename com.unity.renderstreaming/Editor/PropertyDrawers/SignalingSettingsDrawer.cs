@@ -43,7 +43,9 @@ namespace Unity.RenderStreaming.Editor
             var settings = fieldInfo.GetValue(property.serializedObject.targetObject) as SignalingSettings;
             var defaultValue = CustomSignalingSettingsEditor.FindLabelByInspectedType(settings.GetType());
             var choices = CustomSignalingSettingsEditor.Labels().ToList();
-            return new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
+            var field = new PopupField<string>(label: label, choices: choices, defaultValue: defaultValue);
+            field.tooltip = "Choose the signaling type. \"WebSocket\" or \"HTTP Polling\".";
+            return field;
         }
 
         static void ReplaceVisualElement(VisualElement oldValue, VisualElement newValue)

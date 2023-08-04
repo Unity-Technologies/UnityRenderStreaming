@@ -13,7 +13,8 @@ namespace Unity.RenderStreaming
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField] public bool automaticStreaming;
+        [SerializeField, Tooltip("Automatically performs the necessary setup for streaming and starts streaming.")]
+        public bool automaticStreaming;
 
         [SerializeReference, SignalingSettings]
         public SignalingSettings signalingSettings = new WebSocketSignalingSettings();

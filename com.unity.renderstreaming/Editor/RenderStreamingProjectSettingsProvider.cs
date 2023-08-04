@@ -20,6 +20,9 @@ namespace Unity.RenderStreaming.Editor
         private int currentSelectedSettingsAsset;
         private RenderStreamingSettings settings;
 
+        const string LabelRenderStreamingSettingsAsset = "Render Streaming Settings Asset";
+        const string LabelCreateSettingsButton = "Create New Settings Asset";
+
         const string kSettingsPath = "Project/Render Streaming";
         const string kTemplatePath = "Packages/com.unity.renderstreaming/Editor/UXML/RenderStreamingProjectSettings.uxml";
         const string kStylePath = "Packages/com.unity.renderstreaming/Editor/Styles/RenderStreamingProjectSettings.uss";
@@ -59,10 +62,11 @@ namespace Unity.RenderStreaming.Editor
 
             var defaultIndex = ArrayHelpers.IndexOf(availableRenderStreamingSettingsAssets, AssetDatabase.GetAssetPath(settings));
             var choices = availableRenderStreamingSettingsAssets.ToList();
-            var selectPopup = new PopupField<string>(label: label, choices: choices, defaultIndex: defaultIndex)
+            var selectPopup = new PopupField<string>(label: LabelRenderStreamingSettingsAsset, choices: choices, defaultIndex: defaultIndex)
             {
                 name = "renderStreamingSettingsSelectPopup"
             };
+            selectPopup.tooltip = "Choose the Render Streaming Settings.";
             selectPopup.RegisterValueChangedCallback(evt =>
             {
                 currentSelectedSettingsAsset = selectPopup.index;
@@ -77,7 +81,7 @@ namespace Unity.RenderStreaming.Editor
             });
             selectorContainer.Add(selectPopup);
 
-            var createSettingsButton = new Button { text = "Create New Settings Asset" };
+            var createSettingsButton = new Button { text = LabelCreateSettingsButton };
             createSettingsButton.clicked += () =>
             {
                 CreateNewSettingsAsset();

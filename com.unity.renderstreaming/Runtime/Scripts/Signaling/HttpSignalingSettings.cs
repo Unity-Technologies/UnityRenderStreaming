@@ -29,11 +29,11 @@ namespace Unity.RenderStreaming
         /// </summary>
         public int interval => m_interval;
 
-        [SerializeField]
+        [SerializeField, Tooltip("Set the polling frequency (in milliseconds) to the signaling server.")]
         private int m_interval;
-        [SerializeField]
+        [SerializeField, Tooltip("Set the signaling server URL. you should specify a URL starting with \"http\" or \"https\".")]
         protected string m_url;
-        [SerializeField]
+        [SerializeField, Tooltip("Set a list of STUN/TURN servers.")]
         protected IceServer[] m_iceServers;
 
         /// <summary>
