@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   automaticStreaming: 1
   signalingSettings:
-    id: 0
+    rid: 0
   references:
-    version: 1
-    00000000:
+    version: 2
+    RefIds:
+    - rid: 0
       type: {class: WebSocketSignalingSettings, ns: Unity.RenderStreaming, asm: Unity.RenderStreaming}
       data:
         m_url: ws://127.0.0.1:80

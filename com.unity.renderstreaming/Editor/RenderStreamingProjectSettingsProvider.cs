@@ -175,8 +175,7 @@ namespace Unity.RenderStreaming.Editor
         private void ShowRenderStreamingSettingsProperty()
         {
             var settingsPropertyContainer = rootVisualElement.Q("settingsPropertyContainer");
-            settingsPropertyContainer.Clear();
-
+            settingsPropertyContainer.Clear(); 
             var editor = UnityEditor.Editor.CreateEditor(settings);
             var inspectorGUI = editor.CreateInspectorGUI();
             inspectorGUI.SetEnabled(!isDefaultSettings);
