@@ -55,7 +55,7 @@ namespace Unity.RenderStreaming
         private bool m_running;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool Running => m_running;
 
@@ -203,6 +203,7 @@ namespace Unity.RenderStreaming
 #endif
             int i = 0;
             RTCIceServer[] iceServers = new RTCIceServer[settings.iceServers.Count()];
+            iceServers = Array.Empty<RTCIceServer>();
             foreach (var iceServer in settings.iceServers)
             {
                 iceServers[i] = (RTCIceServer)iceServer;
