@@ -213,6 +213,12 @@ namespace Unity.RenderStreaming.InputSystem
                     // todo: not supported multibyte character.
                     return null;
                 }
+                if (utf32Char < 0x100)
+                {
+                    // ignore control
+                    if (char.IsControl((char)utf32Char))
+                        return null;
+                }
 
                 return new Event
                 {
