@@ -670,6 +670,11 @@ namespace Unity.RenderStreaming
                 return new Vector2Int(screenWidth, screenHeight);
             }
 
+            public static void CopyTextureFunction(Texture source, RenderTexture dest)
+            {
+                Graphics.Blit(source, dest);
+            }
+
             public override WaitForCreateTrack CreateTrack()
             {
                 Vector2Int screenSize = GetScreenSize();
@@ -689,7 +694,7 @@ namespace Unity.RenderStreaming
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
                 var instruction = new WaitForCreateTrack();
 
-                CopyTexture copyTexture = isOpenGl ? CopyTextureHelper.VerticalFlipCopy : null;
+                CopyTexture copyTexture = isOpenGl ? null : CopyTextureFunction;
                 instruction.Done(new VideoStreamTrack(m_screenCopyTexture, copyTexture));
                 return instruction;
             }
