@@ -4,6 +4,12 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.8] - 2023-11-30
+
+### Changed
+
+- Upgrade the version of WebRTC package `3.0.0-pre.7`.
+
 ## [3.1.0-exp.7] - 2023-08-09
 
 ### Added
