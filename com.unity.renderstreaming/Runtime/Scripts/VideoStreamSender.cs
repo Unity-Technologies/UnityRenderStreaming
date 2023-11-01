@@ -694,7 +694,11 @@ namespace Unity.RenderStreaming
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
                 var instruction = new WaitForCreateTrack();
 
-                CopyTexture copyTexture = isOpenGl ? null : CopyTextureFunction;
+                CopyTexture copyTexture = null;
+                if (!isOpenGl)
+                {
+                    copyTexture = CopyTextureFunction;
+                }
                 instruction.Done(new VideoStreamTrack(m_screenCopyTexture, copyTexture));
                 return instruction;
             }
