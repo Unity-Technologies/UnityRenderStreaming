@@ -76,6 +76,12 @@ namespace Unity.RenderStreaming
         /// <summary>
         ///
         /// </summary>
+        /// <returns></returns>
+        bool WSConnected();
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="connectionId"></param>
         /// <returns></returns>
         bool IsConnected(string connectionId);
@@ -108,7 +114,7 @@ namespace Unity.RenderStreaming
         void SendAnswer(string connectionId);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="track"></param>
@@ -117,7 +123,7 @@ namespace Unity.RenderStreaming
         RTCRtpTransceiver AddTransceiver(string connectionId, MediaStreamTrack track, RTCRtpTransceiverInit init = null);
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="kind"></param>

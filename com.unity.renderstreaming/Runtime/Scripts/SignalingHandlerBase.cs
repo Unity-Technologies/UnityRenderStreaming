@@ -47,6 +47,17 @@ namespace Unity.RenderStreaming
             return m_handler.ExistConnection(connectionId);
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public virtual bool WSConnected()
+        {
+            return m_handler.WSConnected();
+        }
+
         /// <summary>
         ///
         /// </summary>

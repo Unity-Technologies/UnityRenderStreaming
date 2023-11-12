@@ -91,6 +91,7 @@ namespace Unity.RenderStreaming
         public event Action<string, RTCDataChannel> onAddChannel;
 
         private bool _disposed;
+        private bool _wsConnected;
         private readonly ISignaling _signaling;
         private RTCConfiguration _config;
         private readonly Func<IEnumerator, Coroutine> _startCoroutine;
@@ -182,6 +183,11 @@ namespace Unity.RenderStreaming
         public bool ExistConnection(string connectionId)
         {
             return _mapConnectionIdAndPeer.ContainsKey(connectionId);
+        }
+
+        public bool WSConnected()
+        {
+            return _wsConnected;
         }
 
         public bool IsConnected(string connectionId)
@@ -334,6 +340,8 @@ namespace Unity.RenderStreaming
                 _runningResendCoroutine = true;
                 _startCoroutine(ResendOfferCoroutine());
             }
+
+            _wsConnected = true;
             onStart?.Invoke();
         }
 
