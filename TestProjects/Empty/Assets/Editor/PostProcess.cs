@@ -11,7 +11,6 @@ class PostProcess : IPostprocessBuildWithReport
 
     public void OnPostprocessBuild(BuildReport report)
     {
-         UnityEngine.Debug.Log("OnPostprocessBuild");
 #if UNITY_IOS
         if (report.summary.platform == BuildTarget.iOS)
         {
