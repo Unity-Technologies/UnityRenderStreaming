@@ -123,9 +123,14 @@ namespace Unity.RenderStreaming
 
             EditorApplication.projectChanged += () =>
             {
-                if (!EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey, out RenderStreamingSettings _))
+                if (EditorBuildSettings.TryGetConfigObject(EditorBuildSettingsConfigKey, out RenderStreamingSettings _))
                 {
-                    Settings = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
+                    return;
+                }
+                var value = AssetDatabase.LoadAssetAtPath<RenderStreamingSettings>(DefaultRenderStreamingSettingsPath);
+                if (value != null)
+                {
+                    Settings = value;
                 }
             };
         }

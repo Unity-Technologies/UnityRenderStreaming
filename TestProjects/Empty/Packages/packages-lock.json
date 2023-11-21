@@ -15,7 +15,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.4.4",
+      "version": "1.7.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -28,14 +28,14 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.webrtc": "3.0.0-pre.4",
-        "com.unity.inputsystem": "1.4.4",
+        "com.unity.webrtc": "3.0.0-pre.7",
+        "com.unity.inputsystem": "1.5.1",
         "com.unity.ugui": "1.0.0",
         "com.unity.modules.screencapture": "1.0.0"
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.31",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -55,7 +55,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.6.4",
+      "version": "1.7.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -76,7 +76,7 @@
       }
     },
     "com.unity.webrtc": {
-      "version": "3.0.0-pre.4",
+      "version": "3.0.0-pre.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -217,17 +217,6 @@
     "com.unity.modules.uielements": {
       "version": "1.0.0",
       "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.ui": "1.0.0",
-        "com.unity.modules.imgui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.uielementsnative": "1.0.0"
-      }
-    },
-    "com.unity.modules.uielementsnative": {
-      "version": "1.0.0",
-      "depth": 1,
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",

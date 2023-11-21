@@ -50,7 +50,8 @@ Please see [Requirements](com.unity.renderstreaming/Documentation~/index.md#requ
 | `3.1.0-exp.4` | - Streaming settings API <br/> - *Unity 2022.1* support <br/> - Remove *Unity 2019.4* from support list | Oct 2022 |
 | `3.1.0-exp.5` | - Fix bugs | Jan 2023 |
 | `3.1.0-exp.6` | - Streaming Settings Window <br/> - Auto Configuration <br/> - Command line option | Feb 2023 |
-| `3.1.0-exp.7` | - Fix bugs | July 2023 |
+| `3.1.0-exp.7` | - Fix bugs | Jul 2023 |
+| `3.1.0-exp.8` | - Fix bugs | Nov 2023 |
 
 ## FAQ
 
