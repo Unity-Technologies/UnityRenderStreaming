@@ -86,24 +86,24 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum VideoStreamSource
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Camera = 0,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Screen = 1,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         WebCamera = 2,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         Texture = 3
     }
@@ -159,7 +159,7 @@ namespace Unity.RenderStreaming
         private VideoStreamSourceImpl m_sourceImpl = null;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoStreamSource source
         {
@@ -178,7 +178,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public Camera sourceCamera
         {
@@ -222,7 +222,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public WebCamTexture sourceWebCamTexture
         {
@@ -262,7 +262,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public float scaleResolutionDown
         {
@@ -270,7 +270,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint width
         {
@@ -282,7 +282,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint height
         {
@@ -294,7 +294,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public VideoCodecInfo codec
         {
@@ -309,7 +309,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mimeType"></param>
         public void SetCodec(VideoCodecInfo codec)
@@ -332,7 +332,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
@@ -623,7 +623,7 @@ namespace Unity.RenderStreaming
                                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
 
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
-                return new VideoStreamTrack(m_screenCopyTexture, isOpenGl);
+                return new VideoStreamTrack(m_screenCopyTexture, isOpenGl ? null : Graphics.Blit);
             }
 
             IEnumerator RecordScreenFrame()

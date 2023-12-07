@@ -26,7 +26,7 @@ namespace Unity.RenderStreaming
         private int m_sampleRate = 0;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public AudioCodecInfo codec
         {
@@ -34,7 +34,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint minBitrate
         {
@@ -42,7 +42,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint maxBitrate
         {
@@ -50,7 +50,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         static public IEnumerable<AudioCodecInfo> GetAvailableCodecs()
@@ -61,7 +61,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="bitrate"></param>
         public void SetBitrate(uint minBitrate, uint maxBitrate)
@@ -79,7 +79,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mimeType"></param>
         public void SetCodec(AudioCodecInfo codec)
@@ -151,20 +151,15 @@ namespace Unity.RenderStreaming
 
         protected virtual void OnAudioFilterRead(float[] data, int channels)
         {
-            NativeArray<float> nativeArray = new NativeArray<float>(data, Allocator.Temp);
             try
             {
-                track?.SetData(ref nativeArray, channels, m_sampleRate);
+                track?.SetData(data, channels, m_sampleRate);
             }
             // todo(kazuki):: Should catch only ObjectDisposedException but
             // AudioStreamTrack also throws NullReferenceException.
             catch (Exception)
             {
                 track = null;
-            }
-            finally
-            {
-                nativeArray.Dispose();
             }
         }
     }
