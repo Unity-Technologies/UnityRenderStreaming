@@ -365,7 +365,11 @@ namespace Unity.RenderStreaming
             _mapConnectionIdAndPeer[connectionId] = peer;
 
             peer.OnConnectHandler += () => onConnect?.Invoke(connectionId);
-            peer.OnDisconnectHandler += () => onDisconnect?.Invoke(connectionId);
+            peer.OnDisconnectHandler += () =>
+            {
+                _signaling?.CloseConnection(connectionId);
+                onDisconnect?.Invoke(connectionId);
+            };
             peer.OnDataChannelHandler += channel => onAddChannel?.Invoke(connectionId, channel); ;
             peer.OnTrackEventHandler += e => onAddTransceiver?.Invoke(connectionId, e.Transceiver);
             peer.SendOfferHandler += desc => _signaling?.SendOffer(connectionId, desc);
