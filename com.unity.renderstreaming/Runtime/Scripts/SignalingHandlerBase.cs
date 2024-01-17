@@ -196,7 +196,7 @@ namespace Unity.RenderStreaming
 
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="receiver"></param>
@@ -354,7 +354,7 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public interface IDataChannel
     {
@@ -372,6 +372,11 @@ namespace Unity.RenderStreaming
         ///
         /// </summary>
         string Label { get; }
+
+        /// <summary>
+        ///
+        /// </summary>
+        string ConnectionId { get; }
 
         /// <summary>
         ///

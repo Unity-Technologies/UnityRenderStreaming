@@ -48,7 +48,7 @@ namespace Unity.RenderStreaming
             {
                 RemoveReceiver(connectionId, receiver);
             }
-            foreach (var channel in streams.OfType<IDataChannel>())
+            foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.ConnectionId == connectionId))
             {
                 RemoveChannel(connectionId, channel);
             }

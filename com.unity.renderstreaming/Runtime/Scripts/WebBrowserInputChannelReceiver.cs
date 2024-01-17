@@ -57,6 +57,12 @@ namespace Unity.RenderStreaming
 					onDeviceChange?.Invoke(remoteInput.RemoteKeyboard, InputDeviceChange.Removed);
 					onDeviceChange?.Invoke(remoteInput.RemoteMouse, InputDeviceChange.Removed);
 					onDeviceChange?.Invoke(remoteInput.RemoteTouchscreen, InputDeviceChange.Removed);
+
+                    if (Channel != null)
+                    {
+                        Channel.OnMessage -= remoteInput.ProcessInput;
+                    }
+
                     remoteInput.Dispose();
                     remoteInput = null;
                 }
