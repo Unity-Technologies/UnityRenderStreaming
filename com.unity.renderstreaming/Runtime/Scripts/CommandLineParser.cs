@@ -46,18 +46,18 @@ namespace Unity.RenderStreaming
             public string ArgumentName { get; }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             public bool Defined => m_defined;
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             public readonly bool Required;
 
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             public T Value => m_value;
 
@@ -212,10 +212,10 @@ namespace Unity.RenderStreaming
                 list.Add(arguments[startIndex + 1]);
                 i = startIndex + 2;
             }
-            if (list.Count == 0 && required)
+            if (list.Count == 0)
             {
                 argumentValue = null;
-                return false;
+                return !required;
             }
             argumentValue = list.ToArray();
             return true;
