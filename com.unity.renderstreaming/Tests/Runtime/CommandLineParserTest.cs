@@ -19,6 +19,7 @@ namespace Unity.RenderStreaming.RuntimeTest
             Assert.That(CommandLineParser.TryParse(arguments), Is.True);
             Assert.That((string)CommandLineParser.SignalingUrl, Is.Null);
             Assert.That((int?)CommandLineParser.PollingInterval, Is.Null);
+            Assert.That((string[])CommandLineParser.IceServerUrls, Is.Null);
         }
 
         [Test]
