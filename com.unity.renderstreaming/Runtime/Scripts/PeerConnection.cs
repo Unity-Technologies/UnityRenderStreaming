@@ -86,7 +86,7 @@ namespace Unity.RenderStreaming
                     case RTCPeerConnectionState.Connected:
                         OnConnectHandler?.Invoke();
                         break;
-                    case RTCPeerConnectionState.Disconnected:
+                    case RTCPeerConnectionState.Failed:
                         OnDisconnectHandler?.Invoke();
                         break;
                 }
