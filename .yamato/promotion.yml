@@ -3,7 +3,7 @@
 test_platforms:
   - name: win
     type: Unity::VM
-    image: package-ci/win10:v1.21.0-1103459
+    image: package-ci/win10:v4
     flavor: b1.large
 ---
 
@@ -33,7 +33,7 @@ promote_dry_run:
   name: Promote Dry Run to Production
   agent:
     type: Unity::VM
-    image: package-ci/win10:v1.21.0-1103459
+    image: package-ci/win10:v4
     flavor: b1.large
   variables:
     UPMCI_PROMOTION: 1
@@ -62,7 +62,7 @@ promote:
   name: Promote to Production
   agent:
     type: Unity::VM
-    image: package-ci/win10:v1.21.0-1103459
+    image: package-ci/win10:v4
     flavor: b1.large
   variables:
     UPMCI_PROMOTION: 1
