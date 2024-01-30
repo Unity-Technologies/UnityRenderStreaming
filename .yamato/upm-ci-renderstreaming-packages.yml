@@ -362,7 +362,7 @@ publish_dry_run_{{ packagename }}:
   name: Publish Dry Run {{ package_displayname }}
   agent:
     type: Unity::VM
-    image: package-ci/win10:v1.21.0-1103459
+    image: package-ci/win10:v4
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
@@ -389,7 +389,7 @@ publish_{{ packagename }}:
   name: Publish {{ package_displayname }}
   agent:
     type: Unity::VM
-    image: package-ci/win10:v1.21.0-1103459
+    image: package-ci/win10:v4
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@{{ upm.package_version }} -g --registry {{ upm.registry_url }}
