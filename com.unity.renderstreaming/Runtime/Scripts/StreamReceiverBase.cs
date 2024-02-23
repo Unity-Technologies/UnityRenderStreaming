@@ -57,6 +57,8 @@ namespace Unity.RenderStreaming
                 OnStoppedStream?.Invoke(connectionId);
             else
                 OnStartedStream?.Invoke(connectionId);
+
+            RenderStreaming.Logger.Log($"After started stream for connectionId {connectionId}");
         }
 
         protected virtual void OnDestroy()

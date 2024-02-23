@@ -63,6 +63,8 @@ namespace Unity.RenderStreaming
 
         public void OnOffer(SignalingEventData data)
         {
+            RenderStreaming.Logger.Log($"!!! Start handling offer for connectionId {data.connectionId} !!!");
+
             if (connectionIds.Contains(data.connectionId))
             {
                 RenderStreaming.Logger.Log($"Already answered this connectionId : {data.connectionId}");
@@ -72,12 +74,17 @@ namespace Unity.RenderStreaming
 
             foreach (var source in streams.OfType<IStreamSender>())
             {
+                RenderStreaming.Logger.Log($"!!! Adding sender for connectionId {data.connectionId} !!!");
                 AddSender(data.connectionId, source);
             }
+
             foreach (var channel in streams.OfType<IDataChannel>().Where(c => c.IsLocal))
             {
+                RenderStreaming.Logger.Log($"!!! Adding local channel for connectionId {data.connectionId} !!!");
                 AddChannel(data.connectionId, channel);
             }
+
+            RenderStreaming.Logger.Log($"!!! Before SendAnswer {data.connectionId} !!!");
             SendAnswer(data.connectionId);
         }
 

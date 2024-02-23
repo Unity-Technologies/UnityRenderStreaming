@@ -229,14 +229,18 @@ namespace Unity.RenderStreaming
 
         private IEnumerator SendAnswerCoroutine()
         {
+            RenderStreaming.Logger.Log($"!!! SendAnswerCoroutine started !!!");
+
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.HaveRemoteOffer);
             Assert.AreEqual(_processingSetDescription, false);
 
             _processingSetDescription = true;
 
+            RenderStreaming.Logger.Log($"!!! Before SetLocalDescription !!!");
             var opLocalDesc = _peer.SetLocalDescription();
             yield return opLocalDesc;
 
+            RenderStreaming.Logger.Log($"!!! After SetLocalDescription !!!");
             if (opLocalDesc.IsError)
             {
                 RenderStreaming.Logger.Log(LogType.Error, $"{this} {opLocalDesc.Error.message}");
@@ -244,10 +248,15 @@ namespace Unity.RenderStreaming
                 yield break;
             }
 
+            RenderStreaming.Logger.Log($"!!! Peer.LocalDescription type {_peer.LocalDescription.type} !!!");
+            RenderStreaming.Logger.Log($"!!! Peer.LocalDescription SDP {_peer.LocalDescription.sdp} !!!");
+            RenderStreaming.Logger.Log($"!!! Peer.SignalingState value {_peer.SignalingState} !!!");
+
             Assert.AreEqual(_peer.LocalDescription.type, RTCSdpType.Answer);
             Assert.AreEqual(_peer.SignalingState, RTCSignalingState.Stable);
             _processingSetDescription = false;
 
+            RenderStreaming.Logger.Log($"!!! Sending answer with local description  !!!");
             SendAnswerHandler?.Invoke(_peer.LocalDescription);
         }
 

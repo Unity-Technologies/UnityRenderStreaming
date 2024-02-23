@@ -298,6 +298,7 @@ namespace Unity.RenderStreaming
         {
             if (!_mapConnectionIdAndPeer.TryGetValue(connectionId, out var pc))
                 return;
+            RenderStreaming.Logger.Log($"!!! PC sending answer sender for connectionId {connectionId} !!!");
             pc.SendAnswer();
         }
 

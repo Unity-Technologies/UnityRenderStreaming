@@ -169,15 +169,21 @@ namespace Unity.RenderStreaming
         public virtual void AddSender(string connectionId, IStreamSender sender)
         {
             RTCRtpTransceiverInit init = GetTransceiverInit(sender);
+
+            RenderStreaming.Logger.Log($"!!! Before adding Transceiver for connectionId {connectionId} !!!");
             var transceiver = m_handler.AddTransceiver(connectionId, sender.Track, init);
+
             if (sender is VideoStreamSender)
             {
+                RenderStreaming.Logger.Log($"!!! Before setting codec for connectionId {connectionId} !!!");
                 transceiver.SetCodec(GetVideoCodecInfo(sender));
             }
             else if (sender is AudioStreamSender)
             {
                 transceiver.SetCodec(GetAudioCodecInfo(sender));
             }
+
+            RenderStreaming.Logger.Log($"!!! Before setting transceiver for connectionId {connectionId} !!!");
             sender.SetTransceiver(connectionId, transceiver);
         }
 
