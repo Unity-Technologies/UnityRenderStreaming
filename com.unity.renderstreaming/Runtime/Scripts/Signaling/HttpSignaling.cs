@@ -392,14 +392,14 @@ namespace Unity.RenderStreaming.Signaling
                 }
                 else if (msg.type == "candidate")
                 {
-                    CandidateData candidate = new CandidateData
-                    {
-                        connectionId = msg.connectionId,
-                        candidate = msg.candidate,
-                        sdpMLineIndex = msg.sdpMLineIndex,
-                        sdpMid = msg.sdpMid
-                    };
-                    m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
+                    // CandidateData candidate = new CandidateData
+                    // {
+                    //     connectionId = msg.connectionId,
+                    //     candidate = msg.candidate,
+                    //     sdpMLineIndex = msg.sdpMLineIndex,
+                    //     sdpMid = msg.sdpMid
+                    // };
+                    // m_mainThreadContext.Post(d => OnIceCandidate?.Invoke(this, candidate), null);
                 }
             }
             return true;
