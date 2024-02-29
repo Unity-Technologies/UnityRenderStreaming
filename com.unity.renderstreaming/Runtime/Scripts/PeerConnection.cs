@@ -238,9 +238,10 @@ namespace Unity.RenderStreaming
 
             RenderStreaming.Logger.Log($"!!! Before SetLocalDescription !!!");
             var opLocalDesc = _peer.SetLocalDescription();
+            RenderStreaming.Logger.Log($"!!! After SetLocalDescription !!!");
             yield return opLocalDesc;
 
-            RenderStreaming.Logger.Log($"!!! After SetLocalDescription !!!");
+            RenderStreaming.Logger.Log($"!!! Coroutine resumes after SetLocalDescription !!!");
             if (opLocalDesc.IsError)
             {
                 RenderStreaming.Logger.Log(LogType.Error, $"{this} {opLocalDesc.Error.message}");
