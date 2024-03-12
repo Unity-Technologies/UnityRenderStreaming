@@ -623,7 +623,7 @@ namespace Unity.RenderStreaming
                                SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3;
 
                 m_coroutineScreenCapture = m_behaviour.StartCoroutine(RecordScreenFrame());
-                return new VideoStreamTrack(m_screenCopyTexture, isOpenGl ? null : Graphics.Blit);
+                return new VideoStreamTrack(m_screenCopyTexture, isOpenGl);
             }
 
             IEnumerator RecordScreenFrame()
