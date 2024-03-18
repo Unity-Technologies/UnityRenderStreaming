@@ -408,6 +408,7 @@ namespace Unity.RenderStreaming
 
         internal override MediaStreamTrack CreateTrack()
         {
+            RenderStreaming.Logger.Log("!!! CreateTrack");
             m_sourceImpl?.Dispose();
             m_sourceImpl = CreateVideoStreamSource();
             return m_sourceImpl.CreateTrack();
@@ -631,8 +632,11 @@ namespace Unity.RenderStreaming
                 while (true)
                 {
                     yield return new WaitForEndOfFrame();
+                    RenderStreaming.Logger.Log("!!! Before capturing screenshot");
                     ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
+                    RenderStreaming.Logger.Log("!!! After capturing screenshot");
                     Graphics.ConvertTexture(m_screenTexture, m_screenCopyTexture);
+                    RenderStreaming.Logger.Log("!!! After convert texture");
                 }
             }
 
