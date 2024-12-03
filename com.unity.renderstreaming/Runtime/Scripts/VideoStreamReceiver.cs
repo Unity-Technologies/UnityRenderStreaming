@@ -8,22 +8,22 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    /// 
+    /// Enum representing the video render mode.
     /// </summary>
     public enum VideoRenderMode
     {
         /// <summary>
-        /// 
+        /// Render to a RenderTexture.
         /// </summary>
         RenderTexture,
         /// <summary>
-        /// 
+        /// API only, no rendering.
         /// </summary>
         APIOnly,
     }
 
     /// <summary>
-    /// 
+    /// Component for receiving video streams.
     /// </summary>
     [AddComponentMenu("Render Streaming/Video Stream Receiver")]
     public class VideoStreamReceiver : StreamReceiverBase
@@ -33,13 +33,13 @@ namespace Unity.RenderStreaming
         internal const string TargetTexturePropertyName = nameof(m_TargetTexture);
 
         /// <summary>
-        ///
+        /// Delegate for updating the received texture.
         /// </summary>
-        /// <param name="receiveTexture"></param>
+        /// <param name="receiveTexture">The received texture.</param>
         public delegate void OnUpdateReceiveTextureHandler(Texture receiveTexture);
 
         /// <summary>
-        ///
+        /// Event triggered when the received texture is updated.
         /// </summary>
         public OnUpdateReceiveTextureHandler OnUpdateReceiveTexture;
 
@@ -53,7 +53,7 @@ namespace Unity.RenderStreaming
         private RenderTexture m_TargetTexture;
 
         /// <summary>
-        /// 
+        /// Gets the codec information for the video stream.
         /// </summary>
         public VideoCodecInfo codec
         {
@@ -61,22 +61,22 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        /// The width of the received video stream.
         /// </summary>
         public int width => m_texture.width;
 
         /// <summary>
-        /// 
+        /// The height of the received video stream.
         /// </summary>
         public int height => m_texture.height;
 
         /// <summary>
-        ///
+        /// The texture of the received video stream.
         /// </summary>
         public Texture texture => m_texture;
 
         /// <summary>
-        /// 
+        /// The target RenderTexture.
         /// </summary>
         public RenderTexture targetTexture
         {
@@ -90,9 +90,15 @@ namespace Unity.RenderStreaming
 
 
         /// <summary>
-        /// 
+        /// Gets the available video codecs.
         /// </summary>
-        /// <returns></returns>
+        /// <code>
+        /// var codecs = VideoStreamSender.GetAvailableCodecs();
+        /// foreach (var codec in codecs)
+        ///     Debug.Log(codec.name);
+        /// </code>
+        /// </example>
+        /// <returns>A list of available codecs.</returns>
         public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
         {
             string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03" };
@@ -101,9 +107,18 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        /// Sets the codec for the video stream.
         /// </summary>
-        /// <param name="mimeType"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var codec = VideoStreamReceiver.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("VP9"));
+        /// videoStreamReceiver.SetCodec(codec);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="codec">The codec information to set.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the transceiver is streaming or the track has ended.</exception>
         public void SetCodec(VideoCodecInfo codec)
         {
             m_Codec = codec;
