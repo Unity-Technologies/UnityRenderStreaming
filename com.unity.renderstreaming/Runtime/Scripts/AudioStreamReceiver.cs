@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    ///
+    /// AudioStreamReceiver is a component that receives audio streams and plays them through a specified AudioSource.
     /// </summary>
     [AddComponentMenu("Render Streaming/Audio Stream Receiver")]
     public class AudioStreamReceiver : StreamReceiverBase
@@ -16,13 +16,13 @@ namespace Unity.RenderStreaming
         internal const string TargetAudioSourcePropertyName = nameof(m_TargetAudioSource);
 
         /// <summary>
-        /// 
+        /// Delegate for handling updates to the received audio source.
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="source">The updated AudioSource.</param>
         public delegate void OnUpdateReceiveAudioSourceHandler(AudioSource source);
 
         /// <summary>
-        ///
+        /// Event triggered when the received audio source is updated.
         /// </summary>
         public OnUpdateReceiveAudioSourceHandler OnUpdateReceiveAudioSource;
 
@@ -33,7 +33,7 @@ namespace Unity.RenderStreaming
         private AudioCodecInfo m_Codec;
 
         /// <summary>
-        /// 
+        /// Gets the codec information for the audio stream.
         /// </summary>
         public AudioCodecInfo codec
         {
@@ -41,7 +41,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the target AudioSource where the received audio will be played.
         /// </summary>
         public AudioSource targetAudioSource
         {
@@ -50,9 +50,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        /// Gets the available audio codecs.
         /// </summary>
-        /// <returns></returns>
+        /// <code>
+        /// var codecs = AudioStreamReceiver.GetAvailableCodecs();
+        /// foreach (var codec in codecs)
+        ///     Debug.Log(codec.name);
+        /// </code>
+        /// </example>
+        /// <returns>A list of available codecs.</returns>
         static public IEnumerable<AudioCodecInfo> GetAvailableCodecs()
         {
             var excludeCodecMimeType = new[] { "audio/CN", "audio/telephone-event" };
@@ -61,9 +67,18 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        /// Sets the codec for the audio stream.
         /// </summary>
-        /// <param name="mimeType"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var codec = AudioStreamReceiver.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("opus"));
+        /// audioStreamReceiver.SetCodec(codec);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="codec">The codec information to set.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the transceiver is streaming or the track has ended.</exception>
         public void SetCodec(AudioCodecInfo codec)
         {
             m_Codec = codec;
