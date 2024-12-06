@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    /// 
+    /// The InputSender component is responsible for sending input data over a data channel in a Unity Render Streaming context.
     /// </summary>
+    /// <seealso cref="InputRemoting" />
     [AddComponentMenu("Render Streaming/Input Sender")]
     public class InputSender : DataChannelBase
     {
@@ -16,9 +17,23 @@ namespace Unity.RenderStreaming
         private IDisposable suscriberDisposer;
 
         /// <summary>
-        ///
+        /// Sets the RTCDataChannel for the sender.
         /// </summary>
-        /// <param name="track"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// public void OnAddChannel(SignalingEventData data)
+        /// {
+        ///     var obj = dictObj[data.connectionId];
+        ///     var channels = obj.GetComponentsInChildren<IDataChannel>();
+        ///     var channel = channels.FirstOrDefault(_ => !_.IsLocal && !_.IsConnected);
+        ///     channel?.SetChannel(data);
+        /// }
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="connectionId">The connection ID.</param>
+        /// <param name="channel">The RTCDataChannel to set.</param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
             if (channel == null)
@@ -37,19 +52,34 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// 
+        /// Calculates the input region based on the given texture size and region in world coordinates.
         /// </summary>
-        /// <param name="size">Texture Size.</param>
-        /// <param name="region">Region of the texture in world coordinate system.</param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var (region, size) = remoteVideoImage.GetRegionAndSize();
+        /// inputSender.CalculateInputResion(region, size);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="region">The region of the texture in world coordinate system.</param>
+        /// <param name="size">The size of the texture.</param>
         public void CalculateInputResion(Rect region, Vector2Int size)
         {
             sender.CalculateInputRegion(region, new Rect(Vector2.zero, size));
         }
 
         /// <summary>
-        /// 
+        /// Enables or disables input position correction.
         /// </summary>
-        /// <param name="enabled"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// inputSender.EnableInputPositionCorrection(true);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="enabled">True to enable input position correction, false to disable.</param>
         public void EnableInputPositionCorrection(bool enabled)
         {
             sender.EnableInputPositionCorrection = enabled;
