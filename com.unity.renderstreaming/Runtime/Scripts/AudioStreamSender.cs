@@ -34,6 +34,8 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// Component for sending audio streams.
     /// </summary>
+    /// <seealso cref="AudioStreamSource"/>
+    /// <seealso cref="AudioCodecInfo"/>
     [AddComponentMenu("Render Streaming/Audio Stream Sender")]
     public class AudioStreamSender : StreamSenderBase
     {
