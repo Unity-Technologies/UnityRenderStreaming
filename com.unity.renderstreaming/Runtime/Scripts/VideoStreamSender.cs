@@ -444,7 +444,7 @@ namespace Unity.RenderStreaming
         /// videoStreamSender.SetScaleResolutionDown(2.0f);
         /// </code>
         /// </example>
-        /// <param name="scaleFactor">The scale factor to reduce the resolution. Must be greater than 1.0f.</param>
+        /// <param name="scaleFactor">The scale factor by which to reduce the resolution. Must be greater than 1.0f.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the scale factor is less than or equal to 1.0f.</exception>
         public void SetScaleResolutionDown(float scaleFactor)
         {
