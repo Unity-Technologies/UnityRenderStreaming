@@ -8,6 +8,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// The InputSender component is responsible for sending input data over a data channel in a Unity Render Streaming context.
     /// </summary>
+    /// <seealso cref="InputRemoting" />
     [AddComponentMenu("Render Streaming/Input Sender")]
     public class InputSender : DataChannelBase
     {
