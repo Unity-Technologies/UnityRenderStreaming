@@ -24,12 +24,12 @@ namespace Unity.RenderStreaming
         internal const string DefaultActionMapPropertyName = nameof(m_DefaultActionMap);
 
         /// <summary>
-        ///
+        /// Event triggered when a device changes.
         /// </summary>
         public override event Action<InputDevice, InputDeviceChange> onDeviceChange;
 
         /// <summary>
-        ///
+        /// Gets or sets the input action asset associated with the player.
         /// </summary>
         public InputActionAsset actions
         {
@@ -66,22 +66,22 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Indicates whether the input is currently active.
         /// </summary>
         public bool inputIsActive => m_InputActive;
 
         /// <summary>
-        ///
+        /// Gets or sets the default action map.
         /// </summary>
         public InputUser user => m_InputUser;
 
         /// <summary>
-        ///
+        /// Gets or sets the action events associated with the player.
         /// </summary>
         public ReadOnlyArray<InputDevice> devices => m_InputUser.pairedDevices;
 
         /// <summary>
-        ///
+        /// Gets or sets the current action map.
         /// </summary>
         public InputActionMap currentActionMap
         {
@@ -95,7 +95,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the default action map.
         /// </summary>
         public string defaultActionMap
         {
@@ -104,7 +104,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the action events associated with the player.
         /// </summary>
         public ReadOnlyArray<PlayerInput.ActionEvent> actionEvents
         {
@@ -121,9 +121,6 @@ namespace Unity.RenderStreaming
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         protected virtual void OnEnable()
         {
             m_Enabled = true;
@@ -135,9 +132,6 @@ namespace Unity.RenderStreaming
             ActivateInput();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         protected virtual void OnDisable()
         {
             m_Enabled = false;
@@ -149,8 +143,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Activates input for the player.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// inputReceiver.ActivateInput();
+        /// ]]>
+        ///</code>
+        /// </example>
         public void ActivateInput()
         {
             m_InputActive = true;
@@ -164,8 +165,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Deactivates input for the player.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// inputReceiver.DeactivateInput();
+        /// ]]>
+        ///</code>
+        /// </example>
         public void DeactivateInput()
         {
             m_CurrentActionMap?.Disable();
@@ -174,9 +182,17 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Switches the current action map to the one with the given name or ID.
         /// </summary>
-        /// <param name="mapNameOrId"></param>
+        /// <param name="mapNameOrId">The name or ID of the action map to switch to.</param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// inputReceiver.SwitchCurrentActionMap("Gameplay");
+        ///]]>
+        /// </code>
+        /// </example>
+
         public void SwitchCurrentActionMap(string mapNameOrId)
         {
             // Must be enabled.
@@ -205,17 +221,33 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Performs pairing with the specified input device.
         /// </summary>
-        /// <param name="device"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var playerInput = hostPlayer.GetComponent<InputReceiver>();
+        /// playerInput.PerformPairingWithDevice(device);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="device">The input device to pair with.</param>
         public void PerformPairingWithDevice(InputDevice device)
         {
             m_InputUser = InputUser.PerformPairingWithDevice(device, m_InputUser);
         }
 
         /// <summary>
-        ///
+        /// Performs pairing with all local devices.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var playerInput = hostPlayer.GetComponent<InputReceiver>();
+        /// playerInput.PerformPairingWithAllLocalDevices();
+        /// ]]>
+        ///</code>
+        /// </example>
         public void PerformPairingWithAllLocalDevices()
         {
             foreach (var device in Inputs.devices.Where(_ => !_.remote))
@@ -225,9 +257,17 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Unpairs the input user with the given device.
         /// </summary>
-        /// <param name="device"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var playerInput = hostPlayer.GetComponent<InputReceiver>();
+        /// playerInput.UnpairDevices(device);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="device">The device to unpair.</param>
         public void UnpairDevices(InputDevice device)
         {
             if (!m_InputUser.valid)
@@ -236,9 +276,23 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the RTCDataChannel for the sender.
         /// </summary>
-        /// <param name="track"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// public void OnAddChannel(SignalingEventData data)
+        /// {
+        ///     var obj = dictObj[data.connectionId];
+        ///     var channels = obj.GetComponentsInChildren<IDataChannel>();
+        ///     var channel = channels.FirstOrDefault(_ => !_.IsLocal && !_.IsConnected);
+        ///     channel?.SetChannel(data);
+        /// }
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="connectionId">The connection ID.</param>
+        /// <param name="channel">The RTCDataChannel to set.</param>
         public override void SetChannel(string connectionId, RTCDataChannel channel)
         {
             if (channel == null)
@@ -257,28 +311,39 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Calculates the input region based on the given texture size and region in world coordinates.
         /// </summary>
-        /// <param name="size">Texture Size.</param>
-        /// <param name="region">Region of the texture in world coordinate system.</param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var (region, size) = remoteVideoImage.GetRegionAndSize();
+        /// inputReceiver.CalculateInputRegion(region, size);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="region">The region of the texture in world coordinate system.</param>
+        /// <param name="size">The size of the texture.</param>
         public void CalculateInputRegion(Vector2Int size, Rect region)
         {
             receiver.CalculateInputRegion(new Rect(Vector2.zero, size), region);
         }
 
         /// <summary>
-        ///
+        /// Enables or disables input position correction.
         /// </summary>
-        /// <param name="enabled"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// inputReceiver.EnableInputPositionCorrection(true);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="enabled">True to enable input position correction, false to disable.</param>
         public void SetEnableInputPositionCorrection(bool enabled)
         {
             receiver.EnableInputPositionCorrection = enabled;
         }
 
-
-        /// <summary>
-        ///
-        /// </summary>
         protected virtual void OnDestroy()
         {
             Dispose();
