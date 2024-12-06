@@ -291,7 +291,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// The factor of multiply with the video resolution to reduce the bandwidth.
+        /// The scale factor by which to reduce the video resolution to conserve bandwidth.
         /// </summary>
         public float scaleResolutionDown
         {
