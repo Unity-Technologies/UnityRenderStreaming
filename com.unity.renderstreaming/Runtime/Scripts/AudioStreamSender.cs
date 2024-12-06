@@ -9,31 +9,33 @@ using UnityEngine;
 namespace Unity.RenderStreaming
 {
     /// <summary>
-    ///
+    /// Specifies the source of the audio stream.
     /// </summary>
     public enum AudioStreamSource
     {
         /// <summary>
-        ///
+        /// Use the AudioListener component as the audio source.
         /// </summary>
         AudioListener = 0,
         /// <summary>
-        ///
+        /// Use the AudioSource component as the audio source.
         /// </summary>
         AudioSource = 1,
         /// <summary>
-        ///
+        /// Use the microphone as the audio source.
         /// </summary>
         Microphone = 2,
         /// <summary>
-        ///
+        /// Use only the API to provide audio data.
         /// </summary>
         APIOnly = 3
     }
 
     /// <summary>
-    /// Attach AudioListerner or AudioSource
+    /// Component for sending audio streams.
     /// </summary>
+    /// <seealso cref="AudioStreamSource"/>
+    /// <seealso cref="AudioCodecInfo"/>
     [AddComponentMenu("Render Streaming/Audio Stream Sender")]
     public class AudioStreamSender : StreamSenderBase
     {
@@ -80,7 +82,7 @@ namespace Unity.RenderStreaming
         private int m_frequency = 48000;
 
         /// <summary>
-        ///
+        /// Gets or sets the source of the audio stream.
         /// </summary>
         public AudioStreamSource source
         {
@@ -100,7 +102,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the codec used for the audio stream.
         /// </summary>
         public AudioCodecInfo codec
         {
@@ -108,7 +110,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the minimum bitrate for the audio stream.
         /// </summary>
         public uint minBitrate
         {
@@ -116,7 +118,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the maximum bitrate for the audio stream.
         /// </summary>
         public uint maxBitrate
         {
@@ -124,7 +126,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// Play or not sending to remote audio in local.
+        /// Gets or sets whether to play the audio locally while sending it to the remote peer.
         /// </summary>
         public bool loopback
         {
@@ -149,7 +151,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        /// The index of Microphone.devices.
+        /// Gets or sets the index of the microphone device used as the audio source.
         /// </summary>
         public int sourceDeviceIndex
         {
@@ -169,7 +171,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the AudioSource component used as the audio source.
         /// </summary>
         public AudioSource audioSource
         {
@@ -189,7 +191,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the AudioListener component used as the audio source.
         /// </summary>
         public AudioListener audioListener
         {
@@ -209,9 +211,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the available video codecs.
         /// </summary>
-        /// <returns></returns>
+        /// <code>
+        /// var codecs = VideoStreamSender.GetAvailableCodecs();
+        /// foreach (var codec in codecs)
+        ///     Debug.Log(codec.name);
+        /// </code>
+        /// </example>
+        /// <returns>A list of available codecs.</returns>
         static public IEnumerable<AudioCodecInfo> GetAvailableCodecs()
         {
             var excludeCodecMimeType = new[] { "audio/CN", "audio/telephone-event" };
@@ -220,10 +228,16 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the bitrate range for the audio stream.
         /// </summary>
-        /// <param name="minBitrate"></param>
-        /// <param name="maxBitrate"></param>
+        /// <example>
+        /// <code>
+        /// audioStreamSender.SetBitrate(128, 256);
+        /// </code>
+        /// </example>
+        /// <param name="minBitrate">The minimum bitrate in kbps. Must be greater than zero.</param>
+        /// <param name="maxBitrate">The maximum bitrate in kbps. Must be greater than or equal to the minimum bitrate.</param>
+        /// <exception cref="ArgumentException">Thrown when the maximum bitrate is less than the minimum bitrate.</exception>
         public void SetBitrate(uint minBitrate, uint maxBitrate)
         {
             if (minBitrate > maxBitrate)
@@ -239,9 +253,17 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the codec for the audio stream.
         /// </summary>
-        /// <param name="codec"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var codec = AudioStreamSender.GetAvailableCodecs().First(x => x.mimeType.Contains("opus"));
+        /// audioStreamSender.SetCodec(codec);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="codec">The codec information to set.</param>
         public void SetCodec(AudioCodecInfo codec)
         {
             m_Codec = codec;
@@ -300,7 +322,6 @@ namespace Unity.RenderStreaming
             return m_sourceImpl.CreateTrack();
         }
 
-
         AudioStreamSourceImpl CreateAudioStreamSource()
         {
             switch (m_Source)
@@ -317,7 +338,6 @@ namespace Unity.RenderStreaming
             throw new InvalidOperationException("");
         }
 
-
         private protected override void OnEnable()
         {
             OnAudioConfigurationChanged(false);
@@ -331,6 +351,28 @@ namespace Unity.RenderStreaming
             base.OnDisable();
         }
 
+        /// <summary>
+        /// Sets the audio data for the stream.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// int sampleRate = AudioSettings.outputSampleRate;
+        /// int frequency = 440;
+        /// int bufferSize = sampleRate; // 1 second buffer
+        /// var audioData = new NativeArray<float>(bufferSize, Allocator.Temp);
+        /// for (int i = 0; i < bufferSize; i++)
+        /// {
+        ///     audioData[i] = Mathf.Sin(2 * Mathf.PI * frequency * i / sampleRate);
+        /// }
+        /// audioStreamSender.SetData(audioData.AsReadOnly(), 1);
+        /// audioData.Dispose();
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <param name="nativeArray">The native array containing the audio data.</param>
+        /// <param name="channels">The number of audio channels.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the source property is not set to AudioStreamSource.APIOnly.</exception>
         public void SetData(NativeArray<float>.ReadOnly nativeArray, int channels)
         {
             if (m_Source != AudioStreamSource.APIOnly)
