@@ -86,29 +86,29 @@ namespace Unity.RenderStreaming
     }
 
     /// <summary>
-    ///
+    /// Specifies the source of the video stream.
     /// </summary>
     public enum VideoStreamSource
     {
         /// <summary>
-        ///
+        /// Use the camera as the video stream source.
         /// </summary>
         Camera = 0,
         /// <summary>
-        ///
+        /// Use the screen as the video stream source.
         /// </summary>
         Screen = 1,
         /// <summary>
-        ///
+        /// Use the web camera as the video stream source.
         /// </summary>
         WebCamera = 2,
         /// <summary>
-        ///
+        /// Use a texture as the video stream source.
         /// </summary>
         Texture = 3
     }
     /// <summary>
-    ///
+    /// Component for sending video streams.
     /// </summary>
     [AddComponentMenu("Render Streaming/Video Stream Sender")]
     public class VideoStreamSender : StreamSenderBase
@@ -171,7 +171,7 @@ namespace Unity.RenderStreaming
         private VideoStreamSourceImpl m_sourceImpl = null;
 
         /// <summary>
-        ///
+        /// Gets or sets the source of the video stream.
         /// </summary>
         public VideoStreamSource source
         {
@@ -191,7 +191,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the camera used as the video stream source.
         /// </summary>
         public Camera sourceCamera
         {
@@ -211,7 +211,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the texture used as the video stream source.
         /// </summary>
         public Texture sourceTexture
         {
@@ -251,7 +251,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the WebCamTexture used as the video stream source.
         /// </summary>
         public WebCamTexture sourceWebCamTexture
         {
@@ -267,7 +267,7 @@ namespace Unity.RenderStreaming
 
 
         /// <summary>
-        ///
+        /// Gets the frame rate of the video stream.
         /// </summary>
         public float frameRate
         {
@@ -275,7 +275,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the minimum bitrate of the video stream.
         /// </summary>
         public uint minBitrate
         {
@@ -283,7 +283,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the maximum bitrate of the video stream.
         /// </summary>
         public uint maxBitrate
         {
@@ -291,7 +291,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// The scale factor by which to reduce the video resolution to conserve bandwidth.
         /// </summary>
         public float scaleResolutionDown
         {
@@ -299,7 +299,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the width of the frame buffer used for streaming.
         /// </summary>
         public uint width
         {
@@ -311,7 +311,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets or sets the height of the frame buffer used for streaming.
         /// </summary>
         public uint height
         {
@@ -323,7 +323,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the codec information for the video stream.
         /// </summary>
         public VideoCodecInfo codec
         {
@@ -331,7 +331,7 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Whether request permission to use any video input sources.
         /// </summary>
         public bool autoRequestUserAuthorization
         {
@@ -340,9 +340,17 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the codec for the video stream.
         /// </summary>
-        /// <param name="codec"></param>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var codec = VideoStreamSender.GetAvailableCodecs().FirstOrDefault(x => x.mimeType.Contains("VP9"));
+        /// videoStreamSender.SetCodec(codec);
+        /// ]]>
+        ///</code>
+        /// </example>
+        /// <param name="codec">The codec information to set.</param>
         public void SetCodec(VideoCodecInfo codec)
         {
             if (isPlaying)
@@ -364,9 +372,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the available video codecs.
         /// </summary>
-        /// <returns></returns>
+        /// <code>
+        /// var codecs = VideoStreamSender.GetAvailableCodecs();
+        /// foreach (var codec in codecs)
+        ///     Debug.Log(codec.name);
+        /// </code>
+        /// </example>
+        /// <returns>A list of available codecs.</returns>
         public static IEnumerable<VideoCodecInfo> GetAvailableCodecs()
         {
             string[] excludeCodecMimeType = { "video/red", "video/ulpfec", "video/rtx", "video/flexfec-03" };
@@ -375,9 +389,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the frame rate for the video stream.
         /// </summary>
-        /// <param name="frameRate"></param>
+        /// <example>
+        /// <code>
+        /// videoStreamSender.SetFrameRate(30.0f);
+        /// </code>
+        /// </example>
+        /// <param name="frameRate">The new frame rate. Must be greater than zero.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the frame rate is less than or equal to zero.</exception>
         public void SetFrameRate(float frameRate)
         {
             if (frameRate < 0)
@@ -392,9 +412,16 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the bitrate range for the video stream.
         /// </summary>
-        /// <param name="bitrate"></param>
+        /// <example>
+        /// <code>
+        /// videoStreamSender.SetBitrate(1000, 2500);
+        /// </code>
+        /// </example>
+        /// <param name="minBitrate">The minimum bitrate in kbps. Must be greater than zero.</param>
+        /// <param name="maxBitrate">The maximum bitrate in kbps. Must be greater than or equal to the minimum bitrate.</param>
+        /// <exception cref="ArgumentException">Thrown when the maximum bitrate is less than the minimum bitrate.</exception>
         public void SetBitrate(uint minBitrate, uint maxBitrate)
         {
             if (minBitrate > maxBitrate)
@@ -410,9 +437,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the scale factor by which to reduce the video resolution to conserve bandwidth.
         /// </summary>
-        /// <param name="scaleFactor">The parameter must be greater than 1.0f.</param>
+        /// <example>
+        /// <code>
+        /// videoStreamSender.SetScaleResolutionDown(2.0f);
+        /// </code>
+        /// </example>
+        /// <param name="scaleFactor">The scale factor by which to reduce the resolution. Must be greater than 1.0f.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the scale factor is less than or equal to 1.0f.</exception>
         public void SetScaleResolutionDown(float scaleFactor)
         {
             if (scaleFactor < 1.0f)
@@ -429,9 +462,14 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the size of the frame buffer used for streaming.
         /// </summary>
-        /// <param name="size"></param>
+        /// <example>
+        /// <code>
+        /// SetTextureSize(new Vector2Int(1920, 1080));
+        /// </code>
+        /// </example>
+        /// <param name="size">The new size of the texture as a Vector2Int.</param>
         public void SetTextureSize(Vector2Int size)
         {
             m_TextureSize = size;
