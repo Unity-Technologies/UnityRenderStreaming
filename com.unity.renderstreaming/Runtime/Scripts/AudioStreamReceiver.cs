@@ -9,6 +9,7 @@ namespace Unity.RenderStreaming
     /// <summary>
     /// AudioStreamReceiver is a component that receives audio streams and plays them through a specified AudioSource.
     /// </summary>
+    /// <seealso cref="AudioCodecInfo"/>
     [AddComponentMenu("Render Streaming/Audio Stream Receiver")]
     public class AudioStreamReceiver : StreamReceiverBase
     {
