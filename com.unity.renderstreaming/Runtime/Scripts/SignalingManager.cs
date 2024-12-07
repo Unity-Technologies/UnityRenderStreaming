@@ -13,6 +13,12 @@ using UnityEditor;
 
 namespace Unity.RenderStreaming
 {
+    /// <summary>
+    /// Manages the signaling process for Unity RenderStreaming.
+    /// </summary>
+    /// <seealso cref="ISignaling"/>
+    /// <seealso cref="SignalingSettings"/>
+    /// <seealso cref="SignalingHandlerBase"/>
     [AddComponentMenu("Render Streaming/Signaling Manager")]
     public sealed class SignalingManager : MonoBehaviour
     {
@@ -37,13 +43,13 @@ namespace Unity.RenderStreaming
         private List<SignalingHandlerBase> handlers = new List<SignalingHandlerBase>();
 
         /// <summary>
-        ///
+        /// Indicates whether the signaling process should automatically start when the Awake method is called.
         /// </summary>
         [SerializeField, Tooltip("Automatically started when called Awake method.")]
         public bool runOnAwake = true;
 
         /// <summary>
-        ///
+        /// Indicates whether to evaluate command line arguments if launching runtime on the command line.
         /// </summary>
         [SerializeField, Tooltip("Evaluate commandline arguments if launching runtime on the command line.")]
         public bool evaluateCommandlineArguments = true;
@@ -55,7 +61,7 @@ namespace Unity.RenderStreaming
         private bool m_running;
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether the signaling process is running.
         /// </summary>
         public bool Running => m_running;
 
@@ -79,10 +85,20 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Sets the signaling settings.
         /// </summary>
-        /// <param name="settings"></param>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <example>
+        /// <code>
+        /// var settings = new WebSocketSignalingSettings("ws://example.com", new[]
+        /// {
+        ///     new IceServer (urls: new[] {"stun:stun.l.google.com:19302"})
+        /// });
+        /// signalingManager.SetSignalingSettings(settings);
+        ///</code>
+        /// </example>
+        /// <param name="settings">The signaling settings.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the signaling process has already started.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the settings are null.</exception>
         public void SetSignalingSettings(SignalingSettings settings)
         {
             if (m_running)
@@ -95,18 +111,33 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Gets the signaling settings.
         /// </summary>
-        /// <returns></returns>
+        /// <example>
+        /// <code>
+        /// var settings = signalingManager.GetSignalingSettings();
+        /// if (settings is WebSocketSignalingSettings webSocketSettings)
+        /// {
+        ///     Debug.Log($"WebSocket URL: {webSocketSettings.url}");
+        /// }
+        ///</code>
+        /// </example>
+        /// <returns>The signaling settings.</returns>
         public SignalingSettings GetSignalingSettings()
         {
             return signalingSettings;
         }
 
         /// <summary>
-        ///
+        /// Adds a signaling handler.
         /// </summary>
-        /// <param name="handlerBase"></param>
+        /// <example>
+        /// <code>
+        /// var handler = instance.GetComponent<Multiplay>();
+        /// signalingManager.AddSignalingHandler(handler);
+        ///</code>
+        /// </example>
+        /// <param name="handlerBase">The signaling handler to add.</param>
         public void AddSignalingHandler(SignalingHandlerBase handlerBase)
         {
             if (handlers.Contains(handlerBase))
@@ -124,9 +155,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Removes a signaling handler.
         /// </summary>
-        /// <param name="handlerBase"></param>
+        /// <example>
+        /// <code>
+        /// var handler = instance.GetComponent<Multiplay>();
+        /// signalingManager.RemoveSignalingHandler(handler);
+        ///</code>
+        /// </example>
+        /// <param name="handlerBase">The signaling handler to remove.</param>
         public void RemoveSignalingHandler(SignalingHandlerBase handlerBase)
         {
             handlers.Remove(handlerBase);
@@ -140,10 +177,15 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Runs the signaling process.
         /// </summary>
-        /// <param name="signaling"></param>
-        /// <param name="handlers"></param>
+        /// <param name="signaling">The signaling instance to use. If null, a new instance will be created.</param>
+        /// <param name="handlers">The signaling handlers to use. If null, the existing handlers will be used.</param>
+        /// <example>
+        /// <code>
+        /// signalingManager.Run();
+        ///</code>
+        /// </example>
         public void Run(
             ISignaling signaling = null,
             SignalingHandlerBase[] handlers = null)
@@ -152,12 +194,21 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Runs the signaling process with the specified RTC configuration.
         /// </summary>
-        /// <param name="conf"></param>
-        /// <param name="signaling"></param>
-        /// <param name="handlers"></param>
-        /// <remarks> To use this method, Need to depend WebRTC package </remarks>
+        /// <example>
+        /// <code>
+        /// var rtcConfig = new RTCConfiguration
+        /// {
+        ///     iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } }
+        /// };
+        /// signalingManager.Run(rtcConfig);
+        ///</code>
+        /// </example>
+        /// <param name="conf">The RTC configuration.</param>
+        /// <param name="signaling">The signaling instance to use. If null, a new instance will be created.</param>
+        /// <param name="handlers">The signaling handlers to use. If null, the existing handlers will be used.</param>
+        /// <remarks>To use this method, the WebRTC package is required.</remarks>
         public void Run(
             RTCConfiguration conf,
             ISignaling signaling = null,
@@ -178,12 +229,6 @@ namespace Unity.RenderStreaming
         }
 #endif
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="conf"></param>
-        /// <param name="signaling"></param>
-        /// <param name="handlers"></param>
         private void _Run(
             RTCConfiguration? conf = null,
             ISignaling signaling = null,
@@ -266,8 +311,13 @@ namespace Unity.RenderStreaming
         }
 
         /// <summary>
-        ///
+        /// Stops the signaling process.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// signalingManager.Stop();
+        ///</code>
+        /// </example>
         public void Stop()
         {
             m_instance?.Dispose();
