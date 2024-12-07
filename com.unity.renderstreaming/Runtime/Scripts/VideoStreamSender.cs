@@ -746,8 +746,10 @@ namespace Unity.RenderStreaming
                 while (true)
                 {
                     yield return new WaitForEndOfFrame();
+                    var rt = RenderTexture.active;
                     ScreenCapture.CaptureScreenshotIntoRenderTexture(m_screenTexture);
                     Graphics.ConvertTexture(m_screenTexture, m_screenCopyTexture);
+                    RenderTexture.active = rt;
                 }
             }
 
