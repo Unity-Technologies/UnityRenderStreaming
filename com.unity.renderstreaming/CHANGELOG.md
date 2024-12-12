@@ -4,6 +4,19 @@ All notable changes to com.unity.renderstreaming package will be documented in t
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.0-exp.9] - 2024-12-12
+
+### Changed
+- doc: improve the API documentation of VideoCodecInfo
+- doc: improve the API documentation of AudioCodecInfo
+- doc: improve the API documentation of VideoStreamSender
+- doc: improve the API documentation of VideoStreamReceiver
+- doc: improve the API documentation of InputSender
+- doc: improve the API documentation of InputReceiver
+- doc: improve the API documentation of AudioStreamSender
+- doc: improve the API documentation of AudioStreamReceiver
+- doc: improve the API documentation of SignalingManager
+
 ## [3.1.0-exp.8] - 2023-11-30
 
 ### Changed
