@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.0-exp.9] - 2024-12-12
 
 ### Changed
+- deps: use com.unity.webrtc@3.0.0-pre.8
 - doc: improve the API documentation of VideoCodecInfo
 - doc: improve the API documentation of AudioCodecInfo
 - doc: improve the API documentation of VideoStreamSender
