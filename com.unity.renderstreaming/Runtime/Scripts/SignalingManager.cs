@@ -330,17 +330,7 @@ namespace Unity.RenderStreaming
             if (!runOnAwake || m_running || handlers.Count == 0)
                 return;
 
-            var settings = m_useDefault ? RenderStreaming.GetSignalingSettings<SignalingSettings>() : signalingSettings;
-            int i = 0;
-            RTCIceServer[] iceServers = new RTCIceServer[settings.iceServers.Count()];
-            foreach (var iceServer in settings.iceServers)
-            {
-                iceServers[i] = (RTCIceServer)iceServer;
-                i++;
-            }
-            RTCConfiguration conf = new RTCConfiguration { iceServers = iceServers };
-            ISignaling signaling = CreateSignaling(settings, SynchronizationContext.Current);
-            _Run(conf, signaling, handlers.ToArray());
+            _Run(null, null, handlers.ToArray());
         }
 
         void OnDestroy()
