@@ -496,8 +496,11 @@ namespace Unity.RenderStreaming
 
         void _OnStoppedStream(string connectionId)
         {
-            m_sourceImpl?.Dispose();
-            m_sourceImpl = null;
+            if (Transceivers.Count <= 0)
+            {
+                m_sourceImpl?.Dispose();
+                m_sourceImpl = null;
+            }
         }
 
         internal override WaitForCreateTrack CreateTrack()
